@@ -1,0 +1,12 @@
+[user]
+	name = Ushira Dineth
+	email = ushiradineth@gmail.com
+[pull]
+	rebase = false
+[core]
+	excludesfile = /Users/ushira/.gitignore_global
+[push]
+	default = simple
+	autoSetupRemote = true
+[init]
+	defaultBranch = main
