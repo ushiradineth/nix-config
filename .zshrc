@@ -52,10 +52,18 @@ $HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions $HOME/.oh-my-zsh/plugins/git
 $HOME/.oh-my-zsh/cache/completions /usr/local/share/zsh/site-functions /usr/share/zsh/site-functions /usr/share/zsh/5.9/functions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src)
 
 # Aliases
-alias tf=terraform
-alias tfv=terraform validate && terraform fmt --recursive
-alias ntcd=open . -a iterm
-alias vim=nvim
+alias tf="terraform"
+alias tfv="terraform validate && terraform fmt --recursive"
+
+alias ntcd="open . -a iterm"
+alias vim="nvim"
+
+alias ls="eza"
+alias ll="eza -alh"
+alias tree="eza --tree"
+
+alias cd="z"
+alias zz="z -"
 
 # Path
 export PATH=$PATH:$HOME/istio-1.20.2/bin
