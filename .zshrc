@@ -49,6 +49,10 @@ alias zz="z -"
 
 alias cat="bat"
 
+alias gc="git checkout"
+alias gplo="git pull origin"
+alias gpho="git push origin"
+
 # Path
 export PATH=$PATH:$HOME/istio-1.20.2/bin
 export PATH=$PATH:$HOME/.local/bin
