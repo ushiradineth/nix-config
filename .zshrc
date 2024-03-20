@@ -35,7 +35,11 @@ fpath=($HOME/.oh-my-zsh/plugins/git $HOME/.oh-my-zsh/plugins/kubectl $HOME/.oh-m
 
 # Aliases
 alias tf="terraform"
-alias tfv="terraform validate && terraform fmt --recursive"
+alias tfw="terraform workspace"
+alias tfws="terraform workspace select"
+alias tfs="terraform state"
+alias tfsl="terraform state list"
+alias tfv="terraform validate && terraform fmt --recursive && tflint"
 
 alias ntcd="open . -a iterm"
 alias vim="nvim"
