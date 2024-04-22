@@ -137,3 +137,5 @@ alias gpho="git push origin"
 
 alias ntcd="open . -a iterm"
 alias vim="nvim"
+alias fman="compgen -c | fzf | xargs man"
+alias ftldr="compgen -c | fzf | xargs tldr"
