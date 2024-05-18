@@ -30,18 +30,25 @@ zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
 
-# Add in snippets
-zinit snippet OMZP::git
-zinit snippet OMZP::aws
-zinit snippet OMZP::docker
 zinit snippet OMZP::kubectl
 zinit snippet OMZP::kubectx
-zinit snippet OMZP::command-not-found
 
-# Load completions
+# Add in snippets
+zinit wait lucid for \
+  OMZP::git \
+  OMZP::command-not-found \
+  as"completion" \
+    OMZP::terraform/_terraform \
+    OMZ::plugins/docker/completions/_docker \
+    OMZP::docker-compose/_docker-compose \
+    OMZP::golang/_golang
+
+zinit snippet OMZP::aws
+
 autoload -Uz compinit && compinit
-
 zinit cdreplay -q
+
+source <(kubectl completion zsh)
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
