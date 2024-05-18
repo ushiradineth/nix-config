@@ -1,65 +1,133 @@
-# P10k and OMZ init
-
-## Check if the zsh configuration file for the Powerlevel10k instant prompt exists and is readable.
-## If it does, source the file to incorporate its configurations into the current shell environment.
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-export ZSH=$HOME/.oh-my-zsh
-source $ZSH/oh-my-zsh.sh
+if [[ -f "$HOMEBREW_PREFIX/bin/brew" ]] then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 
-## Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-## Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-plugins=(git kubectl docker zsh-completions)
+# Set the directory we want to store zinit and plugins
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
-source "$HOMEBREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme"
+# Download Zinit, if it's not there yet
+if [ ! -d "$ZINIT_HOME" ]; then
+   mkdir -p "$(dirname $ZINIT_HOME)"
+   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+fi
 
-## To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+# Source/Load zinit
+source "${ZINIT_HOME}/zinit.zsh"
+
+# Add in Powerlevel10k
+zinit ice depth=1; zinit light romkatv/powerlevel10k
+
+# Add in zsh plugins
+zinit light zsh-users/zsh-syntax-highlighting
+zinit light zsh-users/zsh-completions
+zinit light zsh-users/zsh-autosuggestions
+zinit light Aloxaf/fzf-tab
+
+# Add in snippets
+zinit snippet OMZP::git
+zinit snippet OMZP::aws
+zinit snippet OMZP::docker
+zinit snippet OMZP::kubectl
+zinit snippet OMZP::kubectx
+zinit snippet OMZP::command-not-found
+
+# Load completions
+autoload -Uz compinit && compinit
+
+zinit cdreplay -q
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-ZSH_THEME="powerlevel10k/powerlevel10k"
 
-## Update automatically without asking
-zstyle ':omz:update' mode auto
+# Keybindings
+bindkey -e
+bindkey '^p' history-search-backward
+bindkey '^n' history-search-forward
+bindkey '^[w' kill-region
 
-## Enable command auto-correction
-ENABLE_CORRECTION="true"
+# -----------------------------------------------------------------------------------------------------------------------
 
-## Display red dots whilst waiting for completion
-COMPLETION_WAITING_DOTS="true"
+# Path
 
-## Reload the zsh-completions
-autoload -U compinit && compinit
-eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
-source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source <(kubectl completion zsh)
+PATH=$PATH:$HOME/.local/bin
+PATH=$PATH:$HOME/go/bin
 
-## Node Version Manager
+export PATH=$PATH
+
+# -----------------------------------------------------------------------------------------------------------------------
+
+# History
+HISTSIZE=5000
+HISTFILE=~/.zsh_history
+SAVEHIST=$HISTSIZE
+HISTDUP=erase
+setopt appendhistory
+setopt sharehistory
+setopt hist_ignore_space
+setopt hist_ignore_all_dups
+setopt hist_save_no_dups
+setopt hist_ignore_dups
+setopt hist_find_no_dups
+
+# Completion styling
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' menu no
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+
+# -----------------------------------------------------------------------------------------------------------------------
+
+# Aliases
+
+alias tf="terraform"
+alias tfw="terraform workspace"
+alias tfws="terraform workspace select"
+alias tfs="terraform state"
+alias tfsl="terraform state list"
+alias tfv="terraform validate && terraform fmt --recursive && tflint"
+
+alias d='docker'
+alias dr='docker run --rm -i -t'
+
+alias ls="eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions"
+alias ll="eza -alh --no-time --no-user"
+alias tree="eza --tree"
+
+alias cd="z"
+alias zz="z -"
+
+alias cat="bat"
+
+alias gc="git checkout"
+alias gplo="git pull origin"
+alias gpho="git push origin"
+
+alias vim="nvim"
+alias fman="compgen -c | fzf | xargs man"
+alias ftldr="compgen -c | fzf | xargs tldr"
+alias c='clear'
+
+# -----------------------------------------------------------------------------------------------------------------------
+
+# Shell integrations
+eval "$(fzf --zsh)"
+eval "$(zoxide init --cmd cd zsh)"
+export BAT_THEME=tokyonight_night
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-## Android Studio
-export ANDROID_HOME=$HOME/Android/Sdk
-export ANDROID_SDK_ROOT=$HOME/Android/Sdk
-
-## Init Zoxide (better cd)
-eval "$(zoxide init zsh)"
-
-## Init fzf
-eval "$(fzf --zsh)"
-
-## Bat (better cat)
-
-export BAT_THEME=tokyonight_night
-
 # -----------------------------------------------------------------------------------------------------------------------
 
 # FZF and FD configuration
-
-## Use fd instead of fzf
-
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
@@ -94,48 +162,3 @@ _fzf_comprun() {
     *)            fzf --preview "bat -n --color=always --line-range :500 {}" "$@" ;;
   esac
 }
-
-# -----------------------------------------------------------------------------------------------------------------------
-
-# Path
-
-PATH=$PATH:$HOME/.local/bin
-PATH=$PATH:$HOME/go/bin
-PATH=$PATH:$HOME/.dotnet/tools
-PATH=$PATH:$ANDROID_HOME/tools
-PATH=$PATH:$ANDROID_HOME/platform-tools
-PATH=$PATH:$HOMEBREW_PREFIX/opt/postgresql@15/bin
-
-export PATH=$PATH
-
-# -----------------------------------------------------------------------------------------------------------------------
-
-# Aliases
-
-alias tf="terraform"
-alias tfw="terraform workspace"
-alias tfws="terraform workspace select"
-alias tfs="terraform state"
-alias tfsl="terraform state list"
-alias tfv="terraform validate && terraform fmt --recursive && tflint"
-
-alias d='docker'
-alias dr='docker run --rm -i -t'
-
-alias ls="eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions"
-alias ll="eza -alh --no-time --no-user"
-alias tree="eza --tree"
-
-alias cd="z"
-alias zz="z -"
-
-alias cat="bat"
-
-alias gc="git checkout"
-alias gplo="git pull origin"
-alias gpho="git push origin"
-
-alias ntcd="open . -a iterm"
-alias vim="nvim"
-alias fman="compgen -c | fzf | xargs man"
-alias ftldr="compgen -c | fzf | xargs tldr"
