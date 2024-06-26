@@ -117,7 +117,12 @@ alias gc="git checkout"
 alias gplo="git pull origin"
 alias gpho="git push origin"
 
+# NEOVIM
 alias vim="nvim"
+alias code="nvim"
+alias vi="nvim"
+alias nano="nvim"
+
 alias fman="compgen -c | fzf | xargs man"
 alias ftldr="compgen -c | fzf | xargs tldr"
 alias c='clear'
