@@ -5,6 +5,8 @@ vim.cmd "set shiftwidth=2" -- Number of spaces to use for each step of (auto)ind
 vim.cmd "set noshowmode" -- Hide the mode display (e.g., --INSERT--)
 vim.cmd "set noshowcmd" -- Hide the display of the last command in the command line
 vim.cmd "set shortmess+=F" -- Don't display "File is in read-only mode" message when opening a read-only file
+vim.cmd "set fillchars+=vert:▕" -- Use a single vertical bar for vertical split separators
+vim.cmd "set nohlsearch" -- Disable search highlight
 
 vim.api.nvim_set_option("clipboard", "unnamed") -- Use the system clipboard for all operations
 vim.g.mapleader = " " -- Set the leader key to space
@@ -12,17 +14,20 @@ vim.g.maplocalleader = "\\" -- Set the local leader key to backslash
 vim.opt.laststatus = 3 -- Global statusline
 vim.wo.number = true -- Enable line numbers in the window
 
-vim.keymap.set({ "n", "x", "o" }, "<Leader>/", "gcc", { remap = true, desc = "Toggle Comment" })
-vim.keymap.set("n", "<Leader>t", ":TransparentToggle<CR>", { remap = true, desc = "Toggle Transparency" })
-
-vim.api.nvim_set_keymap(
+vim.keymap.set({ "n", "x", "o" }, "<Leader>/", "gcc", { noremap = true, silent = true, desc = "Toggle Comment" })
+vim.keymap.set(
+  "n",
+  "<Leader>t",
+  ":TransparentToggle<CR>",
+  { noremap = true, silent = true, desc = "Toggle Transparency" }
+)
+vim.keymap.set(
   "n",
   "<leader>lr",
   ":lua vim.wo.relativenumber = not vim.wo.relativenumber; vim.wo.number = true<CR>",
   { noremap = true, silent = true, desc = "Toggle Relative Line Number" }
 )
-
-vim.api.nvim_set_keymap(
+vim.keymap.set(
   "n",
   "<leader>lt",
   ":lua vim.wo.number = not vim.wo.number; vim.wo.relativenumber = false<CR>",
