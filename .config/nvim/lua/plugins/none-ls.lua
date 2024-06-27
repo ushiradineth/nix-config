@@ -17,11 +17,23 @@ return {
       end
     end
 
+    require("lspconfig").eslint.setup {
+      settings = {
+        packageManager = "yarn",
+      },
+      on_attach = function(client, bufnr)
+        vim.api.nvim_create_autocmd("BufWritePre", {
+          buffer = bufnr,
+          command = "EslintFixAll",
+        })
+      end,
+    }
+
     null_ls.setup {
       sources = {
         null_ls.builtins.formatting.stylua,
         null_ls.builtins.formatting.prettierd,
-        require "none-ls.diagnostics.eslint_d",
+        -- require "none-ls.diagnostics.eslint_d",
       },
       on_attach = on_attach,
     }

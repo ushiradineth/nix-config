@@ -45,7 +45,7 @@ return {
           "golangci-lint",
           "goimports",
           "gofumpt",
-          "eslint_d",
+          "eslint-lsp",
           "elixir-ls",
           "dockerfile-language-server",
           "docker-compose-language-service",
