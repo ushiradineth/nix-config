@@ -25,5 +25,9 @@ bindings = [
     { key = "Left",  mods = "Alt", chars = "\u001B\u0062" },           # Skip word left
     { key = "Right", mods = "Alt", chars = "\u001B\u0066" },           # Skip word right
     { key = "Back",  mods = "Command", chars = "\u0015" },             # Delete line
-    { key = "Back",  mods = "Alt", chars = "\u001B\u007F" }            # Delete word
+    { key = "Back",  mods = "Alt", chars = "\u001B\u007F" },           # Delete word
+    { key = "J", mods = "Alt", chars = "\u001B\u006A" },
+    { key = "K", mods = "Alt", chars = "\u001B\u006B" },
+    { key = "H", mods = "Alt", chars = "\u001B\u0068" },
+    { key = "L", mods = "Alt", chars = "\u001B\u006C" }
 ]

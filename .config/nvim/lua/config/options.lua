@@ -28,3 +28,9 @@ vim.api.nvim_set_keymap(
   ":lua vim.wo.number = not vim.wo.number; vim.wo.relativenumber = false<CR>",
   { noremap = true, silent = true, desc = "Toggle Line Number" }
 )
+
+-- Move code
+vim.keymap.set("n", "<A-j>", ":MoveLine(1)<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<A-k>", ":MoveLine(-1)<CR>", { noremap = true, silent = true })
+vim.keymap.set("v", "<A-j>", ":MoveBlock(1)<CR>", { noremap = true, silent = true })
+vim.keymap.set("v", "<A-k>", ":MoveBlock(-1)<CR>", { noremap = true, silent = true })
