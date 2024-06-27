@@ -7,6 +7,7 @@ return {
       local builtin = require "telescope.builtin"
       vim.keymap.set("n", "<D-p>", builtin.find_files, {})
       vim.keymap.set("n", "<D-f>", builtin.live_grep, {})
+      vim.keymap.set("n", "<D-F>", require("telescope").extensions.live_grep_args.live_grep_args, { noremap = true })
     end,
   },
   {
@@ -30,5 +31,10 @@ return {
 
       require("telescope").load_extension "ui-select"
     end,
+  },
+  {
+    "nvim-telescope/telescope-live-grep-args.nvim",
+    version = "^1.0.0",
+    config = function() require("telescope").load_extension "live_grep_args" end,
   },
 }
