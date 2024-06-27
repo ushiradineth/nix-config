@@ -4,7 +4,7 @@ return {
     "lewis6991/gitsigns.nvim",
     "nvim-tree/nvim-web-devicons",
   },
-  init = function()
+  config = function()
     vim.g.barbar_auto_setup = false
     local map = vim.api.nvim_set_keymap
     local opts = { noremap = true, silent = true }
@@ -26,11 +26,16 @@ return {
 
     -- Close buffer
     map("n", "<C-c>", "<Cmd>BufferClose<CR>", opts)
+
+    -- Restore buffer
+    map("n", "<C-t>", "<Cmd>BufferRestore<CR>", opts)
+
+    require("barbar").setup {
+      animation = false,
+      sidebar_filetypes = {
+        ["neo-tree"] = true,
+      },
+    }
   end,
-  opts = {
-    sidebar_filetypes = {
-      ["neo-tree"] = true,
-    },
-  },
   version = "^1.0.0",
 }
