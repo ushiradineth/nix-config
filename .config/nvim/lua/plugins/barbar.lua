@@ -26,6 +26,7 @@ return {
 
     -- Close buffer
     map("n", "<C-c>", "<Cmd>BufferClose<CR>", opts)
+    map("n", "<C-x>", "<Cmd>BufferClose<CR>", opts)
 
     -- Restore buffer
     map("n", "<C-t>", "<Cmd>BufferRestore<CR>", opts)
