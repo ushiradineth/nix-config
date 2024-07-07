@@ -10,7 +10,12 @@ return {
     opts = {
       wk.register({
         c = { name = "Code" },
-        g = { name = "Git" },
+        g = {
+          name = "Git",
+          r = {
+            name = "Repo",
+          },
+        },
         l = { name = "Line" },
       }, { prefix = "<leader>" }),
     }
