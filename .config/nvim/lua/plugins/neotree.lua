@@ -16,6 +16,10 @@ return {
           hide_dotfiles = true,
           hide_gitignored = true,
         },
+        follow_current_file = {
+          enabled = true,
+          leave_dirs_open = false,
+        },
       },
       event_handlers = {
         {
@@ -30,7 +34,12 @@ return {
       },
     }
 
-    vim.keymap.set("n", "<leader>e", ":Neotree filesystem toggle left<CR>", { desc = "Toggle Neotree" })
-    vim.keymap.set("n", "<C-f>", ":Neotree<CR>", {})
+    vim.keymap.set(
+      "n",
+      "<leader>e",
+      ":Neotree filesystem toggle left<CR>",
+      { noremap = true, silent = true, desc = "Toggle Neotree" }
+    )
+    vim.keymap.set("n", "<C-f>", ":Neotree<CR>", { noremap = true, silent = true })
   end,
 }

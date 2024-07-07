@@ -5,9 +5,14 @@ return {
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
       local builtin = require "telescope.builtin"
-      vim.keymap.set("n", "<D-p>", builtin.find_files, {})
-      vim.keymap.set("n", "<D-f>", builtin.live_grep, {})
-      vim.keymap.set("n", "<D-F>", require("telescope").extensions.live_grep_args.live_grep_args, { noremap = true })
+      vim.keymap.set("n", "<D-p>", builtin.find_files, { noremap = true, silent = true })
+      vim.keymap.set("n", "<D-f>", builtin.live_grep, { noremap = true, silent = true })
+      vim.keymap.set(
+        "n",
+        "<D-F>",
+        require("telescope").extensions.live_grep_args.live_grep_args,
+        { noremap = true, silent = true }
+      )
     end,
   },
   {
