@@ -68,8 +68,6 @@ return {
       },
     }
 
-    a = 2
-
     -- Inserts a component in lualine_c at left section
     local function ins_left(component) table.insert(config.sections.lualine_c, component) end
 
