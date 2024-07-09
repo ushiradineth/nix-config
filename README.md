@@ -38,7 +38,7 @@ stow .
 
 Run the following command to install all brew packages
 
-``` bash
+```bash
 xargs brew install < brew.txt
 ```
 
