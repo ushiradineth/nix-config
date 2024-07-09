@@ -17,6 +17,7 @@ return {
           },
         },
         l = { name = "Line" },
+        q = { name = "Quit" },
       }, { prefix = "<leader>" }),
     }
   end,
