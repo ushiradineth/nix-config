@@ -35,7 +35,6 @@ zinit snippet OMZP::kubectx
 
 # Add in snippets
 zinit wait lucid for \
-  OMZP::git \
   OMZP::command-not-found \
   as"completion" \
     OMZP::terraform/_terraform \
@@ -122,10 +121,17 @@ alias vim="nvim"
 alias code="nvim"
 alias vi="nvim"
 alias nano="nvim"
+alias n="nvim"
+alias nv="nvim"
+
+# Lazygit
+alias l="lazygit"
+alias lg="lazygit"
+alias lz="lazygit"
 
 alias fman="compgen -c | fzf | xargs man"
 alias ftldr="compgen -c | fzf | xargs tldr"
-alias c='clear'
+alias c="clear"
 
 # -----------------------------------------------------------------------------------------------------------------------
 
@@ -173,4 +179,12 @@ _fzf_comprun() {
     ssh)          fzf --preview 'dig {}'                   "$@" ;;
     *)            fzf --preview "bat -n --color=always --line-range :500 {}" "$@" ;;
   esac
+}
+
+nvim() {
+  if [[ "$1" == "." && "$#" -eq 1 ]]; then
+      command nvim
+  else
+      command nvim "$@"
+  fi
 }
