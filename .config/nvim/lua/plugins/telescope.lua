@@ -32,6 +32,21 @@ return {
             },
           },
         },
+        defaults = {
+          layout_strategy = "vertical",
+          layout_config = { height = 0.75 },
+          scroll_strategy = "limit",
+          vimgrep_arguments = {
+            "rg",
+            "--color=never",
+            "--no-heading",
+            "--with-filename",
+            "--line-number",
+            "--column",
+            "--smart-case",
+            "--hidden",
+          },
+        },
       }
 
       require("telescope").load_extension "ui-select"
@@ -41,5 +56,47 @@ return {
     "nvim-telescope/telescope-live-grep-args.nvim",
     version = "^1.0.0",
     config = function() require("telescope").load_extension "live_grep_args" end,
+  },
+  {
+    -- SEARCH NOTES/TODOS IN TELESCOPE
+    "folke/todo-comments.nvim",
+    dependencies = "nvim-lua/plenary.nvim",
+    config = function()
+      require("todo-comments").setup {
+        keywords = {
+          WARN = {
+            icon = " ",
+            color = "warning",
+            alt = { "WARNING", "IMPORTANT" },
+          },
+        },
+        highlight = {
+          pattern = [[.*<((KEYWORDS)%(\(.{-1,}\))?):]], -- supports both `TODO:` and `TODO(name):`
+        },
+        search = {
+          pattern = [[\b(KEYWORDS)(\(\w*\))*:]], -- ripgrep regex, supporting the pattern TODO(name):
+        },
+      }
+    end,
+  },
+  {
+    -- SEARCH INDEXER
+    "kevinhwang91/nvim-hlslens",
+    config = true,
+  },
+  {
+    -- IMPROVES ASTERISK BEHAVIOR
+    "haya14busa/vim-asterisk",
+    config = function()
+      vim.keymap.set("n", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {})
+      vim.keymap.set("n", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], {})
+      vim.keymap.set("n", "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {})
+      vim.keymap.set("n", "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {})
+
+      vim.keymap.set("x", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {})
+      vim.keymap.set("x", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], {})
+      vim.keymap.set("x", "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {})
+      vim.keymap.set("x", "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {})
+    end,
   },
 }
