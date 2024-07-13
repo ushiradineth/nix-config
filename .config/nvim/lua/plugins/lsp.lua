@@ -1,98 +1,87 @@
+local function merge(t1, t2)
+  for i = 1, #t2 do
+    t1[#t1 + 1] = t2[i]
+  end
+  return t1
+end
+
+local function mappings(bufnr)
+  local opts = { noremap = true, silent = true, buffer = bufnr }
+
+  vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+  vim.keymap.set("n", "<leader>cd", vim.lsp.buf.definition, merge({ desc = "Go to Definition" }, opts))
+  vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, merge({ desc = "Code Action" }, opts))
+end
+
 return {
   {
     "williamboman/mason.nvim",
-    config = function()
-      require("mason").setup {
-        ensure_installed = {
-          "lua-language-server",
-          "stylua",
-          "html-lsp",
-          "css-lsp",
-          "luaformatter",
-          "easy-coding-standard",
-          "sqlls",
-          "vue-language-server",
-          "yamllint",
-          "xmlformatter",
-          "yaml-language-server",
-          "sqls",
-          "typescript-language-server",
-          "tfsec",
-          "tflint",
-          "tailwindcss-language-server",
-          "terraform-ls",
-          "sqlfluff",
-          "rustywind",
-          "rust-analyzer",
-          "python-lsp-server",
-          "sqlfmt",
-          "sql-formatter",
-          "prisma-language-server",
-          "prettierd",
-          "pretty-php",
-          "php-cs-fixer",
-          "nginx-language-server",
-          "lua-language-server",
-          "json-lsp",
-          "hclfmt",
-          "helm-ls",
-          "sonarlint-language-server",
-          "grammarly-languageserver",
-          "gopls",
-          "golines",
-          "golangci-lint-langserver",
-          "goimports-reviser",
-          "golangci-lint",
-          "goimports",
-          "gofumpt",
-          "eslint-lsp",
-          "elixir-ls",
-          "dockerfile-language-server",
-          "docker-compose-language-service",
-          "checkmake",
-          "beautysh",
-          "bash-language-server",
-          "bash-debug-adapter",
-          "astro-language-server",
-          "azure-pipelines-language-server",
-          "ansible-lint",
-          "autopep8",
-          "ansible-language-server",
-        },
-      }
-    end,
+    config = function() require("mason").setup {} end,
   },
   {
     "williamboman/mason-lspconfig.nvim",
+    dependencies = { "mason.nvim", "treesitter-terraform-doc.nvim" },
     config = function()
       require("mason-lspconfig").setup {
         ensure_installed = {
-          "lua_ls",
+          "typos_lsp",
+          "angularls",
+          "ansiblels",
+          "astro",
+          "azure_pipelines_ls",
+          "bashls",
+          "cmake",
+          "cssls",
+          "diagnosticls",
+          "dockerls",
+          "docker_compose_language_service",
+          "eslint",
+          "elixirls",
+          "gopls",
+          "grammarly",
+          "html",
+          "helm_ls",
+          "jsonls",
           "tsserver",
+          "jqls",
+          "lua_ls",
+          "marksman",
+          "nginx_language_server",
+          "spectral",
+          "intelephense",
+          "prismals",
+          "pylsp",
+          "rust_analyzer",
+          "sqlls",
+          "taplo",
+          "tailwindcss",
+          "terraformls",
+          "tflint",
+          "volar",
+          "yamlls",
+        },
+
+        require("mason-lspconfig").setup_handlers {
+          function(server_name)
+            require("lspconfig")[server_name].setup {
+              on_attach = function(client, bufnr)
+                mappings(bufnr)
+                require("illuminate").on_attach(client)
+
+                if server_name == "terraformls" then require("treesitter-terraform-doc").setup() end
+              end,
+            }
+          end,
         },
       }
     end,
   },
   {
     "neovim/nvim-lspconfig",
-    config = function()
-      local lspconfig = require "lspconfig"
-      lspconfig.lua_ls.setup {}
-      lspconfig.tsserver.setup {}
-
-      vim.keymap.set("n", "K", vim.lsp.buf.hover, { noremap = true, silent = true })
-      vim.keymap.set(
-        "n",
-        "<leader>cd",
-        vim.lsp.buf.definition,
-        { noremap = true, silent = true, desc = "Go to Definition" }
-      )
-      vim.keymap.set(
-        { "n", "v" },
-        "<leader>ca",
-        vim.lsp.buf.code_action,
-        { noremap = true, silent = true, desc = "Code Action" }
-      )
-    end,
+  },
+  {
+    -- TERRAFORM DOCS
+    "Afourcat/treesitter-terraform-doc.nvim",
+    dependencies = { "nvim-treesitter" },
   },
 }
