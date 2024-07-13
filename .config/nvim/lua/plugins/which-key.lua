@@ -10,6 +10,7 @@ return {
     opts = {
       wk.register({
         c = { name = "Code" },
+        d = { name = "Diagnostics" },
         g = {
           name = "Git",
           r = {
