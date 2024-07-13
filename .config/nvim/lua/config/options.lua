@@ -15,13 +15,12 @@ vim.g.maplocalleader = "\\" -- Set the local leader key to backslash
 vim.opt.laststatus = 3 -- Global statusline
 vim.wo.number = true -- Enable line numbers in the window
 
-vim.keymap.set({ "n", "x", "o" }, "<Leader>/", "gcc", { noremap = true, silent = true, desc = "Toggle Comment" })
-vim.keymap.set(
-  "n",
-  "<Leader>t",
-  ":TransparentToggle<CR>",
-  { noremap = true, silent = true, desc = "Toggle Transparency" }
-)
+-- Set up key mapping in normal mode
+vim.api.nvim_set_keymap("n", "<leader>/", "gcc", { noremap = false, silent = true, desc = "Toggle Comment" })
+
+-- Set up key mapping in visual mode
+vim.api.nvim_set_keymap("v", "<leader>/", "gc", { noremap = false, silent = true, desc = "Toggle Comment" })
+
 vim.keymap.set(
   "n",
   "<leader>lr",
@@ -34,16 +33,6 @@ vim.keymap.set(
   ":lua vim.wo.number = not vim.wo.number; vim.wo.relativenumber = false<CR>",
   { noremap = true, silent = true, desc = "Toggle Line Number" }
 )
-
--- Move code
-vim.keymap.set("n", "<A-j>", ":MoveLine(1)<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<A-k>", ":MoveLine(-1)<CR>", { noremap = true, silent = true })
-vim.keymap.set("v", "<A-j>", ":MoveBlock(1)<CR>", { noremap = true, silent = true })
-vim.keymap.set("v", "<A-k>", ":MoveBlock(-1)<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<A-Down>", ":MoveLine(1)<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<A-Up>", ":MoveLine(-1)<CR>", { noremap = true, silent = true })
-vim.keymap.set("v", "<A-Down>", ":MoveBlock(1)<CR>", { noremap = true, silent = true })
-vim.keymap.set("v", "<A-Up>", ":MoveBlock(-1)<CR>", { noremap = true, silent = true })
 
 -- Quit
 vim.keymap.set("n", "<leader>qq", ":qa!<CR>", { noremap = true, silent = true, desc = "Force Quit" })
