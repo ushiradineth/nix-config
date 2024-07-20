@@ -10,3 +10,5 @@
 	autoSetupRemote = true
 [init]
 	defaultBranch = main
+[credential]
+	helper = /usr/local/share/gcm-core/git-credential-manager

@@ -46,7 +46,7 @@ Run the following command to update the brew package list
 
 ```bash
 cd ~/dotfiles
-brew list --versions > brew.txt
+brew list > brew.txt
 ```
 
 ## Reference
