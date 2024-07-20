@@ -140,6 +140,7 @@ eval "$(fzf --zsh)"
 eval "$(zoxide init zsh)"
 export BAT_THEME=tokyonight_night
 export NVM_DIR="$HOME/.nvm"
+export K9S_CONFIG_DIR="$HOME/dotfiles/.config/k9s" # config does not load on symlinks
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
