@@ -24,9 +24,23 @@ config.window_decorations = "RESIZE"
 config.macos_window_background_blur = 100
 config.hide_tab_bar_if_only_one_tab = true
 config.enable_tab_bar = true
+config.use_fancy_tab_bar = true
 
+config.window_frame = {
+  inactive_titlebar_bg = '#353535',
+  active_titlebar_bg = '#262838',
+  button_fg = '#cccccc',
+  button_bg = '#2b2042',
+  button_hover_fg = '#ffffff',
+  button_hover_bg = '#3b3052',
+}
+
+-- Keybinds
+config.enable_kitty_keyboard = true
+config.enable_csi_u_key_encoding = false
 config.leader = { key = "s", mods = "CTRL", timeout_milliseconds = 1000 }
 config.keys = {
+  { key = "p", mods = "CMD|SHIFT", action = "Nop" },
   -- Buffer traversal
   {
     -- Skip line left
