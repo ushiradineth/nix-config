@@ -29,6 +29,7 @@ return {
         "typescript",
         "vue",
         "yaml",
+        "terraform"
       },
       highlight = { enabled = true },
       indent = { enabled = true },
