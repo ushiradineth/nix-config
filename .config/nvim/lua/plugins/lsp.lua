@@ -28,14 +28,12 @@ return {
           "angularls",
           "ansiblels",
           "astro",
-          "azure_pipelines_ls",
           "bashls",
           "cmake",
           "cssls",
           "diagnosticls",
           "dockerls",
           "docker_compose_language_service",
-          "eslint",
           "elixirls",
           "gopls",
           "grammarly",
@@ -67,7 +65,6 @@ return {
               on_attach = function(client, bufnr)
                 mappings(bufnr)
                 require("illuminate").on_attach(client)
-
               end,
             }
           end,
