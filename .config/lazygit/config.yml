@@ -1,3 +1,3 @@
 os:
-  editCommand: 'nvim'
-  editCommandTemplate: '{{editor}} --server /tmp/nvim-server.pipe --remote-tab "{{filename}}"'
+  edit: 'nvim'
+  editAtLine: '{{editor}} --server /tmp/nvim-server.pipe --remote-tab "{{filename}}"'
