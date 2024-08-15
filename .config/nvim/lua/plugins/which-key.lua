@@ -6,7 +6,7 @@ return {
     vim.o.timeoutlen = 300
   end,
   config = function()
-    local wk = require "which-key"
+    local wk = require("which-key")
     opts = {
       wk.register({
         c = { name = "Code" },
@@ -19,6 +19,7 @@ return {
         },
         l = { name = "Line" },
         q = { name = "Quit" },
+        s = { name = "Search" },
       }, { prefix = "<leader>" }),
     }
   end,

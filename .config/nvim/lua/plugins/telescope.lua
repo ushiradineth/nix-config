@@ -5,14 +5,9 @@ return {
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
       local builtin = require "telescope.builtin"
-      vim.keymap.set("n", "<D-p>", builtin.find_files, { noremap = true, silent = true })
-      vim.keymap.set("n", "<D-f>", builtin.live_grep, { noremap = true, silent = true })
-      vim.keymap.set(
-        "n",
-        "<D-F>",
-        require("telescope").extensions.live_grep_args.live_grep_args,
-        { noremap = true, silent = true }
-      )
+      vim.keymap.set("n", "<D-p>", builtin.find_files, { noremap = true, silent = true, desc = "Search files" })
+      vim.keymap.set("n", "<leader>sa", builtin.live_grep, { noremap = true, silent = true, desc = "Search all files in current working directory" })
+      vim.keymap.set("n", "<leader>sc", builtin.current_buffer_fuzzy_find, { noremap = true, silent = true, desc = "Fuzzy search in current file" })
     end,
   },
   {
@@ -51,11 +46,6 @@ return {
 
       require("telescope").load_extension "ui-select"
     end,
-  },
-  {
-    "nvim-telescope/telescope-live-grep-args.nvim",
-    version = "^1.0.0",
-    config = function() require("telescope").load_extension "live_grep_args" end,
   },
   {
     -- SEARCH NOTES/TODOS IN TELESCOPE
