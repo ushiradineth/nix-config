@@ -14,7 +14,7 @@ vim.g.mapleader = " " -- Set the leader key to space
 vim.g.maplocalleader = "\\" -- Set the local leader key to backslash
 vim.opt.laststatus = 3 -- Global statusline
 vim.wo.number = true -- Enable line numbers in the window
-
+vim.keymap.set("n", "f", "w") -- Map 'f' to move to the next word
 -- Set up key mapping in normal mode
 vim.api.nvim_set_keymap("n", "<leader>/", "gcc", { noremap = false, silent = true, desc = "Toggle Comment" })
 
