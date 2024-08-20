@@ -1,4 +1,4 @@
-return {
+return { -- SHORTCUT DISPLAY
   "folke/which-key.nvim",
   event = "VeryLazy",
   init = function()

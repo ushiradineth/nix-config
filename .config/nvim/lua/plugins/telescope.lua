@@ -1,5 +1,5 @@
 return {
-  {
+  { -- SEARCH ENGINE
     "nvim-telescope/telescope.nvim",
     tag = "0.1.8",
     dependencies = { "nvim-lua/plenary.nvim" },
@@ -10,7 +10,7 @@ return {
       vim.keymap.set("n", "<leader>sc", builtin.current_buffer_fuzzy_find, { noremap = true, silent = true, desc = "Fuzzy search in current file" })
     end,
   },
-  {
+  { -- UI FOR TELESCOPE
     "nvim-telescope/telescope-ui-select.nvim",
     config = function()
       require("telescope").setup {

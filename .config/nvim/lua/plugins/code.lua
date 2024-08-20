@@ -3,7 +3,7 @@ return {
     -- WHITESPACE HIGHLIGHTER
     "zakharykaplan/nvim-retrail",
     config = function()
-      require("retrail").setup {
+      require("retrail").setup({
         filetype = {
           exclude = {
             "markdown",
@@ -22,32 +22,70 @@ return {
             "WhichKey",
           },
         },
-      }
+      })
+    end,
+  },
+  { -- SYNTAX HIGHLIGHTING
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    config = function()
+      require("nvim-treesitter.configs").setup({
+        ensure_installed = {
+          "astro",
+          "bash",
+          "comment",
+          "dockerfile",
+          "go",
+          "gotmpl",
+          "hcl",
+          "helm",
+          "javascript",
+          "json",
+          "kconfig",
+          "lua",
+          "markdown",
+          "markdown_inline",
+          "nix",
+          "python",
+          "sql",
+          "terraform",
+          "tsx",
+          "typescript",
+          "yaml",
+        },
+        highlight = { enable = true, additional_vim_regex_highlighting = true },
+        indent = { enable = true },
+        incremental_selection = { enable = true },
+        auto_install = true, -- Auto install missing parsers when entering a buffer
+        sync_install = true,
+      })
     end,
   },
   {
     -- AUTOPAIRING
     "windwp/nvim-autopairs",
-    config = function() require("nvim-autopairs").setup {} end,
+    config = function()
+      require("nvim-autopairs").setup({})
+    end,
   },
   {
     -- HTML AUTOPAIRING
     "windwp/nvim-ts-autotag",
     config = function()
-      require("nvim-ts-autotag").setup {
+      require("nvim-ts-autotag").setup({
         opts = {
-          enable_close = true,          -- Auto close tags
-          enable_rename = true,         -- Auto rename pairs of tags
+          enable_close = true,     -- Auto close tags
+          enable_rename = true,    -- Auto rename pairs of tags
           enable_close_on_slash = true, -- Auto close on trailing </
         },
-      }
+      })
     end,
   },
   {
     -- MOVE CODE BLOCKS
     "fedepujol/move.nvim",
     config = function()
-      require("move").setup {}
+      require("move").setup({})
 
       vim.keymap.set("n", "<A-j>", ":MoveLine(1)<CR>", { noremap = true, silent = true })
       vim.keymap.set("n", "<A-k>", ":MoveLine(-1)<CR>", { noremap = true, silent = true })
