@@ -1,12 +1,3 @@
-local icon = function(icon, color)
-	return {
-		color = color or "blue",
-		icon = icon,
-		cat = "filetype",
-		hl = "WhichKeyIcon",
-	}
-end
-
 return { -- SHORTCUT DISPLAY
 	"folke/which-key.nvim",
 	event = "VeryLazy",
