@@ -4,27 +4,33 @@ return {
     tag = "0.1.8",
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
-      local builtin = require "telescope.builtin"
+      local builtin = require("telescope.builtin")
       vim.keymap.set("n", "<D-p>", builtin.find_files, { noremap = true, silent = true, desc = "Search files" })
-      vim.keymap.set("n", "<leader>sa", builtin.live_grep, { noremap = true, silent = true, desc = "Search all files in current working directory" })
-      vim.keymap.set("n", "<leader>sc", builtin.current_buffer_fuzzy_find, { noremap = true, silent = true, desc = "Fuzzy search in current file" })
-    end,
-  },
-  { -- UI FOR TELESCOPE
-    "nvim-telescope/telescope-ui-select.nvim",
-    config = function()
-      require("telescope").setup {
+      vim.keymap.set(
+        "n",
+        "<leader>sa",
+        builtin.live_grep,
+        { noremap = true, silent = true, desc = "Search all files in current working directory" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>sc",
+        builtin.current_buffer_fuzzy_find,
+        { noremap = true, silent = true, desc = "Fuzzy search in current file" }
+      )
+
+      require("telescope").setup({
         pickers = {
           find_files = {
             hidden = true,
-            file_ignore_patterns = { ".git/", ".nuxt", ".next", "node_modules/*" },
+            file_ignore_patterns = { ".git", ".nuxt", ".next", "node_modules" },
           },
         },
         extensions = {
           ["ui-select"] = {
-            require("telescope.themes").get_dropdown {
+            require("telescope.themes").get_dropdown({
               -- even more opts
-            },
+            }),
           },
         },
         defaults = {
@@ -40,11 +46,18 @@ return {
             "--column",
             "--smart-case",
             "--hidden",
+            "--ignore-file",
+            ".gitignore",
           },
+          file_ignore_patterns = { ".git", ".nuxt", ".next", "node_modules" },
         },
-      }
-
-      require("telescope").load_extension "ui-select"
+      })
+    end,
+  },
+  { -- UI FOR TELESCOPE
+    "nvim-telescope/telescope-ui-select.nvim",
+    config = function()
+      require("telescope").load_extension("ui-select")
     end,
   },
   {
@@ -52,7 +65,7 @@ return {
     "folke/todo-comments.nvim",
     dependencies = "nvim-lua/plenary.nvim",
     config = function()
-      require("todo-comments").setup {
+      require("todo-comments").setup({
         keywords = {
           WARN = {
             icon = " ",
@@ -66,7 +79,7 @@ return {
         search = {
           pattern = [[\b(KEYWORDS)(\(\w*\))*:]], -- ripgrep regex, supporting the pattern TODO(name):
         },
-      }
+      })
     end,
   },
   {
