@@ -1,10 +1,11 @@
-# os:
-#   editCommand: 'nvim'
-#   editCommandTemplate: '{{editor}} --server /tmp/nvim-server.pipe --remote-tab "{{filename}}"'
+git:
+  paging:
+    colorArg: always
+    pager: delta --dark --paging=never
 
 os:
-  edit: 'nvim {{filename}}'
-  editAtLine: 'nvim --line={{line}} {{filename}}'
-  editAtLineAndWait: 'nvim --block --line={{line}} {{filename}}'
+  edit: "nvim {{filename}}"
+  editAtLine: "nvim --line={{line}} {{filename}}"
+  editAtLineAndWait: "nvim --block --line={{line}} {{filename}}"
   editInTerminal: true
-  openDirInEditor: 'nvim {{dir}}'
+  openDirInEditor: "nvim {{dir}}"
