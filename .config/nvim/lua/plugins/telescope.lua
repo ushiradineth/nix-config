@@ -49,7 +49,7 @@ return {
             "--ignore-file",
             ".gitignore",
           },
-          file_ignore_patterns = { ".git", ".nuxt", ".next", "node_modules" },
+          file_ignore_patterns = { ".git", ".nuxt", ".next", "node_modules", "*-lock.yaml", "*-lock.json"  },
         },
       })
     end,
