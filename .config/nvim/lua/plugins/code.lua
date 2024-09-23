@@ -59,6 +59,8 @@ return {
 				auto_install = true, -- Auto install missing parsers when entering a buffer
 				sync_install = true,
 			})
+
+      vim.treesitter.language.register('markdown', 'mdx')
 		end,
 	},
 	{

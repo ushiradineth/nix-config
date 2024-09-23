@@ -38,3 +38,9 @@ vim.keymap.set(
 vim.keymap.set("n", "<leader>qq", ":qa!<CR>", { noremap = true, silent = true, desc = "Force Quit" })
 vim.keymap.set("n", "<leader>wq", ":wq!<CR>", { noremap = true, silent = true, desc = "Save and Quit" })
 vim.keymap.set("n", "<leader>w", ":silent w<CR>", { noremap = true, silent = true, desc = "Save" })
+
+vim.filetype.add({
+  extension = {
+    mdx = 'mdx'
+  }
+})
