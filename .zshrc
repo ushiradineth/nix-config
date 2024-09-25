@@ -47,8 +47,6 @@ zinit snippet OMZP::aws
 autoload -Uz compinit && compinit
 zinit cdreplay -q
 
-source <(kubectl completion zsh)
-
 # To customize prompt, run `p10k configure` or edit ~/dotfiles/.p10k.zsh.
 [[ ! -f ~/dotfiles/.p10k.zsh ]] || source ~/dotfiles/.p10k.zsh
 
@@ -136,8 +134,10 @@ alias c="clear"
 # -----------------------------------------------------------------------------------------------------------------------
 
 # Shell integrations
+source <(kubectl completion zsh)
 eval "$(fzf --zsh)"
 eval "$(zoxide init zsh)"
+eval "$(task --completion zsh)"
 export BAT_THEME=tokyonight_night
 export NVM_DIR="$HOME/.nvm"
 export K9S_CONFIG_DIR="$HOME/dotfiles/.config/k9s" # config does not load on symlinks
