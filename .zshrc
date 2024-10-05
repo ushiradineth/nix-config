@@ -144,6 +144,8 @@ export K9S_CONFIG_DIR="$HOME/dotfiles/.config/k9s" # config does not load on sym
 export LG_CONFIG_FILE="$HOME/dotfiles/.config/lazygit/config.yml"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+export UID=$(id -u)
+export GID=$(id -g)
 
 # -----------------------------------------------------------------------------------------------------------------------
 
