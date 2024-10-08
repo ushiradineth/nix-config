@@ -33,7 +33,6 @@ return {
       require("mason-null-ls").setup({
         ensure_installed = {
           "stylua",
-          "easy-coding-standard",
           "yamllint",
           "xmlformatter",
           "tfsec",
@@ -42,8 +41,6 @@ return {
           "sqlfmt",
           "sql-formatter",
           "prettierd",
-          "pretty-php",
-          "php-cs-fixer",
           "hclfmt",
           "golines",
           "golangci-lint-langserver",

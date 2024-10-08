@@ -28,7 +28,6 @@ return {
 			require("mason-lspconfig").setup({
 				ensure_installed = {
 					"typos_lsp",
-					"angularls",
 					"ansiblels",
 					"astro",
 					"bashls",
