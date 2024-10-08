@@ -82,7 +82,6 @@
       homebrew = {
         enable = true;
         brews = [
-          "go-task"
           "terraform"
           "tflint"
           "luajit"
@@ -140,7 +139,7 @@
           autohide = true;
           autohide-delay = 0.01;
           autohide-time-modifier = 0.01;
-          show-recents = false;
+          # show-recents = false;
           magnification = false;
           orientation = "right";
           persistent-apps = [
@@ -177,7 +176,6 @@
           ActuationStrength = 0;
           Clicking = true;
           TrackpadRightClick = true;
-          TrackpadThreeFingerDrag = true;
         };
       };
 

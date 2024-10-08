@@ -137,7 +137,6 @@ alias c="clear"
 source <(kubectl completion zsh)
 eval "$(fzf --zsh)"
 eval "$(zoxide init zsh)"
-eval "$(task --completion zsh)"
 export BAT_THEME=tokyonight_night
 export NVM_DIR="$HOME/.nvm"
 export K9S_CONFIG_DIR="$HOME/dotfiles/.config/k9s" # config does not load on symlinks
