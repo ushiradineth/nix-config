@@ -34,7 +34,7 @@
         pkgs.speedtest-cli
         pkgs.yj
         pkgs.yq
-        pkgs.git-credential-manager
+        pkgs.gh
 
         # Kubernetes & Containerization
         pkgs.k9s
