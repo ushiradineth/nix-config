@@ -139,12 +139,12 @@
           autohide = true;
           autohide-delay = 0.01;
           autohide-time-modifier = 0.01;
-          # show-recents = false;
+          show-recents = false;
           magnification = false;
           orientation = "right";
           persistent-apps = [
-            "${pkgs.arc-browser}/Applications/Arc.app"
-            "Applications/WezTerm.app"
+            "/Applications/Arc.app"
+            "/Applications/WezTerm.app"
             "/Applications/Notion.app"
             "/Applications/Notion Calendar.app"
           ];
@@ -168,7 +168,6 @@
         NSGlobalDomain = {
           AppleICUForce24HourTime = true;
           AppleInterfaceStyle = "Dark";
-          AppleShowScrollBars = "Always";
           KeyRepeat = 2;
         };
 
