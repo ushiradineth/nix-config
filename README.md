@@ -2,53 +2,35 @@
 
 This directory contains the dotfiles for my mac
 
-## Requirements
-
-Ensure that the following installed on the system before use
-
-### Git
-
-```bash
-brew install git
-```
-
-### Stow
-
-```bash
-brew install stow
-```
-
 ## Installation
 
-First, check out the dotfiles repo in your $HOME directory using git
+Install Nix Package Manager
 
 ```bash
-cd
+sh <(curl -L https://nixos.org/nix/install)
+```
+
+Pull the dotfiles
+
+```bash
+cd ~
+nix-env -iA nixos.git
 git clone https://github.com/ushiradineth/dotfiles.git
 cd dotfiles
+```
+
+Install the packages
+
+
+```bash
+cd ~/dotfiles/nix
+nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --flake ~/nix#m2
 ```
 
 then use GNU stow to create symlinks
 
 ```bash
+cd ~/dotfiles
 stow .
 ```
 
-## Brew Packages
-
-Run the following command to install all brew packages
-
-```bash
-xargs brew install < brew.txt
-```
-
-Run the following command to update the brew package list
-
-```bash
-cd ~/dotfiles
-brew list > brew.txt
-```
-
-## Reference
-
-- [Stow has forever changed the way I manage my dotfiles - Dreams of Autonomy](https://www.youtube.com/watch?v=y6XCebnB9gs)
