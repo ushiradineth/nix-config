@@ -25,3 +25,5 @@ brew.txt
 iterm2profile.json
 
 .gitignore
+
+nix
