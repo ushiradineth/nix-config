@@ -24,7 +24,7 @@ Install the packages
 
 ```bash
 cd ~/dotfiles/nix
-nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --flake ~/nix#m2
+nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --flake ~/dotfiles/nix#m2
 ```
 
 then use GNU stow to create symlinks
