@@ -105,6 +105,8 @@
           "bitwarden"
           "burp-suite"
           "wezterm"
+          "postman"
+          "middleclick"
         ];
         masApps = {
           "Horo" = 1437226581;
