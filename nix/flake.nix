@@ -102,7 +102,6 @@
           "raycast"
           "rectangle"
           "monitorcontrol"
-          "bitwarden"
           "burp-suite"
           "wezterm"
           "postman"
@@ -111,6 +110,7 @@
         masApps = {
           "Horo" = 1437226581;
           "Davinci Resolve" = 571213070;
+          "Bitwarden" = 1352778147;
         };
         onActivation.cleanup = "zap";
         onActivation.autoUpdate = true;
