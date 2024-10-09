@@ -3,8 +3,8 @@ local act = wezterm.action
 
 local M = {}
 
-local fd = "/opt/homebrew/bin/fd"
-local rootPath = "/Users/ushira/Code"
+local fd = "/run/current-system/sw/bin/fd"
+local rootPath = "/Users/shu/Code"
 
 local cached = {}
 
