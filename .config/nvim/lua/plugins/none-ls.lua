@@ -9,10 +9,7 @@ return {
       null_ls.setup({
         sources = {
           null_ls.builtins.formatting.stylua,
-          require "none-ls.diagnostics.eslint_d".with({
-            diagnostics_format = "[eslint] #{m}\n(#{c})",
-          }),
-          require "none-ls.formatting.eslint_d".with({
+          require("none-ls.diagnostics.eslint_d").with({
             diagnostics_format = "[eslint] #{m}\n(#{c})",
           }),
           null_ls.builtins.formatting.prettierd,
