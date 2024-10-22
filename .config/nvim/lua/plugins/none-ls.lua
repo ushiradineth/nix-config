@@ -50,7 +50,6 @@ return {
           "bash-debug-adapter",
           "ansible-lint",
           "autopep8",
-          "eslint_d",
           "jsonlint",
           "markdownlint",
           "sonarlint-language-server",
