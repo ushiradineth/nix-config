@@ -64,10 +64,13 @@
         pkgs.jdk17
         pkgs.maven
         pkgs.nodejs_22
+        pkgs.eslint_d
 
         # Version managers
         pkgs.nodenv
         pkgs.pyenv
+
+        # Package managers
         pkgs.pnpm
         pkgs.yarn
 

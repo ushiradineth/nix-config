@@ -62,6 +62,7 @@ bindkey '^[w' kill-region
 
 PATH=$PATH:$HOME/.local/bin
 PATH=$PATH:$HOME/go/bin
+PATH=$PATH:$HOME/Library/pnpm
 
 export PATH=$PATH
 
