@@ -14,6 +14,35 @@ local function mappings(bufnr)
 	vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, merge({ desc = "Rename Definition" }, opts))
 end
 
+local generic_setup = function(server_name)
+	require("lspconfig")[server_name].setup({
+		on_attach = function(client, bufnr)
+			mappings(bufnr)
+			require("illuminate").on_attach(client)
+		end,
+	})
+end
+
+local custom_servers = {
+	["eslint"] = function()
+		require("lspconfig").lua_ls.setup({
+			on_attach = function(client, bufnr)
+				mappings(bufnr)
+				require("illuminate").on_attach(client)
+
+				vim.api.nvim_create_autocmd("BufWritePre", {
+					buffer = bufnr,
+					command = "EslintFixAll",
+				})
+			end,
+			settings = {
+				workingDirectory = { mode = "location" },
+			},
+			root_dir = require("lspconfig").util.find_git_ancestor,
+		})
+	end,
+}
+
 return {
 	{
 		"williamboman/mason.nvim",
@@ -37,6 +66,7 @@ return {
 					"dockerls",
 					"docker_compose_language_service",
 					"elixirls",
+          "eslint-lsp",
 					"gopls",
 					"grammarly",
 					"html",
@@ -63,12 +93,11 @@ return {
 
 				require("mason-lspconfig").setup_handlers({
 					function(server_name)
-						require("lspconfig")[server_name].setup({
-							on_attach = function(client, bufnr)
-								mappings(bufnr)
-								require("illuminate").on_attach(client)
-							end,
-						})
+						if custom_servers[server_name] then
+							custom_servers[server_name]()
+						else
+							generic_setup(server_name)
+						end
 					end,
 				}),
 			})
