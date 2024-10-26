@@ -108,4 +108,15 @@ return {
 		"Afourcat/treesitter-terraform-doc.nvim",
 		dependencies = { "nvim-treesitter" },
 	},
+	{
+		"luckasRanarison/tailwind-tools.nvim",
+		name = "tailwind-tools",
+		build = ":UpdateRemotePlugins",
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter",
+			"nvim-telescope/telescope.nvim",
+			"neovim/nvim-lspconfig",
+		},
+		opts = {},
+	},
 }
