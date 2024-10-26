@@ -1,4 +1,66 @@
 return {
+	{ -- SYNTAX HIGHLIGHTING
+		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
+		config = function()
+			require("nvim-treesitter.configs").setup({
+				ensure_installed = {
+					"astro",
+					"bash",
+					"comment",
+					"dockerfile",
+					"go",
+					"hcl",
+					"javascript",
+					"json",
+					"lua",
+					"nix",
+					"terraform",
+					"tsx",
+					"typescript",
+					"yaml",
+				},
+				highlight = { enable = true, additional_vim_regex_highlighting = true },
+				indent = { enable = true },
+				incremental_selection = { enable = true },
+				auto_install = true, -- Auto install missing parsers when entering a buffer
+				sync_install = true,
+			})
+
+			vim.treesitter.language.register("markdown", "mdx")
+		end,
+	},
+	{ -- QUICK OPEN `%s//gcI`
+		"roobert/search-replace.nvim",
+		config = function()
+			vim.api.nvim_set_keymap(
+				"v",
+				"<C-r>",
+				"<CMD>SearchReplaceWithinVisualSelection<CR>",
+				{ noremap = true, silent = true }
+			)
+
+			vim.api.nvim_set_keymap(
+				"n",
+				"<leader>rr",
+				"<CMD>SearchReplaceSingleBufferOpen<CR>",
+				{ noremap = true, silent = true, desc = "Base replace" }
+			)
+			vim.api.nvim_set_keymap(
+				"n",
+				"<leader>rw",
+				"<CMD>SearchReplaceSingleBufferCWord<CR>",
+				{ noremap = true, silent = true, desc = "Replace hover word" }
+			)
+
+			-- show the effects of a search / replace in a live preview window
+			vim.o.inccommand = "split"
+
+			require("search-replace").setup({
+				default_replace_single_buffer_options = "gcI",
+			})
+		end,
+	},
 	{
 		-- WHITESPACE HIGHLIGHTER
 		"zakharykaplan/nvim-retrail",
@@ -23,44 +85,6 @@ return {
 					},
 				},
 			})
-		end,
-	},
-	{ -- SYNTAX HIGHLIGHTING
-		"nvim-treesitter/nvim-treesitter",
-		build = ":TSUpdate",
-		config = function()
-			require("nvim-treesitter.configs").setup({
-				ensure_installed = {
-					"astro",
-					"bash",
-					"comment",
-					"dockerfile",
-					"go",
-					"gotmpl",
-					"hcl",
-					"helm",
-					"javascript",
-					"json",
-					"kconfig",
-					"lua",
-					"markdown",
-					"markdown_inline",
-					"nix",
-					"python",
-					"sql",
-					"terraform",
-					"tsx",
-					"typescript",
-					"yaml",
-				},
-				highlight = { enable = true, additional_vim_regex_highlighting = true },
-				indent = { enable = true },
-				incremental_selection = { enable = true },
-				auto_install = true, -- Auto install missing parsers when entering a buffer
-				sync_install = true,
-			})
-
-      vim.treesitter.language.register('markdown', 'mdx')
 		end,
 	},
 	{
@@ -100,13 +124,9 @@ return {
 		end,
 	},
 	{
-		-- WORD HIGHLIGHTER
-		"RRethy/vim-illuminate",
-	},
-	{
 		-- DIAGNOSTICS
 		"folke/trouble.nvim",
-		opts = {}, -- for default options, refer to the configuration section for custom setup.
+		opts = {},
 		cmd = "Trouble",
 		keys = {
 			{
@@ -125,8 +145,8 @@ return {
 		"supermaven-inc/supermaven-nvim",
 		config = function()
 			require("supermaven-nvim").setup({
-        log_level = "off",
-      })
+				log_level = "off",
+			})
 		end,
 	},
 	{ -- TIME TRACKING

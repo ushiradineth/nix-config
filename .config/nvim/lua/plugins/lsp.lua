@@ -16,9 +16,8 @@ end
 
 local generic_setup = function(server_name)
 	require("lspconfig")[server_name].setup({
-		on_attach = function(client, bufnr)
+		on_attach = function(_, bufnr)
 			mappings(bufnr)
-			require("illuminate").on_attach(client)
 		end,
 	})
 end
@@ -26,9 +25,8 @@ end
 local custom_servers = {
 	["eslint"] = function()
 		require("lspconfig").lua_ls.setup({
-			on_attach = function(client, bufnr)
+			on_attach = function(_, bufnr)
 				mappings(bufnr)
-				require("illuminate").on_attach(client)
 
 				vim.api.nvim_create_autocmd("BufWritePre", {
 					buffer = bufnr,
@@ -66,7 +64,7 @@ return {
 					"dockerls",
 					"docker_compose_language_service",
 					"elixirls",
-          "eslint-lsp",
+					"eslint-lsp",
 					"gopls",
 					"grammarly",
 					"html",
@@ -81,7 +79,6 @@ return {
 					"intelephense",
 					"prismals",
 					"pylsp",
-					"rust_analyzer",
 					"sqlls",
 					"taplo",
 					"tailwindcss",
