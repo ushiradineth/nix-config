@@ -33,7 +33,6 @@ sudo softwareupdate --install-rosetta --agree-to-license
 
 Install the packages
 
-
 ```bash
 cd ~/dotfiles/nix
 nix run nix-darwin --extra-experimental-features "nix-command flakes" -- switch --flake ~/dotfiles/nix#m2
