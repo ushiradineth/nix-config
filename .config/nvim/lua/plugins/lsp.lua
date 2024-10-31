@@ -61,6 +61,7 @@ local custom_servers = {
 						["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json"] = "*api*.{yml,yaml}",
 						["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = "*docker-compose*.{yml,yaml}",
 						["https://raw.githubusercontent.com/argoproj/argo-workflows/master/api/jsonschema/schema.json"] = "*flow*.{yml,yaml}",
+						["https://api.bitbucket.org/schemas/pipelines-configuration"] = "*bitbucket-pipelines*.{yml,yaml}",
 					},
 				},
 			},
@@ -113,7 +114,10 @@ return {
 					"tflint",
 					"volar",
 					"yamlls",
+					"nixd",
 				},
+
+				require("lspconfig").nixd.setup({}),
 
 				require("mason-lspconfig").setup_handlers({
 					function(server_name)

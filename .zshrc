@@ -131,6 +131,7 @@ alias lz="lazygit"
 alias fman="compgen -c | fzf | xargs man"
 alias ftldr="compgen -c | fzf | xargs tldr"
 alias c="clear"
+alias pip="pip3"
 
 # -----------------------------------------------------------------------------------------------------------------------
 
@@ -146,6 +147,7 @@ export LG_CONFIG_FILE="$HOME/dotfiles/.config/lazygit/config.yml"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 export UID=$(id -u)
 export GID=$(id -g)
+export EDITOR=nvim
 
 # -----------------------------------------------------------------------------------------------------------------------
 

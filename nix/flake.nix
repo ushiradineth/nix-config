@@ -57,7 +57,8 @@
 
         # Programming languages
         pkgs.lua
-        pkgs.python39
+        # pkgs.python39
+        pkgs.python310
         pkgs.ansible
         pkgs.go
         pkgs.gcc
@@ -65,6 +66,8 @@
         pkgs.maven
         pkgs.nodejs_22
         pkgs.eslint_d
+        pkgs.rustup
+        pkgs.nixd
 
         # Version managers
         pkgs.nodenv
@@ -76,7 +79,7 @@
 
         # Cloud tools
         pkgs.awscli2
-        pkgs.azure-cli
+        # pkgs.azure-cli
         pkgs.ngrok
       ];
 

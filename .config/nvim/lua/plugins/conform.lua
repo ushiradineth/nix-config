@@ -49,8 +49,7 @@ return {
 					"sonarlint-language-server",
 					"yaml-language-server",
 					"codespell",
-					"nixfmt",
-					"markdownfmt",
+					"markdownlint",
 				},
 			})
 		end,
@@ -78,13 +77,12 @@ return {
 				sh = { "beautysh" },
 				bash = { "beautysh" },
 				zsh = { "beautysh" },
-				nix = { "nixfmt" },
 				go = { "goimports", "gofmt" },
 				hcl = { "hclfmt" },
 				lua = { "stylua" },
 				["*"] = { "codespell" },
 				["_"] = { "trim_whitespace" },
-				md = { "markdownlint", "markdownfmt" },
+				md = { "markdownlint" },
 			},
 			default_format_opts = {
 				lsp_format = "fallback",
@@ -107,7 +105,7 @@ return {
 			conform.setup(opts)
 
 			vim.keymap.set("n", "<leader>cf", function()
-				conform.format({ async = true, lsp_fallback = true })
+				conform.format({ timeout_ms = 1000, lsp_fallback = true })
 			end, { noremap = true, silent = true, desc = "Format" })
 
 			-- Customize prettier args
