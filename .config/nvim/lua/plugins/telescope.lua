@@ -28,6 +28,12 @@ return {
 				{ noremap = true, silent = true, desc = "Fuzzy search in current file" }
 			)
 
+			vim.keymap.set("n", "<leader>ss", require("telescope.builtin").resume, {
+				noremap = true,
+				silent = true,
+				desc = "Resume",
+			})
+
 			local ignore_patterns = {
 				".git",
 				"node_modules",
