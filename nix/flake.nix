@@ -36,6 +36,7 @@
         pkgs.yq
         pkgs.gh
         pkgs.terraform
+        pkgs.tflint
 
         # Kubernetes & Containerization
         pkgs.k9s
