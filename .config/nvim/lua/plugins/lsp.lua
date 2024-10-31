@@ -24,7 +24,7 @@ end
 
 local custom_servers = {
 	["eslint"] = function()
-		require("lspconfig").lua_ls.setup({
+		require("lspconfig").eslint.setup({
 			on_attach = function(_, bufnr)
 				mappings(bufnr)
 
@@ -98,7 +98,7 @@ return {
 					"html",
 					"helm_ls",
 					"jsonls",
-					"tsserver",
+					"ts_ls",
 					"jqls",
 					"lua_ls",
 					"marksman",
