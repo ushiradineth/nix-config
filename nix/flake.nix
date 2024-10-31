@@ -35,6 +35,7 @@
         pkgs.yj
         pkgs.yq
         pkgs.gh
+        pkgs.terraform
 
         # Kubernetes & Containerization
         pkgs.k9s
@@ -88,7 +89,6 @@
       homebrew = {
         enable = true;
         brews = [
-          "terraform"
           "tflint"
           "luajit"
           "stow"
