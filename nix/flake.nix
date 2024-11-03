@@ -59,8 +59,7 @@
 
         # Programming languages
         pkgs.lua
-        # pkgs.python39
-        pkgs.python310
+        pkgs.python3
         pkgs.ansible
         pkgs.go
         pkgs.gcc
@@ -81,7 +80,6 @@
 
         # Cloud tools
         pkgs.awscli2
-        # pkgs.azure-cli
         pkgs.ngrok
       ];
 
@@ -93,6 +91,7 @@
           "tflint"
           "luajit"
           "stow"
+          "azure-cli"
         ];
         casks = [
           "arc"
