@@ -42,6 +42,12 @@ local custom_servers = {
 	["yamlls"] = function()
 		require("lspconfig").yamlls.setup({
 			on_attach = function(_, bufnr)
+				if vim.bo[bufnr].filetype == "helm" then
+					vim.schedule(function()
+						vim.cmd("LspStop ++force yamlls")
+					end)
+				end
+
 				mappings(bufnr)
 			end,
 			settings = {
@@ -62,7 +68,20 @@ local custom_servers = {
 						["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = "*docker-compose*.{yml,yaml}",
 						["https://raw.githubusercontent.com/argoproj/argo-workflows/master/api/jsonschema/schema.json"] = "*flow*.{yml,yaml}",
 						["https://api.bitbucket.org/schemas/pipelines-configuration"] = "*bitbucket-pipelines*.{yml,yaml}",
+						["values.schema.json"] = "values.yaml",
 					},
+				},
+			},
+		})
+	end,
+	["helm-ls"] = function()
+		require("lspconfig").helm_ls.setup({
+			on_attach = function(_, bufnr)
+				mappings(bufnr)
+			end,
+			settings = {
+				["helm-ls"] = {
+					path = "yaml-language-server",
 				},
 			},
 		})
@@ -103,7 +122,6 @@ return {
 					"lua_ls",
 					"marksman",
 					"nginx_language_server",
-					"spectral",
 					"intelephense",
 					"prismals",
 					"pylsp",
@@ -131,9 +149,7 @@ return {
 			})
 		end,
 	},
-	{
-		"neovim/nvim-lspconfig",
-	},
+	{ "neovim/nvim-lspconfig", event = { "BufReadPre", "BufNewFile", "BufEnter" } },
 	{
 		-- TERRAFORM DOCS
 		"Afourcat/treesitter-terraform-doc.nvim",

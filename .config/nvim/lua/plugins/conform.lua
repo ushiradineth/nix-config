@@ -48,7 +48,6 @@ return {
 					"markdownlint",
 					"sonarlint-language-server",
 					"yaml-language-server",
-					"codespell",
 					"markdownlint",
 				},
 			})
@@ -80,7 +79,6 @@ return {
 				go = { "goimports", "gofmt" },
 				hcl = { "hclfmt" },
 				lua = { "stylua" },
-				["*"] = { "codespell" },
 				["_"] = { "trim_whitespace" },
 				md = { "markdownlint" },
 			},
