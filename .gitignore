@@ -3,3 +3,4 @@
 **/raycast
 .minikube
 .config/k9s/clusters
+.config/infracost
