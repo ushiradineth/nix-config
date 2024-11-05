@@ -34,7 +34,7 @@ vim.keymap.set(
 	{ noremap = true, silent = true, desc = "Toggle Line Number" }
 )
 
-vim.keymap.set("n", "<leader>tw", ":set wrap!<CR>", { noremap = true, silent = true, desc = "Toggle Wrap" })
+vim.keymap.set("n", "<leader>cw", ":set wrap!<CR>", { noremap = true, silent = true, desc = "Code Wrap" })
 
 -- Quit
 vim.keymap.set("n", "<leader>qq", ":qa!<CR>", { noremap = true, silent = true, desc = "Force Quit" })
