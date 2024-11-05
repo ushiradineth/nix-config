@@ -35,8 +35,14 @@
         pkgs.yj
         pkgs.yq
         pkgs.gh
+
+        # Infrastructure
         pkgs.terraform
         pkgs.tflint
+        pkgs.infracost
+        pkgs.awscli2
+        pkgs.ngrok
+
 
         # Kubernetes & Containerization
         pkgs.k9s
@@ -57,7 +63,7 @@
         pkgs.zoxide
         pkgs.delta
 
-        # Programming languages
+        # Programming Languages & Tools
         pkgs.lua
         pkgs.python3
         pkgs.ansible
@@ -66,8 +72,8 @@
         pkgs.jdk17
         pkgs.maven
         pkgs.nodejs_22
-        pkgs.eslint_d
         pkgs.rustup
+        pkgs.eslint_d
         pkgs.nixd
 
         # Version managers
@@ -77,10 +83,6 @@
         # Package managers
         pkgs.pnpm
         pkgs.yarn
-
-        # Cloud tools
-        pkgs.awscli2
-        pkgs.ngrok
       ];
 
       fonts.packages = with pkgs; [ (nerdfonts.override { fonts = [ "Meslo" ]; }) ];
