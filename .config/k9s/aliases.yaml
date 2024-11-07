@@ -1,7 +1,14 @@
 aliases:
   dp: deployments
+  s: services
+  p: pods
+  cm: configmaps
   sec: v1/secrets
-  jo: jobs
+  ns: namespaces
+  ds: daemonsets
+  rs: replicasets
+  c: contexts
+  j: jobs
   cr: clusterroles
   crb: clusterrolebindings
   ro: roles

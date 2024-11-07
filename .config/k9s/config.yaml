@@ -1,11 +1,10 @@
 k9s:
-  # Enable periodic refresh of resource browser windows. Default false
   liveViewAutoRefresh: true
-  noExitOnCtrlC: false
+  noExitOnCtrlC: true
   ui:
     enableMouse: true
     headless: false
-    logoless: false
+    logoless: true
     crumbsless: false
     skin: transparent
   logger:
