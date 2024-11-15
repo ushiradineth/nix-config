@@ -35,6 +35,7 @@
         pkgs.yj
         pkgs.yq
         pkgs.gh
+        pkgs.tokei
 
         # Infrastructure
         pkgs.terraform
