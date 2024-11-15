@@ -15,7 +15,10 @@
 
 [push]
 	default = simple
-	autoSetupRemote = true
+  autoSetupRemote = true
+
+[pull]
+  rebase = true
 
 [init]
 	defaultBranch = main
