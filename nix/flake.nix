@@ -52,7 +52,6 @@
         pkgs.kubectl
         pkgs.kubectx
         pkgs.minikube
-        pkgs.qemu
 
         # Shell & Terminal enhancements
         pkgs.zsh

@@ -139,15 +139,17 @@ alias pip="pip3"
 source <(kubectl completion zsh)
 eval "$(fzf --zsh)"
 eval "$(zoxide init zsh)"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
 export BAT_THEME=tokyonight_night
 export NVM_DIR="$HOME/.nvm"
 export K9S_CONFIG_DIR="$HOME/dotfiles/.config/k9s" # config does not load on symlinks
 export LG_CONFIG_FILE="$HOME/dotfiles/.config/lazygit/config.yml"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 export UID=$(id -u)
 export GID=$(id -g)
 export EDITOR=nvim
+export MINIKUBE_HOME="$HOME/.config/minikube"
 
 # -----------------------------------------------------------------------------------------------------------------------
 
