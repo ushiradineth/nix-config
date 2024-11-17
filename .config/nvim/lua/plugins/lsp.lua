@@ -111,7 +111,6 @@ return {
 					"dockerls",
 					"docker_compose_language_service",
 					"elixirls",
-					"eslint-lsp",
 					"gopls",
 					"grammarly",
 					"html",
@@ -132,7 +131,6 @@ return {
 					"tflint",
 					"volar",
 					"yamlls",
-					"nixd",
 				},
 
 				require("lspconfig").nixd.setup({}),
