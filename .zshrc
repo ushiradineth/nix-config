@@ -1,28 +1,25 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
+# Enable Powerlevel10k instant prompt
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-if [[ -f "$HOMEBREW_PREFIX/bin/brew" ]] then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
+# -----------------------------------------------------------------------------------------------------------------------
 
-# Set the directory we want to store zinit and plugins
+# Setup zinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
-# Download Zinit, if it's not there yet
 if [ ! -d "$ZINIT_HOME" ]; then
    mkdir -p "$(dirname $ZINIT_HOME)"
    git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
 
-# Source/Load zinit
 source "${ZINIT_HOME}/zinit.zsh"
+
+# -----------------------------------------------------------------------------------------------------------------------
 
 # Add in Powerlevel10k
 zinit ice depth=1; zinit light romkatv/powerlevel10k
+[[ ! -f ~/dotfiles/.p10k.zsh ]] || source ~/dotfiles/.p10k.zsh
 
 # Add in zsh plugins
 zinit light zsh-users/zsh-syntax-highlighting
@@ -30,25 +27,17 @@ zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
 
+# Add in snippets
 zinit snippet OMZP::kubectl
 zinit snippet OMZP::kubectx
-
-# Add in snippets
-zinit wait lucid for \
-  OMZP::command-not-found \
-  as"completion" \
-    OMZP::terraform/_terraform \
-    OMZ::plugins/docker/completions/_docker \
-    OMZP::docker-compose/_docker-compose \
-    OMZP::golang/_golang
-
 zinit snippet OMZP::aws
+zinit snippet OMZP::terraform/_terraform
+zinit snippet OMZ::plugins/docker/completions/_docker
+zinit snippet OMZP::docker-compose/_docker-compose
+zinit snippet OMZP::golang/_golang
 
 autoload -Uz compinit && compinit
 zinit cdreplay -q
-
-# To customize prompt, run `p10k configure` or edit ~/dotfiles/.p10k.zsh.
-[[ ! -f ~/dotfiles/.p10k.zsh ]] || source ~/dotfiles/.p10k.zsh
 
 # Keybindings
 bindkey -e
@@ -136,20 +125,23 @@ alias pip="pip3"
 # -----------------------------------------------------------------------------------------------------------------------
 
 # Shell integrations
-source <(kubectl completion zsh)
+eval "$(kubectl completion zsh)"
 eval "$(fzf --zsh)"
 eval "$(zoxide init zsh)"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+eval "$(/opt/homebrew/bin/brew shellenv)"
+source /opt/homebrew/share/zsh/site-functions/*
 
+# -----------------------------------------------------------------------------------------------------------------------
+
+# Environment variables
 export BAT_THEME=tokyonight_night
 export NVM_DIR="$HOME/.nvm"
+export MINIKUBE_HOME="$HOME/.config/minikube"
 export K9S_CONFIG_DIR="$HOME/dotfiles/.config/k9s" # config does not load on symlinks
 export LG_CONFIG_FILE="$HOME/dotfiles/.config/lazygit/config.yml"
 export UID=$(id -u)
 export GID=$(id -g)
 export EDITOR=nvim
-export MINIKUBE_HOME="$HOME/.config/minikube"
 
 # -----------------------------------------------------------------------------------------------------------------------
 

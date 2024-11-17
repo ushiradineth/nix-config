@@ -44,7 +44,6 @@
         pkgs.awscli2
         pkgs.ngrok
 
-
         # Kubernetes & Containerization
         pkgs.k9s
         pkgs.kind
@@ -64,7 +63,7 @@
         pkgs.delta
 
         # Programming Languages & Tools
-        pkgs.lua
+        pkgs.lua5_1
         pkgs.python3
         pkgs.ansible
         pkgs.go
@@ -83,6 +82,7 @@
         # Package managers
         pkgs.pnpm
         pkgs.yarn
+        pkgs.luarocks
       ];
 
       fonts.packages = with pkgs; [ (nerdfonts.override { fonts = [ "Meslo" ]; }) ];
@@ -90,11 +90,9 @@
       homebrew = {
         enable = true;
         brews = [
-          "tflint"
-          "luajit"
-          "stow"
           "azure-cli"
         ];
+        taps = [];
         casks = [
           "arc"
           "discord"
@@ -212,6 +210,7 @@
             enableRosetta = true;
             user = "shu";
             autoMigrate = true;
+            mutableTaps = false;
           };
         }
       ];
