@@ -22,12 +22,18 @@ return {
 		},
 		config = function()
 			require("neo-tree").setup({
+				close_if_last_window = true,
+				use_popups_for_input = false,
 				filesystem = {
 					hijack_netrw_behavior = "open_current",
 					filtered_items = {
-						visible = true,
+						visible = true, -- show filtered items but with a faded style
 						hide_dotfiles = true,
 						hide_gitignored = true,
+					},
+					never_show = { -- remains hidden even if visible is toggled to true
+						".DS_Store",
+						"thumbs.db",
 					},
 					follow_current_file = {
 						enabled = true,
@@ -55,7 +61,6 @@ return {
 				":Neotree filesystem toggle left<CR>",
 				{ noremap = true, silent = true, desc = "Toggle Neotree" }
 			)
-			vim.keymap.set("n", "<C-f>", ":Neotree<CR>", { noremap = true, silent = true })
 		end,
 	},
 }
