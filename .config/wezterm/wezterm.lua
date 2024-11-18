@@ -1,5 +1,5 @@
 local wezterm = require("wezterm")
-local sessionizer = require("sessionizer")
+local sessionizer = wezterm.plugin.require("https://github.com/mikkasendke/sessionizer.wezterm")
 local config = wezterm.config_builder()
 local act = wezterm.action
 
@@ -45,6 +45,11 @@ config.window_frame = {
 	button_hover_fg = "#ffffff",
 	button_hover_bg = "#3b3052",
 }
+
+-- Sessionizer
+sessionizer.apply_to_config(config, true) -- True removes the default keybinds
+sessionizer.config.paths = "/Users/shu/Code"
+sessionizer.config.command_options.fd_path = "/run/current-system/sw/bin/fd"
 
 -- Keybinds
 config.enable_kitty_keyboard = true
@@ -120,12 +125,12 @@ config.keys = {
 	{
 		key = "f",
 		mods = "LEADER",
-		action = wezterm.action_callback(sessionizer.toggle),
+		action = sessionizer.show,
 	},
 	{
 		key = "F",
 		mods = "LEADER",
-		action = wezterm.action_callback(sessionizer.resetCacheAndToggle),
+		action = sessionizer.switch_to_most_recent,
 	},
 }
 
