@@ -35,6 +35,7 @@ config.macos_window_background_blur = 100
 config.hide_tab_bar_if_only_one_tab = true
 config.enable_tab_bar = true
 config.use_fancy_tab_bar = true
+config.max_fps = 120
 
 config.window_frame = {
 	inactive_titlebar_bg = "#353535",
