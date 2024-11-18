@@ -112,6 +112,7 @@
           "wezterm"
           "postman"
           "middleclick"
+          "google-drive"
         ];
         masApps = {
           "Horo" = 1437226581;
@@ -210,7 +211,6 @@
             enableRosetta = true;
             user = "shu";
             autoMigrate = true;
-            mutableTaps = false;
           };
         }
       ];
