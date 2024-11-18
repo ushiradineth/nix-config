@@ -62,6 +62,17 @@
         pkgs.zoxide
         pkgs.delta
 
+        # # Tmux (currently unused)
+        # pkgs.tmux
+        # pkgs.tmuxp
+        # pkgs.tmuxPlugins.sensible
+        # pkgs.tmuxPlugins.yank
+        # pkgs.tmuxPlugins.resurrect
+        # pkgs.tmuxPlugins.continuum
+        # pkgs.tmuxPlugins.pain-control
+        # pkgs.tmuxPlugins.catppuccin
+        # pkgs.tmuxPlugins.cpu
+
         # Programming Languages & Tools
         pkgs.lua5_1
         pkgs.python3
