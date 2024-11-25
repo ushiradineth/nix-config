@@ -83,13 +83,7 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 alias tf="terraform"
 alias tfw="terraform workspace"
-alias tfws="terraform workspace select"
-alias tfs="terraform state"
-alias tfsl="terraform state list"
 alias tfv="terraform validate && terraform fmt --recursive && tflint"
-
-alias d='docker'
-alias dr='docker run --rm -i -t'
 
 alias ls="eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions"
 alias ll="eza -alh --no-time --no-user"
@@ -100,9 +94,8 @@ alias zz="z -"
 
 alias cat="bat"
 
+# Git
 alias gc="git checkout"
-alias gplo="git pull origin"
-alias gpho="git push origin"
 
 # NEOVIM
 alias vim="nvim"
@@ -115,7 +108,10 @@ alias nv="nvim"
 # Lazygit
 alias l="lazygit"
 alias lg="lazygit"
-alias lz="lazygit"
+
+# Lazydocker
+alias d="lazydocker"
+alias ld="lazydocker"
 
 alias fman="compgen -c | fzf | xargs man"
 alias ftldr="compgen -c | fzf | xargs tldr"

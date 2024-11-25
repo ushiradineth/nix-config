@@ -36,6 +36,7 @@
         pkgs.yq
         pkgs.gh
         pkgs.tokei
+        pkgs.lazydocker
 
         # Infrastructure
         pkgs.terraform
