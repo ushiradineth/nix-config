@@ -125,6 +125,8 @@
           "postman"
           "middleclick"
           "google-drive"
+          "MonitorControl"
+          "obsidian"
         ];
         masApps = {
           "Horo" = 1437226581;
