@@ -22,7 +22,7 @@ return { -- SHORTCUT DISPLAY
 			{ "<leader>s", group = "Search" },
 			{ "<leader>w", group = "Save", icon = mini.get("file", "TODO") },
 			{ "<leader>r", group = "Replace" },
-			{ "<leader>t", group = "Theme" },
+			{ "<leader>t", group = "Toggle" },
 		})
 	end,
 }
