@@ -4,7 +4,7 @@
 
 # Uses the above by default unless its overridden by the below conditional
 [includeIf "gitdir:~/Code/surge/"]
-    path = ~/.gitconfig-work
+  path = ~/.gitconfig-work
 
 [pull]
 	rebase = false
@@ -31,6 +31,6 @@
 
 [credential "https://github.com"]
 	helper = !/run/current-system/sw/bin/gh auth git-credential
+
 [credential "https://gist.github.com"]
   helper = !/run/current-system/sw/bin/gh auth git-credential
-
