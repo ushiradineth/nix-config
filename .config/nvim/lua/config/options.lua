@@ -52,3 +52,11 @@ vim.filetype.add({
 		[".*/templates/.*%.yaml"] = "helm",
 	},
 })
+
+vim.keymap.set("v", "<leader>cc", [[:s/\v_(\w)/\U\1/g<CR>:s/\v(^\l)/\L\1/<CR>]], { desc = "snake_case to camel_case" })
+vim.keymap.set(
+	"v",
+	"<leader>cs",
+	[[:s/\v(\l)(\u)/\1_\l\2/g<CR>:s/\v(^\l)/\L\1/g<CR>]],
+	{ desc = "camelCase to snake_case" }
+)
