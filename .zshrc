@@ -1,10 +1,3 @@
-# Enable Powerlevel10k instant prompt
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
-# -----------------------------------------------------------------------------------------------------------------------
-
 # Setup zinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -16,10 +9,6 @@ fi
 source "${ZINIT_HOME}/zinit.zsh"
 
 # -----------------------------------------------------------------------------------------------------------------------
-
-# Add in Powerlevel10k
-zinit ice depth=1; zinit light romkatv/powerlevel10k
-[[ ! -f ~/dotfiles/.p10k.zsh ]] || source ~/dotfiles/.p10k.zsh
 
 # Add in zsh plugins
 zinit light zsh-users/zsh-syntax-highlighting
@@ -121,6 +110,7 @@ alias pip="pip3"
 # -----------------------------------------------------------------------------------------------------------------------
 
 # Shell integrations
+eval "$(starship init zsh)"
 eval "$(kubectl completion zsh)"
 eval "$(fzf --zsh)"
 eval "$(zoxide init zsh)"
@@ -132,6 +122,7 @@ source /opt/homebrew/share/zsh/site-functions/*
 # Environment variables
 export BAT_THEME=tokyonight_night
 export NVM_DIR="$HOME/.nvm"
+export STARSHIP_CONFIG="$HOME/dotfiles/.config/starship/starship.toml"
 export MINIKUBE_HOME="$HOME/.config/minikube"
 export K9S_CONFIG_DIR="$HOME/dotfiles/.config/k9s" # config does not load on symlinks
 export LG_CONFIG_FILE="$HOME/dotfiles/.config/lazygit/config.yml"

@@ -57,7 +57,7 @@
         pkgs.zsh
         pkgs.zsh-autosuggestions
         pkgs.zsh-syntax-highlighting
-        pkgs.zsh-powerlevel10k
+        pkgs.starship
         pkgs.mkalias
         pkgs.zplug
         pkgs.zoxide
