@@ -17,7 +17,7 @@
         # Tools
         pkgs.neovim
         pkgs.git
-        pkgs.htop
+        pkgs.btop
         pkgs.lazygit
         pkgs.openssh
         pkgs.bat
