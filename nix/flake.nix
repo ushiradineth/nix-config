@@ -127,6 +127,7 @@
           "google-drive"
           "MonitorControl"
           "obsidian"
+          "google-cloud-sdk"
         ];
         masApps = {
           "Horo" = 1437226581;
