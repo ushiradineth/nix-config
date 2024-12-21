@@ -62,6 +62,7 @@
         pkgs.zplug
         pkgs.zoxide
         pkgs.delta
+        pkgs.sshpass
 
         # # Tmux (currently unused)
         # pkgs.tmux
@@ -107,6 +108,7 @@
         taps = [];
         casks = [
           "arc"
+          "bitwarden"
           "discord"
           "hiddenbar"
           "intellij-idea-ce"
@@ -132,11 +134,10 @@
         masApps = {
           "Horo" = 1437226581;
           "Davinci Resolve" = 571213070;
-          "Bitwarden" = 1352778147;
         };
         onActivation.cleanup = "zap";
         onActivation.autoUpdate = true;
-        onActivation.upgrade = true;
+        onActivation.upgrade = false;
       };
 
       system.activationScripts.applications.text = let
