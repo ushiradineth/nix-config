@@ -1,4 +1,4 @@
-{}: {
+{...}: {
   username = "shu";
   userfullname = "Ushira Dineth";
   useremail = "ushiradineth@gmail.com";
