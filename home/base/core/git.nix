@@ -55,7 +55,7 @@ in {
       settings = {
         git = {
           paging = {
-            colorArg = true;
+            colorArg = "always";
             pager = "delta --dark --paging=never";
           };
         };
