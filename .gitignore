@@ -1,8 +1,9 @@
-**/.DS_Store
-**/node_modules
-**/raycast
-.config/minikube
-.config/k9s/clusters
-.config/infracost
-.config/pgcli
-.config/configstore
+result
+result/
+.direnv/
+.DS_Store
+.pre-commit-config.yaml
+logs/
+core*
+!core/
+!core.nix
