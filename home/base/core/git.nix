@@ -13,7 +13,7 @@ in {
       enable = true;
       lfs.enable = true;
 
-      userName = myvars.username;
+      userName = myvars.userfullname;
       userEmail = myvars.useremail;
 
       includes = [
