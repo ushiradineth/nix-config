@@ -1,6 +1,6 @@
-# Nix Configuration
+# ❄️ Nix Configuration
 
-This repository contains my nix configuration for my macOS machine, and nixos server.
+This repository contains my nix configuration for my MacOS machine and NixOS homelab server.
 
 ## Reference
 

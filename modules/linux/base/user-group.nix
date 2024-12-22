@@ -21,6 +21,7 @@
       "networkmanager"
       "wheel"
       "docker"
+      "input"
     ];
   };
 
