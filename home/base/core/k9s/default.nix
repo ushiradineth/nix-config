@@ -1,26 +1,36 @@
-{...}: {
+{pkgs, ...}: let
+  k9sSrc = pkgs.fetchFromGitHub {
+    owner = "derailed";
+    repo = "k9s";
+    rev = "v0.32.5";
+    sparseCheckout = ["skins"];
+    hash = "sha256-0S6FomP1WVqYl5nP0FcaElgghMcZmE0V8iLhghERF6A=";
+  };
+in {
   programs.k9s = {
     enable = true;
     aliases = {
-      dp = "deployments";
-      s = "services";
-      p = "pods";
-      cm = "configmaps";
-      sec = "v1/secrets";
-      ns = "namespaces";
-      ds = "daemonsets";
-      rs = "replicasets";
-      c = "contexts";
-      j = "jobs";
-      cr = "clusterroles";
-      crb = "clusterrolebindings";
-      ro = "roles";
-      rb = "rolebindings";
-      np = "networkpolicies";
-      gw = "gateways";
-      vs = "virtualservices";
-      cert = "certificates";
-      cha = "challenges";
+      aliases = {
+        dp = "deployments";
+        s = "services";
+        p = "pods";
+        cm = "configmaps";
+        sec = "v1/secrets";
+        ns = "namespaces";
+        ds = "daemonsets";
+        rs = "replicasets";
+        c = "contexts";
+        j = "jobs";
+        cr = "clusterroles";
+        crb = "clusterrolebindings";
+        ro = "roles";
+        rb = "rolebindings";
+        np = "networkpolicies";
+        gw = "gateways";
+        vs = "virtualservices";
+        cert = "certificates";
+        cha = "challenges";
+      };
     };
     settings = {
       liveViewAutoRefresh = true;
@@ -41,7 +51,7 @@
       };
     };
     skins = {
-      transparent = "./transparent.yaml";
+      transparent = "${k9sSrc}/skins/transparent.yaml";
     };
   };
 }

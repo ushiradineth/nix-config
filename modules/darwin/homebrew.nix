@@ -1,6 +1,7 @@
 {...}: {
   homebrew = {
-    enable = true;
+    # Disabled for fast deployments, enable when needed (updates and un/installations)
+    enable = false;
     brews = [
       "azure-cli"
     ];
@@ -31,6 +32,7 @@
       "MonitorControl"
       "obsidian"
       "google-cloud-sdk"
+      "balenaetcher"
     ];
     masApps = {
       "Horo" = 1437226581;
