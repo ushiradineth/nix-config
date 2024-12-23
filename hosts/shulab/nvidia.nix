@@ -18,8 +18,6 @@
     };
   };
 
-  hardware.nvidia-container-toolkit.enable = true;
-
   # Due to legacy nvidia drivers
   nixpkgs.config.allowBroken = true;
   nixpkgs.config.nvidia.acceptLicense = true;
