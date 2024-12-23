@@ -1,4 +1,4 @@
-{
+{lib, ...}: {
   ## Enable thermald (Intel CPUs Only)
   services.thermald.enable = true;
 
@@ -24,7 +24,7 @@
   };
 
   ## Disable GNOMEs power management
-  services.power-profiles-daemon.enable = false;
+  services.power-profiles-daemon.enable = lib.mkForce false;
 
   ## Enable powertop
   powerManagement.powertop.enable = true;
