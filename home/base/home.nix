@@ -4,18 +4,6 @@
   home = {
     inherit (myvars) username;
 
-    # Don't show the "Last login" message for every new terminal.
-    file.".hushlogin" = {
-      text = "";
-    };
-
-    file.".gitignore_global" = {
-      text = ''
-        ~*
-        .DS_Store
-      '';
-    };
-
     # This value determines the Home Manager release that your
     # configuration is compatible with. This helps avoid breakage
     # when a new Home Manager release introduces backwards
