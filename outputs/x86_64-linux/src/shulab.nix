@@ -18,7 +18,7 @@
       "hosts/${name}"
     ];
     home-modules = map mylib.relativeToRoot [
-      "home/linux"
+      "home/linux/minimal.nix"
     ];
   };
 
