@@ -12,7 +12,7 @@ default:
 
 [macos]
 [group('shu')]
-build-shu:
+build:
   nix build .#darwinConfigurations.shu.system \
     --extra-experimental-features 'nix-command flakes'
 
@@ -20,7 +20,7 @@ build-shu:
 
 [macos]
 [group('shu')]
-debug-shu:
+debug:
   nix build .#darwinConfigurations.shu.system --show-trace --verbose \
     --extra-experimental-features 'nix-command flakes'
 
@@ -34,15 +34,15 @@ debug-shu:
 
 [linux]
 [group('shulab')]
-build-shulab:
+build:
   nix build .#nixosConfigurations.shulab.config.system.build.toplevel \
     --extra-experimental-features 'nix-command flakes'
 
   sudo ./result/bin/switch-to-configuration switch
 
 [linux]
-[group('server')]
-debug-shulab:
+[group('shulab')]
+debug:
   nix build .#nixosConfigurations.shulab.config.system.build.toplevel --show-trace --verbose \
     --extra-experimental-features 'nix-command flakes'
 
