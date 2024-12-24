@@ -139,27 +139,18 @@ reboot
 # Enter an shell with just, git and neovim
 nix-shell -p just git neovim
 
-# Clone this repository
-git clone https://github.com/ushiradineth/nix-config.git
-
+# Copy the fileSystems and swapDevices from the hardware-configuration.nix
 cat /etc/nixos/hardware-configuration.nix
 
-# Add the configuration updates to the new host's hardware-configuration.nix
-# Eg: fileSystems and swapDevices
-nvim nix-config/hosts/shulab/hardware-configuration.nix
+# !IMPORTANT: Add it to the hosts/shulab/hardware-configuration.nix and push it to the repo
 
-# Files need to be added to git inorder to reflect in flakes
+# Install the flake
+git clone https://github.com/ushiradineth/nix-config.git
 cd nix-config
-git add .
-
 just build
-```
 
-### 8. Commit Hardware Configuration
-
-```bash
-git config --global user.email "ushiradineth@gmail.com"
-git config --global user.name "Ushira Dineth"
-git commit -am "feat: update hardware-configuration"
-git push
+mkdir -p /home/shu/nix-config
+cp -r ./* /home/shu/nix-config
+cp -r ./.* /home/shu/nix-config
+sudo chown -R shu:shu ~/home/shu/nix-config
 ```
