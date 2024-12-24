@@ -52,10 +52,6 @@
     rsync
   ];
 
-  users.users.${myvars.username} = {
-    description = myvars.userfullname;
-  };
-
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
     trusted-users = [myvars.username];
