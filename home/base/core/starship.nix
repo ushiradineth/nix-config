@@ -6,6 +6,8 @@
     settings = {
       format = lib.concatStrings [
         "$sudo"
+        "$username"
+        "$hostname"
         "$directory"
         "$git_branch"
         "$git_state"
@@ -16,6 +18,17 @@
         "$cmd_duration"
         "$terraform"
       ];
+      username = {
+        format = "[$user@]($style)";
+        show_always = true;
+        style_user = "bold blue";
+        style_root = "bold red";
+      };
+      hostname = {
+        format = "[$hostname]($style) ";
+        ssh_only = false;
+        style = "bold blue";
+      };
       directory = {
         truncation_length = 255;
         truncate_to_repo = false;
