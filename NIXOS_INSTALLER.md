@@ -152,5 +152,5 @@ just build
 mkdir -p /home/shu/nix-config
 cp -r ./* /home/shu/nix-config
 cp -r ./.* /home/shu/nix-config
-sudo chown -R shu:shu ~/home/shu/nix-config
+sudo chown -R shu:shu /home/shu/nix-config
 ```
