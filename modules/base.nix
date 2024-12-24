@@ -52,6 +52,7 @@
     rsync
   ];
 
+  programs.zsh.enable = true;
   users.users.${myvars.username} = {
     description = myvars.userfullname;
     shell = pkgs.zsh;
