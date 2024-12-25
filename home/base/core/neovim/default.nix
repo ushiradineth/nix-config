@@ -21,9 +21,16 @@ in {
 
   xdg.configFile."nvim".source = config.lib.file.mkOutOfStoreSymlink configPath;
 
+  home.packages = with pkgs; [
+    lua
+    luarocks
+  ];
+
   programs.neovim = {
     enable = true;
     defaultEditor = true;
+    withNodeJs = true;
+    withPython3 = true;
 
     # These environment variables are needed to build and run binaries
     # with external package managers like mason.nvim.
