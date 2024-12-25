@@ -2,57 +2,49 @@
   pkgs,
   myvars,
   ...
-}: {
-  # Auto upgrade nix to the unstable version
-  # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/tools/package-management/nix/default.nix#L284
+}: let
+  shellAliases = {
+    ll = "ls -lah";
+    c = "clear";
+    grep = "rg";
+    neofetch = "fastfetch";
+  };
+in {
   nix.package = pkgs.nixVersions.latest;
-
-  # for security reasons, do not load neovim's user config
-  # since EDITOR may be used to edit some critical files
   environment.variables.EDITOR = "nvim --clean";
 
   environment.systemPackages = with pkgs; [
-    fastfetch
     neovim
     just
     git
     zsh
-
-    # archives
-    zip
-    xz
-    zstd
-    unzipNLS
-    p7zip
-
-    # Text Processing
-    # Docs: https://github.com/learnbyexample/Command-line-text-processing
-    gnugrep # GNU grep, provides `grep`/`egrep`/`fgrep`
-    gnused # GNU sed, very powerful(mainly for replacing text in files)
-    gawk # GNU awk, a pattern scanning and processing language
-    jq # A lightweight and flexible command-line JSON processor
+    ripgrep
+    fastfetch
 
     # networking tools
-    mtr # A network diagnostic tool
-    iperf3
-    dnsutils # `dig` + `nslookup`
-    ldns # replacement of `dig`, it provide the command `drill`
     wget
     curl
-    aria2 # A lightweight multi-protocol & multi-source command-line download utility
+    mtr # A network diagnostic tool
+    iperf3 # Tool to measure IP bandwidth using UDP or TCP
+    dnsutils # `dig` + `nslookup`
     socat # replacement of openbsd-netcat
     nmap # A utility for network discovery and security auditing
+    speedtest-cli # Command-line interface for testing internet bandwidth using speedtest.net
 
     # misc
     file
     findutils
     which
     tree
-    gnutar
     rsync
   ];
 
-  programs.zsh.enable = true;
+  home.shellAliases = shellAliases;
+  programs.zsh = {
+    enable = true;
+    shellAliases = shellAliases;
+  };
+
   users.users.${myvars.username} = {
     description = myvars.userfullname;
     shell = pkgs.zsh;

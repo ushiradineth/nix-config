@@ -26,10 +26,10 @@
     ethtool
     pciutils # lspci
     usbutils # lsusb
-    hdparm # for disk performance, command
+    lshw # lscpu
+    hdparm # for disk performance
     dmidecode # a tool that reads information about your system's hardware from the BIOS according to the SMBIOS/DMI standard
     parted
-    lshw
   ];
 
   # BCC - Tools for BPF-based Linux IO analysis, networking, monitoring, and more
