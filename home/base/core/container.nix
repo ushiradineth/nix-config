@@ -18,5 +18,6 @@ in {
     dive # Explore docker layers
     lazydocker # Docker TUI
     skopeo # Copy/Sync images between registries and local storage
+    helmfile
   ];
 }
