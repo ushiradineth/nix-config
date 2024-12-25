@@ -15,11 +15,12 @@
   modules = {
     darwin-modules = map mylib.relativeToRoot [
       "modules/darwin"
+      "modules/core"
+      "modules/base.nix"
       "hosts/${name}"
     ];
     home-modules = map mylib.relativeToRoot [
-      "hosts/${name}/home.nix"
-      "home/darwin"
+      "home/darwin/default.nix"
     ];
   };
 
