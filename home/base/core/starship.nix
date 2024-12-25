@@ -25,7 +25,7 @@
         style_root = "bold red";
       };
       hostname = {
-        format = "[$hostname]($style) ";
+        format = "[$hostname:]($style)";
         ssh_only = false;
         style = "bold blue";
       };
