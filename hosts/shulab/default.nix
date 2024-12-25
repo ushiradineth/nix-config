@@ -1,6 +1,3 @@
-{mylib, ...}: let
-  hostname = "shulab";
-in {
-  networking.hostName = hostname;
+{mylib, ...}: {
   imports = mylib.scanPaths ./.;
 }
