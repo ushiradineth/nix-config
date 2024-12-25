@@ -14,9 +14,10 @@
 
   modules = {
     nixos-modules = map mylib.relativeToRoot [
-      "modules/linux/base"
+      "modules/linux"
+      "modules/core"
       "modules/base.nix"
-      "hosts/${name}"
+      "hosts/${hostname}"
     ];
     home-modules = map mylib.relativeToRoot [
       "home/linux/default.nix"
@@ -25,5 +26,5 @@
 
   systemArgs = modules // args;
 in {
-  nixosConfigurations.${name} = mylib.nixosSystem systemArgs;
+  nixosConfigurations.${hostname} = mylib.nixosSystem systemArgs;
 }

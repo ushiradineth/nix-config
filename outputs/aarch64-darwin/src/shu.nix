@@ -10,14 +10,14 @@
   genSpecialArgs,
   ...
 } @ args: let
-  name = "shu";
+  hostname = "shu";
 
   modules = {
     darwin-modules = map mylib.relativeToRoot [
       "modules/darwin"
       "modules/core"
       "modules/base.nix"
-      "hosts/${name}"
+      "hosts/${hostname}"
     ];
     home-modules = map mylib.relativeToRoot [
       "home/darwin/default.nix"
@@ -27,5 +27,5 @@
   systemArgs = modules // args;
 in {
   # macOS's configuration
-  darwinConfigurations.${name} = mylib.macosSystem systemArgs;
+  darwinConfigurations.${hostname} = mylib.macosSystem systemArgs;
 }
