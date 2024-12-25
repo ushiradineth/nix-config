@@ -1,4 +1,8 @@
-{myvars, ...}: {
+{
+  pkgs,
+  myvars,
+  ...
+}: {
   services.k3s = {
     enable = true;
     role = "server";
@@ -18,7 +22,8 @@
     wantedBy = ["multi-user.target"];
     serviceConfig = {
       after = ["k3s.service"];
-      ExecStart = ''
+      path = with pkgs; [coreutils];
+      script = ''
         cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && \
         chown ${myvars.username}:${myvars.username} ~/.kube/config
       '';
