@@ -2,8 +2,10 @@
   programs.ssh = {
     enable = true;
     extraConfig = ''
-      AddKeysToAgent yes
-      IdentityFile ~/.ssh/shu
+      Host *
+        ForwardAgent yes
+        AddKeysToAgent yes
+        IdentityFile ~/.ssh/shu
     '';
   };
 }
