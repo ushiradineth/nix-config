@@ -24,13 +24,14 @@ in {
   home.packages = with pkgs; [
     lua
     luarocks
+    python311
+    nixd
   ];
 
   programs.neovim = {
     enable = true;
     defaultEditor = true;
     withNodeJs = true;
-    withPython3 = true;
 
     # These environment variables are needed to build and run binaries
     # with external package managers like mason.nvim.
