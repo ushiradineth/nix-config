@@ -17,13 +17,13 @@
     description = "Copy kubeconfig to user's home directory";
     wantedBy = ["multi-user.target"];
     serviceConfig = {
+      after = ["k3s.service"];
       ExecStart = ''
         cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && \
         chown ${myvars.username}:${myvars.username} ~/.kube/config
       '';
       Restart = "on-failure";
     };
-    Before = "k3s.service";
   };
 
   systemd.tmpfiles.rules = [
