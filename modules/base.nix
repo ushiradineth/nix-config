@@ -2,14 +2,7 @@
   pkgs,
   myvars,
   ...
-}: let
-  shellAliases = {
-    ll = "ls -lah";
-    c = "clear";
-    grep = "rg";
-    neofetch = "fastfetch";
-  };
-in {
+}: {
   nix.package = pkgs.nixVersions.latest;
   environment.variables.EDITOR = "nvim --clean";
 
@@ -39,10 +32,14 @@ in {
     rsync
   ];
 
-  home.shellAliases = shellAliases;
   programs.zsh = {
     enable = true;
-    shellAliases = shellAliases;
+    shellInit = ''
+      alias ll="ls -lah"
+      alias c="clear"
+      alias grep="rg"
+      alias neofetch="fastfetch"
+    '';
   };
 
   users.users.${myvars.username} = {
