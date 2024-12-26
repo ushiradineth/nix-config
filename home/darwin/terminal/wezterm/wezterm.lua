@@ -48,8 +48,8 @@ config.window_frame = {
 
 -- Sessionizer
 sessionizer.apply_to_config(config, true) -- True removes the default keybinds
-sessionizer.config.paths = "/Users/shu/Code"
-sessionizer.config.command_options.fd_path = "/run/current-system/sw/bin/fd"
+sessionizer.config.paths = { os.getenv("HOME") .. "/Code", os.getenv("HOME") .. "/nix-config" }
+sessionizer.config.command_options.fd_path = "/etc/profiles/per-user/" .. os.getenv("USER") .. "/bin/fd"
 
 -- Keybinds
 config.enable_kitty_keyboard = true
