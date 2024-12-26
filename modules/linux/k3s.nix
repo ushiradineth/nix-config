@@ -22,16 +22,8 @@
     wantedBy = ["multi-user.target"];
     serviceConfig = {
       after = ["k3s.service"];
-      path = with pkgs; [coreutils];
-      script = ''
-        cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && \
-        chown ${myvars.username}:${myvars.username} ~/.kube/config
-      '';
+      ExecStart = "${pkgs.zsh}/bin/zsh -c 'sudo cp /etc/rancher/k3s/k3s.yaml /home/${myvars.username}/.kube/config && sudo chown ${myvars.username}:k3s /home/${myvars.username}/.kube/config'";
       Restart = "on-failure";
     };
   };
-
-  systemd.tmpfiles.rules = [
-    "d /home/${myvars.username}/.kube 0755 ${myvars.username} ${myvars.username} -"
-  ];
 }
