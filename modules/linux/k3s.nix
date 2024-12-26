@@ -6,7 +6,7 @@
   services.k3s = {
     enable = true;
     role = "server";
-    extraFlags = ["--disable=traefik" "--cluster-cidr 10.24.0.0/16"];
+    extraFlags = ["--disable traefik" "--cluster-cidr 10.24.0.0/16"];
   };
 
   # k3s requires a firewall rule to allow access to the Kubernetes API
