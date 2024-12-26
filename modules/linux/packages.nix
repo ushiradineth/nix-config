@@ -29,6 +29,8 @@
     hdparm # for disk performance
     dmidecode # a tool that reads information about your system's hardware from the BIOS according to the SMBIOS/DMI standard
     parted
+
+    wezterm # terminal emulator (access through ssh)
   ];
 
   # BCC - Tools for BPF-based Linux IO analysis, networking, monitoring, and more
