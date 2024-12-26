@@ -11,7 +11,6 @@
     home = "/home/${myvars.username}";
     isNormalUser = true;
     extraGroups = [
-      myvars.username
       "users"
       "networkmanager"
       "wheel"
