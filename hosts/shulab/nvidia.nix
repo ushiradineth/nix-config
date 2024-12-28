@@ -11,6 +11,7 @@
 
     package = config.boot.kernelPackages.nvidiaPackages.legacy_390;
 
+    # You can find it using lspci, either under 3D or VGA
     prime = {
       sync.enable = true;
       nvidiaBusId = "PCI:3:0:0";
