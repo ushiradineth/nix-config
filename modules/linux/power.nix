@@ -1,3 +1,5 @@
+# https://nixos.wiki/wiki/Laptop
+# https://nixos.wiki/wiki/Power_Management
 {lib, ...}: {
   # Enable thermald (Intel CPUs Only)
   services.thermald.enable = true;
@@ -37,7 +39,7 @@
   services.logind.lidSwitchExternalPower = "ignore";
   services.logind.lidSwitchDocked = "ignore";
 
-  # Prevent suspend when lid is closed
+  # Prevent suspend
   systemd.sleep.extraConfig = ''
     AllowSuspend=no
     AllowHibernation=no
