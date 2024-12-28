@@ -18,6 +18,7 @@
     btop
     nmon
     sysbench
+    powertop
 
     # system tools
     psmisc # killall/pstree/prtstat/fuser/...
