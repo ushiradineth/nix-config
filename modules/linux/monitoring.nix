@@ -79,12 +79,4 @@
     url = "https://grafana.com/api/dashboards/1860/revisions/37/download";
     sha256 = "sha256:0qza4j8lywrj08bqbww52dgh2p2b9rkhq5p313g72i57lrlkacfl";
   };
-
-  services.nginx.virtualHosts.${config.services.grafana.domain} = {
-    locations."/" = {
-      proxyPass = "http://${toString config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
-      proxyWebsockets = true;
-      recommendedProxySettings = true;
-    };
-  };
 }
