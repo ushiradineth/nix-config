@@ -33,6 +33,7 @@
       "obsidian"
       "google-cloud-sdk"
       "balenaetcher"
+      "cloudflare-warp"
     ];
     masApps = {
       "Horo" = 1437226581;
