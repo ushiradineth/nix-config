@@ -3,6 +3,7 @@
     pgcli
     mycli
     k6 # Load testing tool
+    vegeta # Load testing tool
   ];
 
   programs = {
