@@ -67,8 +67,8 @@ return {
 					{ name = "nvim_lsp" },
 					{ name = "luasnip" },
 					{ name = "path" },
-					{ name = "cmdline" },
-					{ name = "buffer", keyword_length = 3 },
+					-- { name = "cmdline" },
+					-- { name = "buffer", keyword_length = 3 },
 				},
 				formatting = {
 					format = function(entry, vim_item)
@@ -76,8 +76,8 @@ return {
 							nvim_lsp = "LSP",
 							luasnip = "SNIP",
 							path = "PATH",
-							buffer = "BUF",
-							cmdline = "CMD",
+							-- cmdline = "CMD",
+							-- buffer = "BUF",
 						}
 						vim_item.menu = "[" .. abbrev[entry.source.name] .. "]"
 						return vim_item

@@ -9,16 +9,20 @@ return {
 				build = "make",
 			},
 			"nvim-telescope/telescope-ui-select.nvim",
+			"nvim-telescope/telescope-live-grep-args.nvim",
 		},
 
 		config = function()
 			local builtin = require("telescope.builtin")
+			local telescope = require("telescope")
+			local lga_actions = require("telescope-live-grep-args.actions")
+			local live_grep_args_shortcuts = require("telescope-live-grep-args.shortcuts")
 
 			vim.keymap.set("n", "<D-p>", builtin.find_files, { noremap = true, silent = true, desc = "Search files" })
 			vim.keymap.set(
 				"n",
 				"<leader>sa",
-				builtin.live_grep,
+				telescope.extensions.live_grep_args.live_grep_args,
 				{ noremap = true, silent = true, desc = "Search all files in current working directory" }
 			)
 			vim.keymap.set(
@@ -27,6 +31,19 @@ return {
 				builtin.current_buffer_fuzzy_find,
 				{ noremap = true, silent = true, desc = "Fuzzy search in current file" }
 			)
+
+			vim.keymap.set(
+				"n",
+				"<leader>swb",
+				live_grep_args_shortcuts.grep_word_under_cursor_current_buffer,
+				{ noremap = true, silent = true, desc = "Fuzzy search the word under cursor in current file" }
+			)
+
+			vim.keymap.set("n", "<leader>swa", live_grep_args_shortcuts.grep_word_under_cursor, {
+				noremap = true,
+				silent = true,
+				desc = "Fuzzy search the word under cursor in current working directory",
+			})
 
 			vim.keymap.set("n", "<leader>ss", require("telescope.builtin").resume, {
 				noremap = true,
@@ -46,7 +63,7 @@ return {
 				"*-lock.json",
 			}
 
-			require("telescope").setup({
+			telescope.setup({
 				pickers = {
 					find_files = {
 						hidden = true,
@@ -62,6 +79,14 @@ return {
 					},
 					["ui-select"] = {
 						require("telescope.themes").get_dropdown(),
+					},
+					live_grep_args = {
+						auto_quoting = true,
+						mappings = {
+							i = {
+								["<C-k>"] = lga_actions.quote_prompt({ postfix = " -t " }),
+							},
+						},
 					},
 				},
 				defaults = {
@@ -99,11 +124,9 @@ return {
 				},
 			})
 
-			require("telescope").load_extension("ui-select")
-			require("telescope").load_extension("fzf")
+			telescope.load_extension("ui-select")
+			telescope.load_extension("fzf")
+			telescope.load_extension("live_grep_args")
 		end,
-	},
-	{ -- UI FOR TELESCOPE
-		"nvim-telescope/telescope-ui-select.nvim",
 	},
 }

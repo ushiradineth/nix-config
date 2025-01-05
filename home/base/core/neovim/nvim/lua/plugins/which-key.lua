@@ -23,6 +23,7 @@ return { -- SHORTCUT DISPLAY
 			{ "<leader>w", group = "Save", icon = mini.get("file", "TODO") },
 			{ "<leader>r", group = "Replace" },
 			{ "<leader>t", group = "Toggle" },
+			{ "<leader>sw", group = "Highlighted Word" },
 		})
 	end,
 }
