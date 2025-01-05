@@ -15,6 +15,8 @@
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
+    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+
     pre-commit-hooks = {
       url = "github:cachix/pre-commit-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";

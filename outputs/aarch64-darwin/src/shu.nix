@@ -8,17 +8,20 @@
   myvars,
   system,
   genSpecialArgs,
+  nix-homebrew,
   ...
 } @ args: let
   hostname = "shu";
 
   modules = {
-    darwin-modules = map mylib.relativeToRoot [
-      "modules/darwin"
-      "modules/core"
-      "modules/base.nix"
-      "hosts/${hostname}"
-    ];
+    darwin-modules =
+      (map mylib.relativeToRoot [
+        "modules/darwin"
+        "modules/core"
+        "modules/base.nix"
+        "hosts/${hostname}"
+      ])
+      ++ [nix-homebrew.darwinModules.nix-homebrew];
     home-modules = map mylib.relativeToRoot [
       "home/darwin/default.nix"
     ];

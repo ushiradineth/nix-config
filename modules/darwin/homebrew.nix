@@ -34,6 +34,8 @@
       "google-cloud-sdk"
       "balenaetcher"
       "cloudflare-warp"
+      "lens"
+      "ghostty"
     ];
     masApps = {
       "Horo" = 1437226581;
