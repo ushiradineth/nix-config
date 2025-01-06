@@ -13,15 +13,15 @@ in {
       enable = true;
       lfs.enable = true;
 
-      userName = myvars.userfullname;
-      userEmail = myvars.useremail;
+      userName = myvars.userFullname;
+      userEmail = myvars.userEmail;
 
       includes = [
         {
           condition = "gitdir:~/Code/surge";
           contents = {
-            user.name = myvars.userfullname;
-            user.email = myvars.workemail;
+            user.name = myvars.userFullname;
+            user.email = myvars.workEmail;
           };
         }
       ];

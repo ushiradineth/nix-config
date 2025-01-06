@@ -43,7 +43,7 @@
   };
 
   users.users.${myvars.username} = {
-    description = myvars.userfullname;
+    description = myvars.userFullname;
     shell = pkgs.zsh;
   };
 
