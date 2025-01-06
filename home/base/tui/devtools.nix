@@ -4,6 +4,7 @@
     mycli
     k6 # Load testing tool
     vegeta # Load testing tool
+    wireshark # Network protocol analyzer
   ];
 
   programs = {
