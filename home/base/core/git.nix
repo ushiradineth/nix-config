@@ -18,7 +18,7 @@ in {
 
       includes = [
         {
-          condition = "gitdir:~/Code/surge";
+          condition = "gitdir:~/Code/surge/";
           contents = {
             user.name = myvars.userFullname;
             user.email = myvars.workEmail;
