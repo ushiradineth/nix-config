@@ -22,7 +22,6 @@
       "notion-calendar"
       "figma"
       "raycast"
-      "rectangle"
       "monitorcontrol"
       "burp-suite"
       "wezterm"
@@ -35,7 +34,8 @@
       "balenaetcher"
       "cloudflare-warp"
       "lens"
-      "ghostty"
+      "burp-suite"
+      "pgadmin4"
     ];
     masApps = {
       "Horo" = 1437226581;
