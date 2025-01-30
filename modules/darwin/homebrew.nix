@@ -23,7 +23,6 @@
       "figma"
       "raycast"
       "monitorcontrol"
-      "burp-suite"
       "wezterm"
       "postman"
       "middleclick"
