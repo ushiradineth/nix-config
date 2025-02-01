@@ -3,7 +3,7 @@
     # Disabled for fast deployments, enable when needed (updates and un/installations)
     enable = false;
     brews = [
-      "azure-cli"
+      "posting"
     ];
     taps = [
       "homebrew/services"
@@ -12,29 +12,23 @@
       "arc"
       "bitwarden"
       "discord"
-      "hiddenbar"
-      "intellij-idea-ce"
+      "hiddenbar" # hide menu bar items
+      "intellij-idea-ce" # java ide
       "docker"
-      "blackhole-16ch"
       "whatsapp"
-      "oversight"
+      "oversight" # notify when camera is on
       "notion"
       "notion-calendar"
       "figma"
       "raycast"
-      "monitorcontrol"
+      "monitorcontrol" # brightness control for external monitors
       "wezterm"
-      "postman"
-      "middleclick"
+      "middleclick" # middleclick or three finger click control
       "google-drive"
-      "MonitorControl"
       "obsidian"
-      "google-cloud-sdk"
       "balenaetcher"
       "cloudflare-warp"
-      "lens"
       "burp-suite"
-      "pgadmin4"
     ];
     masApps = {
       "Horo" = 1437226581;

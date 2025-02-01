@@ -3,7 +3,7 @@
 # ===================================================================
 {lib, ...}: let
   brokenPackages = [
-    "azure-cli"
+    # No broken packages yet :)
   ];
 in {
   nixpkgs.overlays = [

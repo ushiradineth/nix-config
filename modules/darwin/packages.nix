@@ -1,21 +1,14 @@
 {pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     # Utilities
-    curl
-    fastfetch
-    ripgrep
-    speedtest-cli
-    pgcli
-    tokei
-    tldr
-    gnumake
-    just
-    sshpass
+    pgcli # postgres cli
+    tokei # code statistics
 
     # Programming Languages & Tools
     lua5_1
     python3
     ansible
+    sshpass # ssh password manager (needed for ansible)
     go
     gcc
     jdk17
@@ -28,6 +21,7 @@
     # Version managers
     nodenv
     pyenv
+    tenv
 
     # Package managers
     pnpm
