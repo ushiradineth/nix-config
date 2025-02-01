@@ -15,6 +15,7 @@
     fman = "compgen -c | fzf | xargs man";
     ftldr = "compgen -c | fzf | xargs tldr";
     grep = "rg";
+    curl = "curlie";
   };
 
   FZF_CTRL_T_COMMAND = "fd --hidden --strip-cwd-prefix --exclude .git";
