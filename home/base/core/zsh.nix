@@ -9,7 +9,11 @@
     then ''
       eval "$(kubectl completion zsh)"
       eval "$(/opt/homebrew/bin/brew shellenv)"
-      source /opt/homebrew/share/zsh/site-functions/*
+      if type brew &>/dev/null; then
+        FPATH="$(brew --prefix)/share/zsh/site-functions:$FPATH"
+        autoload -Uz compinit
+        compinit
+      fi
 
       zstyle ':autocomplete:*' default-context history-incremental-search-backward
       zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
