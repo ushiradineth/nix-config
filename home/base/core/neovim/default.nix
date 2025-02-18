@@ -32,6 +32,8 @@ in {
     enable = true;
     defaultEditor = true;
     withNodeJs = true;
+    extraLuaPackages = ps: [ps.magick];
+    extraPackages = [pkgs.imagemagick];
 
     # These environment variables are needed to build and run binaries
     # with external package managers like mason.nvim.
