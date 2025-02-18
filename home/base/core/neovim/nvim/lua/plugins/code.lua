@@ -142,13 +142,16 @@ return {
 			},
 		},
 	},
-	{ -- AI CODE COMPLETION
-		"supermaven-inc/supermaven-nvim",
-		config = function()
-			require("supermaven-nvim").setup({
-				log_level = "off",
-			})
-		end,
+	-- { -- AI CODE COMPLETION
+	-- 	"supermaven-inc/supermaven-nvim",
+	-- 	config = function()
+	-- 		require("supermaven-nvim").setup({
+	-- 			log_level = "off",
+	-- 		})
+	-- 	end,
+	-- },
+	{ -- COPILOT
+		"github/copilot.vim",
 	},
 	{ -- TIME TRACKING
 		"wakatime/vim-wakatime",

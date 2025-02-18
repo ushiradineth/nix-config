@@ -19,6 +19,7 @@ return {
 			"nvim-tree/nvim-web-devicons",
 			"MunifTanjim/nui.nvim",
 			"3rd/image.nvim",
+			"kiyoon/magick.nvim",
 		},
 		config = function()
 			require("neo-tree").setup({
