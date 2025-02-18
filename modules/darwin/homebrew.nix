@@ -29,6 +29,7 @@
       "balenaetcher"
       "cloudflare-warp"
       "burp-suite"
+      "microsoft-azure-storage-explorer"
     ];
     masApps = {
       "Horo" = 1437226581;
