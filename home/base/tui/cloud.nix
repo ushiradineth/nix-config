@@ -12,7 +12,10 @@ in {
     awscli2
     eksctl
     google-cloud-sdk
-    azure-cli
+    (azure-cli.withExtensions [
+      azure-cli.extensions.bastion
+      azure-cli.extensions.ssh
+    ])
     ngrok
     terraform
     terraformer # Generate terraform configs from existing cloud resources
