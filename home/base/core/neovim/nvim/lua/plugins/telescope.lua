@@ -84,7 +84,8 @@ return {
 						auto_quoting = true,
 						mappings = {
 							i = {
-								["<C-k>"] = lga_actions.quote_prompt({ postfix = " -t " }),
+								["<C-t>"] = lga_actions.quote_prompt({ postfix = " -t tf" }),
+								["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob **/*.tf" }),
 							},
 						},
 					},
