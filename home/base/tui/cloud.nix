@@ -11,7 +11,9 @@ in {
   home.packages = with pkgs; [
     awscli2
     eksctl
-    google-cloud-sdk
+    (google-cloud-sdk.withExtraComponents [
+      google-cloud-sdk.components.gke-gcloud-auth-plugin
+    ])
     (azure-cli.withExtensions [
       azure-cli.extensions.bastion
       azure-cli.extensions.ssh
