@@ -117,8 +117,6 @@ return {
 			path = 1,
 		})
 
-		ins_left({ "progress", color = { fg = colors.fg, gui = "bold" } })
-
 		ins_left({ "location" })
 
 		ins_left({
