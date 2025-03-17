@@ -1,3 +1,5 @@
+-- Hide the command line when not in use
+
 local function set_cmdheight()
 	if vim.fn.mode() == "c" then
 		vim.opt.cmdheight = 1 -- Show the command line in command mode
@@ -27,6 +29,8 @@ vim.api.nvim_create_autocmd("CmdlineLeave", {
 
 -- Initial setup of cmdheight
 set_cmdheight()
+
+-- -----------------------------------------------------------------------------
 
 -- Fix comment string for terraform
 vim.api.nvim_create_autocmd("FileType", {

@@ -1,3 +1,5 @@
-require "config.cmd"
-require "config.options"
-require "config.lazy"
+require("config.cmd")
+require("config.options")
+require("config.lazy")
+require("config.keymaps")
+require("config.filetypes")
