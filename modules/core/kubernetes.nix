@@ -9,5 +9,9 @@
     kubernetes-helm
     helmfile
     minikube
+    istioctl
+    argocd
+    kube-score
+    kube-linter
   ];
 }
