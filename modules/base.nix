@@ -26,6 +26,7 @@
     nmap # a utility for network discovery and security auditing
     speedtest-cli # command-line interface for testing internet bandwidth using speedtest.net
     tcpdump # command-line packet analyzer
+    inetutils # inetutils suite of basic networking utilities (hostname, ping, telnet, etc)
 
     # Miscallaneous
     findutils # find, xargs, locate

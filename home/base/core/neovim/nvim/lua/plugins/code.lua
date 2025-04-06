@@ -15,6 +15,7 @@ return {
 					"json",
 					"lua",
 					"nix",
+					"rust",
 					"terraform",
 					"tsx",
 					"typescript",

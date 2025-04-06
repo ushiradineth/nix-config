@@ -15,6 +15,7 @@
     maven
     nodejs_22
     rustup
+    libiconv
     eslint_d
     nixd
 
