@@ -77,10 +77,11 @@ return {
 				bash = { "beautysh" },
 				zsh = { "beautysh" },
 				go = { "goimports", "gofmt" },
-				hcl = { "hclfmt" },
+				terraform = { "terraform_fmt" },
 				lua = { "stylua" },
-				["_"] = { "trim_whitespace" },
 				md = { "markdownlint" },
+				rust = { "rustfmt" },
+				["_"] = { "trim_whitespace" },
 			},
 			default_format_opts = {
 				lsp_format = "fallback",
