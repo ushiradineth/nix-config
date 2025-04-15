@@ -120,9 +120,6 @@ return {
 			})
 		end,
 	},
-	-- { -- COPILOT
-	-- 	"github/copilot.vim",
-	-- },
 	{
 		-- TIME TRACKING
 		"wakatime/vim-wakatime",
