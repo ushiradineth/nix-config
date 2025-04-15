@@ -23,6 +23,23 @@ local generic_setup = function(server_name)
 end
 
 local custom_servers = {
+	["rust_analyzer"] = function()
+		require("lspconfig").rust_analyzer.setup({
+			on_attach = function(_, bufnr)
+				mappings(bufnr)
+			end,
+			settings = {
+				["rust-analyzer"] = {
+					check = {
+						command = "clippy",
+					},
+					diagnostics = {
+						enable = true,
+					},
+				},
+			},
+		})
+	end,
 	["eslint"] = function()
 		require("lspconfig").eslint.setup({
 			on_attach = function(_, bufnr)
