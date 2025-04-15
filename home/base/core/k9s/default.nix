@@ -1,4 +1,7 @@
 {pkgs, ...}: let
+  shellAliases = {
+    "9" = "k9s";
+  };
   k9sSrc = pkgs.fetchFromGitHub {
     owner = "derailed";
     repo = "k9s";
@@ -7,6 +10,9 @@
     hash = "sha256-0S6FomP1WVqYl5nP0FcaElgghMcZmE0V8iLhghERF6A=";
   };
 in {
+  home.shellAliases = shellAliases;
+  programs.zsh.shellAliases = shellAliases;
+
   programs.k9s = {
     enable = true;
     aliases = {

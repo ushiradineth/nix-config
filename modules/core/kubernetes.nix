@@ -1,6 +1,7 @@
 {pkgs, ...}: {
   programs.zsh.shellInit = ''
     alias k="kubectl"
+    alias x="kubectx"
   '';
 
   environment.systemPackages = with pkgs; [
