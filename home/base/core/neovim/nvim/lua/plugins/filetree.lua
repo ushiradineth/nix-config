@@ -1,5 +1,6 @@
 return {
-	{ -- DIRECTORY EDITOR
+	{
+		-- DIRECTORY EDITOR
 		"stevearc/oil.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		keys = {

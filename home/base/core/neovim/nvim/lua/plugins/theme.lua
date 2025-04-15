@@ -43,8 +43,8 @@ local tokyonight = {
 }
 
 return {
-	-- rosepine, -- ONE OF THE THEMES DEFINED ABOVE
-	{ -- UI TRANSPARENCY
+	{
+		-- UI TRANSPARENCY
 		"xiyaowong/transparent.nvim",
 		config = function()
 			local transparent = require("transparent")
@@ -67,6 +67,7 @@ return {
 		end,
 	},
 	{
+		-- THEME PICKER
 		"lmantw/themify.nvim",
 		lazy = false,
 		priority = 999,

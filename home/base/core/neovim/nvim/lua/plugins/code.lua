@@ -32,7 +32,8 @@ return {
 			vim.treesitter.language.register("markdown", "mdx")
 		end,
 	},
-	{ -- QUICK OPEN `%s//gcI`
+	{
+		-- QUICK OPEN `%s//gcI`
 		"roobert/search-replace.nvim",
 		config = function()
 			vim.api.nvim_set_keymap(
@@ -143,7 +144,8 @@ return {
 			},
 		},
 	},
-	{ -- AI CODE COMPLETION
+	{
+		-- AI CODE COMPLETION
 		"supermaven-inc/supermaven-nvim",
 		config = function()
 			require("supermaven-nvim").setup({
@@ -154,14 +156,15 @@ return {
 	-- { -- COPILOT
 	-- 	"github/copilot.vim",
 	-- },
-	{ -- TIME TRACKING
+	{
+		-- TIME TRACKING
 		"wakatime/vim-wakatime",
 		lazy = false,
 	},
-	{ -- Markdown Preview
+	{
+		-- Markdown Preview
 		"OXY2DEV/markview.nvim",
-		lazy = false, -- Recommended
-		-- ft = "markdown" -- If you decide to lazy-load anyway
+		lazy = false,
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter",
 			"nvim-tree/nvim-web-devicons",

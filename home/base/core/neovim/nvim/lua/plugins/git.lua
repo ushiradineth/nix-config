@@ -10,7 +10,8 @@ toggle_diff = function(cmd)
 end
 
 return {
-	{ -- GIT ICONS
+	{
+		-- GIT ICONS
 		"lewis6991/gitsigns.nvim",
 		config = function()
 			require("gitsigns").setup({
@@ -25,7 +26,8 @@ return {
 			)
 		end,
 	},
-	{ -- GIT DIFF VIEW
+	{
+		-- GIT DIFF VIEW
 		"sindrets/diffview.nvim",
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",

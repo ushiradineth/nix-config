@@ -1,4 +1,5 @@
-return { -- START SCREEN
+return {
+	-- START SCREEN
 	"goolord/alpha-nvim",
 	dependencies = {
 		"nvim-tree/nvim-web-devicons",

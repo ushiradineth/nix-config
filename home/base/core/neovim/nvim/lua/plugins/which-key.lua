@@ -1,4 +1,5 @@
-return { -- SHORTCUT DISPLAY
+return {
+	-- SHORTCUT DISPLAY
 	"folke/which-key.nvim",
 	event = "VeryLazy",
 	dependencies = {
