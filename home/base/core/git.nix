@@ -1,6 +1,8 @@
 {myvars, ...}: let
   shellAliases = {
     gc = "git checkout";
+    gcm = "git commit -m";
+    gl = "git log --oneline --graph --decorate --all";
     lg = "lazygit";
     l = "lazygit";
   };
@@ -29,7 +31,8 @@ in {
       extraConfig = {
         init.defaultBranch = "main";
         push.autoSetupRemote = true;
-        pull.rebase = true;
+        pull.rebase = false;
+        merge.ff = false;
       };
 
       delta = {
@@ -40,13 +43,6 @@ in {
           line-numbers = true;
           true-color = "always";
         };
-      };
-
-      aliases = {
-        co = "checkout";
-        cm = "commit -m";
-        update = "submodule update --init --recursive";
-        foreach = "submodule foreach";
       };
     };
 
