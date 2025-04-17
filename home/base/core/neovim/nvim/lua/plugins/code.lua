@@ -137,7 +137,7 @@ return {
 			vim.keymap.set(
 				"n",
 				"<Leader>tm",
-				":Markview toggleAll<CR>",
+				":Markview Toggle<CR>",
 				{ noremap = true, silent = true, desc = "Toggle Markdown Preview" }
 			)
 		end,
