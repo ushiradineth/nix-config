@@ -3,6 +3,7 @@
   envExtra = ''
     export PATH="${path}"
     export EDITOR="nvim"
+    export SHELL="${pkgs.zsh}/bin/zsh"
   '';
   initExtra =
     if pkgs.stdenv.isDarwin
