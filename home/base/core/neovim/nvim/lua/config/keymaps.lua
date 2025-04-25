@@ -31,3 +31,7 @@ vim.keymap.set(
 	[[:s/\v(\l)(\u)/\1_\l\2/g<CR>:s/\v(^\l)/\L\1/g<CR>]],
 	{ desc = "camelCase to snake_case" }
 )
+
+vim.keymap.set("n", "<leader>dc", function()
+	vim.diagnostic.open_float(nil, { focusable = false })
+end, { noremap = true, silent = true, desc = "Current Line Diagnostics" })

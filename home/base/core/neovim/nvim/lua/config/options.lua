@@ -17,7 +17,6 @@ vim.cmd("set fillchars+=vert:▕") -- Use a single vertical bar for vertical spl
 vim.cmd("set nohlsearch") -- Disable search highlight
 vim.cmd("set signcolumn=yes") -- Prevents the UI from shifting when diagnostics or git signs appear.
 vim.cmd("cnoreabbrev w silent! write") -- :w is always silent
-vim.cmd("autocmd CursorHold * lua vim.diagnostic.open_float(nil, { focusable = false })") -- Show inline diagnostics when hovering the cursor over something.
 
 vim.api.nvim_set_option("clipboard", "unnamedplus") -- Use the system clipboard for all operations
 vim.api.nvim_set_option("updatetime", 300) -- Makes cursor-hover actions (like diagnostics popups) respond faster.
