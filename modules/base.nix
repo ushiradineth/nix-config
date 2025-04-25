@@ -11,6 +11,7 @@
     neovim
     git
     tldr # tldr for manual pages
+    clang # C/C++ compiler
     gnumake # Makefile
     just # make alternative (Justfile)
     ripgrep # grep alternative

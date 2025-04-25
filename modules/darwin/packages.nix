@@ -1,4 +1,9 @@
 {pkgs, ...}: {
+  environment.variables = {
+    RUSTFLAGS = "-L  ${pkgs.libiconv}/lib";
+    CC = "clang";
+    CXX = "clang++";
+  };
   environment.systemPackages = with pkgs; [
     # Utilities
     pgcli # postgres cli
@@ -16,6 +21,7 @@
     nodejs_22
     rustup
     libiconv
+    clang
     eslint_d
     nixd
 
