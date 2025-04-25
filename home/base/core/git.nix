@@ -32,7 +32,7 @@ in {
         init.defaultBranch = "main";
         push.autoSetupRemote = true;
         pull.rebase = false;
-        merge.ff = false;
+        merge.ff = true;
       };
 
       delta = {
