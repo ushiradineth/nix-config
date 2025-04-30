@@ -14,5 +14,6 @@
     argocd
     kube-score
     kube-linter
+    trivy
   ];
 }
