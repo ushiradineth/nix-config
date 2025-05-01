@@ -35,6 +35,9 @@ default-root-container-orientation = 'auto'
 # Fallback value (if you omit the key): on-focused-monitor-changed = []
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
+# Move mouse to the center of the focused window when focused window changes
+on-focus-changed = 'move-mouse window-lazy-center'
+
 # You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
 # Useful if you don't use this macOS feature, but accidentally hit cmd-h or cmd-alt-h key
 # Also see: https://nikitabobko.github.io/AeroSpace/goodies#disable-hide-app
@@ -56,10 +59,10 @@ automatically-unhide-macos-hidden-apps = true
 [gaps]
     inner.horizontal = 5
     inner.vertical =   5
-    outer.left =       5
-    outer.bottom =     5
-    outer.top =        5
-    outer.right =      5
+    outer.left =       0
+    outer.bottom =     0
+    outer.top =        0
+    outer.right =      0
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -207,3 +210,28 @@ automatically-unhide-macos-hidden-apps = true
     # down = 'volume down'
     # up = 'volume up'
     # shift-down = ['volume set 0', 'mode main']
+
+# Move Arc to workspace 1
+[[on-window-detected]]
+if.app-id = 'company.thebrowser.Browser'
+run = 'move-node-to-workspace 1'
+
+# Move WezTerm to workspace 2
+[[on-window-detected]]
+if.app-id = 'com.github.wez.wezterm'
+run = 'move-node-to-workspace 2'
+
+# Move Notes to workspace 3
+[[on-window-detected]]
+if.app-id = 'com.apple.Notes'
+run = 'move-node-to-workspace 3'
+
+# Move Notion to workspace 4
+[[on-window-detected]]
+if.app-id = 'notion.id'
+run = 'move-node-to-workspace 4'
+
+# Move Notion Calendar to workspace 4
+[[on-window-detected]]
+if.app-id = 'com.cron.electron'
+run = 'move-node-to-workspace 4'
