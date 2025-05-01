@@ -1,7 +1,7 @@
 {...}: {
   homebrew = {
     # Disabled for fast deployments, enable when needed (updates and un/installations)
-    enable = true;
+    enable = false;
     brews = [
       "posting"
     ];
