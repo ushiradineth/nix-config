@@ -7,9 +7,11 @@
     ];
     taps = [
       "homebrew/services"
+      "nikitabobko/tap"
     ];
     casks = [
       "arc"
+      "aerospace"
       "bitwarden"
       "discord"
       "hiddenbar" # hide menu bar items
