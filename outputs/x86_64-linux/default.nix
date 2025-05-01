@@ -16,7 +16,6 @@
   # Merge all the machine's data into a single attribute set.
   outputs = {
     nixosConfigurations = lib.attrsets.mergeAttrsList (map (it: it.nixosConfigurations or {}) dataWithoutPaths);
-    packages = lib.attrsets.mergeAttrsList (map (it: it.packages or {}) dataWithoutPaths);
   };
 in
   outputs

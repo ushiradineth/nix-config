@@ -1,5 +1,4 @@
 {
-  self,
   nixpkgs,
   pre-commit-hooks,
   nix-homebrew,
@@ -18,7 +17,6 @@
 
       pkgs = import inputs.nixpkgs {
         inherit system;
-        # To use chrome, we need to allow the installation of non-free software
         config.allowUnfree = true;
       };
     };

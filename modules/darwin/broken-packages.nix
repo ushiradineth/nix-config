@@ -1,6 +1,4 @@
-# ===================================================================
 # Remove packages that are not well supported for the Darwin platform
-# ===================================================================
 {lib, ...}: let
   brokenPackages = [
     # No broken packages yet :)
