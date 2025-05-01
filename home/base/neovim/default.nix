@@ -14,7 +14,7 @@
     v = "nvim";
   };
 
-  configPath = "${config.home.homeDirectory}/nix-config/home/base/core/neovim/nvim";
+  configPath = "${config.home.homeDirectory}/nix-config/home/base/neovim/nvim";
 in {
   home.shellAliases = shellAliases;
   programs.zsh.shellAliases = shellAliases;

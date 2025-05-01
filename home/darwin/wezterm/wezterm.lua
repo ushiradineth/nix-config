@@ -1,4 +1,4 @@
-local wezterm = require("wezterm")
+local wezterm = require("home.darwin.wezterm.wezterm")
 local sessionizer = wezterm.plugin.require("https://github.com/mikkasendke/sessionizer.wezterm")
 local config = wezterm.config_builder()
 local act = wezterm.action
