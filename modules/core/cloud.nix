@@ -1,14 +1,11 @@
-{pkgs, ...}: let
-  shellAliases = {
-    tf = "terraform";
-    tfw = "terraform workspace";
-    tfv = "terraform validate && terraform fmt --recursive && tflint";
-  };
-in {
-  home.shellAliases = shellAliases;
-  programs.zsh.shellAliases = shellAliases;
+{pkgs, ...}: {
+  programs.zsh.shellInit = ''
+    alias tf="terraform";
+    alias tfw="terraform workspace";
+    alias tfv="terraform validate && terraform fmt --recursive && tflint";
+  '';
 
-  home.packages = with pkgs; [
+  environment.systemPackages = with pkgs; [
     awscli2
     eksctl
     (google-cloud-sdk.withExtraComponents [
