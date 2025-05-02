@@ -2,26 +2,22 @@ return {
 	"nvim-lualine/lualine.nvim",
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 	config = function()
-		-- Eviline config for lualine
-		-- Author: shadmansaleh
-		-- Credit: glepnir
 		local lualine = require("lualine")
 
-    -- Color table for highlights
-    -- stylua: ignore
-    local colors = {
-      bg       = '#202328',
-      fg       = '#bbc2cf',
-      yellow   = '#ECBE7B',
-      cyan     = '#008080',
-      darkblue = '#081633',
-      green    = '#98be65',
-      orange   = '#FF8800',
-      violet   = '#a9a1e1',
-      magenta  = '#c678dd',
-      blue     = '#51afef',
-      red      = '#ec5f67',
-    }
+		-- Color table for highlights
+		local colors = {
+			bg = "#202328",
+			fg = "#bbc2cf",
+			yellow = "#ECBE7B",
+			cyan = "#008080",
+			darkblue = "#081633",
+			green = "#98be65",
+			orange = "#FF8800",
+			violet = "#a9a1e1",
+			magenta = "#c678dd",
+			blue = "#51afef",
+			red = "#ec5f67",
+		}
 
 		local conditions = {
 			buffer_not_empty = function()
@@ -76,39 +72,7 @@ return {
 			table.insert(config.sections.lualine_x, component)
 		end
 
-		ins_left({
-			-- mode component
-			function()
-				return ""
-			end,
-			color = function()
-				-- auto change color according to neovims mode
-				local mode_color = {
-					n = colors.red,
-					i = colors.green,
-					v = colors.blue,
-					[""] = colors.blue,
-					V = colors.blue,
-					c = colors.magenta,
-					no = colors.red,
-					s = colors.orange,
-					S = colors.orange,
-					[""] = colors.orange,
-					ic = colors.yellow,
-					R = colors.violet,
-					Rv = colors.violet,
-					cv = colors.red,
-					ce = colors.red,
-					r = colors.cyan,
-					rm = colors.cyan,
-					["r?"] = colors.cyan,
-					["!"] = colors.red,
-					t = colors.red,
-				}
-				return { fg = mode_color[vim.fn.mode()] }
-			end,
-			padding = { left = 1, right = 1 },
-		})
+		ins_left({ "mode" })
 
 		ins_left({
 			"filename",
@@ -128,6 +92,16 @@ return {
 				color_warn = { fg = colors.yellow },
 				color_info = { fg = colors.cyan },
 			},
+		})
+
+		ins_left({
+			function()
+				local reg = vim.fn.reg_recording()
+				if reg ~= "" then
+					return "Recording @" .. reg
+				end
+				return ""
+			end,
 		})
 
 		-- Insert mid section. You can make any number of sections in neovim :)
