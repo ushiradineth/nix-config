@@ -127,6 +127,9 @@ return {
 			"lsp_status",
 			ignore_lsp = { "diagnosticls", "typos_lsp" },
 			icon = "",
+			symbols = {
+				done = "",
+			},
 		})
 
 		ins_right({
