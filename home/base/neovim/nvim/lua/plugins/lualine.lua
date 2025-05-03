@@ -40,11 +40,6 @@ return {
 			hide_in_width = function()
 				return vim.fn.winwidth(0) > 80
 			end,
-			check_git_workspace = function()
-				local filepath = vim.fn.expand("%:p:h")
-				local gitdir = vim.fn.finddir(".git", filepath .. ";")
-				return gitdir and #gitdir > 0 and #gitdir < #filepath
-			end,
 		}
 
 		-- Config
@@ -86,7 +81,10 @@ return {
 			table.insert(config.sections.lualine_x, component)
 		end
 
-		ins_left({ "mode" })
+		ins_left({
+			"mode",
+			cond = conditions.buffer_not_empty,
+		})
 
 		ins_left({
 			"filename",
@@ -99,6 +97,7 @@ return {
 
 		ins_left({
 			"diagnostics",
+			cond = conditions.buffer_not_empty,
 			sources = { "nvim_diagnostic" },
 			symbols = { error = " ", warn = " ", info = " " },
 			diagnostics_color = {
@@ -128,13 +127,13 @@ return {
 
 		ins_right({
 			"diff",
+			cond = conditions.hide_in_width,
 			symbols = { added = " ", modified = "󰝤 ", removed = " " },
 			diff_color = {
 				added = { fg = colors.green },
 				modified = { fg = colors.orange },
 				removed = { fg = colors.red },
 			},
-			cond = conditions.hide_in_width,
 		})
 
 		ins_right({
