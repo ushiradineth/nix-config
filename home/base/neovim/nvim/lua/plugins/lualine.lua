@@ -1,3 +1,17 @@
+--- Hide Lualine when in command mode
+vim.api.nvim_create_autocmd("CmdlineEnter", {
+	callback = function()
+		require("lualine").hide()
+	end,
+})
+
+--- Unhide Lualine when out of command mode
+vim.api.nvim_create_autocmd("CmdlineLeave", {
+	callback = function()
+		require("lualine").hide({ unhide = true })
+	end,
+})
+
 return {
 	"nvim-lualine/lualine.nvim",
 	dependencies = { "nvim-tree/nvim-web-devicons" },
