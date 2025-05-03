@@ -69,6 +69,7 @@ return {
 				lualine_c = {},
 				lualine_x = {},
 			},
+			extensions = { "oil", "mason", "lazy", "trouble" },
 		}
 
 		-- Inserts a component in lualine_c at left section
@@ -93,8 +94,6 @@ return {
 			path = 1,
 		})
 
-		ins_left({ "location" })
-
 		ins_left({
 			"diagnostics",
 			cond = conditions.buffer_not_empty,
@@ -117,12 +116,17 @@ return {
 			end,
 		})
 
-		-- Insert mid section. You can make any number of sections in neovim :)
-		-- for lualine it's any number greater then 2
+		-- Gap between left and right sections
 		ins_left({
 			function()
 				return "%="
 			end,
+		})
+
+		ins_right({
+			"lsp_status",
+			ignore_lsp = { "diagnosticls", "typos_lsp" },
+			icon = "",
 		})
 
 		ins_right({
@@ -138,8 +142,8 @@ return {
 
 		ins_right({
 			"branch",
-			icon = "",
 			color = { fg = colors.violet, gui = "bold" },
+			icon = "",
 		})
 
 		lualine.setup(config)
