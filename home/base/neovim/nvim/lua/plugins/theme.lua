@@ -76,7 +76,7 @@ return {
 				catppuccin,
 				rosepine,
 				tokyonight,
-				"Yazeed1s/minimal.nvim",
+				"kdheepak/monochrome.nvim",
 				"default",
 			})
 			vim.keymap.set(
