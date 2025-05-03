@@ -24,12 +24,12 @@ config.font_rules = {
 
 -- Window
 config.window_padding = {
-	left = 10,
-	right = 10,
-	top = 10,
-	bottom = 10,
+	left = 0,
+	right = 0,
+	top = 0,
+	bottom = 0,
 }
-config.window_background_opacity = 0.85
+config.window_background_opacity = 0.75
 config.window_decorations = "RESIZE"
 config.macos_window_background_blur = 100
 config.hide_tab_bar_if_only_one_tab = true
@@ -123,12 +123,12 @@ config.keys = {
 
 	-- Sessionizer
 	{
-		key = "f",
+		key = "s",
 		mods = "LEADER",
 		action = sessionizer.show,
 	},
 	{
-		key = "F",
+		key = "f",
 		mods = "LEADER",
 		action = sessionizer.switch_to_most_recent,
 	},
