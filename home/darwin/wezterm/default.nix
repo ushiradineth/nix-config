@@ -1,8 +1,3 @@
-{...}: {
-  # Unused on darwin, but required for config colocation
-  programs.wezterm = {
-    enable = true;
-    enableZshIntegration = true;
-    extraConfig = builtins.readFile ./wezterm.lua;
-  };
+{config, ...}: {
+  xdg.configFile."wezterm/wezterm.lua".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nix-config/home/darwin/wezterm/wezterm.lua";
 }
