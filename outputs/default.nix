@@ -19,6 +19,11 @@
         inherit system;
         config.allowUnfree = true;
       };
+
+      pkgs-unstable = import inputs.nixpkgs-unstable {
+        inherit system;
+        config.allowUnfree = true;
+      };
     };
 
   # This is the args for all the haumea modules in this folder.
