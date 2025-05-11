@@ -44,7 +44,7 @@ sudo softwareupdate --install-rosetta --agree-to-license
 ```bash
 cd ~/nix-config
 nix-shell -p just
-just build-shu
+just build
 ```
 
 ## Installation on Linux (shulab)
@@ -69,7 +69,7 @@ cd nix-config
 ```bash
 cd ~/nix-config
 nix-shell -p just
-just build-shulab
+just build
 ```
 
 ## Configuration Structure
@@ -78,15 +78,15 @@ just build-shulab
 › tree
 .
 ├── flake.nix # Main entry point
-├── home # home-manager configurations
+├── home # Home-manager configurations
 │   ├── base
 │   ├── darwin
 │   ├── linux
-├── hosts  # hosts configurations
+├── hosts  # Hosts configurations
 │   ├── shu
 │   └── shulab
 ├── Justfile
-├── lib # helper functions
+├── lib # Helper functions
 ├── modules # Modules for extending configurations
 │   ├── darwin
 │   ├── linux

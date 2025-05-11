@@ -142,7 +142,7 @@ nix-shell -p just git neovim
 # Copy the fileSystems and swapDevices from the hardware-configuration.nix
 cat /etc/nixos/hardware-configuration.nix
 
-# !IMPORTANT: Add it to the hosts/shulab/hardware-configuration.nix and push it to the repo
+# !IMPORTANT: Add it to the hosts/shulab/hardware-configuration.nix file and push it to the repo
 
 # Install the flake
 git clone https://github.com/ushiradineth/nix-config.git
