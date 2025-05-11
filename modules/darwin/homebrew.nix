@@ -16,7 +16,6 @@
       "discord"
       "hiddenbar" # hide menu bar items
       "intellij-idea-ce" # java ide
-      "docker"
       "whatsapp"
       "oversight" # notify when camera is on
       "notion"
@@ -32,6 +31,7 @@
       "cloudflare-warp"
       "burp-suite"
       "shottr"
+      "orbstack"
       # "microsoft-azure-storage-explorer" # Not in use
     ];
     masApps = {
