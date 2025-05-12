@@ -7,6 +7,14 @@ return {
 			{ "-", "<cmd>Oil<CR>", desc = "Explorer" },
 		},
 		opts = {
+			default_file_explorer = true,
+			columns = {
+				"icon",
+				-- "permissions",
+				-- "size",
+				-- "mtime",
+			},
+			delete_to_trash = true,
 			view_options = {
 				show_hidden = true,
 			},
