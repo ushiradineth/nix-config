@@ -29,6 +29,5 @@
 
   systemArgs = modules // args;
 in {
-  # macOS's configuration
   darwinConfigurations.${hostname} = mylib.macosSystem systemArgs;
 }

@@ -9,12 +9,9 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # Auto upgrade nix package and the daemon service.
-  services.nix-daemon.enable = true;
-
   nix.settings.auto-optimise-store = false;
 
   nix.channel.enable = false;
 
-  system.stateVersion = 5;
+  system.stateVersion = "24.11";
 }
