@@ -32,6 +32,7 @@
       "burp-suite"
       "shottr"
       "orbstack"
+      "lm-studio"
       # "microsoft-azure-storage-explorer" # Not in use
     ];
     masApps = {
