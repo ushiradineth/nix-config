@@ -16,19 +16,18 @@
     sshpass # ssh password manager (needed for ansible)
     go
     gcc
+    clang
     jdk17
     maven
     nodejs_22
     rustup
     libiconv
-    clang
     eslint_d
     nixd
 
     # Version managers
     nodenv
     pyenv
-    tenv
 
     # Package managers
     pnpm

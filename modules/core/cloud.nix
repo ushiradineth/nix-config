@@ -16,10 +16,12 @@
       azure-cli.extensions.ssh
     ])
     ngrok
+    ansible
     terraform
     terraformer # Generate terraform configs from existing cloud resources
-    tflint
-    infracost
-    ansible
+    tflint # Terraform linter
+    tfsec # Static analysis of terraform code
+    tenv # Terraform version manager
+    infracost # Terraform cost estimation
   ];
 }

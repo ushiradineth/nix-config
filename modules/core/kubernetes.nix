@@ -6,14 +6,13 @@
 
   environment.systemPackages = with pkgs; [
     kubectl
-    kubectx
-    kubernetes-helm
-    helmfile
+    kubectx # Kubernetes context manager
+    kubernetes-helm # Helm
+    helmfile # Declarative helm deployments
     minikube
     istioctl
     argocd
-    kube-score
-    kube-linter
-    trivy
+    kube-score # Kubernetes static analysis
+    kube-linter # Kubernetes YAML and Helm linter / Static analysis
   ];
 }

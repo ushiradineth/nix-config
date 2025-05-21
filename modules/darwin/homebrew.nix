@@ -1,7 +1,7 @@
 {...}: {
   homebrew = {
     # Disabled for fast deployments, enable when needed (updates and un/installations)
-    enable = false;
+    enable = true;
     brews = [
       "posting"
     ];
@@ -11,11 +11,10 @@
     ];
     casks = [
       "arc"
-      "aerospace"
+      "aerospace" # tiling window manager
       "bitwarden"
       "discord"
       "hiddenbar" # hide menu bar items
-      "intellij-idea-ce" # java ide
       "whatsapp"
       "oversight" # notify when camera is on
       "notion"
@@ -30,13 +29,11 @@
       "balenaetcher"
       "cloudflare-warp"
       "burp-suite"
-      "shottr"
+      "shottr" # screenshot tool
       "orbstack"
       "lm-studio"
-      # "microsoft-azure-storage-explorer" # Not in use
     ];
     masApps = {
-      "Horo" = 1437226581;
       "Davinci Resolve" = 571213070;
     };
     onActivation = {

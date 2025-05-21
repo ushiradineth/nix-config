@@ -7,33 +7,33 @@
   environment.variables.EDITOR = "nvim --clean";
 
   environment.systemPackages = with pkgs; [
-    # Base
     neovim
     git
     tldr # tldr for manual pages
     clang # C/C++ compiler
     gnumake # Makefile
-    just # make alternative (Justfile)
+    just # Justfile
     ripgrep # grep alternative
     fastfetch # neofetch alternative
-    lsof # list open files
     btop # process monitor
 
     # Networking tools
-    curlie # curl wrapper with nicer output
     wget # download files
+    curlie # curl wrapper with a readable output
     dnsutils # `dig` + `nslookup`
-    socat # replacement of openbsd-netcat
-    nmap # a utility for network discovery and security auditing
-    speedtest-cli # command-line interface for testing internet bandwidth using speedtest.net
+    speedtest-cli # internet bandwidth using speedtest.net
+    nmap # Utility for network discovery and security auditing
     tcpdump # command-line packet analyzer
-    inetutils # inetutils suite of basic networking utilities (hostname, ping, telnet, etc)
+    inetutils # (hostname, ping, telnet, traceroute, whois, ifconfig, etc)
+    mtr # functionality of traceroute and ping combined
 
     # Miscallaneous
     findutils # find, xargs, locate
     which # locate binary
     tree # directory tree
     rsync # file sync
+    dust # rust implementation of du
+    ncdu_2 # disk usage analyzer
   ];
 
   programs.zsh = {
@@ -43,6 +43,10 @@
       alias c="clear"
       alias grep="rg"
       alias neofetch="fastfetch"
+      alias curl="curlie"
+      alias top="btop"
+      alias htop="btop"
+      alias n="nvim"
     '';
   };
 
