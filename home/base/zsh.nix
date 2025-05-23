@@ -8,6 +8,8 @@
   initContent =
     if pkgs.stdenv.isDarwin
     then ''
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+
       zstyle ':autocomplete:*' default-context history-incremental-search-backward
       zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
       zstyle ':completion:*' menu no
@@ -51,6 +53,9 @@ in {
         "docker"
         "docker-compose"
         "golang"
+        "gcloud"
+        "rust"
+        "helm"
       ];
     };
 
