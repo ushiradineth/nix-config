@@ -131,6 +131,26 @@ run = 'move-node-to-workspace 4'
 if.app-id = 'com.cron.electron'
 run = 'move-node-to-workspace 4'
 
+# Move Figma to workspace 5
+[[on-window-detected]]
+if.app-id = 'com.figma.Desktop'
+run = 'move-node-to-workspace 5'
+
+# Move ChatGPT to workspace 6
+[[on-window-detected]]
+if.app-id = 'com.openai.chat'
+run = 'move-node-to-workspace 6'
+
+# Move Claude to workspace 6
+[[on-window-detected]]
+if.app-id = 'com.anthropic.claudefordesktop'
+run = 'move-node-to-workspace 6'
+
+# Move LM Studio to workspace 6
+[[on-window-detected]]
+if.app-id = 'ai.elementlabs.lmstudio'
+run = 'move-node-to-workspace 6'
+
 # Open Finder in floating mode
 [[on-window-detected]]
 if.app-id = 'com.apple.finder'
@@ -139,4 +159,19 @@ run = 'layout floating'
 # Open Bitwarden in floating mode
 [[on-window-detected]]
 if.app-id = 'com.bitwarden.desktop'
+run = 'layout floating'
+
+# Open Activity Monitor in floating mode
+[[on-window-detected]]
+if.app-id = 'com.apple.ActivityMonitor'
+run = 'layout floating'
+
+# Open OrbStack in floating mode
+[[on-window-detected]]
+if.app-id = 'dev.kdrag0n.MacVirt'
+run = 'layout floating'
+
+# Open Discord in floating mode
+[[on-window-detected]]
+if.app-id = 'com.hnc.Discord'
 run = 'layout floating'
