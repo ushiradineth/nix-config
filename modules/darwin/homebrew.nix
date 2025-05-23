@@ -11,27 +11,29 @@
     ];
     casks = [
       "arc"
-      "aerospace" # tiling window manager
+      "aerospace" # Tiling window manager
       "bitwarden"
       "discord"
-      "hiddenbar" # hide menu bar items
+      "hiddenbar" # Hide menu bar items
       "whatsapp"
-      "oversight" # notify when camera is on
+      "oversight" # Notify when camera is on
       "notion"
       "notion-calendar"
       "figma"
       "raycast"
-      "monitorcontrol" # brightness control for external monitors
+      "monitorcontrol" # Brightness control for external monitors
       "wezterm"
-      "middleclick" # middleclick or three finger click control
+      "middleclick" # Middle click or three finger click control
       "google-drive"
       "obsidian"
       "balenaetcher"
       "cloudflare-warp"
       "burp-suite"
-      "shottr" # screenshot tool
+      "shottr" # Screenshot tool
       "orbstack"
-      "lm-studio"
+      "lm-studio" # Model runner
+      "claude" # Claude Desktop App for MCP
+      "chatgpt" # ChatGPT Desktop App
     ];
     masApps = {
       "Davinci Resolve" = 571213070;
