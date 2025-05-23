@@ -5,7 +5,7 @@
     export EDITOR="nvim"
     export SHELL="${pkgs.zsh}/bin/zsh"
   '';
-  initExtra =
+  initContent =
     if pkgs.stdenv.isDarwin
     then ''
       zstyle ':autocomplete:*' default-context history-incremental-search-backward
@@ -15,7 +15,6 @@
       zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
     ''
     else ''
-
       zstyle ':autocomplete:*' default-context history-incremental-search-backward
       zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
       zstyle ':completion:*' menu no
@@ -55,6 +54,6 @@ in {
       ];
     };
 
-    inherit envExtra initExtra;
+    inherit envExtra initContent;
   };
 }

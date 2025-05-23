@@ -1,4 +1,6 @@
 {lib, ...}: {
+  nix.enable = true;
+
   # Scheduled weekly garbage collection
   nix.gc = {
     automatic = lib.mkDefault true;
@@ -6,12 +8,9 @@
     options = lib.mkDefault "--delete-older-than 7d";
   };
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
   nix.settings.auto-optimise-store = false;
 
   nix.channel.enable = false;
 
-  system.stateVersion = "24.11";
+  system.stateVersion = "25.05";
 }

@@ -1,8 +1,4 @@
-{
-  pkgs,
-  pkgs-unstable,
-  ...
-}: let
+{pkgs, ...}: let
   shellAliases = {
     "9" = "k9s";
   };
@@ -18,7 +14,6 @@ in {
   programs.zsh.shellAliases = shellAliases;
 
   programs.k9s = {
-    package = pkgs-unstable.k9s;
     enable = true;
     aliases = {
       aliases = {

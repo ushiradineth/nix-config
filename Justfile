@@ -17,7 +17,7 @@ build:
   nix build .#darwinConfigurations.$(hostname).system \
     --extra-experimental-features 'nix-command flakes'
 
-  ./result/sw/bin/darwin-rebuild switch --flake .#$(hostname)
+  sudo -E ./result/sw/bin/darwin-rebuild switch --flake .#$(hostname)
 
 # Build in debug mode.
 [macos]
@@ -26,7 +26,7 @@ debug:
   nix build .#darwinConfigurations.$(hostname).system --show-trace --verbose \
     --extra-experimental-features 'nix-command flakes'
 
-  ./result/sw/bin/darwin-rebuild switch --flake .#$(hostname) --show-trace --verbose
+  sudo -E ./result/sw/bin/darwin-rebuild switch --flake .#$(hostname) --show-trace --verbose
 
 ############################################################################
 #
@@ -85,4 +85,4 @@ gc:
 # Format the nix files in this repo.
 [group('nix')]
 fmt:
-  nix fmt
+  nix fmt .

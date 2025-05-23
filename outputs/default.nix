@@ -8,8 +8,7 @@
   mylib = import ../lib {inherit lib;};
   myvars = import ../vars {inherit lib;};
 
-  # Add my custom lib, vars, nixpkgs instance, and all the inputs to specialArgs,
-  # so that I can use them in all my nixos/home-manager/darwin modules.
+  # Add custom lib, vars, nixpkgs instance, and all the inputs to specialArgs,
   genSpecialArgs = system:
     inputs
     // {
@@ -49,12 +48,10 @@ in {
   debugAttrs = {inherit nixosSystems darwinSystems allSystems allSystemNames;};
 
   # NixOS Hosts
-  nixosConfigurations =
-    lib.attrsets.mergeAttrsList (map (it: it.nixosConfigurations or {}) nixosSystemValues);
+  nixosConfigurations = lib.attrsets.mergeAttrsList (map (it: it.nixosConfigurations or {}) nixosSystemValues);
 
   # macOS Hosts
-  darwinConfigurations =
-    lib.attrsets.mergeAttrsList (map (it: it.darwinConfigurations or {}) darwinSystemValues);
+  darwinConfigurations = lib.attrsets.mergeAttrsList (map (it: it.darwinConfigurations or {}) darwinSystemValues);
 
   # Packages
   packages = forAllSystems (
