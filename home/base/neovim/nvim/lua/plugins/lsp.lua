@@ -150,9 +150,11 @@ return {
 					"yamlls",
 				},
 
+				automatic_enable = true,
+
 				require("lspconfig").nixd.setup({}),
 
-				require("mason-lspconfig").setup_handlers({
+				handlers = {
 					function(server_name)
 						if custom_servers[server_name] then
 							custom_servers[server_name]()
@@ -160,7 +162,7 @@ return {
 							generic_setup(server_name)
 						end
 					end,
-				}),
+				},
 			})
 		end,
 	},
