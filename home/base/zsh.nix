@@ -1,5 +1,5 @@
 {pkgs, ...}: let
-  path = "$PATH:$HOME/.local/bin:$HOME/go/bin:$HOME/Library/pnpm";
+  path = "$PATH:$HOME/.local/bin:$HOME/go/bin:$HOME/Library/pnpm:$HOME/.cargo/bin";
   envExtra = ''
     export PATH="${path}"
     export EDITOR="nvim"
