@@ -69,10 +69,13 @@ local custom_servers = {
 			end,
 			settings = {
 				yaml = {
+					schemaStore = {
+						enable = true,
+						url = "https://www.schemastore.org/api/json/catalog.json",
+					},
 					schemas = {
-						kubernetes = "*.yaml",
+						["https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/all.json"] = "*.{yml,yaml}",
 						["http://json.schemastore.org/ansible-stable-2.9"] = "roles/tasks/**/*.{yml,yaml}",
-						["http://json.schemastore.org/circleciconfig"] = ".circleci/**/*.{yml,yaml}",
 						["http://json.schemastore.org/github-workflow"] = ".github/workflows/*",
 						["http://json.schemastore.org/github-action"] = ".github/action.{yml,yaml}",
 						["http://json.schemastore.org/prettierrc"] = ".prettierrc.{yml,yaml}",
@@ -87,6 +90,10 @@ local custom_servers = {
 						["https://api.bitbucket.org/schemas/pipelines-configuration"] = "*bitbucket-pipelines*.{yml,yaml}",
 						["values.schema.json"] = "values.yaml",
 					},
+					format = { enabled = true },
+					validate = true,
+					completion = true,
+					hover = true,
 				},
 			},
 		})

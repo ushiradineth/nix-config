@@ -24,6 +24,7 @@
     libiconv
     eslint_d
     nixd
+    php
 
     # Version managers
     nodenv
