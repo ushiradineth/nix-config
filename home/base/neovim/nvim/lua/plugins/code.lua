@@ -134,6 +134,11 @@ return {
 			"nvim-tree/nvim-web-devicons",
 		},
 		config = function()
+			require("markview").setup({
+				preview = {
+					enable = false, -- Disabled by default
+				},
+			})
 			vim.keymap.set(
 				"n",
 				"<Leader>tm",
