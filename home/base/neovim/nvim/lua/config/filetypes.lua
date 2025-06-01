@@ -1,11 +1,11 @@
 vim.filetype.add({
-	extension = {
-		mdx = "mdx",
-	},
+  extension = {
+    mdx = "mdx",
+  },
 })
 
 vim.filetype.add({
-	pattern = {
-		[".*/templates/.*%.yaml"] = "helm",
-	},
+  pattern = {
+    [".*/templates/.*%.yaml"] = "helm",
+  },
 })
