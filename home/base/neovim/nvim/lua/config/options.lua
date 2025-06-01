@@ -20,5 +20,3 @@ vim.cmd("cnoreabbrev w silent! write") -- :w is always silent
 
 vim.api.nvim_set_option("clipboard", "unnamedplus") -- Use the system clipboard for all operations
 vim.api.nvim_set_option("updatetime", 300) -- Makes cursor-hover actions (like diagnostics popups) respond faster.
-
-vim.lsp.set_log_level("error") -- Disable logging

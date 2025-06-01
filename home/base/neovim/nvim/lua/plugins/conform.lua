@@ -1,74 +1,16 @@
 return {
 	{
-		"nvimtools/none-ls.nvim",
-		dependencies = {
-			"nvimtools/none-ls-extras.nvim",
-		},
-		config = function()
-			local null_ls = require("null-ls")
-			null_ls.setup({
-				sources = {
-					require("none-ls.diagnostics.eslint_d").with({
-						diagnostics_format = "[eslint] #{m}\n(#{c})",
-					}),
-				},
-			})
-		end,
-	},
-	{
-		"jay-babu/mason-null-ls.nvim",
-		event = { "BufReadPre", "BufNewFile" },
-		dependencies = {
-			"williamboman/mason.nvim",
-			"nvimtools/none-ls.nvim",
-		},
-		config = function()
-			require("mason-null-ls").setup({
-				ensure_installed = {
-					"prettier",
-					"beautysh",
-					"goimports",
-					"gofmt",
-					"terraform_fmt",
-					"stylua",
-					"markdownlint",
-					"rustfmt",
-					"php-cs-fixer",
-					"bashls",
-					"yamlls",
-					"yamllint",
-					"tfsec",
-					"sqlfluff",
-					"rustywind",
-					"sqlfmt",
-					"hclfmt",
-					"golines",
-					"golangci-lint-langserver",
-					"goimports-reviser",
-					"golangci-lint",
-					"goimports",
-					"gofumpt",
-					"checkmake",
-					"ansible-lint",
-					"autopep8",
-					"jsonlint",
-					"sonarlint-language-server",
-					"yaml-language-server",
-					"trivy",
-				},
-			})
-		end,
-	},
-	{
+    -- FORMATTER
 		"stevearc/conform.nvim",
 		event = { "BufReadPre", "BufNewFile" },
 		opts = {
 			quiet = true,
 			formatters_by_ft = {
-				typescript = { "prettier" },
-				typescriptreact = { "prettier" },
-				javascript = { "prettier" },
-				javascriptreact = { "prettier" },
+				javascript = { "prettier", "eslint_d" },
+				typescript = { "prettier", "eslint_d" },
+				javascriptreact = { "prettier", "eslint_d" },
+				typescriptreact = { "prettier", "eslint_d" },
+        json = { "prettier" },
 				html = { "prettier" },
 				css = { "prettier" },
 				scss = { "prettier" },
