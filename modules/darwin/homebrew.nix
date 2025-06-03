@@ -11,30 +11,40 @@
     ];
     casks = [
       "arc"
+      "figma"
+      "shottr" # Screenshot tool
+      "raycast" # Enhanced Spotlight
       "aerospace" # Tiling window manager
+      "oversight" # Notify when camera or microphone gets active
+      "middleclick" # Middle click or three finger click control
+      "monitorcontrol" # Brightness control for external monitors
       "bitwarden"
-      "discord"
-      "hiddenbar" # Hide menu bar items
+      "balenaetcher" # Burn OS images to USBs
+      "cloudflare-warp" # Cloudflare WARP / Zero Trust VPN
+      "burp-suite" # Web testing tool
+      "wezterm" # Terminal emulator
+      "orbstack" # Drop in replacement for Docker Desktop
       "whatsapp"
-      "oversight" # Notify when camera is on
+      "google-drive" # Google Drive Sync
+
       "notion"
       "notion-mail"
       "notion-calendar"
-      "figma"
-      "raycast"
-      "monitorcontrol" # Brightness control for external monitors
-      "wezterm"
-      "middleclick" # Middle click or three finger click control
-      "google-drive"
-      "obsidian"
-      "balenaetcher"
-      "cloudflare-warp"
-      "burp-suite"
-      "shottr" # Screenshot tool
-      "orbstack"
+
+      # "proton-vpn" Unavailable in the current region
+
+      # Rarely used
+      "discord"
+      "obsidian" # Markdown note taking app
+      "hiddenbar" # Hide menu bar items
+
+      # Temporary / Testing
+      "zen" # Zen Browser
+      "spacedrive" # Virtual Distributed File System
       "lm-studio" # Model runner
       "claude" # Claude Desktop App for MCP
       "chatgpt" # ChatGPT Desktop App
+      "proton-drive"
     ];
     masApps = {
       "Davinci Resolve" = 571213070;

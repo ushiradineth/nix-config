@@ -34,5 +34,7 @@
     pnpm
     yarn
     luarocks
+
+    codex # Terminal based coding agent
   ];
 }
