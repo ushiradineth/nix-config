@@ -18,6 +18,7 @@
       "whatsapp"
       "oversight" # Notify when camera is on
       "notion"
+      "notion-mail"
       "notion-calendar"
       "figma"
       "raycast"

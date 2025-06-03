@@ -131,6 +131,11 @@ run = 'move-node-to-workspace 4'
 if.app-id = 'com.cron.electron'
 run = 'move-node-to-workspace 4'
 
+# Move Notion Mail to workspace 4
+[[on-window-detected]]
+if.app-id = 'notion.mail.id'
+run = 'move-node-to-workspace 4'
+
 # Move Figma to workspace 5
 [[on-window-detected]]
 if.app-id = 'com.figma.Desktop'
