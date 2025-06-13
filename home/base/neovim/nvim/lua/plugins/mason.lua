@@ -27,6 +27,7 @@ return {
           "astro",
           "eslint_d",
           "prettier",
+          "biome",
           "ts_ls",
           "vue_ls",
           "prismals",
