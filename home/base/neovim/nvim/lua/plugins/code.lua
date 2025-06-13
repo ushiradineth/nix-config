@@ -32,6 +32,21 @@ return {
     end,
   },
   {
+    -- SEARCH AND REPLACE
+    "nvim-pack/nvim-spectre",
+    dependencies = {
+      { "nvim-lua/plenary.nvim" },
+    },
+    config = function()
+      vim.api.nvim_set_keymap(
+        "n",
+        "<leader>rs",
+        "<CMD>Spectre<CR>",
+        { noremap = true, silent = true, desc = "Search and Replace" }
+      )
+    end,
+  },
+  {
     -- WHITESPACE HIGHLIGHTER
     "zakharykaplan/nvim-retrail",
     config = function()

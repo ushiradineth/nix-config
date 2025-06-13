@@ -10,6 +10,7 @@ local function mappings(bufnr)
 
   vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
   vim.keymap.set("n", "<leader>cd", vim.lsp.buf.definition, merge({ desc = "Go to Definition" }, opts))
+  vim.keymap.set({ "n", "v" }, "<leader>cf", vim.lsp.buf.references, merge({ desc = "Find References" }, opts))
   vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, merge({ desc = "Code Action" }, opts))
   vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, merge({ desc = "Rename Definition" }, opts))
 end
