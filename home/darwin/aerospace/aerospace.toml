@@ -111,6 +111,11 @@ accordion-padding = 30
 if.app-id = 'company.thebrowser.Browser'
 run = 'move-node-to-workspace 1'
 
+# Move Zen to workspace 1
+[[on-window-detected]]
+if.app-id = 'app.zen-browser.zen'
+run = 'move-node-to-workspace 1'
+
 # Move WezTerm to workspace 2
 [[on-window-detected]]
 if.app-id = 'com.github.wez.wezterm'
@@ -179,4 +184,9 @@ run = 'layout floating'
 # Open Discord in floating mode
 [[on-window-detected]]
 if.app-id = 'com.hnc.Discord'
+run = 'layout floating'
+
+# Open ProtonVPN in floating mode
+[[on-window-detected]]
+if.app-id = 'ch.protonvpn.mac'
 run = 'layout floating'
