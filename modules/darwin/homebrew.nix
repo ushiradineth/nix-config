@@ -1,7 +1,7 @@
 {...}: {
   homebrew = {
     # Disabled for fast deployments, enable when needed (updates and un/installations)
-    enable = true;
+    enable = false;
     brews = [
       "posting"
     ];
@@ -10,7 +10,8 @@
       "nikitabobko/tap"
     ];
     casks = [
-      "arc"
+      "arc" # Arc - for work
+      "zen" # Zen Browser
       "figma"
       "shottr" # Screenshot tool
       "raycast" # Enhanced Spotlight
@@ -26,6 +27,7 @@
       "orbstack" # Drop in replacement for Docker Desktop
       "whatsapp"
       "google-drive" # Google Drive Sync
+      "proton-drive" # Proton Drive Sync
 
       "notion"
       "notion-mail"
@@ -39,12 +41,11 @@
       "hiddenbar" # Hide menu bar items
 
       # Temporary / Testing
-      "zen" # Zen Browser
+      "zed"
       "spacedrive" # Virtual Distributed File System
       "lm-studio" # Model runner
       "claude" # Claude Desktop App for MCP
       "chatgpt" # ChatGPT Desktop App
-      "proton-drive"
     ];
     masApps = {
       "Davinci Resolve" = 571213070;
