@@ -2,6 +2,7 @@
 
 1. `shu`: MacOS with Nix-Darwin on Macbook Pro 14-inch (2023), M2 Pro 10 Cores, 16GB RAM, 512GB SSD.
 2. `shulab`: NixOS on Acer Aspire V3-572G Intel i5-4210U 2 Cores @ 1.70GHz, 6GB RAM, 1TB HDD.
+3. `shuorb`: NixOS VM running on orbstack.
 
 ## How to add a new host
 
