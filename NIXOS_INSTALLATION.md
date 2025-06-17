@@ -6,9 +6,8 @@
 
 ### 1. Preparing the USB installer
 
-- Install balenaEtcher through `brew install --cask balenaetcher`
+- Install balenaEtcher `brew install --cask balenaetcher`
 - Download the NixOS Minimal ISO image from [NixOS](https://nixos.org/download/)
-- Format the USB drive to FAT32, as my laptop doesn't support Secure Boot
 - Burn the ISO image to a USB drive
 
 ### 2. Connecting to the Internet
@@ -38,8 +37,15 @@ wpa_cli -i wlan0
 
 ### 3. Partitioning
 
-- BIOS Systems (MBR)
+- Plan out the partitions using `parted --list`
+- Ensure to replace `sda` with the correct drive name
+- Verify the below commands using the references, do not blindly run the below commands
+
+#### BIOS Systems (MBR)
   [REF](https://nixos.org/manual/nixos/stable/#sec-installation-manual-partitioning-MBR)
+
+- Primary = Rest of the drive 
+- Swap = 8GB
 
 ```bash
 sudo su
@@ -49,7 +55,11 @@ parted /dev/sda -- set 1 boot on
 parted /dev/sda -- mkpart primary linux-swap -8GB 100%
 ```
 
-- UEFI (GPT) [REF](https://nixos.org/manual/nixos/stable/#sec-installation-manual-partitioning-UEFI)
+#### UEFI (GPT) [REF](https://nixos.org/manual/nixos/stable/#sec-installation-manual-partitioning-UEFI)
+
+- Primary = Rest of the drive
+- Swap = 8GB
+- Boot = 512MB
 
 ```bash
 sudo su
@@ -60,9 +70,11 @@ parted /dev/sda -- mkpart ESP fat32 1MB 512MB
 parted /dev/sda -- set 3 esp on
 ```
 
-### 4. Formatting
+### 4. Formatting and Mounting [REF](https://nixos.org/manual/nixos/stable/#sec-installation-manual-partitioning-formatting)
 
-- BIOS Systems (MBR)
+- Verify the disk and partitions using `parted --list`
+
+#### BIOS Systems (MBR)
 
 ```bash
 mkfs.ext4 -L nixos /dev/sda1
@@ -71,7 +83,7 @@ swapon /dev/sda2
 mount /dev/disk/by-label/nixos /mnt
 ```
 
-- UEFI (GPT)
+#### UEFI (GPT)
 
 ```bash
 mkfs.ext4 -L nixos /dev/sda1
@@ -108,11 +120,6 @@ boot.loader.grub.device = "/dev/sda";
 - UEFI Systems (GPT)
 
 ```bash
-## GRUB
-boot.loader.grub.device = "nodev";
-boot.loader.grub.efiSupport = true;
-
-# Systemd-boot
 boot.loader.systemd-boot.enable = true;
 ```
 
@@ -139,18 +146,26 @@ reboot
 # Enter an shell with just, git and neovim
 nix-shell -p just git neovim
 
-# Copy the fileSystems and swapDevices from the hardware-configuration.nix
-cat /etc/nixos/hardware-configuration.nix
-
-# !IMPORTANT: Add it to the hosts/shulab/hardware-configuration.nix file and push it to the repo
-
 # Install the flake
+cd 
 git clone https://github.com/ushiradineth/nix-config.git
 cd nix-config
+
+# Create host directory for the machine, or use an existing one
+# Following hosts/README.md for initiating the new host
+
+# Copy the hardware-configuration.nix file for the host
+cp /etc/nixos/hardware-configuration.nix /home/shu/nix-config/hosts/<hostname>/hardware-configuration.nix
+git add .
+
+# Build the flake
 just build
 
 mkdir -p /home/shu/nix-config
 cp -r ./* /home/shu/nix-config
 cp -r ./.* /home/shu/nix-config
 sudo chown -R shu:shu /home/shu/nix-config
+su shu
+cd /home/shu/nix-config
+just build
 ```
