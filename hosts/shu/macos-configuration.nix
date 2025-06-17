@@ -1,22 +1,6 @@
-# ===================================================================
-#
-#  macOS's System configuration
-#
-#  All the configuration options are documented here:
-#    https://daiderd.com/nix-darwin/manual/index.html#sec-options
-#  Incomplete list of macOS `defaults` commands :
-#    https://github.com/yannbertrand/macos-defaults
-#
-# ===================================================================
-{
-  pkgs,
-  self,
-  ...
-}: {
+{self, ...}: {
   # Add ability to used TouchID for sudo authentication
   security.pam.services.sudo_local.touchIdAuth = true;
-
-  time.timeZone = "Asia/Dubai";
 
   system = {
     stateVersion = 5;
@@ -36,6 +20,7 @@
         expose-group-apps = true;
         persistent-apps = [
           "/Applications/Arc.app"
+          "/Applications/Zen.app"
           "/Applications/WezTerm.app"
           "/Applications/Notion.app"
           "/Applications/Notion Calendar.app"
@@ -139,18 +124,5 @@
         "com.apple.ImageCapture".disableHotPlug = true;
       };
     };
-  };
-
-  fonts = {
-    packages = with pkgs; [
-      material-design-icons
-      font-awesome
-      nerd-fonts.symbols-only
-      nerd-fonts.fira-code
-      nerd-fonts.jetbrains-mono
-      nerd-fonts.iosevka
-      nerd-fonts.meslo-lg
-      nerd-fonts.zed-mono
-    ];
   };
 }
