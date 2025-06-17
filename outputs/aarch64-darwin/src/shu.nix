@@ -16,14 +16,13 @@
   modules = {
     darwin-modules =
       (map mylib.relativeToRoot [
-        "modules/darwin"
-        "modules/core"
-        "modules/base.nix"
+        "modules/nix-modules/darwin"
+        "modules/nix-modules/core"
         "hosts/${hostname}"
       ])
       ++ [nix-homebrew.darwinModules.nix-homebrew];
     home-modules = map mylib.relativeToRoot [
-      "home/darwin/default.nix"
+      "modules/home-manager/darwin"
     ];
   };
 

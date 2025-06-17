@@ -22,6 +22,6 @@
   imports =
     (mylib.scanPaths ./.)
     ++ [
-      ../shared
+      ../core
     ];
 }
