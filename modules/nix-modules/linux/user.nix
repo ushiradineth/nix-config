@@ -6,6 +6,9 @@
 }: {
   users.groups."${myvars.username}" = {};
 
+  # Enable zsh for initial login
+  programs.zsh.enable = true;
+
   users.users."${myvars.username}" = {
     description = myvars.userFullname;
     initialHashedPassword = myvars.initialHashedPassword;

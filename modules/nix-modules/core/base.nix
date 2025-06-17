@@ -9,10 +9,10 @@
   environment.systemPackages = with pkgs; [
     neovim
     git
+    just # Justfile
     tldr # tldr for manual pages
     clang # C/C++ compiler
     gnumake # Makefile
-    just # Justfile
     ripgrep # grep alternative
     fastfetch # neofetch alternative
     btop # process monitor
