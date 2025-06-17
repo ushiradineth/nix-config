@@ -38,19 +38,15 @@ debug:
 [linux]
 [group('linux')]
 build:
-  nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel \
-    --extra-experimental-features 'nix-command flakes'
-
-  sudo ./result/bin/switch-to-configuration switch
+  nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel
+  sudo nixos-rebuild switch --flake .#$(hostname)
 
 # Build in debug mode.
 [linux]
 [group('linux')]
 debug:
-  nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel --show-trace --verbose \
-    --extra-experimental-features 'nix-command flakes'
-
-  sudo ./result/bin/switch-to-configuration switch --show-trace --verbose
+  nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel --show-trace --verbose
+  sudo nixos-rebuild switch --flake .#$(hostname) --show-trace --verbose
 
 ############################################################################
 #
