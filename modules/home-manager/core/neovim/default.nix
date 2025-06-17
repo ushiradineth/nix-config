@@ -14,7 +14,7 @@
     v = "nvim";
   };
 
-  configPath = "${config.home.homeDirectory}/nix-config/home/base/neovim/nvim";
+  configPath = "${config.home.homeDirectory}/nix-config/modules/home-manager/core/neovim/nvim";
 in {
   home.shellAliases = shellAliases;
   programs.zsh.shellAliases = shellAliases;
@@ -22,7 +22,7 @@ in {
   xdg.configFile."nvim".source = config.lib.file.mkOutOfStoreSymlink configPath;
 
   home.packages = with pkgs; [
-    lua
+    lua5_1 # Some packages require lua5_1 to be installed
     luarocks
     python311
     nixd

@@ -5,7 +5,7 @@
   k9sSrc = pkgs.fetchFromGitHub {
     owner = "derailed";
     repo = "k9s";
-    rev = "v0.32.5";
+    rev = "v0.32.5"; # This does not affect the K9s version
     sparseCheckout = ["skins"];
     hash = "sha256-fmOB9hE/1J7GfzNNeEAbBo0798FYaUFWnLLHbkxEBb0=";
   };

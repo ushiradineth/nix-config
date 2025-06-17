@@ -18,9 +18,10 @@
       '';
     };
   };
+
   imports =
     (mylib.scanPaths ./.)
     ++ [
-      ../base
+      ../shared
     ];
 }
