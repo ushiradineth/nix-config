@@ -10,7 +10,7 @@
     tokei # code statistics
 
     # Programming Languages & Tools
-    lua5_1
+    lua
     python3
     ansible
     sshpass # ssh password manager (needed for ansible)
