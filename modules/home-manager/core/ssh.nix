@@ -1,11 +1,20 @@
-{myvars, ...}: {
+{
+  myvars,
+  lib,
+  pkgs,
+  ...
+}: {
   programs.ssh = {
     enable = true;
-    extraOptionOverrides = {
-      ForwardAgent = "yes";
-      AddKeysToAgent = "yes";
-      UseKeychain = "yes";
-      IdentityFile = "~/.ssh/${myvars.username}";
-    };
+    extraOptionOverrides = lib.mkMerge [
+      {
+        ForwardAgent = "yes";
+        AddKeysToAgent = "yes";
+        IdentityFile = "~/.ssh/${myvars.username}";
+      }
+      (lib.mkIf pkgs.stdenv.isDarwin {
+        UseKeychain = "yes";
+      })
+    ];
   };
 }
