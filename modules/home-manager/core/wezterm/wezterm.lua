@@ -53,7 +53,6 @@ local sessionizer_schema = {
     -- Group Surge Workspaces
     if starts_with(entry.label, "~/Code/surge") then
       entry.label = wezterm.format {
-        { Foreground = { Color = "#e57373" } },
         { Text = "Surge: " .. entry.label },
       }
       return
@@ -62,7 +61,6 @@ local sessionizer_schema = {
     -- Group Personal Workspaces
     if starts_with(entry.label, "~/Code") then
       entry.label = wezterm.format {
-        { Foreground = { Color = "#cc99ff" } },
         { Text = "Personal: " .. entry.label },
       }
       return
@@ -71,7 +69,6 @@ local sessionizer_schema = {
     -- Group Config Workspaces
     if entry.label:match("~/nix%-config") then
       entry.label = wezterm.format {
-        { Foreground = { Color = "#5f87ff" } },
         { Text = "Config: " .. entry.label },
       }
       return
@@ -111,7 +108,10 @@ config.macos_window_background_blur = 100
 config.hide_tab_bar_if_only_one_tab = true
 config.enable_tab_bar = true
 config.use_fancy_tab_bar = true
-config.max_fps = 120
+config.max_fps = 60
+config.animation_fps = 1
+config.enable_scroll_bar = false
+config.webgpu_power_preference = "LowPower"
 
 config.window_frame = {
   inactive_titlebar_bg = "#353535",
