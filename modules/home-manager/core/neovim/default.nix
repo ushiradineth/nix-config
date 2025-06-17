@@ -26,6 +26,8 @@ in {
     luarocks
     python311
     nixd
+    typos
+    typos-lsp
   ];
 
   programs.neovim = {
