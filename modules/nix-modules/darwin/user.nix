@@ -11,7 +11,6 @@
 
   users.users."${myvars.username}" = {
     description = myvars.userFullname;
-    initialHashedPassword = myvars.initialHashedPassword;
     home = "/Users/${myvars.username}";
     shell = pkgs.zsh;
   };
