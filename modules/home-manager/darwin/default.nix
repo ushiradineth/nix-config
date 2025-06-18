@@ -15,6 +15,8 @@
       text = ''
         ~*
         .DS_Store
+        .envrc
+        .direnv
       '';
     };
   };

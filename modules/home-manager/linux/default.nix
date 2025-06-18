@@ -1,7 +1,6 @@
 {
   mylib,
   myvars,
-  lib,
   ...
 }: {
   home = {
@@ -16,6 +15,8 @@
       text = ''
         ~*
         .DS_Store
+        .envrc
+        .direnv
       '';
     };
   };
