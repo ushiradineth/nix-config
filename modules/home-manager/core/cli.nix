@@ -95,7 +95,6 @@ in {
         ];
         right_format = lib.concatStrings [
           "$cmd_duration"
-          "$terraform"
         ];
         username = {
           format = "[$user@]($style)";
@@ -128,9 +127,6 @@ in {
         cmd_duration = {
           format = " [$duration]($style)";
           style = "yellow";
-        };
-        terraform = {
-          format = " [$workspace]($style)";
         };
       };
     };
