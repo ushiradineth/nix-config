@@ -24,5 +24,6 @@
     (mylib.scanPaths ./.)
     ++ [
       ../core
+      ./hyprland
     ];
 }
