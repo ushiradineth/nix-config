@@ -6,32 +6,42 @@ return {
     opts = {
       quiet = true,
       formatters_by_ft = {
-        javascript = { "biome", "biome-check", "biome-organize-imports", "prettier", "eslint_d" },
-        typescript = { "biome", "biome-check", "biome-organize-imports", "prettier", "eslint_d" },
-        javascriptreact = { "biome", "biome-check", "biome-organize-imports", "prettier", "eslint_d" },
-        typescriptreact = { "biome", "biome-check", "biome-organize-imports", "prettier", "eslint_d" },
-        astro = { "astro", "biome", "prettier" },
-        json = { "biome", "prettier" },
-        jsonc = { "biome", "prettier" },
-        html = { "biome", "prettier" },
-        css = { "biome", "prettier" },
-        markdown = { "biome", "prettier" },
-        sh = { "bash-language-server", "beautysh", "prettier" },
-        bash = { "bash-language-server", "beautysh", "prettier" },
-        zsh = { "bash-language-server", "beautysh", "prettier" },
-        yaml = { "yamlls", "yamllint" },
-        go = { "goimports", "gofmt" },
-        terraform = { "terraform_fmt", "tfsec", "hclfmt" },
-        hcl = { "hclfmt" },
+        javascript = { "biome", "prettier", stop_after_first = true },
+        typescript = { "biome", "prettier", stop_after_first = true },
+        javascriptreact = { "biome", "prettier", stop_after_first = true },
+        typescriptreact = { "biome", "prettier", stop_after_first = true },
+        astro = { "biome" },
+        json = { "biome" },
+        jsonc = { "biome" },
+        html = { "biome" },
+        css = { "biome" },
+        markdown = { "markdownlint", "prettier", stop_after_first = true },
+        md = { "markdownlint", "prettier", stop_after_first = true },
+        sh = { "beautysh", "prettier", stop_after_first = true },
+        bash = { "beautysh", "prettier", stop_after_first = true },
+        zsh = { "beautysh", "prettier", stop_after_first = true },
+        yaml = { "yamlfix" },
+        go = { "goimports-reviser", "gofumpt" },
+        terraform = { "terraform_fmt" },
         lua = { "stylua" },
-        md = { "markdownlint" },
         rust = { "rustfmt" },
-        php = { "php-cs-fixer" },
+        php = { "pretty-php" },
+        nix = { "alejandra" },
         ["_"] = { "trim_whitespace" },
       },
       formatters = {
         biome = {
           require_cwd = true,
+        },
+        yamlfix = {
+          env = {
+            YAMLFIX_WHITELINES = "1",
+          },
+        },
+        beautysh = {
+          prepend_args = function()
+            return { "--indent-size", "2", "--force-function-style", "fnpar" }
+          end,
         },
       },
       default_format_opts = {
@@ -57,14 +67,6 @@ return {
       vim.keymap.set("n", "<leader>cf", function()
         conform.format({ timeout_ms = 1000, lsp_fallback = true })
       end, { noremap = true, silent = true, desc = "Format" })
-
-      conform.formatters = {
-        beautysh = {
-          prepend_args = function()
-            return { "--indent-size", "2", "--force-function-style", "fnpar" }
-          end,
-        },
-      }
     end,
   },
 }

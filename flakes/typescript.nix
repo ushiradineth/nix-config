@@ -24,7 +24,7 @@
             pkgs.biome
 
             # pkgs.eslint_d
-            # pkgs.prettier
+            # pkgs.prettierd
             # pkgs.astro-language-server
             # pkgs.vue-language-server
           ];

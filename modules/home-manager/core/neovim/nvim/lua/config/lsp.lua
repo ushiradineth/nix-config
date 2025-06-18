@@ -15,20 +15,32 @@ local function mappings(bufnr)
   vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, merge({ desc = "Rename Definition" }, opts))
 end
 
-local custom_servers = {
+local on_attach = function(client, bufnr)
+  mappings(bufnr)
+end
+
+local servers = {
   rust_analyzer = {
     on_attach = function(_, bufnr)
       mappings(bufnr)
     end,
     settings = {
       ["rust-analyzer"] = {
-        check = {
-          command = "clippy",
+        imports = {
+          granularity = {
+            group = "module",
+          },
+          prefix = "self",
         },
-        diagnostics = {
-          enable = true,
+        cargo = {
+          buildScripts = {
+            enable = true,
+          },
         },
-      },
+        procMacro = {
+          enable = true
+        },
+      }
     },
   },
   eslint = {
@@ -47,13 +59,13 @@ local custom_servers = {
   },
   yamlls = {
     on_attach = function(_, bufnr)
+      mappings(bufnr)
+
       if vim.bo[bufnr].filetype == "helm" then
         vim.schedule(function()
           vim.cmd("LspStop ++force yamlls")
         end)
       end
-
-      mappings(bufnr)
     end,
     settings = {
       yaml = {
@@ -89,19 +101,14 @@ local custom_servers = {
     },
   },
   helm_ls = {
-    on_attach = function(_, bufnr)
-      mappings(bufnr)
-    end,
-    settings = {
-      ["helm-ls"] = {
-        path = "yaml-language-server",
-      },
-    },
+    cmd       = { 'helm_ls', 'serve' },
+    filetypes = { "helm", "yaml", 'yml' },
+    root_dir  = vim.fs.dirname(vim.fs.find({ 'Chart.yaml' }, { upward = true })[1]),
+    on_attach = on_attach,
   },
 }
 
--- Register servers with custom settings
-for server, config in pairs(custom_servers) do
+for server, config in pairs(servers) do
   vim.lsp.config(server, config)
 end
 

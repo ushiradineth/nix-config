@@ -11,38 +11,36 @@ return {
     config = function()
       require("mason-lspconfig").setup({
         ensure_installed = {
-          -- Docker
-          "docker_compose_language_service",
-          "dockerls",
-
-          -- YAML / TOML / JSON
-          "yaml-language-server",
-          "yamllint",
-          "jsonlint",
+          "astro",
+          "ts_ls",
+          "vue_ls",
+          "prismals",
+          "tailwindcss", -- Tailwind LSP
           "jqls",
           "jsonls",
-          "taplo", -- TOML LSP
-
-          -- Bash
+          "taplo",        -- TOML LSP
+          "terraformls",  -- Terraform LSP
+          "ansiblels",
+          "pylsp",        -- Python LSP
+          "dockerls",
+          "gopls",        -- Go LSP
+          "intelephense", -- PHP linter
+          "lua_ls",
           "bashls",
-          "beautysh", -- Bash formatter
-
-          -- Markdown
-          "markdownlint",
-          "marksman",
-
-          -- Misc
-          "html",         -- HTML LSP
+          "marksman",      -- Markdown LSP
+          "html",          -- HTML LSP
           "cssls",
-          "diagnosticls", -- Diagnostics engine
-          "sonarlint-language-server",
+          "diagnosticls",  -- Diagnostics engine
+          "helm_ls",
+          "rust_analyzer", -- Rust LSP
           "nginx_language_server",
+          "typos_lsp",
         },
-        automatic_enable = true, -- Manually enable servers with custom config
-        automatic_installation = true,
+        automatic_enable = true,
+        automatic_installation = false,
       })
       local lspconfig = require("lspconfig")
-      lspconfig.nixd.setup({}) -- Nix LSP
+      lspconfig.nixd.setup({}) -- Nix LSP, installed with the nvim module
     end,
   },
   { "neovim/nvim-lspconfig", event = { "BufReadPre", "BufNewFile", "BufEnter" } },

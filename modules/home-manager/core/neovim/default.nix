@@ -24,10 +24,26 @@ in {
   home.packages = with pkgs; [
     lua5_1 # Some packages require lua5_1 to be installed
     luarocks
-    python311
-    nixd
+    stylua
+    nixd # Nix LSP, enabled with mason-lspconfig
+
+    python311 # For plugins that require python
+    nodejs # For plugins that require node
+    go # For plugins that require go
+
+    # Formatters and Linters
+    # LSPs should be installed with mason-lspconfig
     typos
-    typos-lsp
+    biome
+    prettierd
+    markdownlint-cli
+    beautysh
+    yamlfix
+    goimports-reviser
+    gofumpt
+    rustfmt
+    pretty-php
+    alejandra # Nix formatter
   ];
 
   programs.neovim = {

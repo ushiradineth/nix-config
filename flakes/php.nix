@@ -12,7 +12,7 @@
         devshell = pkgs.mkshell {
           buildinputs = [
             pkgs.php84
-            pkgs.php84Packages.php-cs-fixer
+            pkgs.pretty-php
             pkgs.intelephense
             pkgs.vimPlugins.nvim-treesitter-parsers.php
           ];

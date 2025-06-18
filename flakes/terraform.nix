@@ -7,7 +7,10 @@
   outputs = inputs:
     inputs.flake-utils.lib.eachDefaultSystem (
       system: let
-        pkgs = import (inputs.nixpkgs) {inherit system;};
+        pkgs = import (inputs.nixpkgs) {
+          inherit system;
+          config.allowUnfree = true;
+        };
       in {
         devShell = pkgs.mkShell {
           buildInputs = [
@@ -16,7 +19,6 @@
 
             pkgs.tfsec
             pkgs.tflint
-            pkgs.hclfmt
 
             pkgs.terraform-ls
             pkgs.vimPlugins.nvim-treesitter-parsers.terraform
