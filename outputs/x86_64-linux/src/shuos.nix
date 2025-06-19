@@ -10,12 +10,14 @@
   genSpecialArgs,
   ...
 } @ args: let
-  hostname = "shulab";
+  hostname = "shuos";
 
   modules = {
     nixos-modules = map mylib.relativeToRoot [
       "modules/nix-modules/linux"
-      "modules/nix-modules/core"
+      "modules/nix-modules/core/base.nix"
+      "modules/nix-modules/core/fonts.nix"
+      "modules/nix-modules/core/ssh.nix"
       "hosts/${hostname}"
     ];
     home-modules = map mylib.relativeToRoot [
