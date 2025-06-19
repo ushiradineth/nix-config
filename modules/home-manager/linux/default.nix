@@ -23,8 +23,5 @@
 
   imports =
     (mylib.scanPaths ./.)
-    ++ [
-      ../core
-      ./hyprland
-    ];
+    ++ [../core];
 }
