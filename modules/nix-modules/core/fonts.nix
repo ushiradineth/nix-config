@@ -1,5 +1,15 @@
 {pkgs, ...}: {
   fonts = {
+    fontconfig = {
+      enable = true;
+      antialias = true;
+      defaultFonts = {
+        monospace = ["ZedMono Nerd Font"];
+        sansSerif = ["JetBrainsMono Nerd Font"];
+        serif = ["MesloLGS Nerd Font"];
+      };
+    };
+
     packages = with pkgs; [
       material-design-icons
       font-awesome
