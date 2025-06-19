@@ -34,6 +34,7 @@
     rsync # file sync
     dust # rust implementation of du
     ncdu_2 # disk usage analyzer
+    jq # json parser
   ];
 
   programs.zsh = {
