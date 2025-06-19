@@ -80,18 +80,16 @@ config.automatically_reload_config = true
 
 -- Colour
 config.term = "xterm-256color"
-config.color_scheme = "Catppuccin Macchiato (Gogh)"
+config.color_scheme = "Catppuccin Frappé (Gogh)"
 
 -- Font
-config.font = wezterm.font("MesloLGS Nerd Font Mono")
+config.font = wezterm.font("MesloLGS Nerd Font")
 config.font_size = 18.0
 config.font_rules = {
 	{
 		intensity = "Normal",
 		font = wezterm.font({
-			-- family = "JetBrainsMono Nerd Font",
-			family = "MesloLGS Nerd Font Mono",
-			-- family = "ZedMono Nerd Font",
+			family = "MesloLGS Nerd Font",
 			weight = "Bold",
 		}),
 	},
