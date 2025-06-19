@@ -21,6 +21,7 @@
       "networkmanager"
       "wheel"
       "input"
+      "audio"
     ];
   };
 
