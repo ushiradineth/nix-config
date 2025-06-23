@@ -46,6 +46,7 @@
       "lm-studio" # Model runner
       "claude" # Claude Desktop App for MCP
       "chatgpt" # ChatGPT Desktop App
+      "ghostty"
     ];
     masApps = {
       "Davinci Resolve" = 571213070;
