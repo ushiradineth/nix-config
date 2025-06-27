@@ -1,4 +1,5 @@
 --- Hide Lualine when in command mode
+---
 vim.api.nvim_create_autocmd("CmdlineEnter", {
 	callback = function()
 		require("lualine").hide()
@@ -17,21 +18,45 @@ return {
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 	config = function()
 		local lualine = require("lualine")
-
-		-- Color table for highlights
+		local function get_hl_color(group, attr)
+			-- 1) Try Neovim’s native API (0.9+):
+			local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = group })
+			if ok and hl[attr] then
+				return string.format("#%06x", hl[attr])
+			end
+			-- 2) Fallback to the synIDattr route:
+			local id = vim.fn.synIDtrans(vim.fn.hlID(group))
+			local what = (attr == "fg" and "fg#" or "bg#")
+			local col = vim.fn.synIDattr(id, what)
+			return (col ~= "" and col) or nil
+		end
 		local colors = {
-			bg = "#202328",
-			fg = "#bbc2cf",
-			yellow = "#ECBE7B",
-			cyan = "#008080",
-			darkblue = "#081633",
-			green = "#98be65",
-			orange = "#FF8800",
-			violet = "#a9a1e1",
-			magenta = "#c678dd",
-			blue = "#51afef",
-			red = "#ec5f67",
+			bg = get_hl_color("Normal", "bg"),
+			fg = get_hl_color("Normal", "fg"),
+			yellow = get_hl_color("WarningMsg", "fg"),
+			cyan = get_hl_color("Type", "fg"),
+			green = get_hl_color("String", "fg"),
+			orange = get_hl_color("Conditional", "fg"),
+			violet = get_hl_color("Constant", "fg"),
+			magenta = get_hl_color("Identifier", "fg"),
+			blue = get_hl_color("Function", "fg"),
+			red = get_hl_color("Error", "fg"),
 		}
+
+		-- -- Color table for highlights
+		-- local colors = {
+		-- 	bg = "#202328",
+		-- 	fg = "#bbc2cf",
+		-- 	yellow = "#ECBE7B",
+		-- 	cyan = "#008080",
+		-- 	darkblue = "#081633",
+		-- 	green = "#98be65",
+		-- 	orange = "#FF8800",
+		-- 	violet = "#a9a1e1",
+		-- 	magenta = "#c678dd",
+		-- 	blue = "#51afef",
+		-- 	red = "#ec5f67",
+		-- }
 
 		local conditions = {
 			buffer_not_empty = function()
@@ -40,6 +65,25 @@ return {
 			hide_in_width = function()
 				return vim.fn.winwidth(0) > 80
 			end,
+		}
+
+		local oil = {
+			sections = {
+				lualine_a = {
+					{
+						function()
+							local ok, o = pcall(require, "oil")
+							if ok then
+								return vim.fn.fnamemodify(o.get_current_dir(), ":~")
+							else
+								return ""
+							end
+						end,
+						color = { fg = colors.magenta, gui = "bold" },
+					},
+				},
+			},
+			filetypes = { "oil" },
 		}
 
 		-- Config
@@ -69,7 +113,7 @@ return {
 				lualine_c = {},
 				lualine_x = {},
 			},
-			extensions = { "oil", "mason", "lazy", "trouble" },
+			extensions = { oil, "mason", "lazy", "trouble" },
 		}
 
 		-- Inserts a component in lualine_c at left section

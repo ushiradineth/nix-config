@@ -7,8 +7,6 @@ local catppuccin = {
 		require("catppuccin").setup({
 			transparent_background = vim.g.transparent_enabled,
 		})
-
-		vim.cmd.colorscheme("catppuccin-mocha")
 	end,
 }
 
@@ -23,8 +21,6 @@ local rosepine = {
 				transparent = vim.g.transparent_enabled,
 			},
 		})
-
-		vim.cmd.colorscheme("rose-pine-moon")
 	end,
 }
 
@@ -37,8 +33,30 @@ local tokyonight = {
 		require("tokyonight").setup({
 			transparent = vim.g.transparent_enabled,
 		})
+	end,
+}
 
-		vim.cmd.colorscheme("tokyonight-moon")
+local nord = {
+	"gbprod/nord.nvim",
+	name = "nord",
+	lazy = false,
+	priority = 1000,
+	config = function()
+		require("nord").setup({
+			transparent = vim.g.transparent_enabled,
+		})
+	end,
+}
+
+local onedark = {
+	"navarasu/onedark.nvim",
+	name = "onedark",
+	lazy = false,
+	priority = 1000,
+	config = function()
+		require("onedark").setup({
+			transparent = vim.g.transparent_enabled,
+		})
 	end,
 }
 
@@ -76,7 +94,8 @@ return {
 				catppuccin,
 				rosepine,
 				tokyonight,
-				"kdheepak/monochrome.nvim",
+				nord,
+				onedark,
 				"default",
 			})
 			vim.keymap.set(
