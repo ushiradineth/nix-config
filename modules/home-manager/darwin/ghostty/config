@@ -7,7 +7,7 @@ clipboard-read = allow
 clipboard-write = allow
 copy-on-select = true
 
-# Window (no styling)
+# Window (remove all styling)
 macos-non-native-fullscreen = false
 macos-titlebar-style = hidden
 window-decoration = none
@@ -33,7 +33,44 @@ font-style-bold-italic = bold-italic
 macos-option-as-alt = true
 macos-icon = official
 
+# ---
+
 # Keybinds
-# Allow CMD+P to be used as a keybind
-keybind = cmd+p=ignore
+
+# CMD + p -> Esc + p
+# Allow CMD + p to be used in neovim with tmux
 keybind = cmd+p=esc:p
+
+# CMD + [1-9] -> TmuxLeader + [1-9]
+# Switch to window in tmux
+keybind = cmd+1=text:\x131
+keybind = cmd+2=text:\x132
+keybind = cmd+3=text:\x133
+keybind = cmd+4=text:\x134
+keybind = cmd+5=text:\x135
+keybind = cmd+6=text:\x136
+keybind = cmd+7=text:\x137
+keybind = cmd+8=text:\x138
+keybind = cmd+9=text:\x139
+
+# CMD + t ->  TmuxLeader + t
+# Open new window in tmux
+keybind = cmd+t=text:\x13t
+
+# CMD + \ -> TmuxLeader + ^
+# New horizontal split in tmux
+keybind = cmd+\=text:\x13^
+
+# CMD + - -> TmuxLeader + %
+# New vertical split in tmux
+keybind = cmd+-=text:\x13%
+
+# CMD + w -> TmuxLeader + &
+# Close pane in tmux
+keybind = cmd+w=text:\x13x
+
+# CMD + c -> TmuxLeader + c
+# Close window in tmux
+keybind = cmd+c=text:\x13c
+
+# ---
