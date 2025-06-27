@@ -18,6 +18,8 @@ return {
 		local live_grep_args_shortcuts = require("telescope-live-grep-args.shortcuts")
 
 		vim.keymap.set("n", "<D-p>", builtin.find_files, { noremap = true, silent = true, desc = "Search files" })
+		vim.keymap.set("n", "<C-p>", builtin.find_files, { noremap = true, silent = true, desc = "Search files" })
+		vim.keymap.set("n", "<M-p>", builtin.find_files, { noremap = true, silent = true, desc = "Search files" })
 
 		-- Initiate search in all files in the current working directory
 		vim.keymap.set(

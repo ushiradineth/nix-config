@@ -32,3 +32,8 @@ font-style-bold-italic = bold-italic
 # Misc
 macos-option-as-alt = true
 macos-icon = glass
+
+# Keybinds
+# Allow CMD+P to be used as a keybind
+keybind = cmd+p=ignore
+keybind = cmd+p=esc:p
