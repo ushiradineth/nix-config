@@ -1,16 +1,34 @@
+# General
 theme = catppuccin-frappe
 shell-integration = zsh
+
+# Clipboard
 clipboard-read = allow
 clipboard-write = allow
 copy-on-select = true
-background-opacity = 0.7
-background-blur = 20
+
+# Window (no styling)
 macos-non-native-fullscreen = false
-macos-option-as-alt = true
-macos-icon = glass
-font-size = 22
-window-padding-x = 0
-window-padding-y = 0
-font-family = "MesloLGS Nerd Font Mono"
 macos-titlebar-style = hidden
 window-decoration = none
+window-padding-x = 0
+window-padding-y = 0
+
+# Background
+background-opacity = 0.7
+background-blur = 20
+
+# Font
+font-size = 18
+font-family = "MesloLGS Nerd Font Mono"
+font-family-bold = "MesloLGS Nerd Font Mono"
+font-family-italic = "MesloLGS Nerd Font Mono"
+font-family-bold-italic = "MesloLGS Nerd Font Mono"
+font-style = bold
+font-style-bold = bold
+font-style-italic = bold-italic
+font-style-bold-italic = bold-italic
+
+# Misc
+macos-option-as-alt = true
+macos-icon = glass
