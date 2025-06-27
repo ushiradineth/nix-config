@@ -1,28 +1,20 @@
-{pkgs, ...}: let
+{
+  pkgs,
+  lib,
+  ...
+}: let
   path = "$PATH:$HOME/.local/bin:$HOME/go/bin:$HOME/Library/pnpm:$HOME/.cargo/bin";
   envExtra = ''
     export PATH="${path}"
     export EDITOR="nvim"
     export SHELL="${pkgs.zsh}/bin/zsh"
   '';
-  initContent =
+  conditionalInitContent =
     if pkgs.stdenv.isDarwin
     then ''
       eval "$(/opt/homebrew/bin/brew shellenv)"
-
-      zstyle ':autocomplete:*' default-context history-incremental-search-backward
-      zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-      zstyle ':completion:*' menu no
-      zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-      zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
     ''
-    else ''
-      zstyle ':autocomplete:*' default-context history-incremental-search-backward
-      zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-      zstyle ':completion:*' menu no
-      zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-      zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
-    '';
+    else "";
 in {
   programs.zsh = {
     enable = true;
@@ -59,6 +51,19 @@ in {
       ];
     };
 
-    inherit envExtra initContent;
+    envExtra = envExtra;
+    initContent = ''
+      ${conditionalInitContent}
+
+      zstyle ':autocomplete:*' default-context history-incremental-search-backward
+      zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+      zstyle ':completion:*' menu no
+      zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+      zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+
+      bindkey -s '^As' 't\n'
+
+      ${lib.fileContents ./sessionizer.zsh}
+    '';
   };
 }
