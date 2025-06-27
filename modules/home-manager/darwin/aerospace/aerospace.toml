@@ -121,6 +121,11 @@ run = 'move-node-to-workspace 1'
 if.app-id = 'com.github.wez.wezterm'
 run = 'move-node-to-workspace 2'
 
+# Move Ghostty to workspace 2
+[[on-window-detected]]
+if.app-id = 'com.mitchellh.ghostty'
+run = 'move-node-to-workspace 2'
+
 # Move Notes to workspace 3
 [[on-window-detected]]
 if.app-id = 'com.apple.Notes'
