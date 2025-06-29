@@ -10,7 +10,6 @@
     ydotool
     hyprpolkitagent
     hyprland-qtutils # needed for banners and ANR messages
-    wezterm
     pavucontrol
     wl-clipboard-rs # wl-clipboard in Rust
     libnotify

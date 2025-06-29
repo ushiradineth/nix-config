@@ -23,7 +23,7 @@
       "balenaetcher" # Burn OS images to USBs
       "cloudflare-warp" # Cloudflare WARP / Zero Trust VPN
       "burp-suite" # Web testing tool
-      "wezterm" # Terminal emulator
+      "ghostty" # Terminal emulator
       "orbstack" # Drop in replacement for Docker Desktop
       "whatsapp"
       "google-drive" # Google Drive Sync
@@ -46,7 +46,7 @@
       "lm-studio" # Model runner
       "claude" # Claude Desktop App for MCP
       "chatgpt" # ChatGPT Desktop App
-      "ghostty"
+      "wezterm" # Terminal emulator
     ];
     masApps = {
       "Davinci Resolve" = 571213070;
