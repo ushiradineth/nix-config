@@ -26,6 +26,7 @@ in {
     luarocks
     stylua
     nixd # Nix LSP, enabled with mason-lspconfig
+    unzip # Needed for terraform-ls
 
     python311 # For plugins that require python
     nodejs # For plugins that require node
