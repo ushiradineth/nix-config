@@ -8,6 +8,7 @@
   myvars,
   system,
   genSpecialArgs,
+  nixvim,
   ...
 } @ args: let
   hostname = "shuos";
@@ -20,9 +21,11 @@
       "modules/nix-modules/core/ssh.nix"
       "hosts/${hostname}"
     ];
-    home-modules = map mylib.relativeToRoot [
-      "modules/home-manager/linux"
-    ];
+    home-modules =
+      map mylib.relativeToRoot [
+        "modules/home-manager/linux"
+      ]
+      ++ [nixvim.homeManagerModules.nixvim];
   };
 
   systemArgs = modules // args;
