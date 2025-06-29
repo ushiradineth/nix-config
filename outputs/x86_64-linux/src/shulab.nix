@@ -8,6 +8,7 @@
   myvars,
   system,
   genSpecialArgs,
+  nixvim,
   ...
 } @ args: let
   hostname = "shulab";
@@ -18,9 +19,11 @@
       "modules/nix-modules/core"
       "hosts/${hostname}"
     ];
-    home-modules = map mylib.relativeToRoot [
-      "modules/home-manager/linux"
-    ];
+    home-modules =
+      map mylib.relativeToRoot [
+        "modules/home-manager/linux"
+      ]
+      ++ [nixvim.homeManagerModules.nixvim];
   };
 
   systemArgs = modules // args;

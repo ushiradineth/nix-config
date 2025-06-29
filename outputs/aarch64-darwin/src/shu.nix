@@ -9,6 +9,7 @@
   system,
   genSpecialArgs,
   nix-homebrew,
+  nixvim,
   ...
 } @ args: let
   hostname = "shu";
@@ -21,9 +22,11 @@
         "hosts/${hostname}"
       ])
       ++ [nix-homebrew.darwinModules.nix-homebrew];
-    home-modules = map mylib.relativeToRoot [
-      "modules/home-manager/darwin"
-    ];
+    home-modules =
+      map mylib.relativeToRoot [
+        "modules/home-manager/darwin"
+      ]
+      ++ [nixvim.homeManagerModules.nixvim];
   };
 
   systemArgs = modules // args;
