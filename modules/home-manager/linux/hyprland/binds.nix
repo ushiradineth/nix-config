@@ -3,7 +3,7 @@ in {
   wayland.windowManager.hyprland.settings = {
     bind = [
       # Launch applications
-      "$modifier,T,exec,wezterm"
+      "$modifier,T,exec,ghostty"
       "$modifier,B,exec,firefox"
       "$modifier,Y,exec,wezterm -e yazi"
       "ALT,W,killactive"
