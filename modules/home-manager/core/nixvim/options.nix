@@ -13,6 +13,7 @@
     laststatus = 3; # Global statusline
     swapfile = false;
     updatetime = 300; # Makes cursor-hover actions (like diagnostics popups) respond faster
+    inccommand = "split"; # Show the effects of a search / replace in a live preview window
 
     showmode = false; # set noshowmode
     showcmd = false; # set noshowcmd
