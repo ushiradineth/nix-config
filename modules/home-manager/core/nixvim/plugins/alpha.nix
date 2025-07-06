@@ -75,7 +75,7 @@
               ];
               position = "center";
               cursor = 0;
-              width = 40;
+              width = 50;
               align_shortcut = "right";
               hl_shortcut = "Keyword";
             };
