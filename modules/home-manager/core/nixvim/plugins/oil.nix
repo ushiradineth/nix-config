@@ -11,4 +11,16 @@
       };
     };
   };
+
+  programs.nixvim.keymaps = [
+    {
+      key = "-";
+      action = ":Oil<CR>";
+      options = {
+        noremap = true;
+        silent = true;
+        desc = "Open Oil";
+      };
+    }
+  ];
 }
