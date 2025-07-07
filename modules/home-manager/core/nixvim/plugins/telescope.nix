@@ -62,24 +62,7 @@ in {
         set_env = {
           COLORTERM = "truecolor";
         };
-        sorting_strategy = "ascending";
         layout_strategy = "vertical";
-        layout_config = {
-          horizontal = {
-            size = {
-              width = "90%";
-              height = "60%";
-            };
-          };
-          vertical = {
-            size = {
-              width = "90%";
-              height = "90%";
-            };
-          };
-          width = 0.9;
-          height = 0.9;
-        };
       };
 
       pickers = {
