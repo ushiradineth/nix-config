@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{...}: {
   # Whitespace highlighting
   programs.nixvim.plugins.whitespace.enable = true;
 
