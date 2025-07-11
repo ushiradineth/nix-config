@@ -34,6 +34,6 @@
       xsel.enable = true;
     };
 
-    register.__raw = ''vim.env.SSH_TTY and "" or "unnamedplus"'';
+    register = "unnamedplus";
   };
 }
