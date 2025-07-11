@@ -6,7 +6,8 @@
       mode = ["n"];
       action = "gcc";
       options = {
-        desc = "Toggle Comment";
+        remap = true;
+        desc = "Toggle comment on current line";
       };
     }
     {
@@ -14,7 +15,8 @@
       mode = ["v"];
       action = "gc";
       options = {
-        desc = "Toggle Comment";
+        remap = true;
+        desc = "Toggle comment on selection";
       };
     }
 
