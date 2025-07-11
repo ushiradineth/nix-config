@@ -68,6 +68,7 @@ in {
             file_status = true;
             path = 1;
             cond = conditions.buffer_not_empty;
+            color = {fg = "#e2bdbc";};
           }
 
           {
@@ -107,6 +108,7 @@ in {
           {
             __unkeyed-1 = "branch";
             icon = "";
+            color = {fg = "#e3a27d";};
           }
         ];
       };
