@@ -14,10 +14,10 @@ default:
 [macos]
 [group('macos')]
 build:
-  nix build .#darwinConfigurations.$(hostname).system --quiet \
+  nix build .#darwinConfigurations.$(hostname).system \
     --extra-experimental-features 'nix-command flakes'
 
-  sudo -E ./result/sw/bin/darwin-rebuild switch --flake .#$(hostname) --quiet
+  sudo -E ./result/sw/bin/darwin-rebuild switch --flake .#$(hostname)
 
 # Build in debug mode.
 [macos]
