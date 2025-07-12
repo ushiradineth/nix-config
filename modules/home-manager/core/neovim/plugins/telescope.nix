@@ -25,12 +25,25 @@ in {
           override_generic_sorter = true;
         };
       };
-      ui-select.enable = true;
+      ui-select = {
+        enable = true;
+        settings = {
+          theme = "dropdown";
+          results_title = false;
+          sorting_strategy = "ascending";
+          layout_strategy = "center";
+          border = true;
+          borderchars = {
+            prompt = ["─" "│" " " "│" "╭" "╮" "│" "│"];
+            results = ["─" "│" "─" "│" "├" "┤" "╯" "╰"];
+            preview = ["─" "│" "─" "│" "╭" "╮" "╯" "╰"];
+          };
+        };
+      };
       live-grep-args = {
         enable = true;
         settings = {
           auto_quoting = true;
-          theme = "dropdown";
           mappings = {
             i = {
               "<C-t>".__raw = "require('telescope-live-grep-args.actions').quote_prompt({ postfix = ' -t rs' })";
