@@ -77,4 +77,56 @@
       typos_lsp.enable = true;
     };
   };
+
+  programs.nixvim.keymaps = [
+    {
+      key = "K";
+      mode = ["n"];
+      action = ":lua vim.lsp.buf.hover()<CR>";
+      options = {
+        noremap = true;
+        silent = true;
+      };
+    }
+    {
+      key = "<leader>cd";
+      mode = ["n"];
+      action = ":lua vim.lsp.buf.definition()<CR>";
+      options = {
+        noremap = true;
+        silent = true;
+        desc = "Go to Definition";
+      };
+    }
+    {
+      key = "<leader>cf";
+      mode = ["n" "v"];
+      action = ":lua vim.lsp.buf.references()<CR>";
+      options = {
+        noremap = true;
+        silent = true;
+        desc = "Find References";
+      };
+    }
+    {
+      key = "<leader>ca";
+      mode = ["n" "v"];
+      action = ":lua vim.lsp.buf.code_action()<CR>";
+      options = {
+        noremap = true;
+        silent = true;
+        desc = "Code Action";
+      };
+    }
+    {
+      key = "<leader>cr";
+      mode = ["n"];
+      action = ":lua vim.lsp.buf.rename()<CR>";
+      options = {
+        noremap = true;
+        silent = true;
+        desc = "Rename Definition";
+      };
+    }
+  ];
 }
