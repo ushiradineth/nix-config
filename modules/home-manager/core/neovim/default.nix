@@ -9,8 +9,6 @@
     lua5_1 # Some packages require lua5_1 to be installed
     luarocks
     stylua
-    nixd # Nix LSP, enabled with mason-lspconfig
-    unzip # Needed for terraform-ls
 
     python311 # For plugins that require python
     nodejs # For plugins that require node
