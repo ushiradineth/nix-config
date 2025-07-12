@@ -13,6 +13,7 @@
     pavucontrol
     wl-clipboard-rs # wl-clipboard in Rust
     libnotify
+    brightnessctl
   ];
 
   systemd.user.targets.hyprland-session.Unit.Wants = [

@@ -73,7 +73,7 @@ in {
 
       # General
       "$modifier,F,fullscreen,"
-      "$modifier SHIFT,I,togglesplit," # Toggle between horizonal and vertical split
+      "$modifier SHIFT,I,togglesplit," # Toggle between horizontal and vertical split
       "$modifier SHIFT,F,togglefloating," # Float
       "$modifier SHIFT,C,exit," # Closes hyprland
     ];
