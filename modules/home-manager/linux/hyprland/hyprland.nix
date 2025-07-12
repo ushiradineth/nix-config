@@ -13,6 +13,7 @@
     pavucontrol
     wl-clipboard-rs # wl-clipboard in Rust
     libnotify
+    brightnessctl
   ];
 
   systemd.user.targets.hyprland-session.Unit.Wants = [
@@ -142,9 +143,12 @@
     };
 
     extraConfig = "
-      monitor=,preferred,auto,auto
-      monitor=Virtual-1,2560x1440@60,auto,1
-      layerrule = blur,waybar
+      monitor = DP-3, 2560x1440@144, 0x0, 1
+      layerrule = blur, waybar
+      device {
+        name = logitech-usb-receiver
+        sensitivity = -0.5
+      }
     ";
   };
 }

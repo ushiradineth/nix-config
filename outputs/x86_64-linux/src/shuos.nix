@@ -8,21 +8,27 @@
   myvars,
   system,
   genSpecialArgs,
+  nixvim,
+  lanzaboote,
   ...
 } @ args: let
   hostname = "shuos";
 
   modules = {
-    nixos-modules = map mylib.relativeToRoot [
-      "modules/nix-modules/linux"
-      "modules/nix-modules/core/base.nix"
-      "modules/nix-modules/core/fonts.nix"
-      "modules/nix-modules/core/ssh.nix"
-      "hosts/${hostname}"
-    ];
-    home-modules = map mylib.relativeToRoot [
-      "modules/home-manager/linux"
-    ];
+    nixos-modules =
+      map mylib.relativeToRoot [
+        "modules/nix-modules/linux"
+        "modules/nix-modules/core/base.nix"
+        "modules/nix-modules/core/fonts.nix"
+        "modules/nix-modules/core/ssh.nix"
+        "hosts/${hostname}"
+      ]
+      ++ [lanzaboote.nixosModules.lanzaboote];
+    home-modules =
+      map mylib.relativeToRoot [
+        "modules/home-manager/linux"
+      ]
+      ++ [nixvim.homeManagerModules.nixvim];
   };
 
   systemArgs = modules // args;

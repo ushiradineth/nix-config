@@ -2,6 +2,8 @@
   nixpkgs,
   pre-commit-hooks,
   nix-homebrew,
+  nixvim,
+  lanzaboote,
   ...
 } @ inputs: let
   inherit (inputs.nixpkgs) lib;
@@ -26,7 +28,7 @@
     };
 
   # This is the args for all the haumea modules in this folder.
-  args = {inherit inputs lib mylib myvars genSpecialArgs nix-homebrew;};
+  args = {inherit inputs lib mylib myvars genSpecialArgs nix-homebrew nixvim lanzaboote;};
 
   # modules for each supported system
   nixosSystems = {

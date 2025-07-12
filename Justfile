@@ -14,10 +14,10 @@ default:
 [macos]
 [group('macos')]
 build:
-  nix build .#darwinConfigurations.$(hostname).system \
+  nix build .#darwinConfigurations.$(hostname).system --quiet \
     --extra-experimental-features 'nix-command flakes'
 
-  sudo -E ./result/sw/bin/darwin-rebuild switch --flake .#$(hostname)
+  sudo -E ./result/sw/bin/darwin-rebuild switch --flake .#$(hostname) --quiet
 
 # Build in debug mode.
 [macos]
@@ -38,8 +38,8 @@ debug:
 [linux]
 [group('linux')]
 build:
-  nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel
-  sudo nixos-rebuild switch --flake .#$(hostname)
+  nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel --quiet
+  sudo nixos-rebuild switch --flake .#$(hostname) --quiet
 
 # Build in debug mode.
 [linux]
