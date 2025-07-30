@@ -3,5 +3,6 @@
     tokei # code statistics
     codex # Terminal based coding agent
     localsend # AirDrop Alternative
+    claude-code
   ];
 }
