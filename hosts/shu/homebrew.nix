@@ -33,20 +33,14 @@
       "notion-mail"
       "notion-calendar"
 
-      # "proton-vpn" Unavailable in the current region
+      "tailscale-app"
+      "protonvpn"
 
       # Rarely used
       "discord"
       "obsidian" # Markdown note taking app
       "hiddenbar" # Hide menu bar items
-
-      # Temporary / Testing
-      "zed"
-      "spacedrive" # Virtual Distributed File System
-      "lm-studio" # Model runner
-      "claude" # Claude Desktop App for MCP
-      "chatgpt" # ChatGPT Desktop App
-      "wezterm" # Terminal emulator
+      "visual-studio-code" # For Dev Containers
     ];
     masApps = {
       "Davinci Resolve" = 571213070;
