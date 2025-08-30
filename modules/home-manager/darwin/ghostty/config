@@ -1,5 +1,5 @@
 # General
-theme = catppuccin-frappe
+# theme = catppuccin-frappe
 shell-integration = zsh
 
 # Clipboard
@@ -15,7 +15,7 @@ window-padding-x = 0
 window-padding-y = 0
 
 # Background
-background-opacity = 0.7
+background-opacity = 0.85
 background-blur = 20
 
 # Font
