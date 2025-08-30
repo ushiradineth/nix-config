@@ -42,7 +42,6 @@
     shellInit = ''
       alias ll="ls -lah"
       alias c="clear"
-      alias grep="rg"
       alias neofetch="fastfetch"
       alias curl="curlie"
       alias top="btop"
