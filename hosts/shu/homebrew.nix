@@ -28,6 +28,7 @@
       "whatsapp"
       "google-drive" # Google Drive Sync
       "proton-drive" # Proton Drive Sync
+      "modrinth" # Minecraft Launcher
 
       "notion"
       "notion-mail"
