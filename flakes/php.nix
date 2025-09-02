@@ -10,7 +10,7 @@
         pkgs = import (inputs.nixpkgs) {inherit system;};
       in {
         devshell = pkgs.mkshell {
-          buildinputs = [
+          buildInputs = [
             pkgs.php84
             pkgs.pretty-php
             pkgs.intelephense

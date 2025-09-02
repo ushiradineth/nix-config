@@ -10,7 +10,7 @@
         pkgs = import (inputs.nixpkgs) {inherit system;};
       in {
         devShell = pkgs.mkShell {
-          buildinputs = [
+          buildInputs =
             pkgs.rustup
             pkgs.libiconv
             pkgs.clang

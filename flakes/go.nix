@@ -10,7 +10,7 @@
         pkgs = import (inputs.nixpkgs) {inherit system;};
       in {
         devshell = pkgs.mkshell {
-          buildinputs = [
+          buildInputs = [
             pkgs.go_1_24
 
             pkgs.gopls

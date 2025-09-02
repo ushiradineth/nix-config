@@ -10,7 +10,7 @@
         pkgs = import (inputs.nixpkgs) {inherit system;};
       in {
         devshell = pkgs.mkshell {
-          buildinputs = [
+          buildInputs = [
             pkgs.ansible_2_18
             pkgs.sshpass
             pkgs.python311
