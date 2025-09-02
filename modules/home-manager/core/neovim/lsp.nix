@@ -54,6 +54,7 @@
       pylsp.enable = true;
       nixd.enable = true;
       marksman.enable = true; # Markdown LSP
+      elixirls.enable = true;
 
       astro.enable = true;
       ts_ls.enable = true;
