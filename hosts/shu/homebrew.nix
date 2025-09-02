@@ -1,13 +1,15 @@
 {...}: {
   homebrew = {
     # Disabled for fast deployments, enable when needed (updates and un/installations)
-    enable = false;
+    enable = true;
     brews = [
       "posting"
+      "sst/tap/opencode"
     ];
     taps = [
       "homebrew/services"
       "nikitabobko/tap"
+      "sst/tap"
     ];
     casks = [
       "arc" # Arc - for work
