@@ -195,3 +195,8 @@ run = 'layout floating'
 [[on-window-detected]]
 if.app-id = 'ch.protonvpn.mac'
 run = 'layout floating'
+
+# Open OpenCloud in floating mode
+[[on-window-detected]]
+if.app-id = 'eu.opencloud.desktop'
+run = 'layout floating'

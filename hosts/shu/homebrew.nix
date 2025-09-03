@@ -4,12 +4,10 @@
     enable = true;
     brews = [
       "posting"
-      "sst/tap/opencode"
     ];
     taps = [
       "homebrew/services"
       "nikitabobko/tap"
-      "sst/tap"
     ];
     casks = [
       "arc" # Arc - for work
@@ -28,21 +26,16 @@
       "ghostty" # Terminal emulator
       "orbstack" # Drop in replacement for Docker Desktop
       "whatsapp"
-      "google-drive" # Google Drive Sync
-      "proton-drive" # Proton Drive Sync
+      "opencloud" # OpenCloud Sync
       "modrinth" # Minecraft Launcher
-
+      "hiddenbar" # Hide menu bar items
+      "discord"
+      "krita"
+      "wacom-tablet"
       "notion"
-      "notion-mail"
       "notion-calendar"
-
       "tailscale-app"
       "protonvpn"
-
-      # Rarely used
-      "discord"
-      "obsidian" # Markdown note taking app
-      "hiddenbar" # Hide menu bar items
       "visual-studio-code" # For Dev Containers
     ];
     masApps = {
