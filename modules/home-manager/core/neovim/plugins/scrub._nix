@@ -1,0 +1,30 @@
+{pkgs, ...}: {
+  programs.nixvim.extraPlugins = [
+    (pkgs.vimUtils.buildVimPlugin {
+      name = "scrub.nvim";
+      src = pkgs.fetchFromGitHub {
+        owner = "n3tw0rth";
+        repo = "scrub.nvim";
+        rev = "master";
+        hash = "sha256-GwZhnb3aykJ0gbAvxgEXAu9FUpJmkYKBdo0H4Nmhcqg=";
+      };
+    })
+  ];
+
+  programs.nixvim.extraConfigLua = ''
+    require("scrub").setup();
+  '';
+
+  programs.nixvim.keymaps = [
+    {
+      key = "_";
+      mode = ["n"];
+      action = "<CMD>Scrub<CR>";
+      options = {
+        noremap = true;
+        silent = true;
+        desc = "Run Scrub";
+      };
+    }
+  ];
+}
