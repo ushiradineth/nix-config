@@ -1,7 +1,7 @@
 {
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
   outputs = inputs:
@@ -10,7 +10,7 @@
         pkgs = import (inputs.nixpkgs) {inherit system;};
       in {
         devShell = pkgs.mkShell {
-          buildInputs =
+          buildInputs = [
             pkgs.rustup
             pkgs.libiconv
             pkgs.clang
