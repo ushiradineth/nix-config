@@ -73,4 +73,7 @@ keybind = cmd+w=text:\x13x
 # Close window in tmux
 keybind = cmd+c=text:\x13c
 
+# Claude Code - New line
+keybind = shift+enter=text:\x1b\r
+
 # ---
