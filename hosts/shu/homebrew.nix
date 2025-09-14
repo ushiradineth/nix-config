@@ -37,6 +37,7 @@
       "tailscale-app"
       "protonvpn"
       "visual-studio-code" # For Dev Containers
+      "claude-code"
     ];
     masApps = {
       "Davinci Resolve" = 571213070;
