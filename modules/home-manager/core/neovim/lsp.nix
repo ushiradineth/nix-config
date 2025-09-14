@@ -53,7 +53,8 @@
       bashls.enable = true;
       pylsp.enable = true;
       nixd.enable = true;
-      marksman.enable = true; # Markdown LSP
+      # TODO: Enable marksman when package is fixed
+      # marksman.enable = true; # Markdown LSP
       elixirls.enable = true;
 
       astro.enable = true;
