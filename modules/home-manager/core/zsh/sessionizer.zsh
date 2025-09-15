@@ -25,7 +25,7 @@ function t() {
     [[ -z $selected ]] && return 0
 
     # Derive a safe session name
-    selected_name=$(basename -- "$selected" | tr -c 'a-zA-Z0-9_' '_')
+    selected_name=$(basename -- "$selected" | tr '.' '_')
     tmux_running=$(pgrep tmux)
 
     # If no tmux server at all, start a fresh session
