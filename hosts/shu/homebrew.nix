@@ -38,6 +38,7 @@
       "protonvpn"
       "visual-studio-code" # For Dev Containers
       "claude-code"
+      "drawpen" # For presentations (sketching on the screen)
     ];
     masApps = {
       "Davinci Resolve" = 571213070;
