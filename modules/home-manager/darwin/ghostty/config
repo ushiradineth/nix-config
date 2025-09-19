@@ -44,15 +44,15 @@ keybind = cmd+p=esc:p
 
 # CMD + [1-9] -> TmuxLeader + [1-9]
 # Switch to window in tmux
-keybind = cmd+1=text:\x131
-keybind = cmd+2=text:\x132
-keybind = cmd+3=text:\x133
-keybind = cmd+4=text:\x134
-keybind = cmd+5=text:\x135
-keybind = cmd+6=text:\x136
-keybind = cmd+7=text:\x137
-keybind = cmd+8=text:\x138
-keybind = cmd+9=text:\x139
+keybind = cmd+Digit1=text:\x131
+keybind = cmd+Digit2=text:\x132
+keybind = cmd+Digit3=text:\x133
+keybind = cmd+Digit4=text:\x134
+keybind = cmd+Digit5=text:\x135
+keybind = cmd+Digit6=text:\x136
+keybind = cmd+Digit7=text:\x137
+keybind = cmd+Digit9=text:\x138
+keybind = cmd+Digit9=text:\x139
 
 # CMD + t ->  TmuxLeader + t
 # Open new window in tmux
