@@ -1,5 +1,8 @@
 # General
-# theme = catppuccin-frappe
+
+# theme = Catppuccin Frappe
+theme = Nord
+
 shell-integration = zsh
 
 # Clipboard
@@ -20,14 +23,12 @@ background-blur = 20
 
 # Font
 font-size = 18
-font-family = "MesloLGS Nerd Font Mono"
-font-family-bold = "MesloLGS Nerd Font Mono"
-font-family-italic = "MesloLGS Nerd Font Mono"
-font-family-bold-italic = "MesloLGS Nerd Font Mono"
-font-style = bold
-font-style-bold = bold
-font-style-italic = bold-italic
-font-style-bold-italic = bold-italic
+font-style = semibold
+font-family = "JetBrainsMono Nerd Font Mono"
+# font-family = "VictorMono Nerd Font Mono"
+# font-family-bold = "VictorMono NFM Oblique"
+# font-family-italic = "VictorMono NFM Oblique"
+# font-family-bold-italic = "VictorMono NFM Oblique"
 
 # Misc
 macos-option-as-alt = true
