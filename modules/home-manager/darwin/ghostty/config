@@ -13,7 +13,9 @@ copy-on-select = true
 # Window (remove all styling)
 macos-non-native-fullscreen = false
 macos-titlebar-style = hidden
-window-decoration = none
+# TODO: Move this to linux ghostty config
+# This disables rounded corners on macOS
+# window-decoration = none
 window-padding-x = 0
 window-padding-y = 0
 
