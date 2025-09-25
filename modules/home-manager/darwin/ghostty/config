@@ -53,7 +53,7 @@ keybind = cmd+Digit4=text:\x134
 keybind = cmd+Digit5=text:\x135
 keybind = cmd+Digit6=text:\x136
 keybind = cmd+Digit7=text:\x137
-keybind = cmd+Digit9=text:\x138
+keybind = cmd+Digit8=text:\x138
 keybind = cmd+Digit9=text:\x139
 
 # CMD + t ->  TmuxLeader + t
