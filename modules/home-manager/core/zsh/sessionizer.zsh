@@ -46,3 +46,13 @@ function t() {
         tmux switch-client -t "$selected_name"
     fi
 }
+
+function ts() {
+    selected=$(
+        tmux list-sessions -F "#{session_name}" 2>/dev/null \
+            | fzf --reverse --border \
+            --preview 'tmux list-windows -t {}'
+    )
+
+    [ -n "$selected" ] && tmux attach -t "$selected"
+}
