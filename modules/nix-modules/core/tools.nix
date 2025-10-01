@@ -1,6 +1,7 @@
 {pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     pnpm
+    uv # Python package manager
     pgcli # PostgreSQL CLI
     mycli # MySQL CLI
     k6 # Load testing tool
