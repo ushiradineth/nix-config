@@ -77,6 +77,7 @@ gc:
   # garbage collect all unused nix store entries(for the user - home-manager)
   # https://github.com/NixOS/nix/issues/8508
   nix-collect-garbage --delete-older-than 7d
+  nix store optimise
 
 # Format the nix files in this repo.
 [group('nix')]
