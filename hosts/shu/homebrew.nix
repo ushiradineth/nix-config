@@ -4,6 +4,7 @@
     enable = true;
     brews = [
       "posting"
+      "codex"
     ];
     taps = [
       "homebrew/services"
@@ -33,6 +34,7 @@
       "discord"
       "krita"
       "wacom-tablet"
+      "medibangpaintpro"
       "notion"
       "notion-calendar"
       "tailscale-app"
