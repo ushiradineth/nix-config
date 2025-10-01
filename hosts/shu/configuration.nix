@@ -57,6 +57,8 @@
         AppleKeyboardUIMode = 3; # Mode 3 enables full keyboard control.
         ApplePressAndHoldEnabled = true; # Enable press and hold
         AppleICUForce24HourTime = true; # Show 24 hour clock
+        AppleShowAllExtensions = true; # Show all extensions in finder
+        AppleShowAllFiles = true; # Show all files in finder
 
         # If you press and hold certain keyboard keys when in a text area, the key’s character begins to repeat.
         # This is very useful for vim users, they use `hjkl` to move cursor.
@@ -66,6 +68,7 @@
 
         "com.apple.swipescrolldirection" = true; # Enable natural scrolling
         "com.apple.sound.beep.feedback" = 0; # Disable beep sound when pressing volume up/down key
+        "com.apple.mouse.tapBehavior" = 1; # Enable tap to click
 
         NSAutomaticCapitalizationEnabled = false; # Disable auto capitalization
         NSAutomaticDashSubstitutionEnabled = false; # Disable auto dash substitution
@@ -74,6 +77,10 @@
         NSAutomaticSpellingCorrectionEnabled = false; # Disable auto spelling correction
         NSNavPanelExpandedStateForSaveMode = true; # Expand save panel by default
         NSNavPanelExpandedStateForSaveMode2 = true;
+      };
+
+      ".GlobalPreferences" = {
+        "com.apple.mouse.scaling" = -1.0; # Disable mouse scaling / acceleration
       };
 
       CustomUserPreferences = {
