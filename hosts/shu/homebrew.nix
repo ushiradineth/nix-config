@@ -42,6 +42,7 @@
       "visual-studio-code" # For Dev Containers
       "claude-code"
       "drawpen" # For presentations (sketching on the screen)
+      "utm" # Virtual Machines
     ];
     masApps = {
       "Davinci Resolve" = 571213070;
