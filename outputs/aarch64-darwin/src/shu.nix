@@ -14,6 +14,8 @@
 } @ args: let
   hostname = "shu";
 
+  specialArgs = (genSpecialArgs system) // {inherit hostname;};
+
   modules = {
     darwin-modules =
       (map mylib.relativeToRoot [
@@ -29,7 +31,7 @@
       ++ [nixvim.homeManagerModules.nixvim];
   };
 
-  systemArgs = modules // args;
+  systemArgs = modules // args // {inherit specialArgs;};
 in {
   darwinConfigurations.${hostname} = mylib.macosSystem systemArgs;
 }

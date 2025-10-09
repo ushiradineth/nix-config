@@ -1,6 +1,4 @@
-let
-  hostname = "shu";
-in {
+{hostname, ...}: {
   networking.hostName = hostname;
   networking.computerName = hostname; # Darwin Specific
 }

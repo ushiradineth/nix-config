@@ -13,6 +13,8 @@
 } @ args: let
   hostname = "shulab";
 
+  specialArgs = (genSpecialArgs system) // {inherit hostname;};
+
   modules = {
     nixos-modules = map mylib.relativeToRoot [
       "modules/nix-modules/linux"
@@ -26,7 +28,7 @@
       ++ [nixvim.homeManagerModules.nixvim];
   };
 
-  systemArgs = modules // args;
+  systemArgs = modules // args // {inherit specialArgs;};
 in {
   nixosConfigurations.${hostname} = mylib.nixosSystem systemArgs;
 }
