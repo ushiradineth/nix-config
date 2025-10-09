@@ -15,6 +15,8 @@
   ...
 } @ args: let
   hostname = "shupi";
+  tags = [hostname];
+  ssh-user = "root";
 
   specialArgs = (genSpecialArgs system) // {inherit hostname;};
 
@@ -30,27 +32,31 @@
       ]
       ++ [lanzaboote.nixosModules.lanzaboote]
       ++ [disko.nixosModules.disko]
-      ++ [
-        nixos-raspberrypi.lib.inject-overlays
-        nixos-raspberrypi.lib.inject-overlays-global
-      ]
       ++ (with nixos-raspberrypi.nixosModules; [
-        trusted-nix-caches
-        nixpkgs-rpi
         raspberry-pi-5.base
-        usb-gadget-ethernet
+
+        # Required: Add necessary overlays with kernel, firmware, vendor packages
+        nixos-raspberrypi.lib.inject-overlays
+
+        # Binary cache with prebuilt packages for the currently locked `nixpkgs`,
+        trusted-nix-caches
+
+        #optimizations and fixes for issues arising from 16k memory page size (only for systems running default rpi5 (bcm2712) kernel)
         raspberry-pi-5.page-size-16k
-        raspberry-pi-5.display-vc4
-        raspberry-pi-5.bluetooth
+
+        # Configures USB Gadget/Ethernet - Ethernet emulation over USB
+        usb-gadget-ethernet
       ]);
-    home-modules =
-      map mylib.relativeToRoot [
-        "modules/home-manager/linux"
-      ]
-      ++ [nixvim.homeManagerModules.nixvim];
+    home-modules = map mylib.relativeToRoot [
+      "modules/home-manager/core/zsh"
+      "modules/home-manager/core/btop.nix"
+      "modules/home-manager/core/ssh.nix"
+      "modules/home-manager/core/home.nix"
+    ];
   };
 
   systemArgs = modules // args // {inherit specialArgs;};
 in {
   nixosConfigurations.${hostname} = mylib.nixosSystem systemArgs;
+  colmena.${hostname} = mylib.colmenaSystem (systemArgs // {inherit tags ssh-user;});
 }

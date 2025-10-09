@@ -94,25 +94,14 @@ fmt:
 #
 ############################################################################
 
-# Initialize shupi machine
+# Initialize achine
 [group('init')]
-init-shupi:
+init hostname phases='disko,install,reboot':
   nix run github:nix-community/nixos-anywhere -- \
-    --flake .#shupi \
-    --target-host root@192.168.1.13 \
-    --build-on local \
+    --flake .#{{hostname}} \
+    --target-host root@{{hostname}} \
     --option experimental-features "nix-command flakes" \
-    --phases disko,install,reboot
-
-# Initialize shutm machine
-[group('init')]
-init-shutm:
-  nix run github:nix-community/nixos-anywhere -- \
-    --flake .#shutm \
-    --target-host root@192.168.64.3 \
-    --build-on remote \
-    --option experimental-features "nix-command flakes" \
-    --phases disko,install,reboot
+    --phases {{phases}}
 
 ############################################################################
 #
