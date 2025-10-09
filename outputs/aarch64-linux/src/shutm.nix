@@ -9,6 +9,8 @@
   ...
 } @ args: let
   hostname = "shutm";
+  tags = [hostname];
+  ssh-user = "root";
 
   specialArgs = (genSpecialArgs system) // {inherit hostname;};
 
@@ -28,4 +30,5 @@
   systemArgs = modules // args // {inherit specialArgs;};
 in {
   nixosConfigurations.${hostname} = mylib.nixosSystem systemArgs;
+  colmena.${hostname} = mylib.colmenaSystem (systemArgs // {inherit tags ssh-user;});
 }

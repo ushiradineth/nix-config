@@ -6,6 +6,7 @@
   lanzaboote,
   disko,
   nixos-raspberrypi,
+  colmena,
   ...
 } @ inputs: let
   inherit (inputs.nixpkgs) lib;
@@ -25,7 +26,7 @@
     };
 
   # This is the args for all the haumea modules in this folder.
-  args = {inherit inputs lib mylib myvars genSpecialArgs nix-homebrew nixvim lanzaboote disko nixos-raspberrypi;};
+  args = {inherit inputs lib mylib myvars genSpecialArgs nix-homebrew nixvim lanzaboote disko nixos-raspberrypi colmena;};
 
   # modules for each supported system
   nixosSystems = {
@@ -51,6 +52,30 @@ in {
 
   # macOS Hosts
   darwinConfigurations = lib.attrsets.mergeAttrsList (map (it: it.darwinConfigurations or {}) darwinSystemValues);
+
+  colmena =
+    {
+      meta =
+        (
+          let
+            system = builtins.currentSystem;
+          in {
+            # colmena's default nixpkgs & specialArgs
+            nixpkgs = import nixpkgs {inherit system;};
+            specialArgs = genSpecialArgs system;
+          }
+        )
+        // {
+          # per-node nixpkgs & specialArgs
+          nodeNixpkgs = lib.attrsets.mergeAttrsList (
+            map (it: it.colmenaMeta.nodeNixpkgs or {}) nixosSystemValues
+          );
+          nodeSpecialArgs = lib.attrsets.mergeAttrsList (
+            map (it: it.colmenaMeta.nodeSpecialArgs or {}) nixosSystemValues
+          );
+        };
+    }
+    // lib.attrsets.mergeAttrsList (map (it: it.colmena or {}) nixosSystemValues);
 
   # Packages
   packages = forAllSystems (

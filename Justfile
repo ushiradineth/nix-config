@@ -113,3 +113,13 @@ init-shutm:
     --build-on remote \
     --option experimental-features "nix-command flakes" \
     --phases disko,install,reboot
+
+############################################################################
+#
+#  Deploy existing machines
+#
+############################################################################
+
+[group('deploy')]
+col tag:
+  colmena apply --on '@{{tag}}' --verbose --show-trace --impure --build-on-target

@@ -1,6 +1,7 @@
 {lib, ...}: {
-  macosSystem = import ./macosSystem.nix;
   nixosSystem = import ./nixosSystem.nix;
+  macosSystem = import ./macosSystem.nix;
+  colmenaSystem = import ./colmenaSystem.nix;
   attrs = import ./attrs.nix {inherit lib;};
 
   # use path relative to the root of the project

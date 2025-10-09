@@ -8,4 +8,9 @@
   authorizedKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICG/8RWB3RvaLc9T3vGy7Gm4+tOYZwVdodE28YHXr98t shu@shu"
   ];
+  hostAddresses = {
+    shu = "192.168.1.2";
+    shutm = "192.168.64.3";
+    shupi = "192.168.1.13";
+  };
 }

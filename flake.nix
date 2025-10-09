@@ -49,6 +49,11 @@
     };
 
     nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/main";
+
+    colmena = {
+      url = "github:zhaofengli/colmena";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs: import ./outputs inputs;
