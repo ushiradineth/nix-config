@@ -162,10 +162,12 @@ git add .
 just build
 
 mkdir -p /home/shu/nix-config
-cp -r ./* /home/shu/nix-config
-cp -r ./.* /home/shu/nix-config
+rsync -a --exclude='.git' ./ /home/shu/nix-config/
 sudo chown -R shu:shu /home/shu/nix-config
 su shu
 cd /home/shu/nix-config
 just build
+
+# If you prefer to keep the repo elsewhere, update any paths that point to
+# `/home/shu/nix-config` (for example in Home Manager symlinks) accordingly.
 ```

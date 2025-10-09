@@ -12,5 +12,6 @@
     shu = "192.168.1.2";
     shutm = "192.168.64.3";
     shupi = "192.168.1.13";
+    # Add shulab/shuos once their static IPs are assigned.
   };
 }
