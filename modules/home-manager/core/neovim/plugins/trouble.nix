@@ -14,7 +14,7 @@
     }
     {
       key = "<leader>dD";
-      action = ":Trouble diangostics toggle filter.bug=0<CR>";
+      action = ":Trouble diagnostics toggle filter.buf=0<CR>";
       options = {
         noremap = true;
         silent = true;

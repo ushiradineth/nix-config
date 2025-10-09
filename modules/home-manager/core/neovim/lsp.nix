@@ -100,7 +100,7 @@
       };
     }
     {
-      key = "<leader>cf";
+      key = "<leader>cR";
       mode = ["n" "v"];
       action = ":lua vim.lsp.buf.references()<CR>";
       options = {
