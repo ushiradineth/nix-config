@@ -103,3 +103,13 @@ shupi phases='install,reboot':
     --build-on local \
     --option experimental-features "nix-command flakes" \
     --phases "{{phases}}"
+
+# Deploy shutm configuration
+[group('deployment')]
+shutm phases='disko,install,reboot':
+  nix run github:nix-community/nixos-anywhere -- \
+    --flake .#shutm \
+    --target-host 192.168.64.3 \
+    --build-on local \
+    --option experimental-features "nix-command flakes" \
+    --phases "{{phases}}"
