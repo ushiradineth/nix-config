@@ -54,7 +54,7 @@ debug:
 
 ############################################################################
 #
-#  nix related commands
+#  Nix related commands
 #
 ############################################################################
 
@@ -90,26 +90,26 @@ fmt:
 
 ############################################################################
 #
-#  deployment related commands
+#  Initialise new machines
 #
 ############################################################################
 
-# Deploy shupi configuration
-[group('deployment')]
-shupi phases='install,reboot':
+# Initialize shupi machine
+[group('init')]
+init-shupi:
   nix run github:nix-community/nixos-anywhere -- \
     --flake .#shupi \
     --target-host root@192.168.1.13 \
     --build-on local \
     --option experimental-features "nix-command flakes" \
-    --phases "{{phases}}"
+    --phases disko,install,reboot
 
-# Deploy shutm configuration
-[group('deployment')]
-shutm phases='disko,install,reboot':
+# Initialize shutm machine
+[group('init')]
+init-shutm:
   nix run github:nix-community/nixos-anywhere -- \
     --flake .#shutm \
-    --target-host 192.168.64.3 \
-    --build-on local \
+    --target-host root@192.168.64.3 \
+    --build-on remote \
     --option experimental-features "nix-command flakes" \
-    --phases "{{phases}}"
+    --phases disko,install,reboot

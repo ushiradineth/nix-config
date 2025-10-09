@@ -11,12 +11,12 @@
           boot = {
             type = "ef00";
             label = "BOOT";
-            start = "1MiB";
-            size = "512MiB";
+            start = "1M";
+            size = "512M";
             content = {
               type = "filesystem";
               format = "vfat";
-              mountpoint = "/boot";
+              mountpoint = "/boot/efi";
               mountOptions = ["fmask=0022" "dmask=0022"];
               extraArgs = ["-n" "BOOT"];
             };
@@ -24,7 +24,7 @@
           root = {
             type = "8300";
             label = "ROOT";
-            start = "513MiB";
+            start = "513M";
             size = "100%";
             content = {
               type = "filesystem";
@@ -40,5 +40,5 @@
   };
 
   boot.loader.grub.enable = lib.mkForce false;
-  fileSystems."/boot".neededForBoot = true;
+  fileSystems."/boot/efi".neededForBoot = true;
 }

@@ -1,10 +1,8 @@
-{
-  lib,
-  pkgs,
-  ...
-}: {
-  environment.systemPackages = lib.mkForce (with pkgs; [
+{pkgs, ...}: {
+  environment.systemPackages = with pkgs; [
+    git
+    vim
     spice-vdagent
     glxinfo
-  ]);
+  ];
 }

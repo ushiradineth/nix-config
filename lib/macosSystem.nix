@@ -17,7 +17,10 @@ in
       darwin-modules
       ++ [
         ({...}: {
-          nixpkgs.pkgs = import nixpkgs-darwin {inherit system;};
+          nixpkgs.pkgs = import nixpkgs-darwin {
+            inherit system;
+            config.allowUnfree = true;
+          };
         })
       ]
       ++ (

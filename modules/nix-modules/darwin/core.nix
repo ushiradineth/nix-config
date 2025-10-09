@@ -1,6 +1,4 @@
 {lib, ...}: {
-  nixpkgs.config.allowUnfree = true;
-
   nix.enable = true;
 
   # Scheduled weekly garbage collection
