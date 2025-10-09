@@ -3,6 +3,8 @@
   myvars,
   ...
 }: {
+  nixpkgs.config.allowUnfree = true;
+
   nix.package = pkgs.nixVersions.latest;
   environment.variables.EDITOR = "nvim --clean";
 
@@ -35,6 +37,7 @@
     dust # rust implementation of du
     ncdu_2 # disk usage analyzer
     jq # json parser
+    psutils
   ];
 
   programs.zsh = {

@@ -4,6 +4,8 @@
   nix-homebrew,
   nixvim,
   lanzaboote,
+  disko,
+  nixos-raspberrypi,
   ...
 } @ inputs: let
   inherit (inputs.nixpkgs) lib;
@@ -16,11 +18,6 @@
     // {
       inherit mylib myvars;
 
-      pkgs = import inputs.nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
-
       pkgs-unstable = import inputs.nixpkgs-unstable {
         inherit system;
         config.allowUnfree = true;
@@ -28,11 +25,12 @@
     };
 
   # This is the args for all the haumea modules in this folder.
-  args = {inherit inputs lib mylib myvars genSpecialArgs nix-homebrew nixvim lanzaboote;};
+  args = {inherit inputs lib mylib myvars genSpecialArgs nix-homebrew nixvim lanzaboote disko nixos-raspberrypi;};
 
   # modules for each supported system
   nixosSystems = {
     x86_64-linux = import ./x86_64-linux (args // {system = "x86_64-linux";});
+    aarch64-linux = import ./aarch64-linux (args // {system = "aarch64-linux";});
   };
   darwinSystems = {
     aarch64-darwin = import ./aarch64-darwin (args // {system = "aarch64-darwin";});

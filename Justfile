@@ -38,14 +38,18 @@ debug:
 [linux]
 [group('linux')]
 build:
-  nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel --quiet
+  nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel \
+    --quiet --extra-experimental-features 'nix-command flakes'
+
   sudo nixos-rebuild switch --flake .#$(hostname) --quiet
 
 # Build in debug mode.
 [linux]
 [group('linux')]
 debug:
-  nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel --show-trace --verbose
+  nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel --show-trace --verbose \
+    --extra-experimental-features 'nix-command flakes'
+
   sudo nixos-rebuild switch --flake .#$(hostname) --show-trace --verbose
 
 ############################################################################
@@ -83,3 +87,19 @@ gc:
 [group('nix')]
 fmt:
   nix fmt .
+
+############################################################################
+#
+#  deployment related commands
+#
+############################################################################
+
+# Deploy shupi configuration
+[group('deployment')]
+shupi phases='install,reboot':
+  nix run github:nix-community/nixos-anywhere -- \
+    --flake .#shupi \
+    --target-host root@192.168.1.13 \
+    --build-on local \
+    --option experimental-features "nix-command flakes" \
+    --phases "{{phases}}"
