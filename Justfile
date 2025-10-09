@@ -90,12 +90,12 @@ fmt:
 
 ############################################################################
 #
-#  Initialise new machines
+#  Remote deployment
 #
 ############################################################################
 
-# Initialize achine
-[group('init')]
+# Initialize remote machine
+[group('remote')]
 init hostname phases='disko,install,reboot':
   nix run github:nix-community/nixos-anywhere -- \
     --flake .#{{hostname}} \
@@ -103,12 +103,7 @@ init hostname phases='disko,install,reboot':
     --option experimental-features "nix-command flakes" \
     --phases {{phases}}
 
-############################################################################
-#
-#  Deploy existing machines
-#
-############################################################################
-
-[group('deploy')]
-col tag:
+# Deploy to remote machine
+[group('remote')]
+deploy tag:
   colmena apply --on '@{{tag}}' --verbose --show-trace --impure --build-on-target
