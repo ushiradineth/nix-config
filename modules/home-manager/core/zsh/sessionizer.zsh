@@ -10,7 +10,7 @@ function t() {
         local surge=$(find ~/Code/surge -mindepth 1 -maxdepth 2 -type d)
         local fork=$(find ~/Code/fork -mindepth 1 -maxdepth 1 -type d)
         local koano=$(find ~/Code/koano -mindepth 1 -maxdepth 1 -type d)
-        local freelance=$(find ~/Code/freelance -mindepth 1 -maxdepth 2 -type d)
+        local freelance=$(find ~/Code/freelance -mindepth 1 -maxdepth 1 -type d)
 
         # Combine and fzf
         selected=$(
