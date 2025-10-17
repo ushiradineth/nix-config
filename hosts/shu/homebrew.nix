@@ -41,6 +41,7 @@
       "protonvpn"
       "visual-studio-code" # For Dev Containers
       "claude-code"
+      "conductor" # Claude Code Parallelisation
       "drawpen" # For presentations (sketching on the screen)
       "utm" # Virtual Machines
     ];
