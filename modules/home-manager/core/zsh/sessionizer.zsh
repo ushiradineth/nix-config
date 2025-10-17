@@ -5,7 +5,7 @@ function t() {
     if [[ $# -eq 1 ]]; then
         selected=$1
     else
-        local manual=("$HOME/nix-config" "$HOME/.config")
+        local manual=("$HOME/nix-config" "$HOME/nix-secrets" "$HOME/.config")
         local code=$(find ~/Code -mindepth 1 -maxdepth 1 -type d)
         local surge=$(find ~/Code/surge -mindepth 1 -maxdepth 2 -type d)
         local fork=$(find ~/Code/fork -mindepth 1 -maxdepth 1 -type d)

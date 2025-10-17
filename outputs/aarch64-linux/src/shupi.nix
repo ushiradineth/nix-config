@@ -12,6 +12,7 @@
   lanzaboote,
   disko,
   nixos-raspberrypi,
+  agenix,
   ...
 } @ args: let
   hostname = "shupi";
@@ -28,10 +29,14 @@
         "modules/nix-modules/linux/core.nix"
         "modules/nix-modules/linux/i18n.nix"
         "modules/nix-modules/linux/user.nix"
+        "modules/nix-modules/linux/secrets.nix"
         "hosts/${hostname}"
       ]
-      ++ [lanzaboote.nixosModules.lanzaboote]
-      ++ [disko.nixosModules.disko]
+      ++ [
+        agenix.nixosModules.default
+        lanzaboote.nixosModules.lanzaboote
+        disko.nixosModules.disko
+      ]
       ++ (with nixos-raspberrypi.nixosModules; [
         raspberry-pi-5.base
 

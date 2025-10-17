@@ -23,7 +23,9 @@
         "modules/nix-modules/core"
         "hosts/${hostname}"
       ])
-      ++ [nix-homebrew.darwinModules.nix-homebrew];
+      ++ [
+        nix-homebrew.darwinModules.nix-homebrew
+      ];
     home-modules =
       map mylib.relativeToRoot [
         "modules/home-manager/darwin"

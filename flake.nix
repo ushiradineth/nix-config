@@ -54,6 +54,16 @@
       url = "github:zhaofengli/colmena";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    mysecrets = {
+      url = "git+ssh://git@github.com/ushiradineth/nix-secrets.git?shallow=1";
+      flake = false;
+    };
   };
 
   outputs = inputs: import ./outputs inputs;
