@@ -1,7 +1,7 @@
 {...}: let
   publicKeys = {
     shu = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICG/8RWB3RvaLc9T3vGy7Gm4+tOYZwVdodE28YHXr98t shu@shu";
-    shupi = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICG/8RWB3RvaLc9T3vGy7Gm4+tOYZwVdodE28YHXr98t shu@shupi";
+    shupi = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMZl3bh9/8hTnd4bGE46sX247Uhyzid/168ytiFy4/Zq shu@shupi";
   };
 in {
   username = "shu";

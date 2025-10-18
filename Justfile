@@ -63,6 +63,12 @@ debug:
 up:
   nix flake update
 
+# Update specific input
+# Usage: just upp nixpkgs
+[group('nix')]
+upp input:
+  nix flake update {{input}} --commit-lock-file
+
 # List all generations of the system profile.
 [group('nix')]
 history:
