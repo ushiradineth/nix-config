@@ -1,3 +1,7 @@
 {mylib, ...}: {
-  imports = mylib.scanPaths ./.;
+  imports =
+    mylib.scanPaths ./.
+    ++ [
+      ./services/default.nix
+    ];
 }
