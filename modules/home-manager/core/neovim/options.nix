@@ -1,4 +1,4 @@
-{...}: {
+{pkgs, ...}: {
   programs.nixvim.globals = {
     mapleader = " "; # Set the leader key to space
     maplocalleader = "\\"; # Set the local leader key to backslash
@@ -30,8 +30,8 @@
 
   programs.nixvim.clipboard = {
     providers = {
-      wl-copy.enable = true;
-      xsel.enable = true;
+      wl-copy.enable = pkgs.stdenv.isLinux;
+      xsel.enable = pkgs.stdenv.isLinux;
     };
 
     register = "unnamedplus";

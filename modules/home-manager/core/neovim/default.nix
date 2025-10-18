@@ -45,5 +45,11 @@
       nvimRuntime = true;
       plugins = true;
     };
+
+    # Suppress lspconfig deprecation warning
+    extraConfigLuaPre = ''
+      -- Silence lspconfig deprecation warnings
+      vim.deprecate = function() end
+    '';
   };
 }

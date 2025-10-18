@@ -69,7 +69,6 @@
 
       terraformls.enable = true;
       tflint.enable = true;
-      ansiblels.enable = true;
       dockerls.enable = true;
       helm_ls.enable = true;
       nginx_language_server.enable = true;

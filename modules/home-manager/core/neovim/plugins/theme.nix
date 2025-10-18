@@ -34,6 +34,21 @@
         "StatusLineNC"
         "EndOfBuffer"
       ];
+      extra_groups = [
+        "NormalFloat"
+        "FloatBorder"
+        "FloatTitle"
+        "NvimTreeNormal"
+        "NvimTreeNormalNC"
+        "TelescopeNormal"
+        "TelescopeBorder"
+        "TelescopePromptNormal"
+        "TelescopePromptBorder"
+        "TelescopeResultsNormal"
+        "TelescopeResultsBorder"
+        "TelescopePreviewNormal"
+        "TelescopePreviewBorder"
+      ];
     };
   };
 
