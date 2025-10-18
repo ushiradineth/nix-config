@@ -30,7 +30,7 @@
       map mylib.relativeToRoot [
         "modules/home-manager/darwin"
       ]
-      ++ [nixvim.homeManagerModules.nixvim];
+      ++ [nixvim.homeModules.nixvim];
   };
 
   systemArgs = modules // args // {inherit specialArgs;};

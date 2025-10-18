@@ -67,7 +67,7 @@ up:
 # Usage: just upp nixpkgs
 [group('nix')]
 upp input:
-  nix flake update {{input}} --commit-lock-file
+  nix flake update {{input}}
 
 # List all generations of the system profile.
 [group('nix')]
