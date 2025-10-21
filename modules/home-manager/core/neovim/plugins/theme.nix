@@ -35,7 +35,7 @@
         "EndOfBuffer"
       ];
       extra_groups = [
-        "NormalFloat"
+        # "NormalFloat"
         "FloatBorder"
         "FloatTitle"
         "NvimTreeNormal"
