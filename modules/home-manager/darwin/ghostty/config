@@ -25,8 +25,9 @@ background-blur = 20
 
 # Font
 font-size = 18
-font-style = semibold
+font-style = medium
 font-family = "JetBrainsMono Nerd Font Mono"
+# font-family = "GeistMono Nerd Font Mono"
 # font-family = "VictorMono Nerd Font Mono"
 # font-family-bold = "VictorMono NFM Oblique"
 # font-family-italic = "VictorMono NFM Oblique"

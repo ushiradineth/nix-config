@@ -12,6 +12,7 @@
 
       nerd-fonts.jetbrains-mono
       nerd-fonts.victor-mono
+      nerd-fonts.geist-mono
     ];
   };
 }
