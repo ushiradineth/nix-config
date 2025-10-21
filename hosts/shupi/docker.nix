@@ -1,11 +1,16 @@
-{pkgs, ...}: {
-  virtualisation.docker = {
-    enable = true;
-    autoPrune = {
+{myvars, ...}: {
+  virtualisation = {
+    oci-containers.backend = "docker";
+
+    docker = {
       enable = true;
-      dates = "weekly";
+      enableOnBoot = true;
+      autoPrune = {
+        enable = true;
+        dates = "weekly";
+      };
     };
   };
 
-  users.users.shu.extraGroups = ["docker"];
+  users.users."${myvars.username}".extraGroups = ["docker"];
 }

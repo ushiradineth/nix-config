@@ -6,5 +6,6 @@
     ACTUALBUDGET_DOMAIN = "ab.shupi.ushira.com";
     PORTAINER_DOMAIN = "pt.shupi.ushira.com";
     ADGUARD_DOMAIN = "ad.shupi.ushira.com";
+    TRAEFIK_DOMAIN = "tr.shupi.ushira.com";
   };
 }

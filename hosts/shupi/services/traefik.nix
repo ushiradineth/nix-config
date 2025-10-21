@@ -26,7 +26,7 @@
       certificatesResolvers.letsencrypt = {
         acme = {
           email = config.environment.variables.ACME_EMAIL;
-          storage = "/srv/traefik/acme.json";
+          storage = "/srv/traefik/data/acme.json";
           caServer = "https://acme-v02.api.letsencrypt.org/directory";
 
           dnsChallenge = {
@@ -37,22 +37,26 @@
         };
       };
 
-      providers.docker = {
-        endpoint = "unix:///var/run/docker.sock";
-        exposedByDefault = false;
-        watch = true;
-      };
-
       api = {
         dashboard = true;
-        insecure = false;
       };
 
       log = {
-        level = "INFO";
+        level = "WARN";
       };
 
       accessLog = {};
+    };
+
+    dynamicConfigOptions = {
+      http.routers.api = {
+        rule = "Host(`${config.environment.variables.TRAEFIK_DOMAIN}`)";
+        tls = {
+          certResolver = "letsencrypt";
+        };
+        service = "api@internal";
+        entrypoints = "websecure";
+      };
     };
   };
 
@@ -60,6 +64,4 @@
   environment.variables.CLOUDFLARE_DNS_API_TOKEN = "${config.age.secrets.traefik-cf-api-key.path}";
 
   networking.firewall.allowedTCPPorts = [80 443];
-
-  users.users.traefik.extraGroups = ["docker"];
 }
