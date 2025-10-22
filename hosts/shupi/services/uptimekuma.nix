@@ -15,9 +15,7 @@
 
     routers.uptimekuma = {
       rule = "Host(`${config.environment.variables.UPTIMEKUMA_DOMAIN}`)";
-      tls = {
-        certResolver = "letsencrypt";
-      };
+      tls.certResolver = "letsencrypt";
       service = "uptimekuma";
       entrypoints = "websecure";
     };

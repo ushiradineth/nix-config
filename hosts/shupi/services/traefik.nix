@@ -51,9 +51,7 @@
     dynamicConfigOptions = {
       http.routers.api = {
         rule = "Host(`${config.environment.variables.TRAEFIK_DOMAIN}`)";
-        tls = {
-          certResolver = "letsencrypt";
-        };
+        tls.certResolver = "letsencrypt";
         service = "api@internal";
         entrypoints = "websecure";
       };

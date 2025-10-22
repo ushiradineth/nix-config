@@ -102,9 +102,7 @@
 
     routers.adguard = {
       rule = "Host(`${config.environment.variables.ADGUARD_DOMAIN}`)";
-      tls = {
-        certResolver = "letsencrypt";
-      };
+      tls.certResolver = "letsencrypt";
       service = "adguard";
       entrypoints = "websecure";
     };

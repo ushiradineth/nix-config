@@ -46,9 +46,7 @@
 
     routers.opencloud = {
       rule = "Host(`${config.environment.variables.OC_DOMAIN}`)";
-      tls = {
-        certResolver = "letsencrypt";
-      };
+      tls.certResolver = "letsencrypt";
       service = "opencloud";
       entrypoints = "websecure";
     };

@@ -18,9 +18,7 @@
 
     routers.portainer = {
       rule = "Host(`${config.environment.variables.PORTAINER_DOMAIN}`)";
-      tls = {
-        certResolver = "letsencrypt";
-      };
+      tls.certResolver = "letsencrypt";
       service = "portainer";
       entrypoints = "websecure";
     };

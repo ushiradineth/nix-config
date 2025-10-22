@@ -15,9 +15,7 @@
 
     routers.actualbudget = {
       rule = "Host(`${config.environment.variables.ACTUALBUDGET_DOMAIN}`)";
-      tls = {
-        certResolver = "letsencrypt";
-      };
+      tls.certResolver = "letsencrypt";
       service = "actualbudget";
       entrypoints = "websecure";
     };
