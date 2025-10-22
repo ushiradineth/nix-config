@@ -61,7 +61,28 @@
   };
 
   age.secrets.traefik-cf-api-key.file = "${mysecrets}/${hostname}/traefik-cf-api-key.age";
-  environment.variables.CLOUDFLARE_DNS_API_TOKEN = "${config.age.secrets.traefik-cf-api-key.path}";
+
+  system.activationScripts.traefikSetup = {
+    text = ''
+      echo "Setting up Traefik directories and permissions..."
+      mkdir -p /srv/traefik/data
+      mkdir -p /var/lib/traefik
+
+      # Ensure traefik owns its directories
+      chown -R traefik:traefik /srv/traefik
+      chmod 700 /srv/traefik/data
+
+      # Create env file
+      echo "CLOUDFLARE_DNS_API_TOKEN=$(cat ${config.age.secrets.traefik-cf-api-key.path})" > /var/lib/traefik/env
+      chmod 600 /var/lib/traefik/env
+    '';
+    deps = [];
+  };
+
+  systemd.services.traefik.serviceConfig = {
+    EnvironmentFile = ["/var/lib/traefik/env"];
+    ReadWritePaths = ["/srv/traefik"];
+  };
 
   networking.firewall.allowedTCPPorts = [80 443];
 }
