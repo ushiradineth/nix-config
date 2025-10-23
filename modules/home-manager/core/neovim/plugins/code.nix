@@ -27,7 +27,4 @@
 
   # Time tracking
   programs.nixvim.plugins.wakatime.enable = true;
-
-  # TailwindCSS tools
-  programs.nixvim.plugins.tailwind-tools.enable = true;
 }

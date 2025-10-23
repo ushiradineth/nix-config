@@ -19,7 +19,6 @@
             pkgs.vimPlugins.nvim-treesitter-parsers.typescript
             pkgs.tailwindcss-language-server
             pkgs.vimPlugins.tailwindcss-colors-nvim
-            pkgs.vimPlugins.tailwind-tools-nvim
 
             pkgs.biome
 
