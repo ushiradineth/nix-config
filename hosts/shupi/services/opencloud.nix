@@ -4,7 +4,9 @@
   mysecrets,
   myvars,
   ...
-}: {
+}: let
+  port = config.ports.opencloud;
+in {
   age.secrets.oc-initial-admin-password = {
     file = "${mysecrets}/${hostname}/oc-initial-admin-password.age";
     mode = "0500";
@@ -14,7 +16,7 @@
   virtualisation.oci-containers.containers.opencloud = {
     image = "opencloudeu/opencloud-rolling:latest";
     autoStart = true;
-    ports = ["127.0.0.1:48004:9200"];
+    ports = ["127.0.0.1:${toString port}:9200"];
     entrypoint = "/bin/sh";
     cmd = [
       "-c"
@@ -40,7 +42,7 @@
   services.traefik.dynamicConfigOptions.http = {
     services.opencloud.loadBalancer.servers = [
       {
-        url = "http://localhost:48004";
+        url = "http://localhost:${toString port}";
       }
     ];
 

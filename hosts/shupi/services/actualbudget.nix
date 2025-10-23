@@ -1,15 +1,17 @@
-{config, ...}: {
+{config, ...}: let
+  port = config.ports.actualbudget;
+in {
   virtualisation.oci-containers.containers.actualbudget = {
     image = "actualbudget/actual-server:latest";
     autoStart = true;
     volumes = ["/srv/actualbudget:/data"];
-    ports = ["127.0.0.1:48001:5006"];
+    ports = ["127.0.0.1:${toString port}:5006"];
   };
 
   services.traefik.dynamicConfigOptions.http = {
     services.actualbudget.loadBalancer.servers = [
       {
-        url = "http://localhost:48001";
+        url = "http://localhost:${toString port}";
       }
     ];
 

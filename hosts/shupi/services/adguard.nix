@@ -1,10 +1,12 @@
-{config, ...}: {
+{config, ...}: let
+  port = config.ports.adguard;
+in {
   services.adguardhome = {
     enable = true;
     mutableSettings = true;
     openFirewall = true;
     host = "0.0.0.0";
-    port = 48005;
+    port = port;
 
     settings = {
       users = [
@@ -96,7 +98,7 @@
   services.traefik.dynamicConfigOptions.http = {
     services.adguard.loadBalancer.servers = [
       {
-        url = "http://localhost:48005";
+        url = "http://localhost:${toString port}";
       }
     ];
 
