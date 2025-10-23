@@ -14,6 +14,7 @@
       adguard = 48005;
       prometheus = 48006;
       grafana = 48007;
+      homepage = 48008;
     };
   };
 }

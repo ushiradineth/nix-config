@@ -8,5 +8,6 @@
     ADGUARD_DOMAIN = "ad.shupi.ushira.com";
     TRAEFIK_DOMAIN = "tr.shupi.ushira.com";
     GRAFANA_DOMAIN = "gr.shupi.ushira.com";
+    HOMEPAGE_DOMAIN = "home.shupi.ushira.com";
   };
 }
