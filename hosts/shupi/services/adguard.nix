@@ -20,7 +20,9 @@ in {
         bind_hosts = ["0.0.0.0"];
         port = 53;
         upstream_dns = [
-          "https://dns10.quad9.net/dns-query"
+          "quic://dns.nextdns.io"
+          "https://dns.quad9.net/dns-query"
+          "https://dns.adguard-dns.com/dns-query"
         ];
         bootstrap_dns = [
           "9.9.9.10"
@@ -86,6 +88,12 @@ in {
       filtering = {
         filtering_enabled = true;
         protection_enabled = true;
+        rewrites = [
+          {
+            domain = "*.shupi.ushira.com";
+            answer = "100.74.32.50";
+          }
+        ];
       };
     };
   };
