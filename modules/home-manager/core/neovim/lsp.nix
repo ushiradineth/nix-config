@@ -48,6 +48,8 @@
         installCargo = true;
       };
 
+      clangd.enable = true;
+
       gopls.enable = true; # Go LSP
       lua_ls.enable = true;
       bashls.enable = true;

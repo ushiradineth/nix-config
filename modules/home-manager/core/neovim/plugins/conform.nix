@@ -70,6 +70,8 @@
         rust = ["rustfmt"];
         php = ["pretty-php"];
         nix = ["alejandra"];
+        c = ["clang-format"];
+        cpp = ["clang-format"];
         "*" = ["codespell"];
         "_" = [
           "squeeze_blanks"

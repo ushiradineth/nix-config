@@ -23,6 +23,7 @@
     yamlfix
     alejandra # Nix formatter
     codespell # Spell checker for code
+    clang-tools # C/C++ linter
   ];
 
   programs.nixvim = {
