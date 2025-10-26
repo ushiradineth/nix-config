@@ -5,8 +5,8 @@ in {
       # Launch applications
       "$modifier,T,exec,ghostty"
       "$modifier,B,exec,firefox"
-      "$modifier,Y,exec,wezterm -e yazi"
-      "ALT,W,killactive"
+      "$modifier,Y,exec,ghostty -e yazi"
+      "ALT,Q,killactive"
 
       # Move active window
       "$modifier SHIFT,left,movewindow,l"
@@ -57,7 +57,7 @@ in {
       "ALT,Tab,bringactivetotop"
 
       # Raycast :<
-      "$modifier,SPACE,exec,rofi -show drun"
+      "ALT,SPACE,exec,rofi -show drun"
       "$modifier,V,exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
 
       # Audio

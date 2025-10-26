@@ -2,6 +2,7 @@
   publicKeys = {
     shu = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICG/8RWB3RvaLc9T3vGy7Gm4+tOYZwVdodE28YHXr98t shu@shu";
     shupi = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMZl3bh9/8hTnd4bGE46sX247Uhyzid/168ytiFy4/Zq shu@shupi";
+    shuos = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKjBz32Mi31WhyjZJpYTjtP/NcT+JDOcjqNlIfNUXqGj shu@shuos";
   };
 in {
   username = "shu";
@@ -14,7 +15,8 @@ in {
     shu = "192.168.1.2";
     shutm = "192.168.64.3";
     shupi = "192.168.1.13";
-    # Add shulab/shuos once their static IPs are assigned.
+    shuos = "192.168.1.5";
+    # Add shulab once their static IPs are assigned.
   };
   publicKeys = publicKeys;
   authorizedKeys = [publicKeys.shu]; # Authourized to access all machines
