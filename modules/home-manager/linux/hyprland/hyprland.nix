@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  myvars,
+  ...
+}: {
   home.packages = with pkgs; [
     cliphist
     hyprpolkitagent
@@ -29,12 +33,15 @@
         "wl-paste --type text --watch cliphist store" # Stores only text data
         "wl-paste --type image --watch cliphist store" # Stores only image data
         "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+
         "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
         "systemctl --user start hyprpolkitagent"
+
         "killall -q waybar;sleep .5 && waybar"
         "killall -q swaync;sleep .5 && swaync"
+
         "swww-daemon"
-        "swww img /home/shu/wallpaper.jpg"
+        "swww img /home/${myvars.username}/wallpaper.jpg"
       ];
 
       input = {
