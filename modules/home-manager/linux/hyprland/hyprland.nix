@@ -98,7 +98,7 @@
         rounding = 10;
         blur = {
           enabled = true;
-          size = 5;
+          size = 3;
           passes = 3;
           ignore_opacity = false;
           new_optimizations = true;
@@ -140,6 +140,12 @@
     extraConfig = "
       monitor = DP-3, 2560x1440@144, 0x0, 1
       layerrule = blur, waybar
+      layerrule = ignorealpha 0.3, waybar
+      layerrule = blurpopups, waybar
+      layerrule = blur, swaync-control-center
+      layerrule = blur, swaync-notification-window
+      layerrule = ignorealpha 0.3, swaync-control-center
+      layerrule = ignorealpha 0.3, swaync-notification-window
       device {
         name = logitech-usb-receiver
         sensitivity = -0.5
