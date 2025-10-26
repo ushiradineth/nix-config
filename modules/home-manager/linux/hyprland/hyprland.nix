@@ -1,19 +1,13 @@
 {pkgs, ...}: {
-  # TODO: Optimize this
-  # TODO: These options are not customised yet
   home.packages = with pkgs; [
-    swww
-    grim
-    slurp
     cliphist
-    swappy
-    ydotool
     hyprpolkitagent
     hyprland-qtutils # needed for banners and ANR messages
     pavucontrol
     wl-clipboard-rs # wl-clipboard in Rust
     libnotify
     brightnessctl
+    swww
   ];
 
   systemd.user.targets.hyprland-session.Unit.Wants = [
@@ -22,7 +16,6 @@
 
   wayland.windowManager.hyprland = {
     enable = true;
-    package = pkgs.hyprland;
     systemd = {
       enable = true;
       enableXdgAutostart = true;
@@ -33,13 +26,15 @@
     };
     settings = {
       exec-once = [
-        "wl-paste --type text --watch cliphist store # Stores only text data"
-        "wl-paste --type image --watch cliphist store # Stores only image data"
+        "wl-paste --type text --watch cliphist store" # Stores only text data
+        "wl-paste --type image --watch cliphist store" # Stores only image data
         "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
         "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
         "systemctl --user start hyprpolkitagent"
         "killall -q waybar;sleep .5 && waybar"
         "killall -q swaync;sleep .5 && swaync"
+        "swww-daemon"
+        "swww img /home/shu/wallpaper.jpg"
       ];
 
       input = {
