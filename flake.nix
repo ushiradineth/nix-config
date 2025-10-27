@@ -63,6 +63,11 @@
       url = "git+ssh://git@github.com/ushiradineth/nix-secrets.git?shallow=1";
       flake = false;
     };
+
+    vicinae = {
+      url = "github:vicinaehq/vicinae";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs: import ./outputs inputs;

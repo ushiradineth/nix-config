@@ -40,7 +40,7 @@ in {
         "custom/startmenu" = {
           tooltip = false;
           format = "";
-          on-click = "sleep 0.1 && rofi -show drun";
+          on-click = "sleep 0.1 && vicinae toggle";
         };
 
         tray = {

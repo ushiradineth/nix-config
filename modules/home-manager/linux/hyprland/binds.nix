@@ -57,9 +57,9 @@ in {
       "CTRL,Tab,cyclenext"
       "CTRL,Tab,bringactivetotop"
 
-      # Raycast :<
-      "CTRL,SPACE,exec,rofi -show drun"
-      "$modifier,V,exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+      # Launchers
+      "CTRL,SPACE,exec,vicinae toggle"
+      "$modifier,V,exec,vicinae vicinae://extensions/vicinae/clipboard/history"
 
       # Audio
       ",XF86AudioRaiseVolume,exec,wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"

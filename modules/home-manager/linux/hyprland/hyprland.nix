@@ -37,6 +37,7 @@
     };
     settings = {
       exec-once = [
+        "vicinae server" # Start Vicinae server
         "wl-paste --type text --watch cliphist store" # Stores only text data
         "wl-paste --type image --watch cliphist store" # Stores only image data
         "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
@@ -170,6 +171,9 @@
       layerrule = blur, swaync-notification-window
       layerrule = ignorealpha 0.3, swaync-control-center
       layerrule = ignorealpha 0.3, swaync-notification-window
+      layerrule = blur, vicinae
+      layerrule = ignorealpha 0, vicinae
+      layerrule = noanim, vicinae
 
       device {
         name = logitech-usb-receiver

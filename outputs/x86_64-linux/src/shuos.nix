@@ -10,6 +10,7 @@
   genSpecialArgs,
   nixvim,
   lanzaboote,
+  vicinae,
   ...
 } @ args: let
   hostname = "shuos";
@@ -28,7 +29,10 @@
       map mylib.relativeToRoot [
         "modules/home-manager/linux"
       ]
-      ++ [nixvim.homeModules.nixvim];
+      ++ [
+        nixvim.homeModules.nixvim
+        vicinae.homeManagerModules.default
+      ];
   };
 
   systemArgs = modules // args // {inherit specialArgs;};

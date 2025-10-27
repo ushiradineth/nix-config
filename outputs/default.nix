@@ -9,6 +9,7 @@
   colmena,
   agenix,
   mysecrets,
+  vicinae,
   ...
 } @ inputs: let
   inherit (inputs.nixpkgs) lib;
@@ -28,7 +29,24 @@
     };
 
   # This is the args for all the haumea modules in this folder.
-  args = {inherit inputs lib mylib myvars genSpecialArgs nix-homebrew nixvim lanzaboote disko nixos-raspberrypi colmena agenix mysecrets;};
+  args = {
+    inherit
+      inputs
+      lib
+      mylib
+      myvars
+      genSpecialArgs
+      nix-homebrew
+      nixvim
+      lanzaboote
+      disko
+      nixos-raspberrypi
+      colmena
+      agenix
+      mysecrets
+      vicinae
+      ;
+  };
 
   # modules for each supported system
   nixosSystems = {
