@@ -19,5 +19,5 @@ in {
     # Add shulab once their static IPs are assigned.
   };
   publicKeys = publicKeys;
-  authorizedKeys = [publicKeys.shu]; # Authourized to access all machines
+  authorizedKeys = [publicKeys.shu publicKeys.shuos]; # Authourized to access all machines
 }
