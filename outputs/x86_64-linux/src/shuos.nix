@@ -20,9 +20,7 @@
     nixos-modules =
       map mylib.relativeToRoot [
         "modules/nix-modules/linux"
-        "modules/nix-modules/core/base.nix"
-        "modules/nix-modules/core/fonts.nix"
-        "modules/nix-modules/core/ssh.nix"
+        "modules/nix-modules/core"
         "hosts/${hostname}"
       ]
       ++ [lanzaboote.nixosModules.lanzaboote];
