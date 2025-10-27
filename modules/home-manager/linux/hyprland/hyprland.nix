@@ -18,6 +18,7 @@
     swappy
     wf-recorder
     hyprpicker
+    bluetuith
   ];
 
   systemd.user.targets.hyprland-session.Unit.Wants = [
@@ -156,7 +157,6 @@
         new_on_top = 1;
         mfact = 0.5;
       };
-
     };
 
     extraConfig = "

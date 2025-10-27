@@ -78,6 +78,10 @@ in {
       # Color picker
       "$modifier,C,exec,hyprpicker -a"
 
+      # Network and Bluetooth management
+      "$modifier,W,exec,ghostty -e nmtui"
+      "$modifier SHIFT,B,exec,ghostty -e bluetuith"
+
       # General
       "$modifier,F,fullscreen,"
       "$modifier SHIFT,I,togglesplit," # Toggle between horizontal and vertical split

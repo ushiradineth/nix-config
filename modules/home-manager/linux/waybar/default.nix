@@ -1,4 +1,5 @@
 {
+  pkgs,
   lib,
   config,
   ...
@@ -10,6 +11,10 @@ in {
     text = builtins.readFile ./catppuccin-frappe.css;
   };
 
+  home.packages = with pkgs; [
+    bluetuith
+  ];
+
   programs.waybar = {
     enable = true;
     settings = [
@@ -19,7 +24,7 @@ in {
 
         modules-left = ["custom/startmenu"];
         modules-center = ["hyprland/workspaces"];
-        modules-right = ["custom/clock-notification"];
+        modules-right = ["tray" "bluetooth" "network" "custom/clock-notification"];
 
         "hyprland/workspaces" = {
           format = "{name}";
@@ -36,6 +41,34 @@ in {
           tooltip = false;
           format = "";
           on-click = "sleep 0.1 && rofi -show drun";
+        };
+
+        tray = {
+          icon-size = 18;
+          spacing = 8;
+        };
+
+        bluetooth = {
+          format = "";
+          format-connected = "󰂯";
+          format-connected-battery = "󰂯";
+          tooltip-format = "{controller_alias}\t{controller_address}\n\n{num_connections} connected";
+          tooltip-format-connected = "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}";
+          tooltip-format-enumerate-connected = "{device_alias}\t{device_address}";
+          tooltip-format-enumerate-connected-battery = "{device_alias}\t{device_address}\t{device_battery_percentage}%";
+          on-click = "ghostty -e bluetuith";
+        };
+
+        network = {
+          format-wifi = "󰖩";
+          format-ethernet = "󰖩";
+          format-linked = "󰖩";
+          format-disconnected = "󰖪";
+          tooltip-format = "{ifname} via {gwaddr}";
+          tooltip-format-wifi = "{essid} ({signalStrength}%)";
+          tooltip-format-ethernet = "{ifname}";
+          tooltip-format-disconnected = "Disconnected";
+          on-click = "ghostty -e nmtui";
         };
 
         "custom/clock-notification" = {
@@ -110,11 +143,27 @@ in {
       "  transition: all 0.2s ease;"
       "}"
       "#custom-startmenu:hover {"
-      "  color: @lavender;"
+      "  opacity: 0.8;"
       "}"
       "#tray {"
       "  padding: 0px 10px;"
       "  background: transparent;"
+      "}"
+      "#bluetooth {"
+      "  padding: 0px 10px;"
+      "  background: transparent;"
+      "  transition: all 0.2s ease;"
+      "}"
+      "#bluetooth:hover {"
+      "  opacity: 0.8;"
+      "}"
+      "#network {"
+      "  padding: 0px 10px;"
+      "  background: transparent;"
+      "  transition: all 0.2s ease;"
+      "}"
+      "#network:hover {"
+      "  opacity: 0.8;"
       "}"
     ];
   };
