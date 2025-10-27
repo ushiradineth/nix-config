@@ -7,7 +7,7 @@ in {
       "$modifier,B,exec,firefox"
       "$modifier,Y,exec,ghostty -e yazi"
       "$modifier,E,exec,thunar"
-      "ALT,Q,killactive"
+      "CTRL,Q,killactive"
 
       # Move active window
       "$modifier SHIFT,left,movewindow,l"
@@ -53,12 +53,12 @@ in {
       "$modifier SHIFT,9,movetoworkspace,9"
       "$modifier SHIFT,0,movetoworkspace,10"
 
-      # Alt+Tab
-      "ALT,Tab,cyclenext"
-      "ALT,Tab,bringactivetotop"
+      # Ctrl+Tab (since ALT is now CTRL due to key remapping)
+      "CTRL,Tab,cyclenext"
+      "CTRL,Tab,bringactivetotop"
 
       # Raycast :<
-      "ALT,SPACE,exec,rofi -show drun"
+      "CTRL,SPACE,exec,rofi -show drun"
       "$modifier,V,exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
 
       # Audio
@@ -73,7 +73,7 @@ in {
       ",XF86MonBrightnessUp,exec,brightnessctl set +5%"
 
       # Screenshots
-      "ALT SHIFT,5,exec,grim -g \"$(slurp)\" - | swappy -f -"
+      "CTRL SHIFT,5,exec,grim -g \"$(slurp)\" - | swappy -f -"
 
       # Color picker
       "$modifier,C,exec,hyprpicker -a"

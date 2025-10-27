@@ -66,6 +66,9 @@
       windowrule = [
         "tag +browser, class:^([Ff]irefox|org.mozilla.firefox|[Ff]irefox-esr)$"
         "tag +terminal, class:^(com.mitchellh.ghostty|org.wezfurlong.wezterm|Alacritty|kitty|kitty-dropterm)$"
+        "workspace 1, class:^([Ff]irefox|org.mozilla.firefox|[Ff]irefox-esr)$"
+        "workspace 2, class:^(com.mitchellh.ghostty)$"
+        "workspace 6, class:^(Bitwarden)$"
       ];
 
       gestures = {
@@ -153,6 +156,7 @@
         new_on_top = 1;
         mfact = 0.5;
       };
+
     };
 
     extraConfig = "

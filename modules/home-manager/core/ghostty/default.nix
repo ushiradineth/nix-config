@@ -41,39 +41,37 @@
 
     # Close tmux window/pane
     keybind = cmd+w=text:\x13x
-    keybind = cmd+c=text:\x13c
   '';
 
   # Linux-specific settings
   linuxConfig = ''
     window-decoration = true
 
-    # Tmux window switching (Alt+1-9)
-    keybind = alt+1=text:\x131
-    keybind = alt+2=text:\x132
-    keybind = alt+3=text:\x133
-    keybind = alt+4=text:\x134
-    keybind = alt+5=text:\x135
-    keybind = alt+6=text:\x136
-    keybind = alt+7=text:\x137
-    keybind = alt+8=text:\x138
-    keybind = alt+9=text:\x139
+    # Tmux window switching (Ctrl+1-9) - now that Alt is mapped to Ctrl
+    keybind = ctrl+1=text:\x131
+    keybind = ctrl+2=text:\x132
+    keybind = ctrl+3=text:\x133
+    keybind = ctrl+4=text:\x134
+    keybind = ctrl+5=text:\x135
+    keybind = ctrl+6=text:\x136
+    keybind = ctrl+7=text:\x137
+    keybind = ctrl+8=text:\x138
+    keybind = ctrl+9=text:\x139
 
-    # Allow Alt+p to be used by other applications (neovim)
-    keybind = alt+p=esc:p
+    # Allow Ctrl+p to be used by other applications (neovim)
+    keybind = ctrl+p=esc:p
 
     # New tmux tab
-    keybind = alt+t=text:\x13t
+    keybind = ctrl+t=text:\x13t
 
     # Tmux horizontal split
-    keybind = alt+\=text:\x13^
+    keybind = ctrl+\=text:\x13^
 
     # Tmux vertical split
-    keybind = alt+-=text:\x13%
+    keybind = ctrl+-=text:\x13%
 
     # Close tmux window/pane
-    keybind = alt+w=text:\x13x
-    keybind = alt+c=text:\x13c
+    keybind = ctrl+w=text:\x13x
   '';
 
   platformConfig =
@@ -95,7 +93,7 @@ in {
       background-opacity = 0.75
       background-blur = true
 
-      font-size = 18
+      font-size = 16
       font-style = medium
       font-feature = -calt, +ccmp
       font-family = JetBrainsMono Nerd Font Mono
