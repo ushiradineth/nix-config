@@ -8,7 +8,7 @@
     hyprpolkitagent
     hyprland-qtutils # needed for banners and ANR messages
     pavucontrol
-    wl-clipboard-rs # wl-clipboard in Rust
+    wl-clipboard
     libnotify
     brightnessctl
     swww
