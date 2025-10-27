@@ -10,6 +10,7 @@
   agenix,
   mysecrets,
   vicinae,
+  zen-browser,
   ...
 } @ inputs: let
   inherit (inputs.nixpkgs) lib;
@@ -45,6 +46,7 @@
       agenix
       mysecrets
       vicinae
+      zen-browser
       ;
   };
 

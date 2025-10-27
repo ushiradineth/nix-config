@@ -11,6 +11,7 @@
   nixvim,
   lanzaboote,
   vicinae,
+  zen-browser,
   ...
 } @ args: let
   hostname = "shuos";
@@ -32,6 +33,7 @@
       ++ [
         nixvim.homeModules.nixvim
         vicinae.homeManagerModules.default
+        zen-browser.homeModules.beta
       ];
   };
 
