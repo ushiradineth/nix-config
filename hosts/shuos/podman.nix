@@ -25,4 +25,3 @@
     podman-tui # Terminal UI for podman
   ];
 }
-
