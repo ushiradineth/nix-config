@@ -6,6 +6,7 @@ in {
       "$modifier,T,exec,ghostty"
       "$modifier,B,exec,firefox"
       "$modifier,Y,exec,ghostty -e yazi"
+      "$modifier,E,exec,thunar"
       "ALT,Q,killactive"
 
       # Move active window
@@ -70,6 +71,12 @@ in {
       ",XF86AudioPrev, exec, playerctl previous"
       ",XF86MonBrightnessDown,exec,brightnessctl set 5%-"
       ",XF86MonBrightnessUp,exec,brightnessctl set +5%"
+
+      # Screenshots
+      "ALT SHIFT,5,exec,grim -g \"$(slurp)\" - | swappy -f -"
+
+      # Color picker
+      "$modifier,C,exec,hyprpicker -a"
 
       # General
       "$modifier,F,fullscreen,"

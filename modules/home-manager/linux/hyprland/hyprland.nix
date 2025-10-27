@@ -12,6 +12,12 @@
     libnotify
     brightnessctl
     swww
+    xfce.thunar
+    grim
+    slurp
+    swappy
+    wf-recorder
+    hyprpicker
   ];
 
   systemd.user.targets.hyprland-session.Unit.Wants = [
@@ -56,6 +62,11 @@
           scroll_factor = 0.8;
         };
       };
+
+      windowrule = [
+        "tag +browser, class:^([Ff]irefox|org.mozilla.firefox|[Ff]irefox-esr)$"
+        "tag +terminal, class:^(com.mitchellh.ghostty|org.wezfurlong.wezterm|Alacritty|kitty|kitty-dropterm)$"
+      ];
 
       gestures = {
         workspace_swipe = 1;
@@ -146,6 +157,8 @@
 
     extraConfig = "
       monitor = DP-3, 2560x1440@144, 0x0, 1
+
+      # Layer rules
       layerrule = blur, waybar
       layerrule = ignorealpha 0.3, waybar
       layerrule = blurpopups, waybar
@@ -153,10 +166,11 @@
       layerrule = blur, swaync-notification-window
       layerrule = ignorealpha 0.3, swaync-control-center
       layerrule = ignorealpha 0.3, swaync-notification-window
+
       device {
         name = logitech-usb-receiver
         sensitivity = -0.5
-      }
+    }
     ";
   };
 }

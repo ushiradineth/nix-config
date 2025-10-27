@@ -4,5 +4,7 @@
     firefox
     bitwarden
     claude-code
+    opencloud-desktop
+    figma-linux
   ];
 }
