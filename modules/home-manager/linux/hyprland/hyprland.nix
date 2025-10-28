@@ -8,6 +8,7 @@
     hyprpolkitagent
     hyprland-qtutils # needed for banners and ANR messages
     pavucontrol
+    playerctl # Media player control
     wl-clipboard
     libnotify
     brightnessctl
