@@ -37,6 +37,7 @@
     ncdu_2 # disk usage analyzer
     jq # json parser
     pciutils
+    killall
   ];
 
   programs.zsh = {
