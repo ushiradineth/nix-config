@@ -1,5 +1,4 @@
 {
-  gtk = {
-    enable = true;
-  };
+  gtk.enable = true;
+  dconf.enable = false;
 }

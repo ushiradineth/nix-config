@@ -51,6 +51,9 @@
 
         "swww-daemon"
         "swww img /home/${myvars.username}/wallpaper.jpg"
+
+        # Set cursor theme
+        "hyprctl setcursor macOS 24"
       ];
 
       input = {
@@ -103,10 +106,8 @@
         disable_hyprland_logo = true;
         disable_splash_rendering = true;
         enable_swallow = false;
-        vfr = true; # Variable Frame Rate
-        vrr = 2; #Variable Refresh Rate  Might need to set to 0 for NVIDIA/AQ_DRM_DEVICES
-        # Screen flashing to black momentarily or going black when app is fullscreen
-        # Try setting vrr to 0
+        vfr = false; # Variable Frame Rate
+        vrr = 0; # Disable VRR for NVIDIA compatibility
 
         #  Application not responding (ANR) settings
         enable_anr_dialog = true;
@@ -142,17 +143,17 @@
       };
 
       cursor = {
-        sync_gsettings_theme = true;
-        no_hardware_cursors = 2; # change to 1 if want to disable
+        sync_gsettings_theme = false; # Disable to avoid dconf dependency
+        no_hardware_cursors = true; # Essential for NVIDIA
         enable_hyprcursor = false;
         warp_on_change_workspace = 2;
         no_warps = true;
       };
 
       render = {
-        explicit_sync = 1; # Change to 1 to disable
-        explicit_sync_kms = 1;
-        direct_scanout = 0;
+        explicit_sync = 2; # NVIDIA requires 2 for compatibility
+        explicit_sync_kms = 2;
+        direct_scanout = false; # Better for NVIDIA screen sharing
       };
 
       master = {

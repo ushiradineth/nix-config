@@ -75,17 +75,17 @@ in {
       # Brightness controls
       ",F1,exec,brightnessctl set 5%-"
       ",F2,exec,brightnessctl set +5%"
-      
+
       # Media controls
       ",F7,exec,playerctl previous"
       ",F8,exec,playerctl play-pause"
       ",F9,exec,playerctl next"
-      
+
       # Additional media controls (Super + function keys)
       "$modifier,F7,exec,playerctl previous"
       "$modifier,F8,exec,playerctl play-pause"
       "$modifier,F9,exec,playerctl next"
-      
+
       # Volume controls with regular keys
       "$modifier,F10,exec,wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
       "$modifier,F11,exec,wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
