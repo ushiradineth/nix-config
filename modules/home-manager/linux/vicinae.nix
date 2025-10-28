@@ -10,7 +10,7 @@
         rounding = 10;
       };
       terminal = "ghostty";
-      browser = "firefox";
+      browser = "zen";
     };
   };
 }

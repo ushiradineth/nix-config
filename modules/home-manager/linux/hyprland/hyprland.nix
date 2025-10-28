@@ -67,11 +67,12 @@
       };
 
       windowrule = [
-        "tag +browser, class:^([Ff]irefox|org.mozilla.firefox|[Ff]irefox-esr)$"
-        "tag +terminal, class:^(com.mitchellh.ghostty|org.wezfurlong.wezterm|Alacritty|kitty|kitty-dropterm)$"
-        "workspace 1, class:^([Ff]irefox|org.mozilla.firefox|[Ff]irefox-esr)$"
+        "tag +browser, class:^([Zz]en|zen-alpha|zen-browser)$"
+        "tag +terminal, class:^(com.mitchellh.ghostty|org.wezfurlong.wezterm)$"
+        "workspace 1, class:^([Zz]en|zen-alpha|zen-browser)$"
         "workspace 2, class:^(com.mitchellh.ghostty)$"
         "workspace 6, class:^(Bitwarden)$"
+        "opacity 0.75 0.50, class:^([Zz]en|zen-alpha|zen-browser)$"
       ];
 
       gestures = {

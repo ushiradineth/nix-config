@@ -1,7 +1,6 @@
 {pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     ghostty
-    firefox
     discord
     bitwarden
     claude-code
