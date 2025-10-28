@@ -90,6 +90,10 @@ in {
       window-padding-x = 5
       window-padding-y = 5
 
+      background = 303446
+      foreground = f1f1f1
+      selection-background = ffffff
+      selection-foreground = f1f1f1
       background-opacity = 0.75
       background-blur = true
 

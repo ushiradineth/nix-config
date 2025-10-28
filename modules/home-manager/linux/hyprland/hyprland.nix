@@ -46,13 +46,17 @@
         "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
         "systemctl --user start hyprpolkitagent"
 
+        # Dark mode settings
+        "gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark'"
+        "gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'"
+        "gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur'"
+
         "killall -q waybar;sleep .5 && waybar"
         "killall -q swaync;sleep .5 && swaync"
 
         "swww-daemon"
         "swww img /home/${myvars.username}/wallpaper.jpg"
 
-        # Set cursor theme
         "hyprctl setcursor macOS 24"
       ];
 
@@ -134,7 +138,7 @@
       };
 
       decoration = {
-        rounding = 10;
+        rounding = 12;
         blur = {
           enabled = true;
           size = 3;
@@ -143,7 +147,10 @@
           new_optimizations = true;
         };
         shadow = {
-          enabled = false;
+          enabled = true;
+          color = "0x66000000";
+          range = 8;
+          render_power = 2;
         };
       };
 
@@ -175,6 +182,11 @@
 
     extraConfig = "
       monitor = DP-3, 2560x1440@144, 0x0, 1
+
+      # Environment variables for dark mode
+      env = GTK_THEME,WhiteSur-Dark
+      env = QT_STYLE_OVERRIDE,adwaita-dark
+      env = QT_QPA_PLATFORMTHEME,qt6ct
 
       # Layer rules
       layerrule = blur, waybar

@@ -1,16 +1,8 @@
 {
   pkgs,
   lib,
-  config,
   ...
-}: let
-  cfg = config.home;
-  waybarDir = "${cfg.homeDirectory}/.config/waybar";
-in {
-  home.file."${waybarDir}/theme.css" = {
-    text = builtins.readFile ./catppuccin-frappe.css;
-  };
-
+}: {
   home.packages = with pkgs; [
     bluetuith
   ];
@@ -52,10 +44,9 @@ in {
           format = "";
           format-connected = "󰂯";
           format-connected-battery = "󰂯";
-          tooltip-format = "{controller_alias}\t{controller_address}\n\n{num_connections} connected";
-          tooltip-format-connected = "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}";
-          tooltip-format-enumerate-connected = "{device_alias}\t{device_address}";
-          tooltip-format-enumerate-connected-battery = "{device_alias}\t{device_address}\t{device_battery_percentage}%";
+          tooltip-format-connected = "{num_connections} devices connected\n\n{device_enumerate}";
+          tooltip-format-enumerate-connected = "{device_alias}";
+          tooltip-format-enumerate-connected-battery = "{device_alias} - {device_battery_percentage}%";
           on-click = "ghostty -e bluetuith";
         };
 
@@ -64,10 +55,9 @@ in {
           format-ethernet = "󰖩";
           format-linked = "󰖩";
           format-disconnected = "󰖪";
-          tooltip-format = "{ifname} via {gwaddr}";
-          tooltip-format-wifi = "{essid} ({signalStrength}%)";
-          tooltip-format-ethernet = "{ifname}";
-          tooltip-format-disconnected = "Disconnected";
+          tooltip-format-wifi = "Wi-Fi connected\n\n{ipaddr} @ {essid} - Signal {signalStrength}%";
+          tooltip-format-ethernet = "Ethernet connected\n\n{ipaddr} @ {ifname}";
+          tooltip-format-disconnected = "Not Connected";
           on-click = "ghostty -e nmtui";
         };
 
@@ -85,14 +75,15 @@ in {
     ];
 
     style = lib.concatStringsSep "\n" [
-      "@import \"theme.css\";"
       "* {"
-      "  font-family: JetBrainsMono Nerd Font Mono;"
+      "  font-family: Geist;"
       "  font-size: 14px;"
       "  font-weight: 600;"
-      "  border-radius: 0px;"
+      "  border-radius: 12px;"
       "  border: none;"
       "  min-height: 0px;"
+      "  margin: 0.5px 8px;"
+      "  padding: 0px;"
       "  color: @text;"
       "}"
       "window#waybar {"
@@ -101,69 +92,28 @@ in {
       "  border-bottom: 1px solid rgba(255, 255, 255, 0.05);"
       "  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);"
       "}"
-      "#workspaces {"
-      "  background: transparent;"
-      "  margin: 0 8px;"
-      "}"
       "#workspaces button {"
-      "  padding: 0px 6px;"
-      "  margin: 0 2px;"
-      "  background: transparent;"
-      "  color: rgba(255, 255, 255, 0.5);"
-      "  border-radius: 0px;"
-      "  font-weight: 400;"
-      "  transition: all 0.2s ease;"
-      "}"
-      "#workspaces button:hover {"
-      "  color: rgba(255, 255, 255, 0.8);"
-      "}"
-      "#workspaces button.active {"
-      "  background: transparent;"
-      "  color: @text-active;"
-      "  font-weight: 800;"
       "  box-shadow: none;"
-      "  border: none;"
-      "}"
-      "#workspaces button.urgent {"
-      "  color: @red;"
+      "  text-shadow: none;"
+      "  margin: 0px;"
+      "  padding: 0px;"
+      "  color: #f1f1f1;"
       "}"
       "tooltip {"
-      "  background: rgba(48, 52, 70, 0.95);"
-      "  border-radius: 12px;"
+      "  background: rgba(0, 0, 0, 0.5);"
       "  border: 1px solid rgba(255, 255, 255, 0.1);"
       "}"
+      "tooltip label {"
+      "  padding: 0px;"
+      "  margin: 8px 0px;"
+      "}"
       "#custom-clock-notification {"
-      "  padding: 0px 10px;"
-      "  background: transparent;"
+      "  margin: 0px;"
+      "  margin-left: 8px;"
       "}"
       "#custom-startmenu {"
-      "  padding: 0px 10px;"
-      "  font-size: 18px;"
-      "  background: transparent;"
-      "  transition: all 0.2s ease;"
-      "}"
-      "#custom-startmenu:hover {"
-      "  opacity: 0.8;"
-      "}"
-      "#tray {"
-      "  padding: 0px 10px;"
-      "  background: transparent;"
-      "}"
-      "#bluetooth {"
-      "  padding: 0px 10px;"
-      "  background: transparent;"
-      "  transition: all 0.2s ease;"
-      "}"
-      "#bluetooth:hover {"
-      "  opacity: 0.8;"
-      "}"
-      "#network {"
-      "  padding: 0px 10px;"
-      "  background: transparent;"
-      "  transition: all 0.2s ease;"
-      "}"
-      "#network:hover {"
-      "  opacity: 0.8;"
+      "  margin: 0px;"
+      "  margin-right: 8px;"
       "}"
     ];
   };
