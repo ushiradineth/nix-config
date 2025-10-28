@@ -70,12 +70,21 @@
       };
 
       windowrule = [
-        "tag +browser, class:^([Zz]en|zen-alpha|zen-browser)$"
-        "tag +terminal, class:^(com.mitchellh.ghostty|org.wezfurlong.wezterm)$"
-        "workspace 1, class:^([Zz]en|zen-alpha|zen-browser)$"
+        "opacity 1 1, class:^(zen-beta)$" # Full active and unfocused opacity for Zen Browser
+      ];
+
+      windowrulev2 = [
+        # Zen Browser to workspace 1
+        "workspace 1, class:^(zen-beta)$"
+
+        # Ghostty to workspace 2
         "workspace 2, class:^(com.mitchellh.ghostty)$"
+
+        # Figma to workspace 4
+        "workspace 4, class:^(figma-linux)$"
+
+        # Bitwarden to workspace 6
         "workspace 6, class:^(Bitwarden)$"
-        "opacity 0.75 0.50, class:^([Zz]en|zen-alpha|zen-browser)$"
       ];
 
       gestures = {
@@ -92,9 +101,9 @@
       general = {
         "$modifier" = "SUPER";
         layout = "dwindle";
-        gaps_in = 6;
-        gaps_out = 8;
-        border_size = 2;
+        gaps_in = 2;
+        gaps_out = 2;
+        border_size = 0;
         resize_on_border = true;
       };
 
@@ -114,6 +123,10 @@
         anr_missed_pings = 20;
       };
 
+      animations = {
+        enabled = false;
+      };
+
       dwindle = {
         pseudotile = true;
         preserve_split = true;
@@ -130,10 +143,7 @@
           new_optimizations = true;
         };
         shadow = {
-          enabled = true;
-          range = 4;
-          render_power = 3;
-          color = "rgba(1a1a1aee)";
+          enabled = false;
         };
       };
 
