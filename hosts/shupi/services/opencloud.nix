@@ -36,6 +36,7 @@ in {
       OC_INSECURE = "false";
       PROXY_ENABLE_BASIC_AUTH = "false";
       TZ = myvars.timezone;
+      NO_PROXY = "127.0.0.1,localhost,${config.environment.variables.OC_DOMAIN}";
     };
   };
 
