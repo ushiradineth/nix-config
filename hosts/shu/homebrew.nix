@@ -44,6 +44,8 @@
       "conductor" # Claude Code Parallelisation
       "drawpen" # For presentations (sketching on the screen)
       "utm" # Virtual Machines
+      "affinity" # Photo editing
+      "obsidian"
     ];
     masApps = {
       "Davinci Resolve" = 571213070;

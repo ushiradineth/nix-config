@@ -126,6 +126,11 @@ run = 'move-node-to-workspace 2'
 if.app-id = 'com.mitchellh.ghostty'
 run = 'move-node-to-workspace 2'
 
+# Move Obsidian to workspace 3
+[[on-window-detected]]
+if.app-id = 'md.obsidian'
+run = 'move-node-to-workspace 3'
+
 # Move Notes to workspace 3
 [[on-window-detected]]
 if.app-id = 'com.apple.Notes'
