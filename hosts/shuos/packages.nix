@@ -4,7 +4,7 @@
     discord
     bitwarden
     claude-code
-    opencloud-desktop
+    seafile-client
     localsend # AirDrop alternative
     expect # Automate interactive applications
     figma-linux

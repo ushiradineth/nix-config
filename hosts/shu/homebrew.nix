@@ -46,6 +46,7 @@
       "utm" # Virtual Machines
       "affinity" # Photo editing
       "obsidian"
+      "seafile-client"
     ];
     masApps = {
       "Davinci Resolve" = 571213070;

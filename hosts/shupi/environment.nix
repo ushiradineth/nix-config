@@ -10,5 +10,6 @@
     GRAFANA_DOMAIN = "gr.shupi.ushira.com";
     HOMEPAGE_DOMAIN = "home.shupi.ushira.com";
     IMMICH_DOMAIN = "im.shupi.ushira.com";
+    SEAFILE_DOMAIN = "sf.shupi.ushira.com";
   };
 }

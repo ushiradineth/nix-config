@@ -16,6 +16,7 @@
       grafana = 48007;
       homepage = 48008;
       immich = 48009;
+      seafile = 48010;
     };
   };
 }
