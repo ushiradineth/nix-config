@@ -28,7 +28,7 @@ in {
         };
         "Applications" = {
           style = "row";
-          columns = 2;
+          columns = 3;
         };
         "Development" = {
           style = "row";
@@ -126,6 +126,13 @@ in {
               icon = "https://avatars.githubusercontent.com/u/188916550?s=280&v=4";
               href = "https://${config.environment.variables.OC_DOMAIN}";
               description = "Cloud Storage";
+            };
+          }
+          {
+            Immich = {
+              icon = "https://avatars.githubusercontent.com/u/109746326?v=4";
+              href = "https://${config.environment.variables.IMMICH_DOMAIN}";
+              description = "Photo Management";
             };
           }
         ];

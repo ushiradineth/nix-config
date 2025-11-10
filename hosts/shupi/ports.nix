@@ -15,6 +15,7 @@
       prometheus = 48006;
       grafana = 48007;
       homepage = 48008;
+      immich = 48009;
     };
   };
 }
