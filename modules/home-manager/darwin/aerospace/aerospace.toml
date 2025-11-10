@@ -206,9 +206,9 @@ run = 'layout floating'
 if.app-id = 'ch.protonvpn.mac'
 run = 'layout floating'
 
-# Open OpenCloud in floating mode
+# Open Seafile in floating mode
 [[on-window-detected]]
-if.app-id = 'eu.opencloud.desktop'
+if.app-id = 'com.seafile.seafile-client'
 run = 'layout floating'
 
 # Open Tailscale in floating mode

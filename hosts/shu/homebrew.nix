@@ -27,7 +27,6 @@
       "ghostty" # Terminal emulator
       "orbstack" # Drop in replacement for Docker Desktop
       "whatsapp"
-      "opencloud" # OpenCloud Sync
       "google-drive"
       "modrinth" # Minecraft Launcher
       "hiddenbar" # Hide menu bar items

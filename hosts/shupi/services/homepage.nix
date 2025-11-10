@@ -122,9 +122,9 @@ in {
             };
           }
           {
-            OpenCloud = {
-              icon = "https://avatars.githubusercontent.com/u/188916550?s=280&v=4";
-              href = "https://${config.environment.variables.OC_DOMAIN}";
+            Seafile = {
+              icon = "https://manual.seafile.com/latest/media/seafile-transparent-1024.png";
+              href = "https://${config.environment.variables.SEAFILE_DOMAIN}";
               description = "Cloud Storage";
             };
           }
