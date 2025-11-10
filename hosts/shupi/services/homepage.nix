@@ -135,6 +135,13 @@ in {
               description = "Photo Management";
             };
           }
+          {
+            Umami = {
+              icon = "https://avatars.githubusercontent.com/u/53970247?v=4";
+              href = "https://${config.environment.variables.UMAMI_DOMAIN}";
+              description = "Privacy-focused Analytics";
+            };
+          }
         ];
       }
     ];
