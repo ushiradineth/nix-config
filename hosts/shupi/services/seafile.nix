@@ -75,75 +75,75 @@ in {
     # Create MySQL init script for seafile user
     mkdir -p /srv/seafile/mysql-init
     cat > /srv/seafile/mysql-init/init-seafile-user.sql << EOF
--- Create seafile user and grant permissions
-CREATE USER IF NOT EXISTS 'seafile'@'%' IDENTIFIED BY '$DB_PASSWORD';
-GRANT ALL PRIVILEGES ON ccnet_db.* TO 'seafile'@'%';
-GRANT ALL PRIVILEGES ON seafile_db.* TO 'seafile'@'%';
-GRANT ALL PRIVILEGES ON seahub_db.* TO 'seafile'@'%';
-FLUSH PRIVILEGES;
-EOF
+    -- Create seafile user and grant permissions
+    CREATE USER IF NOT EXISTS 'seafile'@'%' IDENTIFIED BY '$DB_PASSWORD';
+    GRANT ALL PRIVILEGES ON ccnet_db.* TO 'seafile'@'%';
+    GRANT ALL PRIVILEGES ON seafile_db.* TO 'seafile'@'%';
+    GRANT ALL PRIVILEGES ON seahub_db.* TO 'seafile'@'%';
+    FLUSH PRIVILEGES;
+    EOF
     chmod 644 /srv/seafile/mysql-init/init-seafile-user.sql
 
     # Seafile env file (v13.0 format - matches official compose)
     cat > /var/lib/seafile/seafile.env << EOF
-# Server Configuration
-SEAFILE_SERVER_HOSTNAME=${domain}
-SEAFILE_SERVER_PROTOCOL=https
-TIME_ZONE=${myvars.timezone}
-SITE_ROOT=/
-NON_ROOT=false
-SEAFILE_LOG_TO_STDOUT=false
+    # Server Configuration
+    SEAFILE_SERVER_HOSTNAME=${domain}
+    SEAFILE_SERVER_PROTOCOL=https
+    TIME_ZONE=${myvars.timezone}
+    SITE_ROOT=/
+    NON_ROOT=false
+    SEAFILE_LOG_TO_STDOUT=false
 
-# Admin Configuration (only used on first setup)
-INIT_SEAFILE_ADMIN_EMAIL=${myvars.userEmail}
-INIT_SEAFILE_ADMIN_PASSWORD=$ADMIN_PASSWORD
+    # Admin Configuration (only used on first setup)
+    INIT_SEAFILE_ADMIN_EMAIL=${myvars.userEmail}
+    INIT_SEAFILE_ADMIN_PASSWORD=$ADMIN_PASSWORD
 
-# MySQL/MariaDB Configuration
-SEAFILE_MYSQL_DB_HOST=seafile-db
-SEAFILE_MYSQL_DB_PORT=3306
-SEAFILE_MYSQL_DB_USER=seafile
-SEAFILE_MYSQL_DB_PASSWORD=$DB_PASSWORD
-INIT_SEAFILE_MYSQL_ROOT_PASSWORD=$DB_PASSWORD
-SEAFILE_MYSQL_DB_CCNET_DB_NAME=ccnet_db
-SEAFILE_MYSQL_DB_SEAFILE_DB_NAME=seafile_db
-SEAFILE_MYSQL_DB_SEAHUB_DB_NAME=seahub_db
+    # MySQL/MariaDB Configuration
+    SEAFILE_MYSQL_DB_HOST=seafile-db
+    SEAFILE_MYSQL_DB_PORT=3306
+    SEAFILE_MYSQL_DB_USER=seafile
+    SEAFILE_MYSQL_DB_PASSWORD=$DB_PASSWORD
+    INIT_SEAFILE_MYSQL_ROOT_PASSWORD=$DB_PASSWORD
+    SEAFILE_MYSQL_DB_CCNET_DB_NAME=ccnet_db
+    SEAFILE_MYSQL_DB_SEAFILE_DB_NAME=seafile_db
+    SEAFILE_MYSQL_DB_SEAHUB_DB_NAME=seahub_db
 
-# JWT Configuration
-JWT_PRIVATE_KEY=$JWT_KEY
+    # JWT Configuration
+    JWT_PRIVATE_KEY=$JWT_KEY
 
-# Cache Configuration (Redis)
-CACHE_PROVIDER=redis
-REDIS_HOST=seafile-redis
-REDIS_PORT=6379
-REDIS_PASSWORD=
+    # Cache Configuration (Redis)
+    CACHE_PROVIDER=redis
+    REDIS_HOST=seafile-redis
+    REDIS_PORT=6379
+    REDIS_PASSWORD=
 
-# Notification Server
-ENABLE_NOTIFICATION_SERVER=true
-INNER_NOTIFICATION_SERVER_URL=http://notification-server:8083
-NOTIFICATION_SERVER_URL=https://${domain}/notification
+    # Notification Server
+    ENABLE_NOTIFICATION_SERVER=true
+    INNER_NOTIFICATION_SERVER_URL=http://notification-server:8083
+    NOTIFICATION_SERVER_URL=https://${domain}/notification
 
-# SeaDoc Configuration (disabled - not running seadoc container)
-ENABLE_SEADOC=false
+    # SeaDoc Configuration (disabled - not running seadoc container)
+    ENABLE_SEADOC=false
 
-# Seafile AI (disabled)
-ENABLE_SEAFILE_AI=false
+    # Seafile AI (disabled)
+    ENABLE_SEAFILE_AI=false
 
-# Limits
-MD_FILE_COUNT_LIMIT=100000
-EOF
+    # Limits
+    MD_FILE_COUNT_LIMIT=100000
+    EOF
     chmod 600 /var/lib/seafile/seafile.env
 
     # Create custom seahub settings to append
     mkdir -p /srv/seafile
     cat > /srv/seafile/custom_settings.py << EOF
-# Custom settings for reverse proxy
-SERVICE_URL = "https://${domain}"
-FILE_SERVER_ROOT = "https://${domain}/seafhttp"
-ALLOWED_HOSTS = ['${domain}']
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'Strict'
-CSRF_TRUSTED_ORIGINS = ['https://${domain}']
-EOF
+    # Custom settings for reverse proxy
+    SERVICE_URL = "https://${domain}"
+    FILE_SERVER_ROOT = "https://${domain}/seafhttp"
+    ALLOWED_HOSTS = ['${domain}']
+    CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_SAMESITE = 'Strict'
+    CSRF_TRUSTED_ORIGINS = ['https://${domain}']
+    EOF
     chmod 644 /srv/seafile/custom_settings.py
   '';
 
