@@ -14,7 +14,7 @@ in {
   hostAddresses = {
     shu = "192.168.1.2";
     shutm = "192.168.64.3";
-    shupi = "192.168.1.13";
+    shupi = "100.74.32.50";
     shuos = "192.168.1.5";
     # Add shulab once their static IPs are assigned.
   };
