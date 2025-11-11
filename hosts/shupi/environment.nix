@@ -10,6 +10,6 @@
     HOMEPAGE_DOMAIN = "home.shupi.ushira.com";
     IMMICH_DOMAIN = "im.shupi.ushira.com";
     SEAFILE_DOMAIN = "sf.shupi.ushira.com";
-    UMAMI_DOMAIN = "um.shupi.ushira.com";
+    UMAMI_DOMAIN = "umami.ushira.com"; # Exposed through Cloudflared
   };
 }

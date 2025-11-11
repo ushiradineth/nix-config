@@ -94,20 +94,4 @@ in {
     extraOptions = ["--network=umami"];
     environmentFiles = ["/var/lib/umami/app.env"];
   };
-
-  # Traefik configuration for reverse proxy
-  services.traefik.dynamicConfigOptions.http = {
-    services.umami.loadBalancer.servers = [
-      {
-        url = "http://localhost:${toString port}";
-      }
-    ];
-
-    routers.umami = {
-      rule = "Host(`${domain}`)";
-      tls.certResolver = "letsencrypt";
-      service = "umami";
-      entrypoints = "websecure";
-    };
-  };
 }
