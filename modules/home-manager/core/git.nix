@@ -85,4 +85,14 @@ in {
       enable = true;
     };
   };
+
+  services = {
+    # GPG agent service for key management
+    gpg-agent = {
+      enable = true;
+      enableSshSupport = true;
+      defaultCacheTtl = 3600; # 1 hour
+      pinentry.package = pkgs.pinentry_mac;
+    };
+  };
 }
