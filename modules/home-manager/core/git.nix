@@ -1,7 +1,12 @@
-{myvars, ...}: let
+{
+  lib,
+  myvars,
+  pkgs,
+  ...
+}: let
   shellAliases = {
     gc = "git checkout";
-    gcm = "git commit -m";
+    gcm = "git commit -s -m";
     gl = "git log --oneline --graph --decorate --all";
     lg = "lazygit";
     l = "lazygit";
@@ -35,6 +40,11 @@ in {
         rerere.enabled = true;
       };
 
+      signing = {
+        key = myvars.gpgKeyId;
+        signByDefault = true;
+      };
+
       delta = {
         enable = true;
         options = {
@@ -46,10 +56,16 @@ in {
       };
     };
 
+    gpg.enable = true;
+
     lazygit = {
       enable = true;
       settings = {
         git = {
+          overrideGpg = true;
+          commit = {
+            signOff = true;
+          };
           paging = {
             colorArg = "always";
             pager = "delta --dark --paging=never";
