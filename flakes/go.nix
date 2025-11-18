@@ -15,8 +15,9 @@
 
             pkgs.gopls
             pkgs.gofumpt
-            pkgs.goimp
+            pkgs.goimports-reviser
             pkgs.golines
+            pkgs.golangci-lint
 
             pkgs.vimPlugins.nvim-treesitter-parsers.go
             pkgs.vimPlugins.nvim-treesitter-parsers.gomod
