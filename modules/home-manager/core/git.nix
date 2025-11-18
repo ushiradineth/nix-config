@@ -29,6 +29,7 @@ in {
           contents = {
             user.name = myvars.userFullname;
             user.email = myvars.workEmail;
+            user.signingKey = myvars.workGpgKeyId;
           };
         }
       ];
