@@ -21,6 +21,7 @@
     fillchars = "vert:▕"; # set fillchars+=vert:▕
     hlsearch = false; # set nohlsearch
     signcolumn = "yes"; # set signcolumn=yes;
+    number = true; # Enable line numbers
   };
 
   programs.nixvim.extraConfigLua = ''
