@@ -1,16 +1,16 @@
 {pkgs, ...}: let
   ignore_patterns = [
-    ".git/*"
-    "node_modules/*"
-    ".next/*"
-    ".nuxt/*"
-    "dist/*"
-    "build/*"
-    "target/*"
-    "*-lock.yaml"
-    "*-lock.json"
-    "*.tfvars"
-    ".direnv/*"
+    "^%.git/"
+    "node_modules/"
+    "%.next/"
+    "%.nuxt/"
+    "dist/"
+    "build/"
+    "target/"
+    "%-lock%.yaml$"
+    "%-lock%.json$"
+    "%.tfvars$"
+    "%.direnv/"
   ];
 in {
   programs.nixvim.plugins.telescope = {

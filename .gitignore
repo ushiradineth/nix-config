@@ -7,4 +7,3 @@ logs/
 core*
 !core/
 !core.nix
-.serena
