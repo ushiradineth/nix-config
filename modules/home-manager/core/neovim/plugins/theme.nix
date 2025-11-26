@@ -33,6 +33,7 @@
         "StatusLine"
         "StatusLineNC"
         "EndOfBuffer"
+        "ZenBg"
       ];
       extra_groups = [
         # "NormalFloat"

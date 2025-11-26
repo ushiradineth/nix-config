@@ -89,6 +89,9 @@ in {
         # Right side
         lualine_x = [
           {
+            __unkeyed-1 = "location";
+          }
+          {
             __unkeyed-1 = "lsp_status";
             ignore_lsp = ["diagnosticls" "typos_lsp"];
             icon = "";
