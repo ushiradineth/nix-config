@@ -1,4 +1,9 @@
 {pkgs, ...}: {
+  programs.zsh.shellInit = ''
+    alias lq="lazysql"
+    alias lj="lazyjournal"
+  '';
+
   environment.systemPackages = with pkgs; [
     pnpm
     uv # Python package manager
@@ -10,5 +15,7 @@
     trivy # Vulnerability scanner
     # TODO: Enable prowler when package is fixed
     # prowler # Cloud security scanner
+    lazyjournal # Easy-to-use journalctl TUI
+    lazysql # SQL TUI
   ];
 }
