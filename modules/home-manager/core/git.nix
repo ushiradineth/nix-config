@@ -74,8 +74,8 @@ in {
         };
         os = {
           edit = "nvim {{filename}}";
-          editAtLine = "nvim --line={{line}} {{filename}}";
-          editAtLineAndWait = "nvim --block --line={{line}} {{filename}}";
+          editAtLine = "nvim +{{line}} {{filename}}";
+          editAtLineAndWait = "nvim --block +{{line}} {{filename}}";
           editInTerminal = true;
           openDirInEditor = "nvim {{dir}}";
         };
