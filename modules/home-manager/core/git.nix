@@ -93,7 +93,7 @@ in {
       enable = true;
       enableSshSupport = true;
       defaultCacheTtl = 3600; # 1 hour
-      pinentry.package = pkgs.pinentry_mac;
+      pinentry.package = lib.mkIf pkgs.stdenv.isDarwin pkgs.pinentry_mac; # macOS only
     };
   };
 }
