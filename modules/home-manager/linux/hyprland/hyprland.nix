@@ -73,9 +73,7 @@
         };
       };
 
-      windowrule = [
-        "opacity 1 1, class:^(zen-beta)$" # Full active and unfocused opacity for Zen Browser
-      ];
+      windowrule = [];
 
       windowrulev2 = [
         # Zen Browser to workspace 1
