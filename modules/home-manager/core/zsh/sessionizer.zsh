@@ -5,12 +5,15 @@ function t() {
     if [[ $# -eq 1 ]]; then
         selected=$1
     else
-        local manual=("$HOME/nix-config" "$HOME/nix-secrets" "$HOME/.config")
-        local code=$(find ~/Code -mindepth 1 -maxdepth 1 -type d)
-        local surge=$(find ~/Code/surge -mindepth 1 -maxdepth 2 -type d)
-        local fork=$(find ~/Code/fork -mindepth 1 -maxdepth 1 -type d)
-        local koano=$(find ~/Code/koano -mindepth 1 -maxdepth 1 -type d)
-        local freelance=$(find ~/Code/freelance -mindepth 1 -maxdepth 1 -type d)
+        local manual=()
+        [[ -d "$HOME/nix-config" ]] && manual+=("$HOME/nix-config")
+        [[ -d "$HOME/nix-secrets" ]] && manual+=("$HOME/nix-secrets")
+        [[ -d "$HOME/.config" ]] && manual+=("$HOME/.config")
+        local code=$(find ~/Code -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
+        local surge=$(find ~/Code/surge -mindepth 1 -maxdepth 2 -type d 2>/dev/null)
+        local fork=$(find ~/Code/fork -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
+        local koano=$(find ~/Code/koano -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
+        local freelance=$(find ~/Code/freelance -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
 
         # Combine and fzf
         selected=$(
