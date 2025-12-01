@@ -58,12 +58,6 @@
     keybind = ctrl+8=text:\x138
     keybind = ctrl+9=text:\x139
 
-    # Linux specific theming
-    background = 303446
-    foreground = f1f1f1
-    selection-background = ffffff
-    selection-foreground = f1f1f1
-
     # Allow Ctrl+p to be used by other applications (neovim)
     keybind = ctrl+p=esc:p
 
