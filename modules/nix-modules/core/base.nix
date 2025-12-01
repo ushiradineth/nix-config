@@ -38,6 +38,7 @@
     jq # json parser
     pciutils
     killall
+    efibootmgr
   ];
 
   programs.zsh = {

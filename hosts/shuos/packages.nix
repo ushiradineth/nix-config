@@ -11,5 +11,6 @@
     notion-app-enhanced
     dust # Disk usage analyzer
     procs # Modern process viewer
+    seafile-client
   ];
 }
