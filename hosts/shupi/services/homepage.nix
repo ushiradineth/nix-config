@@ -46,7 +46,7 @@ in {
       favicon = "https://ushira.com/favicon.svg";
       cardBlur = "lg";
       background = {
-        image = "https://oc.shupi.ushira.com/remote.php/dav/public-files/aELzbBuaCwDvQDt/28.png?scalingup=0&preview=1&a=1&processor=fit&c=5dbfb7f7e18fcedff3506645d6cc6528&x=1920&y=1920";
+        image = "https://sf.shupi.ushira.com/seafhttp/f/60de3dc0de714ec7b8d7/?op=view";
         blur = "md";
         saturate = "50";
         brightness = "50";
@@ -140,6 +140,17 @@ in {
               icon = "https://avatars.githubusercontent.com/u/105618662?s=200&v=4";
               href = "https://${config.environment.variables.UMAMI_DOMAIN}";
               description = "Privacy-focused Analytics";
+            };
+          }
+        ];
+      }
+      {
+        "Development" = [
+          {
+            Wakapi = {
+              icon = "https://avatars.githubusercontent.com/u/82216526?s=200&v=4";
+              href = "https://${config.environment.variables.WAKAPI_DOMAIN}";
+              description = "Coding Time Tracking";
             };
           }
         ];

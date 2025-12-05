@@ -11,5 +11,6 @@
     IMMICH_DOMAIN = "im.shupi.ushira.com";
     SEAFILE_DOMAIN = "sf.shupi.ushira.com";
     UMAMI_DOMAIN = "umami.ushira.com"; # Exposed through Cloudflared
+    WAKAPI_DOMAIN = "wakapi.ushira.com"; # Exposed through Cloudflared
   };
 }

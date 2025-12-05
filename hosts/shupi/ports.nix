@@ -17,6 +17,7 @@
       immich = 48009;
       seafile = 48010;
       umami = 48011;
+      wakapi = 48012;
     };
   };
 }
