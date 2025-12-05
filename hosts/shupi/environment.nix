@@ -6,7 +6,8 @@
     PORTAINER_DOMAIN = "pt.shupi.ushira.com";
     ADGUARD_DOMAIN = "ad.shupi.ushira.com";
     TRAEFIK_DOMAIN = "tr.shupi.ushira.com";
-    GRAFANA_DOMAIN = "gr.shupi.ushira.com";
+    VICTORIAMETRICS_DOMAIN = "vm.shupi.ushira.com";
+    VICTORIALOGS_DOMAIN = "vl.shupi.ushira.com";
     HOMEPAGE_DOMAIN = "home.shupi.ushira.com";
     IMMICH_DOMAIN = "im.shupi.ushira.com";
     SEAFILE_DOMAIN = "sf.shupi.ushira.com";

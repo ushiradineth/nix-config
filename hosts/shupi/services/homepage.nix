@@ -18,21 +18,17 @@ in {
       showStats = true;
       statusStyle = "dot";
       layout = {
+        "Applications" = {
+          style = "row";
+          columns = 5;
+        };
         "Infrastructure" = {
           style = "row";
-          columns = 4;
+          columns = 5;
         };
         "Network & Security" = {
           style = "row";
           columns = 3;
-        };
-        "Applications" = {
-          style = "row";
-          columns = 3;
-        };
-        "Development" = {
-          style = "row";
-          columns = 2;
         };
         "Quick Links" = {
           style = "row";
@@ -79,10 +75,17 @@ in {
             };
           }
           {
-            Grafana = {
-              icon = "grafana.png";
-              href = "https://${config.environment.variables.GRAFANA_DOMAIN}";
-              description = "Metrics Dashboard";
+            "Victoria Metrics" = {
+              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}";
+              description = "Metrics & Monitoring";
+            };
+          }
+          {
+            "Victoria Logs" = {
+              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              href = "https://${config.environment.variables.VICTORIALOGS_DOMAIN}";
+              description = "Log Management";
             };
           }
         ];
@@ -142,13 +145,9 @@ in {
               description = "Privacy-focused Analytics";
             };
           }
-        ];
-      }
-      {
-        "Development" = [
           {
             Wakapi = {
-              icon = "https://avatars.githubusercontent.com/u/82216526?s=200&v=4";
+              icon = "https://wakapi.dev/assets/images/favicon-32x32.png";
               href = "https://${config.environment.variables.WAKAPI_DOMAIN}";
               description = "Coding Time Tracking";
             };
@@ -158,6 +157,86 @@ in {
     ];
 
     bookmarks = [
+      {
+        "Monitoring Queries" = [
+          {
+            "CPU Usage" = [
+              {
+                icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+                abbr = "CPU";
+                href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}/vmui/#/?g0.expr=100%20-%20(avg%20by%20(instance)%20(rate(node_cpu_seconds_total%7Bmode%3D%22idle%22%7D%5B5m%5D))%20*%20100)&g0.range_input=1h&g0.tab=0";
+              }
+            ];
+          }
+          {
+            "Memory Usage" = [
+              {
+                icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+                abbr = "MEM";
+                href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}/vmui/#/?g0.expr=(1%20-%20(node_memory_MemAvailable_bytes%20%2F%20node_memory_MemTotal_bytes))%20*%20100&g0.range_input=1h&g0.tab=0";
+              }
+            ];
+          }
+          {
+            "Disk Usage" = [
+              {
+                icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+                abbr = "DISK";
+                href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}/vmui/#/?g0.expr=100%20-%20((node_filesystem_avail_bytes%7Bmountpoint%3D%22%2F%22%7D%20%2F%20node_filesystem_size_bytes%7Bmountpoint%3D%22%2F%22%7D)%20*%20100)&g0.range_input=1h&g0.tab=0";
+              }
+            ];
+          }
+          {
+            "Network Traffic" = [
+              {
+                icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+                abbr = "NET";
+                href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}/vmui/#/?g0.expr=rate(node_network_receive_bytes_total%5B5m%5D)&g0.range_input=1h&g0.tab=0";
+              }
+            ];
+          }
+        ];
+      }
+      {
+        "Log Queries" = [
+          {
+            "All Logs (5m)" = [
+              {
+                icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+                abbr = "ALL";
+                href = "https://${config.environment.variables.VICTORIALOGS_DOMAIN}/select/vmui/?#/?query=*&g0.range_input=5m&g0.relative_time=last_5_minutes";
+              }
+            ];
+          }
+          {
+            "Error Logs" = [
+              {
+                icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+                abbr = "ERR";
+                href = "https://${config.environment.variables.VICTORIALOGS_DOMAIN}/select/vmui/?#/?query=error%20OR%20ERROR%20OR%20failed%20OR%20FAILED&g0.range_input=1h&g0.relative_time=last_1_hour";
+              }
+            ];
+          }
+          {
+            "Docker Logs" = [
+              {
+                icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+                abbr = "DOCK";
+                href = "https://${config.environment.variables.VICTORIALOGS_DOMAIN}/select/vmui/?#/?query=%7Bcontainer_name%21%3D%22%22%7D&g0.range_input=30m&g0.relative_time=last_30_minutes";
+              }
+            ];
+          }
+          {
+            "System Services" = [
+              {
+                icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+                abbr = "SYS";
+                href = "https://${config.environment.variables.VICTORIALOGS_DOMAIN}/select/vmui/?#/?query=%7B_SYSTEMD_UNIT%3D~%22.%2B%22%7D&g0.range_input=30m&g0.relative_time=last_30_minutes";
+              }
+            ];
+          }
+        ];
+      }
       {
         Entertainment = [
           {
