@@ -17,5 +17,6 @@
     # prowler # Cloud security scanner
     lazyjournal # Easy-to-use journalctl TUI
     lazysql # SQL TUI
+    websocat # A command-line client for WebSockets
   ];
 }
