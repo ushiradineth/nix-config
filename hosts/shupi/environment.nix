@@ -13,5 +13,6 @@
     SEAFILE_DOMAIN = "sf.shupi.ushira.com";
     UMAMI_DOMAIN = "umami.ushira.com"; # Exposed through Cloudflared
     WAKAPI_DOMAIN = "wakapi.ushira.com"; # Exposed through Cloudflared
+    COUCHDB_DOMAIN = "couchdb.shupi.ushira.com"; # CouchDB (Obsidian LiveSync)
   };
 }
