@@ -7,7 +7,7 @@
   environment.systemPackages = with pkgs; [
     pnpm
     uv # Python package manager
-    pgcli # PostgreSQL CLI
+    postgresql # For psql, pg_dump, pg_restore
     mycli # MySQL CLI
     k6 # Load testing tool
     vegeta # Load testing tool
