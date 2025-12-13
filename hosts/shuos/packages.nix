@@ -2,7 +2,7 @@
   environment.systemPackages = with pkgs; [
     ghostty
     discord
-    bitwarden
+    bitwarden-desktop
     claude-code
     seafile-client
     localsend # AirDrop alternative

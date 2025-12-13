@@ -34,7 +34,7 @@
     tree # directory tree
     rsync # file sync
     dust # rust implementation of du
-    ncdu_2 # disk usage analyzer
+    ncdu # disk usage analyzer
     jq # json parser
     pciutils
     killall

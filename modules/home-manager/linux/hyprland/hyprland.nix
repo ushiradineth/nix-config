@@ -89,16 +89,9 @@
         "workspace 6, class:^(Bitwarden)$"
       ];
 
-      gestures = {
-        workspace_swipe = 1;
-        workspace_swipe_fingers = 3;
-        workspace_swipe_distance = 500;
-        workspace_swipe_invert = 1;
-        workspace_swipe_min_speed_to_force = 30;
-        workspace_swipe_cancel_ratio = 0.5;
-        workspace_swipe_create_new = 1;
-        workspace_swipe_forever = 1;
-      };
+      gesture = [
+        "3, horizontal, workspace"
+      ];
 
       general = {
         "$modifier" = "SUPER";
@@ -166,8 +159,6 @@
       };
 
       render = {
-        explicit_sync = 2; # NVIDIA requires 2 for compatibility
-        explicit_sync_kms = 2;
         direct_scanout = false; # Better for NVIDIA screen sharing
       };
 

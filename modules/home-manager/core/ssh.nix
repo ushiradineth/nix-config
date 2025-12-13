@@ -6,6 +6,7 @@
 }: {
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;
     extraOptionOverrides = lib.mkMerge [
       {
         ForwardAgent = "yes";

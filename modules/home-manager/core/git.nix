@@ -20,8 +20,14 @@ in {
       enable = true;
       lfs.enable = true;
 
-      userName = myvars.userFullname;
-      userEmail = myvars.userEmail;
+      settings.user = {
+        name = myvars.userFullname;
+        email = myvars.userEmail;
+        init.defaultBranch = "main";
+        push.autoSetupRemote = true;
+        pull.rebase = true;
+        rerere.enabled = true;
+      };
 
       includes = [
         {
@@ -34,26 +40,20 @@ in {
         }
       ];
 
-      extraConfig = {
-        init.defaultBranch = "main";
-        push.autoSetupRemote = true;
-        pull.rebase = true;
-        rerere.enabled = true;
-      };
-
       signing = {
         key = myvars.gpgKeyId;
         signByDefault = true;
       };
+    };
 
-      delta = {
-        enable = true;
-        options = {
-          features = "side-by-side";
-          diff-so-fancy = true;
-          line-numbers = true;
-          true-color = "always";
-        };
+    delta = {
+      enable = true;
+      enableGitIntegration = true;
+      options = {
+        features = "side-by-side";
+        diff-so-fancy = true;
+        line-numbers = true;
+        true-color = "always";
       };
     };
 
@@ -67,10 +67,12 @@ in {
           commit = {
             signOff = true;
           };
-          paging = {
-            colorArg = "always";
-            pager = "delta --dark --paging=never";
-          };
+          pagers = [
+            {
+              pager = "delta --dark --paging=never";
+              colorArg = "always";
+            }
+          ];
         };
         os = {
           edit = "nvim {{filename}}";
