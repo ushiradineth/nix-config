@@ -9,12 +9,12 @@
           # Swap left Alt and Ctrl
           leftalt = "leftcontrol";
           leftcontrol = "leftalt";
-          
+
           # Swap right Alt and Ctrl
           rightalt = "rightcontrol";
           rightcontrol = "rightalt";
         };
-        
+
         # Override to keep Ctrl+C working for interrupt
         # This makes both physical Alt+C and physical Ctrl+C send Ctrl+C
         "alt" = {
