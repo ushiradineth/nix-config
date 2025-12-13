@@ -3,7 +3,6 @@
   pre-commit-hooks,
   nix-homebrew,
   nixvim,
-  lanzaboote,
   disko,
   nixos-raspberrypi,
   colmena,
@@ -39,7 +38,6 @@
       genSpecialArgs
       nix-homebrew
       nixvim
-      lanzaboote
       disko
       nixos-raspberrypi
       colmena

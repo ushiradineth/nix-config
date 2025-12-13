@@ -9,7 +9,6 @@
   system,
   genSpecialArgs,
   nixvim,
-  lanzaboote,
   disko,
   nixos-raspberrypi,
   agenix,
@@ -34,7 +33,6 @@
       ]
       ++ [
         agenix.nixosModules.default
-        lanzaboote.nixosModules.lanzaboote
         disko.nixosModules.disko
       ]
       ++ (with nixos-raspberrypi.nixosModules; [

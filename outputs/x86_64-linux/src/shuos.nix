@@ -9,7 +9,6 @@
   system,
   genSpecialArgs,
   nixvim,
-  lanzaboote,
   vicinae,
   zen-browser,
   ...
@@ -19,13 +18,11 @@
   specialArgs = (genSpecialArgs system) // {inherit hostname;};
 
   modules = {
-    nixos-modules =
-      map mylib.relativeToRoot [
-        "modules/nix-modules/linux"
-        "modules/nix-modules/core"
-        "hosts/${hostname}"
-      ]
-      ++ [lanzaboote.nixosModules.lanzaboote];
+    nixos-modules = map mylib.relativeToRoot [
+      "modules/nix-modules/linux"
+      "modules/nix-modules/core"
+      "hosts/${hostname}"
+    ];
     home-modules =
       map mylib.relativeToRoot [
         "modules/home-manager/linux"
