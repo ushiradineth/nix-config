@@ -4,7 +4,7 @@ in {
     bind = [
       # Launch applications
       "$modifier,T,exec,ghostty"
-      "$modifier,B,exec,zen"
+      "$modifier,B,exec,zen-beta -P default"
       "$modifier,Y,exec,ghostty -e yazi"
       "$modifier,E,exec,nautilus"
       "CTRL,Q,killactive"
