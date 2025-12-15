@@ -77,17 +77,41 @@
       windowrule = [];
 
       windowrulev2 = [
-        # Zen Browser to workspace 1
+        # Move Zen to workspace 1
         "workspace 1, class:^(zen-beta)$"
 
-        # Ghostty to workspace 2
+        # Move Ghostty to workspace 2
         "workspace 2, class:^(com.mitchellh.ghostty)$"
 
-        # Figma to workspace 4
-        "workspace 4, class:^(figma-linux)$"
+        # Move Obsidian to workspace 3
+        "workspace 3, class:^(obsidian)$"
 
-        # Bitwarden to workspace 6
+        # Move Notion to workspace 4
+        "workspace 4, class:^(notion-app-enhanced)$"
+
+        # Move Figma to workspace 5
+        "workspace 5, class:^(figma-linux)$"
+
+        # Move Bitwarden to workspace 6
         "workspace 6, class:^(Bitwarden)$"
+
+        # Open Bitwarden in floating mode
+        "float, class:^(Bitwarden)$"
+
+        # Open Thunar in floating mode
+        "float, class:^(Thunar)$"
+
+        # Open Discord in floating mode
+        "float, class:^(vesktop)$"
+
+        # Open ProtonVPN in floating mode
+        "float, class:^(\\.protonvpn-app-wrapped)$"
+
+        # Open Seafile in floating mode
+        "float, class:^(com\\.seafile\\.)$"
+
+        # Open Pavucontrol in floating mode
+        "float, class:^(org\\.pulseaudio\\.pavucontrol)$"
       ];
 
       gesture = [
