@@ -46,6 +46,9 @@
         "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
         "systemctl --user start hyprpolkitagent"
 
+        # Enable Ghostty systemd service for fast D-Bus window creation
+        "systemctl enable --user app-com.mitchellh.ghostty.service"
+
         # Dark mode settings
         "gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark'"
         "gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'"

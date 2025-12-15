@@ -82,6 +82,7 @@ in {
   home.file."${ghosttyDir}/config" = {
     text = ''
       shell-integration = zsh
+      gtk-single-instance = true
 
       clipboard-read = allow
       clipboard-write = allow

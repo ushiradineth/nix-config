@@ -3,9 +3,9 @@ in {
   wayland.windowManager.hyprland.settings = {
     bind = [
       # Launch applications
-      "$modifier,T,exec,ghostty"
+      "$modifier,T,exec,ghostty +new-window"
       "$modifier,B,exec,zen-beta -P default"
-      "$modifier,Y,exec,ghostty -e yazi"
+      "$modifier,Y,exec,ghostty +new-window -e yazi"
       "$modifier,E,exec,nautilus"
       "CTRL,Q,killactive"
 
@@ -97,9 +97,10 @@ in {
       # Color picker
       "$modifier,C,exec,hyprpicker -a"
 
-      # Network and Bluetooth management
+      # Network, Bluetooth, and Audio management
       "$modifier,W,exec,ghostty -e nmtui"
       "$modifier SHIFT,B,exec,ghostty -e bluetuith"
+      "$modifier,A,exec,pavucontrol"
 
       # General
       "$modifier,F,fullscreen,"
