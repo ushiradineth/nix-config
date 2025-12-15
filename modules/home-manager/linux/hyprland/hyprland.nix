@@ -14,8 +14,6 @@
     brightnessctl
     swayosd
     swww
-    xfce.thunar
-    gvfs # required for thunar
     grim
     slurp
     swappy
@@ -100,8 +98,8 @@
         # Open Bitwarden in floating mode
         "float, class:^(Bitwarden)$"
 
-        # Open Thunar in floating mode
-        "float, class:^(Thunar)$"
+        # Open Nautilus in floating mode
+        "float, class:^(org.gnome.Nautilus)$"
 
         # Open Discord in floating mode
         "float, class:^(vesktop)$"

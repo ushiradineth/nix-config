@@ -6,7 +6,7 @@ in {
       "$modifier,T,exec,ghostty"
       "$modifier,B,exec,zen"
       "$modifier,Y,exec,ghostty -e yazi"
-      "$modifier,E,exec,thunar"
+      "$modifier,E,exec,nautilus"
       "CTRL,Q,killactive"
 
       # Move active window
