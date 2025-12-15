@@ -12,6 +12,7 @@
     wl-clipboard
     libnotify
     brightnessctl
+    swayosd
     swww
     xfce.thunar
     gvfs # required for thunar
@@ -54,6 +55,7 @@
 
         "killall -q waybar;sleep .5 && waybar"
         "killall -q swaync;sleep .5 && swaync"
+        "swayosd-server"
 
         "swww-daemon"
         "swww img /home/${myvars.username}/wallpaper.jpg"
@@ -103,9 +105,6 @@
 
         # Open Discord in floating mode
         "float, class:^(vesktop)$"
-
-        # Open ProtonVPN in floating mode
-        "float, class:^(\\.protonvpn-app-wrapped)$"
 
         # Open Seafile in floating mode
         "float, class:^(com\\.seafile\\.)$"
@@ -213,6 +212,8 @@
       layerrule = blur, vicinae
       layerrule = ignorealpha 0, vicinae
       layerrule = noanim, vicinae
+      layerrule = blur, swayosd
+      layerrule = ignorealpha 0.3, swayosd
 
       device {
         name = logitech-usb-receiver

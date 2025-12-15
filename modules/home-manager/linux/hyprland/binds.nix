@@ -61,20 +61,20 @@ in {
       "CTRL,SPACE,exec,vicinae toggle"
       "$modifier,V,exec,vicinae vicinae://extensions/vicinae/clipboard/history"
 
-      # Audio
-      ",XF86AudioRaiseVolume,exec,wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
-      ",XF86AudioLowerVolume,exec,wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-      ",XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-      ",XF86AudioPlay, exec, playerctl play-pause"
-      ",XF86AudioPause, exec, playerctl play-pause"
-      ",XF86AudioNext, exec, playerctl next"
-      ",XF86AudioPrev, exec, playerctl previous"
-      ",XF86MonBrightnessDown,exec,brightnessctl set 5%-"
-      ",XF86MonBrightnessUp,exec,brightnessctl set +5%"
+      # Audio (with SwayOSD visual feedback)
+      ",XF86AudioRaiseVolume,exec,swayosd-client --output-volume raise"
+      ",XF86AudioLowerVolume,exec,swayosd-client --output-volume lower"
+      ",XF86AudioMute,exec,swayosd-client --output-volume mute-toggle"
+      ",XF86AudioPlay,exec,playerctl play-pause"
+      ",XF86AudioPause,exec,playerctl play-pause"
+      ",XF86AudioNext,exec,playerctl next"
+      ",XF86AudioPrev,exec,playerctl previous"
+      ",XF86MonBrightnessDown,exec,swayosd-client --brightness lower"
+      ",XF86MonBrightnessUp,exec,swayosd-client --brightness raise"
 
       # Brightness controls
-      ",F1,exec,brightnessctl set 5%-"
-      ",F2,exec,brightnessctl set +5%"
+      ",F1,exec,swayosd-client --brightness lower"
+      ",F2,exec,swayosd-client --brightness raise"
 
       # Media controls
       ",F7,exec,playerctl previous"
@@ -86,10 +86,10 @@ in {
       "$modifier,F8,exec,playerctl play-pause"
       "$modifier,F9,exec,playerctl next"
 
-      # Volume controls with regular keys
-      "$modifier,F10,exec,wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-      "$modifier,F11,exec,wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-      "$modifier,F12,exec,wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
+      # Volume controls with regular keys (with SwayOSD visual feedback)
+      "$modifier,F10,exec,swayosd-client --output-volume mute-toggle"
+      "$modifier,F11,exec,swayosd-client --output-volume lower"
+      "$modifier,F12,exec,swayosd-client --output-volume raise"
 
       # Screenshots
       "CTRL SHIFT,5,exec,grim -g \"$(slurp)\" - | swappy -f -"
