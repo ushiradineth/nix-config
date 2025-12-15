@@ -1,8 +1,6 @@
 {
   pkgs,
   agenix,
-  myvars,
-  mylib,
   ...
 }: {
   imports = [

@@ -41,8 +41,6 @@
     killall
     pciutils # lspci
     usbutils # lsusb
-    lshw # lscpu
-    parted
   ];
 
   programs.zsh = {

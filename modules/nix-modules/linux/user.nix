@@ -12,6 +12,11 @@
   # Required for thunar/nautilus/dolphin
   services.gvfs.enable = true;
 
+  environment.systemPackages = with pkgs; [
+    lshw # lscpu
+    parted
+  ];
+
   users.users."${myvars.username}" = {
     description = myvars.userFullname;
     initialHashedPassword = myvars.initialHashedPassword;
