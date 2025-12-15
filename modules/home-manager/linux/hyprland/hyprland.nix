@@ -50,9 +50,8 @@
         "systemctl enable --user app-com.mitchellh.ghostty.service"
 
         # Dark mode settings
-        "gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark'"
         "gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'"
-        "gsettings set org.gnome.desktop.interface icon-theme 'WhiteSur'"
+        "gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'"
 
         "killall -q waybar;sleep .5 && waybar"
         "killall -q swaync;sleep .5 && swaync"
@@ -112,6 +111,9 @@
 
         # Open Pavucontrol in floating mode
         "float, class:^(org\\.pulseaudio\\.pavucontrol)$"
+
+        # Full opacity for ghostty floating/popup windows
+        "opacity 1.0 1.0, class:^(com.mitchellh.ghostty)$, floating:1"
       ];
 
       gesture = [
@@ -198,7 +200,7 @@
       monitor = DP-3, 2560x1440@144, 0x0, 1
 
       # Environment variables for dark mode
-      env = GTK_THEME,WhiteSur-Dark
+      env = GTK_THEME,Adwaita-dark
       env = QT_STYLE_OVERRIDE,adwaita-dark
       env = QT_QPA_PLATFORMTHEME,qt6ct
 

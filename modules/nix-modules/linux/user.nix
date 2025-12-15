@@ -9,6 +9,9 @@
   # Enable zsh for initial login
   programs.zsh.enable = true;
 
+  # Required for thunar/nautilus/dolphin
+  services.gvfs.enable = true;
+
   users.users."${myvars.username}" = {
     description = myvars.userFullname;
     initialHashedPassword = myvars.initialHashedPassword;

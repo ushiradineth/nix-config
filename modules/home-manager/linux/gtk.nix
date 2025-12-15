@@ -1,15 +1,16 @@
 {pkgs, ...}: {
   home.sessionVariables = {
-    GTK_THEME = "WhiteSur-Dark";
-    QT_STYLE_OVERRIDE = "adwaita-dark";
     GTK_USE_PORTAL = "1";
+    GTK_THEME = "Adwaita-dark";
+    QT_STYLE_OVERRIDE = "adwaita-dark";
   };
+
   gtk = {
     enable = true;
 
     theme = {
-      name = "WhiteSur-Dark";
-      package = pkgs.whitesur-gtk-theme;
+      name = "Adwaita-dark";
+      package = pkgs.gnome-themes-extra;
     };
 
     iconTheme = {
@@ -35,9 +36,9 @@
       "org/gnome/desktop/interface" = {
         gtk-key-theme = "Emacs";
         color-scheme = "prefer-dark";
-        gtk-theme = "WhiteSur-Dark";
-        icon-theme = "WhiteSur";
         font-name = "Geist 11";
+        gtk-theme = "Adwaita-dark";
+        icon-theme = "WhiteSur";
       };
       "org/freedesktop/appearance" = {
         color-scheme = 1; # 1 = prefer dark, 0 = prefer light
