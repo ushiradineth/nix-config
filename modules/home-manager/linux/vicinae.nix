@@ -10,7 +10,7 @@
         rounding = 12;
       };
       terminal = "ghostty";
-      browser = "zen";
+      browser = "zen-beta -P default";
     };
   };
 }
