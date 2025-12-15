@@ -16,7 +16,7 @@
 
         modules-left = ["custom/startmenu"];
         modules-center = ["hyprland/workspaces"];
-        modules-right = ["tray" "bluetooth" "network" "custom/clock-notification"];
+        modules-right = ["tray" "custom/mic" "custom/camera" "custom/screen" "bluetooth" "network" "custom/clock-notification"];
 
         "hyprland/workspaces" = {
           format = "{name}";
@@ -71,12 +71,36 @@
           '';
           on-click = "swaync-client -t";
         };
+
+        "custom/mic" = {
+          interval = 2;
+          format = "{}";
+          return-type = "json";
+          exec = "privacy-monitor mic-status";
+          exec-if = "which privacy-monitor";
+        };
+
+        "custom/camera" = {
+          interval = 2;
+          format = "{}";
+          return-type = "json";
+          exec = "privacy-monitor camera-status";
+          exec-if = "which privacy-monitor";
+        };
+
+        "custom/screen" = {
+          interval = 2;
+          format = "{}";
+          return-type = "json";
+          exec = "privacy-monitor screen-status";
+          exec-if = "which privacy-monitor";
+        };
       }
     ];
 
     style = lib.concatStringsSep "\n" [
       "* {"
-      "  font-family: Geist;"
+      "  font-family: Geist, 'Symbols Nerd Font';"
       "  font-size: 14px;"
       "  font-weight: 600;"
       "  border-radius: 12px;"
@@ -114,6 +138,12 @@
       "#custom-startmenu {"
       "  margin: 0px;"
       "  margin-right: 8px;"
+      "}"
+      "#custom-mic.active, #custom-camera.active, #custom-screen.active {"
+      "  color: #ffffff;"
+      "}"
+      "#custom-mic.inactive, #custom-camera.inactive, #custom-screen.inactive {"
+      "  color: transparent;"
       "}"
     ];
   };
