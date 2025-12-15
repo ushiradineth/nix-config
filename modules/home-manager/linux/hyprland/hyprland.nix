@@ -14,6 +14,7 @@
     brightnessctl
     swww
     xfce.thunar
+    gvfs # required for thunar
     grim
     slurp
     swappy

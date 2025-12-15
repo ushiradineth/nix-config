@@ -17,6 +17,7 @@
     fastfetch # neofetch alternative
     btop # process monitor
     colmena # remote deployment via SSH
+    expect # Automate interactive applications
 
     # Networking tools
     wget # download files
@@ -36,9 +37,12 @@
     dust # rust implementation of du
     ncdu # disk usage analyzer
     jq # json parser
-    pciutils
+    procs # Modern process viewer
     killall
-    efibootmgr
+    pciutils # lspci
+    usbutils # lsusb
+    lshw # lscpu
+    parted
   ];
 
   programs.zsh = {
