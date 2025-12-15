@@ -79,6 +79,8 @@
       windowrule = [];
 
       windowrulev2 = [
+        "plugin:hyprbars:nobar, title:Vicina\sLauncher"
+
         # Move Zen to workspace 1
         "workspace 1, class:^(zen-beta)$"
 
@@ -213,7 +215,7 @@
       layerrule = ignorealpha 0.3, swaync-control-center
       layerrule = ignorealpha 0.3, swaync-notification-window
       layerrule = blur, vicinae
-      layerrule = ignorealpha 0, vicinae
+      layerrule = ignorealpha 0.3, vicinae
       layerrule = noanim, vicinae
       layerrule = blur, swayosd
       layerrule = ignorealpha 0.3, swayosd

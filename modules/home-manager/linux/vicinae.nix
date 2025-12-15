@@ -2,6 +2,7 @@
   services.vicinae = {
     enable = true;
     autoStart = true;
+    useLayerShell = false;
     settings = {
       theme.name = "vicinae-dark";
       window = {
@@ -13,4 +14,9 @@
       browser = "zen-beta -P default";
     };
   };
+
+  # Workaround for Hyprland layer shell issues (vicinaehq/vicinae#558)
+  systemd.user.services.vicinae.Service.Environment = [
+    "USE_LAYER_SHELL=0"
+  ];
 }
