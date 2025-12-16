@@ -147,7 +147,7 @@ in {
           }
           {
             Wakapi = {
-              icon = "https://wakapi.dev/assets/images/favicon-32x32.png";
+              icon = "https://wakapi.dev/assets/images/icon.svg";
               href = "https://${config.environment.variables.WAKAPI_DOMAIN}";
               description = "Coding Time Tracking";
             };
