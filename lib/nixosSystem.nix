@@ -12,10 +12,11 @@
   inherit (inputs) nixpkgs home-manager nixos-generators;
 in
   nixpkgs.lib.nixosSystem {
-    inherit system specialArgs;
+    inherit specialArgs;
     modules =
       nixos-modules
       ++ [
+        {nixpkgs.hostPlatform = system;}
         nixos-generators.nixosModules.all-formats
       ]
       ++ (

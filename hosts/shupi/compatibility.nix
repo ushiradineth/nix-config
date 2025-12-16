@@ -5,6 +5,6 @@
   ];
 
   imports = [
-    (lib.mkAliasOptionModuleMD ["environment" "checkConfigurationOptions"] ["_module" "check"])
+    (lib.mkAliasOptionModule ["environment" "checkConfigurationOptions"] ["_module" "check"])
   ];
 }
