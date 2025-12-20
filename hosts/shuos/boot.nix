@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   boot.loader = {
     efi.canTouchEfiVariables = true;
-    timeout = 10; # 10 seconds timeout
+    timeout = 60;
 
     limine = {
       enable = true;
@@ -14,8 +14,6 @@
       '';
       style = {
         interface = {
-          resolution = "1920x1080";
-          helpHidden = true;
           branding = "shuos";
           brandingColor = 7; # gray
         };
