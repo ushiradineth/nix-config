@@ -47,6 +47,12 @@
   linuxConfig = ''
     window-decoration = true
 
+    # macOS-like clipboard operations
+    keybind = ctrl+v=paste_from_clipboard
+    keybind = ctrl+c=copy_to_clipboard
+    keybind = ctrl+x=copy_to_clipboard
+    keybind = ctrl+a=select_all
+
     # Tmux window switching (Ctrl+1-9) - now that Alt is mapped to Ctrl
     keybind = ctrl+1=text:\x131
     keybind = ctrl+2=text:\x132

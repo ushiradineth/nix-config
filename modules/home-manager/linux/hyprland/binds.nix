@@ -5,7 +5,6 @@ in {
       # Launch applications
       "$modifier,T,exec,ghostty +new-window"
       "$modifier,B,exec,zen-beta -P default"
-      "$modifier,Y,exec,ghostty +new-window -e yazi"
       "$modifier,E,exec,nautilus"
       "CTRL,Q,killactive"
 
@@ -53,9 +52,8 @@ in {
       "$modifier SHIFT,9,movetoworkspace,9"
       "$modifier SHIFT,0,movetoworkspace,10"
 
-      # Ctrl+Tab (since ALT is now CTRL due to key remapping)
-      "CTRL,Tab,cyclenext"
-      "CTRL,Tab,bringactivetotop"
+      "CTRL,Tab,cyclenext,"
+      "CTRL SHIFT,Tab,cyclenext,prev"
 
       # Launchers
       "CTRL,SPACE,exec,vicinae toggle"
@@ -104,9 +102,10 @@ in {
 
       # General
       "$modifier,F,fullscreen,"
-      "$modifier SHIFT,I,togglesplit," # Toggle between horizontal and vertical split
-      "$modifier SHIFT,F,togglefloating," # Float
-      "$modifier SHIFT,C,exit," # Closes hyprland
+      "CTRL,slash,layoutmsg,orientationcycle left top" # Toggle layout orientation
+      "CTRL,comma,layoutmsg,togglesplit" # Toggle accordion-like split
+      "$modifier SHIFT,F,togglefloating," # Toggle floating
+      "$modifier SHIFT,C,exit,"
     ];
 
     bindm = [

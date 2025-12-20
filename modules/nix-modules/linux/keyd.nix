@@ -6,19 +6,24 @@
       ids = ["*"];
       settings = {
         main = {
-          # Swap left Alt and Ctrl
+          # Swap Alt and Ctrl so Alt becomes the main modifier (like Cmd on macOS)
           leftalt = "leftcontrol";
           leftcontrol = "leftalt";
-
-          # Swap right Alt and Ctrl
           rightalt = "rightcontrol";
           rightcontrol = "rightalt";
         };
 
-        # Override to keep Ctrl+C working for interrupt
-        # This makes both physical Alt+C and physical Ctrl+C send Ctrl+C
-        "alt" = {
-          c = "C-c";
+        # Special control layer for macOS-like text editing
+        # Physical Alt sends Ctrl, so this layer is triggered by physical Alt
+        control = {
+          a = "C-a";
+          backspace = "C-u";
+        };
+
+        # Meta/Alt layer for word-level operations
+        # Physical Ctrl sends Alt, so this layer is triggered by physical Ctrl
+        alt = {
+          backspace = "C-w";
         };
       };
     };
