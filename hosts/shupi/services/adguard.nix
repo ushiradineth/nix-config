@@ -63,25 +63,37 @@ in {
           enabled = true;
           url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_51.txt";
           name = "HaGeZi's Pro++ Blocklist";
-          id = 1758608610;
+          id = 3;
         }
         {
           enabled = true;
           url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_45.txt";
           name = "HaGeZi's Allowlist Referral";
-          id = 1758608611;
+          id = 4;
         }
         {
           enabled = true;
           url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_44.txt";
           name = "HaGeZi's Threat Intelligence Feeds";
-          id = 1758826497;
+          id = 5;
         }
         {
           enabled = true;
           url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_18.txt";
           name = "Phishing Army";
-          id = 1758826499;
+          id = 6;
+        }
+        {
+          enabled = true;
+          url = "https://raw.githubusercontent.com/fmhy/FMHYFilterlist/main/filterlist-abp.txt";
+          name = "FMHY Filterlist";
+          id = 7;
+        }
+        {
+          enabled = true;
+          url = "https://raw.githubusercontent.com/DandelionSprout/adfilt/refs/heads/master/LegitimateURLShortener.txt";
+          name = "Legitimate URL Shortener";
+          id = 8;
         }
       ];
 
