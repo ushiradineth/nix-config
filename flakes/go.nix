@@ -11,13 +11,15 @@
       in {
         devShell = pkgs.mkShell {
           buildInputs = [
-            pkgs.go_1_24
+            pkgs.go_1_25
 
             pkgs.gopls
             pkgs.gofumpt
             pkgs.goimports-reviser
             pkgs.golines
             pkgs.golangci-lint
+            pkgs.air
+            pkgs.govulncheck
 
             pkgs.vimPlugins.nvim-treesitter-parsers.go
             pkgs.vimPlugins.nvim-treesitter-parsers.gomod
