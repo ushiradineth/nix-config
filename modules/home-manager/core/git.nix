@@ -20,9 +20,11 @@ in {
       enable = true;
       lfs.enable = true;
 
-      settings.user = {
-        name = myvars.userFullname;
-        email = myvars.userEmail;
+      settings = {
+        user = {
+          name = myvars.userFullname;
+          email = myvars.userEmail;
+        };
         init.defaultBranch = "main";
         push.autoSetupRemote = true;
         pull.rebase = true;
