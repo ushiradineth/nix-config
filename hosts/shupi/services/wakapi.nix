@@ -14,6 +14,7 @@ in {
 
   services.wakapi = {
     enable = true;
+    stateDir = "/srv/wakapi";
     passwordSaltFile = config.age.secrets.wakapi-password-salt.path;
     settings = {
       server = {
