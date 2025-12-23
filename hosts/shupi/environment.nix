@@ -1,6 +1,8 @@
 {myvars, ...}: {
   environment.variables = {
     ACME_EMAIL = myvars.userEmail;
+
+    # Exposed through Tailscale tailnet
     UPTIMEKUMA_DOMAIN = "up.shupi.ushira.com";
     ACTUALBUDGET_DOMAIN = "ab.shupi.ushira.com";
     PORTAINER_DOMAIN = "pt.shupi.ushira.com";
@@ -11,8 +13,11 @@
     HOMEPAGE_DOMAIN = "home.shupi.ushira.com";
     IMMICH_DOMAIN = "im.shupi.ushira.com";
     SEAFILE_DOMAIN = "sf.shupi.ushira.com";
-    UMAMI_DOMAIN = "umami.ushira.com"; # Exposed through Cloudflared
-    WAKAPI_DOMAIN = "wakapi.ushira.com"; # Exposed through Cloudflared
-    COUCHDB_DOMAIN = "couchdb.shupi.ushira.com"; # CouchDB (Obsidian LiveSync)
+    COUCHDB_DOMAIN = "couchdb.shupi.ushira.com";
+
+    # Exposed through Cloudflared
+    UMAMI_DOMAIN = "umami.ushira.com";
+    WAKAPI_DOMAIN = "wakapi.ushira.com";
+    INFISICAL_DOMAIN = "infisical.ushira.com";
   };
 }
