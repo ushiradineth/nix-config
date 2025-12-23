@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   hostname,
   mysecrets,
   ...
@@ -132,6 +133,34 @@ in {
       tls.certResolver = "letsencrypt";
       service = "immich";
       entrypoints = "websecure";
+    };
+  };
+
+  # Database dump service
+  systemd.services.dump-immich-db = {
+    description = "Dump Immich PostgreSQL database";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = pkgs.writeShellScript "dump-immich-db" ''
+        set -euo pipefail
+        BACKUP_DIR="/var/backup/databases"
+        mkdir -p "$BACKUP_DIR"
+
+        # Dump to temp file, then atomically replace
+        ${config.virtualisation.docker.package}/bin/docker exec immich-postgres \
+          pg_dumpall -U postgres > "$BACKUP_DIR/immich.sql.tmp"
+        mv "$BACKUP_DIR/immich.sql.tmp" "$BACKUP_DIR/immich.sql"
+      '';
+      User = "root";
+    };
+  };
+
+  systemd.timers.dump-immich-db = {
+    description = "Timer for Immich database dump";
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnCalendar = "*-*-* 01:45:00";
+      Persistent = true;
     };
   };
 }

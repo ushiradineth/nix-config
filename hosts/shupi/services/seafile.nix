@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   myvars,
   hostname,
   mysecrets,
@@ -202,6 +203,37 @@ in {
       tls.certResolver = "letsencrypt";
       service = "seafile";
       entrypoints = "websecure";
+    };
+  };
+
+  # Database dump service
+  systemd.services.dump-seafile-db = {
+    description = "Dump Seafile MariaDB database";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = pkgs.writeShellScript "dump-seafile-db" ''
+        set -euo pipefail
+        BACKUP_DIR="/var/backup/databases"
+        mkdir -p "$BACKUP_DIR"
+
+        # Read the database password
+        DB_PASSWORD=$(cat ${config.age.secrets.seafile-db-password.path})
+
+        # Dump to temp file, then atomically replace
+        ${config.virtualisation.docker.package}/bin/docker exec seafile-db \
+          mariadb-dump -u root -p"$DB_PASSWORD" --all-databases > "$BACKUP_DIR/seafile.sql.tmp"
+        mv "$BACKUP_DIR/seafile.sql.tmp" "$BACKUP_DIR/seafile.sql"
+      '';
+      User = "root";
+    };
+  };
+
+  systemd.timers.dump-seafile-db = {
+    description = "Timer for Seafile database dump";
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnCalendar = "*-*-* 01:45:00";
+      Persistent = true;
     };
   };
 }

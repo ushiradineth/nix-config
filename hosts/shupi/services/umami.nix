@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   hostname,
   mysecrets,
   ...
@@ -93,5 +94,33 @@ in {
     ports = ["127.0.0.1:${toString port}:3000"];
     extraOptions = ["--network=umami"];
     environmentFiles = ["/var/lib/umami/app.env"];
+  };
+
+  # Database dump service
+  systemd.services.dump-umami-db = {
+    description = "Dump Umami PostgreSQL database";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = pkgs.writeShellScript "dump-umami-db" ''
+        set -euo pipefail
+        BACKUP_DIR="/var/backup/databases"
+        mkdir -p "$BACKUP_DIR"
+
+        # Dump to temp file, then atomically replace
+        ${config.virtualisation.docker.package}/bin/docker exec umami-db \
+          pg_dumpall -U umami > "$BACKUP_DIR/umami.sql.tmp"
+        mv "$BACKUP_DIR/umami.sql.tmp" "$BACKUP_DIR/umami.sql"
+      '';
+      User = "root";
+    };
+  };
+
+  systemd.timers.dump-umami-db = {
+    description = "Timer for Umami database dump";
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnCalendar = "*-*-* 01:45:00";
+      Persistent = true;
+    };
   };
 }

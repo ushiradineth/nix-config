@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   hostname,
   mysecrets,
   ...
@@ -144,6 +145,34 @@ in {
       tls.certResolver = "letsencrypt";
       service = "infisical";
       entrypoints = "websecure";
+    };
+  };
+
+  # Database dump service
+  systemd.services.dump-infisical-db = {
+    description = "Dump Infisical PostgreSQL database";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = pkgs.writeShellScript "dump-infisical-db" ''
+        set -euo pipefail
+        BACKUP_DIR="/var/backup/databases"
+        mkdir -p "$BACKUP_DIR"
+
+        # Dump to temp file, then atomically replace
+        ${config.virtualisation.docker.package}/bin/docker exec infisical-db \
+          pg_dumpall -U infisical > "$BACKUP_DIR/infisical.sql.tmp"
+        mv "$BACKUP_DIR/infisical.sql.tmp" "$BACKUP_DIR/infisical.sql"
+      '';
+      User = "root";
+    };
+  };
+
+  systemd.timers.dump-infisical-db = {
+    description = "Timer for Infisical database dump";
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnCalendar = "*-*-* 01:45:00";
+      Persistent = true;
     };
   };
 }

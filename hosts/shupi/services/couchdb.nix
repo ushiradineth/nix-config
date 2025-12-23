@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   hostname,
   mysecrets,
   ...
@@ -74,4 +75,8 @@ in {
       entrypoints = "websecure";
     };
   };
+
+  # NOTE: CouchDB backup uses file-based approach (already in TIER 2)
+  # Backing up /srv/couchdb/data directly is more reliable than REST API dumps
+  # See: https://docs.couchdb.org/en/stable/maintenance/backups.html
 }
