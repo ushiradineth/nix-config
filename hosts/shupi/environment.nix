@@ -1,6 +1,7 @@
 {myvars, ...}: {
   environment.variables = {
     ACME_EMAIL = myvars.userEmail;
+    EMAIL_DOMAIN = "shupi.ushira.com";
 
     # Exposed through Tailscale tailnet
     UPTIMEKUMA_DOMAIN = "up.shupi.ushira.com";

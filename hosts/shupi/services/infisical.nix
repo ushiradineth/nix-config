@@ -6,6 +6,7 @@
 }: let
   port = config.ports.infisical;
   domain = config.environment.variables.INFISICAL_DOMAIN;
+  emailDomain = config.environment.variables.EMAIL_DOMAIN;
 in {
   age.secrets.infisical-db-password = {
     file = "${mysecrets}/${hostname}/infisical-db-password.age";
@@ -19,6 +20,11 @@ in {
 
   age.secrets.infisical-auth-secret = {
     file = "${mysecrets}/${hostname}/infisical-auth-secret.age";
+    mode = "0400";
+  };
+
+  age.secrets.resend-api-key = {
+    file = "${mysecrets}/${hostname}/resend-api-key.age";
     mode = "0400";
   };
 
@@ -60,6 +66,7 @@ in {
     DB_PASSWORD=$(cat ${config.age.secrets.infisical-db-password.path} | tr -d '[:space:]')
     ENCRYPTION_KEY=$(cat ${config.age.secrets.infisical-encryption-key.path} | tr -d '[:space:]')
     AUTH_SECRET=$(cat ${config.age.secrets.infisical-auth-secret.path} | tr -d '[:space:]')
+    RESEND_API_KEY=$(cat ${config.age.secrets.resend-api-key.path} | tr -d '[:space:]')
 
     # PostgreSQL env file
     echo "POSTGRES_DB=infisical" > /var/lib/infisical/postgres.env
@@ -74,6 +81,12 @@ in {
     echo "DB_CONNECTION_URI=postgres://infisical:$DB_PASSWORD@infisical-db:5432/infisical" >> /var/lib/infisical/backend.env
     echo "REDIS_URL=redis://infisical-redis:6379" >> /var/lib/infisical/backend.env
     echo "SITE_URL=https://${domain}" >> /var/lib/infisical/backend.env
+    echo "SMTP_HOST=smtp.resend.com" >> /var/lib/infisical/backend.env
+    echo "SMTP_PORT=587" >> /var/lib/infisical/backend.env
+    echo "SMTP_USERNAME=resend" >> /var/lib/infisical/backend.env
+    echo "SMTP_PASSWORD=$RESEND_API_KEY" >> /var/lib/infisical/backend.env
+    echo "SMTP_FROM_ADDRESS=infisical@${emailDomain}" >> /var/lib/infisical/backend.env
+    echo "SMTP_FROM_NAME=Infisical" >> /var/lib/infisical/backend.env
     chmod 600 /var/lib/infisical/backend.env
   '';
 
