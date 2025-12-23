@@ -4,6 +4,7 @@
     enable = false;
     brews = [
       "posting"
+      "defaultbrowser"
     ];
     taps = [
       "homebrew/services"
