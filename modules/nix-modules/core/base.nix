@@ -29,7 +29,7 @@
     inetutils # (hostname, ping, telnet, traceroute, whois, ifconfig, etc)
     mtr # functionality of traceroute and ping combined
 
-    # Miscallaneous
+    # Miscellaneous
     findutils # find, xargs, locate
     which # locate binary
     tree # directory tree

@@ -44,7 +44,7 @@
         # Binary cache with prebuilt packages for the currently locked `nixpkgs`,
         trusted-nix-caches
 
-        #optimizations and fixes for issues arising from 16k memory page size (only for systems running default rpi5 (bcm2712) kernel)
+        # Optimizations and fixes for issues arising from 16k memory page size (only for systems running default rpi5 (bcm2712) kernel)
         raspberry-pi-5.page-size-16k
 
         # Configures USB Gadget/Ethernet - Ethernet emulation over USB
