@@ -10,6 +10,9 @@
   port = config.ports.infisical;
   domain = config.environment.variables.INFISICAL_DOMAIN;
   emailDomain = config.environment.variables.EMAIL_DOMAIN;
+  smtpHost = config.environment.variables.SMTP_HOST;
+  smtpPort = config.environment.variables.SMTP_PORT;
+  smtpUser = config.environment.variables.SMTP_USER;
 in
   lib.mkMerge [
     {
@@ -52,9 +55,9 @@ in
         echo "DB_CONNECTION_URI=postgres://infisical:$DB_PASSWORD@infisical-db:5432/infisical" >> /var/lib/infisical/backend.env
         echo "REDIS_URL=redis://infisical-redis:6379" >> /var/lib/infisical/backend.env
         echo "SITE_URL=https://${domain}" >> /var/lib/infisical/backend.env
-        echo "SMTP_HOST=smtp.resend.com" >> /var/lib/infisical/backend.env
-        echo "SMTP_PORT=587" >> /var/lib/infisical/backend.env
-        echo "SMTP_USERNAME=resend" >> /var/lib/infisical/backend.env
+        echo "SMTP_HOST=${smtpHost}" >> /var/lib/infisical/backend.env
+        echo "SMTP_PORT=${smtpPort}" >> /var/lib/infisical/backend.env
+        echo "SMTP_USERNAME=${smtpUser}" >> /var/lib/infisical/backend.env
         echo "SMTP_PASSWORD=$RESEND_API_KEY" >> /var/lib/infisical/backend.env
         echo "SMTP_FROM_ADDRESS=infisical@${emailDomain}" >> /var/lib/infisical/backend.env
         echo "SMTP_FROM_NAME=Infisical" >> /var/lib/infisical/backend.env

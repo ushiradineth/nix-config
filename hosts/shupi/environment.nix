@@ -3,6 +3,11 @@
     ACME_EMAIL = myvars.userEmail;
     EMAIL_DOMAIN = "shupi.ushira.com";
 
+    # SMTP Configuration
+    SMTP_HOST = "smtp.resend.com";
+    SMTP_PORT = "587";
+    SMTP_USER = "resend";
+
     # Hetzner Storage Box Configuration
     HETZNER_USER = "u522887";
     HETZNER_HOST = "u522887.your-storagebox.de";
