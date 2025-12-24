@@ -1,4 +1,8 @@
-{config, ...}: let
+{
+  config,
+  mylib,
+  ...
+}: let
   port = config.ports.uptimekuma;
 in {
   virtualisation.oci-containers.containers.uptimekuma = {
@@ -8,18 +12,9 @@ in {
     ports = ["127.0.0.1:${toString port}:3001"];
   };
 
-  services.traefik.dynamicConfigOptions.http = {
-    services.uptimekuma.loadBalancer.servers = [
-      {
-        url = "http://localhost:${toString port}";
-      }
-    ];
-
-    routers.uptimekuma = {
-      rule = "Host(`${config.environment.variables.UPTIMEKUMA_DOMAIN}`)";
-      tls.certResolver = "letsencrypt";
-      service = "uptimekuma";
-      entrypoints = "websecure";
-    };
+  services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
+    name = "uptimekuma";
+    domain = config.environment.variables.UPTIMEKUMA_DOMAIN;
+    port = port;
   };
 }

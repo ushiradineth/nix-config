@@ -1,4 +1,8 @@
-{config, ...}: let
+{
+  config,
+  mylib,
+  ...
+}: let
   port = config.ports.homepage;
 in {
   services.homepage-dashboard = {
@@ -20,7 +24,7 @@ in {
       layout = {
         "Applications" = {
           style = "row";
-          columns = 5;
+          columns = 3;
         };
         "Infrastructure" = {
           style = "row";
@@ -143,6 +147,13 @@ in {
               icon = "https://avatars.githubusercontent.com/u/105618662?s=200&v=4";
               href = "https://${config.environment.variables.UMAMI_DOMAIN}";
               description = "Privacy-focused Analytics";
+            };
+          }
+          {
+            Infisical = {
+              icon = "https://infisical.com/infisical.ico";
+              href = "https://${config.environment.variables.INFISICAL_DOMAIN}";
+              description = "Secrets Management";
             };
           }
           {
@@ -323,18 +334,9 @@ in {
     ];
   };
 
-  services.traefik.dynamicConfigOptions.http = {
-    services.homepage.loadBalancer.servers = [
-      {
-        url = "http://localhost:${toString port}";
-      }
-    ];
-
-    routers.homepage = {
-      rule = "Host(`${config.environment.variables.HOMEPAGE_DOMAIN}`)";
-      tls.certResolver = "letsencrypt";
-      service = "homepage";
-      entrypoints = "websecure";
-    };
+  services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
+    name = "homepage";
+    domain = config.environment.variables.HOMEPAGE_DOMAIN;
+    port = port;
   };
 }

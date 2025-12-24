@@ -1,4 +1,8 @@
-{config, ...}: let
+{
+  config,
+  mylib,
+  ...
+}: let
   port = config.ports.portainer;
 in {
   virtualisation.oci-containers.containers.portainer = {
@@ -11,18 +15,9 @@ in {
     ports = ["127.0.0.1:${toString port}:9000"];
   };
 
-  services.traefik.dynamicConfigOptions.http = {
-    services.portainer.loadBalancer.servers = [
-      {
-        url = "http://localhost:${toString port}";
-      }
-    ];
-
-    routers.portainer = {
-      rule = "Host(`${config.environment.variables.PORTAINER_DOMAIN}`)";
-      tls.certResolver = "letsencrypt";
-      service = "portainer";
-      entrypoints = "websecure";
-    };
+  services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
+    name = "portainer";
+    domain = config.environment.variables.PORTAINER_DOMAIN;
+    port = port;
   };
 }

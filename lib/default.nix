@@ -3,6 +3,8 @@
   macosSystem = import ./macosSystem.nix;
   colmenaSystem = import ./colmenaSystem.nix;
   attrs = import ./attrs.nix {inherit lib;};
+  dockerHelpers = import ./docker-helpers.nix {inherit lib;};
+  traefikHelpers = import ./traefik-helpers.nix {inherit lib;};
 
   # use path relative to the root of the project
   relativeToRoot = lib.path.append ../.;

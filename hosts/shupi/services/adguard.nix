@@ -1,4 +1,8 @@
-{config, ...}: let
+{
+  config,
+  mylib,
+  ...
+}: let
   port = config.ports.adguard;
 in {
   services.adguardhome = {
@@ -115,18 +119,9 @@ in {
     allowedUDPPorts = [53];
   };
 
-  services.traefik.dynamicConfigOptions.http = {
-    services.adguard.loadBalancer.servers = [
-      {
-        url = "http://localhost:${toString port}";
-      }
-    ];
-
-    routers.adguard = {
-      rule = "Host(`${config.environment.variables.ADGUARD_DOMAIN}`)";
-      tls.certResolver = "letsencrypt";
-      service = "adguard";
-      entrypoints = "websecure";
-    };
+  services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
+    name = "adguard";
+    domain = config.environment.variables.ADGUARD_DOMAIN;
+    port = port;
   };
 }

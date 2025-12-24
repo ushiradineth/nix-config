@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  mylib,
   hostname,
   mysecrets,
   ...
@@ -13,21 +14,17 @@ in {
     mode = "0400";
   };
 
-  # Create env file for CouchDB container
   system.activationScripts.couchdb-env = ''
         mkdir -p /var/lib/couchdb
         mkdir -p /srv/couchdb/data
         mkdir -p /srv/couchdb/config
 
-        # Read admin password from age secret
         ADMIN_PASSWORD=$(cat ${config.age.secrets.couchdb-admin-password.path})
 
-        # Create CouchDB env file
         echo "COUCHDB_USER=admin" > /var/lib/couchdb/couchdb.env
         echo "COUCHDB_PASSWORD=$ADMIN_PASSWORD" >> /var/lib/couchdb/couchdb.env
         chmod 600 /var/lib/couchdb/couchdb.env
 
-        # Create CouchDB local.ini for CORS configuration
         cat > /srv/couchdb/config/local.ini << 'EOF'
     [chttpd]
     require_valid_user = true
@@ -46,7 +43,6 @@ in {
         chmod 644 /srv/couchdb/config/local.ini
   '';
 
-  # CouchDB container
   virtualisation.oci-containers.containers.couchdb = {
     image = "couchdb:3.3.3";
     autoStart = true;
@@ -56,7 +52,7 @@ in {
     ];
     ports = ["127.0.0.1:${toString port}:5984"];
     extraOptions = [
-      "--health-cmd=curl -f http://localhost:5984/_up || exit 1"
+      "--health-cmd=sh -c 'curl -fsS -u \"$COUCHDB_USER:$COUCHDB_PASSWORD\" http://localhost:5984/_up || exit 1'"
       "--health-interval=30s"
       "--health-start-period=10s"
       "--health-timeout=5s"
@@ -65,18 +61,11 @@ in {
     environmentFiles = ["/var/lib/couchdb/couchdb.env"];
   };
 
-  # Traefik routing for CouchDB
-  services.traefik.dynamicConfigOptions.http = {
-    services.couchdb.loadBalancer.servers = [{url = "http://localhost:${toString port}";}];
-    routers.couchdb = {
-      rule = "Host(`${domain}`)";
-      tls.certResolver = "letsencrypt";
-      service = "couchdb";
-      entrypoints = "websecure";
-    };
+  services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
+    name = "couchdb";
+    domain = domain;
+    port = port;
   };
 
-  # NOTE: CouchDB backup uses file-based approach (already in TIER 2)
-  # Backing up /srv/couchdb/data directly is more reliable than REST API dumps
-  # See: https://docs.couchdb.org/en/stable/maintenance/backups.html
+  # File-based backup in TIER 2 (more reliable than REST API dumps)
 }
