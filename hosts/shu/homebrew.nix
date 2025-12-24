@@ -45,6 +45,7 @@
       "affinity" # Photo editing
       "obsidian"
       "seafile-client"
+      "codex"
     ];
     masApps = {
       "Davinci Resolve" = 571213070;
