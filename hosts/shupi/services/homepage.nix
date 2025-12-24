@@ -28,7 +28,7 @@ in {
         };
         "Infrastructure" = {
           style = "row";
-          columns = 5;
+          columns = 3;
         };
         "Network & Security" = {
           style = "row";
@@ -90,6 +90,13 @@ in {
               icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
               href = "https://${config.environment.variables.VICTORIALOGS_DOMAIN}";
               description = "Log Management";
+            };
+          }
+          {
+            Backrest = {
+              icon = "https://raw.githubusercontent.com/garethgeorge/backrest/4053b88e7522684a75f4ff69870b156d0255d08f/webui/assets/favicon.svg";
+              href = "https://${config.environment.variables.BACKREST_DOMAIN}";
+              description = "Backup Management";
             };
           }
         ];

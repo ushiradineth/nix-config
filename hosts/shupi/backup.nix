@@ -5,11 +5,8 @@
   mysecrets,
   ...
 }: let
-  # Hetzner Storage Box configuration
-  hetznerUser = "u522887";
-  hetznerHost = "u522887.your-storagebox.de";
-
-  # Repository base
+  hetznerUser = config.environment.variables.HETZNER_USER;
+  hetznerHost = config.environment.variables.HETZNER_HOST;
   repoBase = "sftp://${hetznerUser}@${hetznerHost}:23/backups/shupi";
 in {
   environment.systemPackages = with pkgs; [
