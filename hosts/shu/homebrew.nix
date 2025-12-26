@@ -5,10 +5,12 @@
     brews = [
       "posting"
       "defaultbrowser"
+      "mole" # MacOS clean up utility
     ];
     taps = [
       "homebrew/services"
       "nikitabobko/tap"
+      "tw93/tap"
     ];
     casks = [
       "arc" # Arc - for work
@@ -22,14 +24,12 @@
       "monitorcontrol" # Brightness control for external monitors
       "bitwarden"
       "balenaetcher" # Burn OS images to USBs
-      "cloudflare-warp" # Cloudflare WARP / Zero Trust VPN
       "burp-suite" # Web testing tool
       "ghostty" # Terminal emulator
       "orbstack" # Drop in replacement for Docker Desktop
       "whatsapp"
       "google-drive"
       "modrinth" # Minecraft Launcher
-      "hiddenbar" # Hide menu bar items
       "discord"
       "krita"
       "wacom-tablet"
@@ -37,7 +37,6 @@
       "notion"
       "notion-calendar"
       "tailscale-app"
-      "protonvpn"
       "visual-studio-code" # For Dev Containers
       "claude-code"
       "drawpen" # For presentations (sketching on the screen)
