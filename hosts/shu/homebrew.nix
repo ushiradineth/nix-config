@@ -6,6 +6,7 @@
       "posting"
       "defaultbrowser"
       "mole" # MacOS clean up utility
+      "opencode"
     ];
     taps = [
       "homebrew/services"
@@ -45,6 +46,7 @@
       "obsidian"
       "seafile-client"
       "codex"
+      "insomnia"
     ];
     masApps = {
       "Davinci Resolve" = 571213070;
