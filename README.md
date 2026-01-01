@@ -1,6 +1,6 @@
 # ❄️ Nix Configuration
 
-This repository contains my nix-darwin configuration for macOS (`shu`) and multiple NixOS hosts.
+This repository contains my nix configuration for all my machines.
 
 ## Reference
 
@@ -14,44 +14,51 @@ This repository drew significant inspiration from the outstanding work done by
 
 ```bash
 .
-├── flakes/                       # language/tool flakes
-├── hosts/                        # per-host configurations
-├── lib/                          # helper functions)
-├── modules/                      # shared module library
+├── flakes/                           # language/tool flakes
+├── hosts/                            # per-host configurations
+├── lib/                              # helper functions)
+├── modules/                          # shared module library
 │   ├── README.md
-│   ├── home-manager/             # reusable home-manager modules
+│   ├── home-manager/                 # reusable home-manager modules
 │   │   ├── core/
 │   │   ├── darwin/
 │   │   └── linux/
-│   └── nix-modules/              # reusable NixOS / nix-darwin modules
+│   └── nix-modules/                  # reusable NixOS / nix-darwin modules
 │       ├── core/
 │       ├── darwin/
 │       └── linux/
-├── outputs/                      # flake outputs grouped by system/architecture
+├── outputs/                          # flake outputs grouped by system/architecture
 │   ├── aarch64-linux/
-│   │   ├── src/                  # aarch64-linux host entries
+│   │   ├── src/                      # aarch64-linux host entries
 │   │   └── default.nix
 │   ├── aarch64-darwin/
-│   │   ├── src/                  # aarch64-darwin host entries
+│   │   ├── src/                      # aarch64-darwin host entries
 │   │   └── default.nix
 │   ├── x86_64-linux/
-│   │   ├── src/                  # x86_64-linux host entries
+│   │   ├── src/                      # x86_64-linux host entries
 │   │   └── default.nix
-│   └── default.nix               # merges architecture-specific outputs
-├── vars/                         # shared variables
-├── flake.nix                     # main entry point
-├── flake.lock                    # pinned inputs
-├── README.md                     # repo overview
-├── NIX-DARWIN_INSTALLATION.md    # macOS install guide
-├── NIXOS_INSTALLATION.md         # nixOS install notes
-├── Justfile                      # helper commands
-└── result -> /nix/store/...      # symlink to last build (if present)
+│   └── default.nix                   # merges architecture-specific outputs
+├── vars/                             # shared variables
+├── flake.nix                         # main entry point
+├── flake.lock                        # pinned inputs
+├── README.md                         # repo overview
+├── docs/                             # documentation
+│   ├── NIX_DARWIN_INSTALLATION.md    # macOS install guide
+│   ├── NIXOS_INSTALLATION.md         # nixOS install notes
+│   ├── RASPBERRY_PI_INSTALLATION.md  # Raspberry Pi 5 setup notes
+│   └── README.md
+├── Justfile                          # helper commands
+└── result -> /nix/store/...          # symlink to last build (if present)
 ```
 
-## Installation Guides
+## Documentation
 
-- [Nix-darwin (shu)](./NIX-DARWIN_INSTALLATION.md)
-- [NixOS](./NIXOS_INSTALLATION.md)
+- **Installation Guides**
+  - [macOS (nix-darwin)](./docs/NIX_DARWIN_INSTALLATION.md)
+  - [NixOS General](./docs/NIXOS_INSTALLATION.md)
+  - [Raspberry Pi 5 Setup](./docs/RASPBERRY_PI_INSTALLATION.md)
+- **Host Documentation**
+  - ./hosts/(host)/README.md
 
 ## Colmena & nixos-anywhere
 
@@ -60,7 +67,6 @@ This repository drew significant inspiration from the outstanding work done by
 
 ## Shared Host Registry
 
-`vars/default.nix` defines `hostAddresses`: a shared map of hostnames to IPs.
-
+- `vars/default.nix` defines `hostAddresses`: a shared map of hostnames to IPs.
 - `modules/nix-modules/core/ssh.nix` consumes this list to write `/etc/hosts` and generate SSH aliases everywhere.
 - Update `hostAddresses` whenever a new host is added, and both nix-darwin and NixOS configurations pick it up automatically.
