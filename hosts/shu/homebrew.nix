@@ -47,6 +47,7 @@
       "seafile-client"
       "codex"
       "insomnia"
+      "helium-browser"
     ];
     masApps = {
       "Davinci Resolve" = 571213070;
