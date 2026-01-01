@@ -33,11 +33,31 @@
           __unkeyed-2 = "prettier";
           stop_after_first = true;
         };
-        astro = ["biome"];
-        json = ["biome"];
-        jsonc = ["biome"];
-        html = ["biome"];
-        css = ["biome"];
+        astro = {
+          __unkeyed-1 = "biome";
+          __unkeyed-2 = "prettier";
+          stop_after_first = true;
+        };
+        json = {
+          __unkeyed-1 = "biome";
+          __unkeyed-2 = "prettier";
+          stop_after_first = true;
+        };
+        jsonc = {
+          __unkeyed-1 = "biome";
+          __unkeyed-2 = "prettier";
+          stop_after_first = true;
+        };
+        html = {
+          __unkeyed-1 = "biome";
+          __unkeyed-2 = "prettier";
+          stop_after_first = true;
+        };
+        css = {
+          __unkeyed-1 = "biome";
+          __unkeyed-2 = "prettier";
+          stop_after_first = true;
+        };
         markdown = {
           __unkeyed-1 = "markdownlint";
           __unkeyed-2 = "prettier";
