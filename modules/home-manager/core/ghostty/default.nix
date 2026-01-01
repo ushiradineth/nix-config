@@ -15,6 +15,7 @@
     # macOS-specific settings
     macos-option-as-alt = true
     macos-icon = official
+    bell-features = attention,title
 
     # Override tmux keybinds with Cmd for macOS
     keybind = cmd+Digit1=text:\x131
@@ -46,6 +47,7 @@
   # Linux-specific settings
   linuxConfig = ''
     window-decoration = true
+    bell-features = attention,title,system
 
     # macOS-like clipboard operations
     keybind = ctrl+v=paste_from_clipboard
@@ -93,6 +95,7 @@ in {
       clipboard-read = allow
       clipboard-write = allow
       copy-on-select = true
+      desktop-notifications = true
 
       window-padding-x = 5
       window-padding-y = 5
