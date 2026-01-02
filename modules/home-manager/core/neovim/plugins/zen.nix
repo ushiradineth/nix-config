@@ -10,10 +10,23 @@
     };
   };
 
+  programs.nixvim.plugins.twilight = {
+    enable = true;
+
+    settings = {
+      dimming = {
+        alpha = 0.25;
+      };
+
+      context = 10;
+      treesitter = true;
+    };
+  };
+
   programs.nixvim.keymaps = [
     {
       key = "<leader>z";
-      action = ":ZenMode<CR>";
+      action = ":ZenMode<CR> Twilight<CR>";
       options = {
         noremap = true;
         silent = true;

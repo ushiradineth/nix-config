@@ -8,6 +8,8 @@
       go
       json
       lua
+      markdown
+      markdown_inline
       nix
       rust
       terraform
