@@ -2,7 +2,7 @@
 
 Complete guide for setting up NixOS on Raspberry Pi 5 (or any other Raspberry Pi but I haven't tested it).
 
-## Build Custom Installer Image
+## Step 1: Build Custom Installer Image
 
 Use the `nixos-raspberrypi` installer image and bake in your SSH key so you can log in on first boot.
 
@@ -33,6 +33,7 @@ ls -lh result/sd-image/
 ### Extract the Image
 
 ```bash
+# Requires zstd (provides unzstd)
 # Extract the compressed image
 unzstd nixos-installer-rpi5-kernel.img.zst
 
@@ -44,16 +45,9 @@ unzstd nixos-installer-rpi5-kernel.img.zst
 # Now you should have `nixos-installer-rpi5-kernel.img`
 ```
 
-### Flash to NVMe Drive
+### Flash to SD card
 
-1. **Using balenaEtcher**:
-   - Open balenaEtcher
-   - Select the extracted `.img` file
-   - Select your NVMe drive (via USB adapter or directly if supported)
-   - Click "Flash!"
-   - Wait for verification to complete
-
-2. **Using dd (Linux/macOS)**:
+1. **Using dd (Linux/macOS)**:
 
    ```bash
    # Find your device (be very careful!)
@@ -61,14 +55,17 @@ unzstd nixos-installer-rpi5-kernel.img.zst
    lsblk          # Linux
 
    # Unmount the device (macOS example)
-   diskutil unmountDisk /dev/void
+   diskutil unmountDisk /dev/diskN
+   # Unmount the device (Linux example)
+   sudo umount /dev/sdX*
 
-   # Flash the image (replace /dev/void with your device)
-   sudo dd if=nixos-installer-rpi5-kernel.img of=/dev/void bs=4M status=progress
+   # Flash the image (/dev/SDCARD = /dev/diskN on macOS, /dev/sdX on Linux)
+   # macOS: /dev/rdiskN is faster than /dev/diskN
+   sudo dd if=nixos-installer-rpi5-kernel.img of=/dev/SDCARD bs=4M status=progress
 
    # Sync and eject
    sync
-   diskutil eject /dev/void
+   diskutil eject /dev/diskN
    ```
 
 ## Step 3: Deploy Configuration with nixos-anywhere
