@@ -92,7 +92,6 @@
         nix = ["alejandra"];
         c = ["clang-format"];
         cpp = ["clang-format"];
-        "*" = ["codespell"];
         "_" = [
           "squeeze_blanks"
           "trim_whitespace"
