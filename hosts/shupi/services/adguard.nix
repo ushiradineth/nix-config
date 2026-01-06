@@ -24,15 +24,12 @@ in {
         bind_hosts = ["0.0.0.0"];
         port = 53;
         upstream_dns = [
-          "quic://dns.nextdns.io"
-          "https://dns.quad9.net/dns-query"
-          "https://dns.adguard-dns.com/dns-query"
+          # Mullvad internal DNS
+          "10.64.0.1"
         ];
         bootstrap_dns = [
-          "9.9.9.10"
-          "149.112.112.10"
-          "2620:fe::10"
-          "2620:fe::fe:10"
+          # Mullvad internal DNS
+          "10.64.0.1"
         ];
       };
 
