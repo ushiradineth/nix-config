@@ -92,7 +92,13 @@ gc:
 # Format the nix files in this repo.
 [group('nix')]
 fmt:
-  nix fmt .
+  bash -eu -o pipefail -c '\
+    nix fmt .; \
+    find . \
+      \( -path "./.git" -o -path "./.direnv" -o -path "./result" -o -path "./result-*" -o -path "./node_modules" \) -prune -o \
+      -name "*.nix" -print0 | \
+      xargs -0 -P "$(getconf _NPROCESSORS_ONLN)" nix-instantiate --parse --strict >/dev/null \
+  '
 
 ############################################################################
 #
