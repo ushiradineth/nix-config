@@ -20,8 +20,8 @@
     ];
 
     settings = {
-      auto_install = true;
-      sync_install = true;
+      auto_install = false;
+      sync_install = false;
       highlight = {
         enable = true;
         additional_vim_regex_highlighting = true;
