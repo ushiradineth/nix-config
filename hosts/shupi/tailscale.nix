@@ -43,13 +43,18 @@
     allowedUDPPorts = [config.services.tailscale.port];
   };
 
-  # Clear Tailscale marks so local services route via tailscale0
+  # Handle Tailscale traffic marks for Mullvad coexistence
   networking.nftables.tables.tailscale-prerouting-mark = {
     family = "ip";
     content = ''
       chain prerouting {
         type filter hook prerouting priority mangle + 10; policy accept;
-        iifname "tailscale0" ip saddr 100.64.0.0/10 meta mark set 0x00000000 ct mark set 0x00000000
+        # Traffic from Tailscale peers TO local Tailscale services (CGNAT range)
+        # Set bypass mark so Mullvad's INPUT chain accepts it
+        iifname "tailscale0" ip saddr 100.64.0.0/10 ip daddr 100.64.0.0/10 ct mark set 0x00000f41
+        # Exit node traffic (to non-Tailscale destinations like the internet)
+        # Clear marks so it routes through Mullvad tunnel
+        iifname "tailscale0" ip saddr 100.64.0.0/10 ip daddr != 100.64.0.0/10 meta mark set 0x00000000 ct mark set 0x00000000
       }
     '';
   };
