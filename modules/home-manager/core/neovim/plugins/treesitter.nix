@@ -17,6 +17,10 @@
       typescript
       yaml
       helm
+      heex
+      elixir
+      erlang
+      gleam
     ];
 
     settings = {
