@@ -33,12 +33,47 @@ in {
     "d /var/backup/databases 0755 root root -"
   ];
 
+  # Notification service templates for backup success/failure
+  # Uses localhost HTTP to ntfy container (no auth needed internally)
+  systemd.services."notify-backup-success@" = {
+    description = "Notify backup success for %i";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.curl}/bin/curl -H 'Title: Backup Success: %i' -H 'Priority: default' -H 'Tags: backup' -d 'Backup job %i completed successfully' http://127.0.0.1:${toString config.ports.ntfy}/alerts";
+    };
+  };
+
+  systemd.services."notify-backup-failure@" = {
+    description = "Notify backup failure for %i";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.curl}/bin/curl -H 'Title: Backup Failed: %i' -H 'Priority: urgent' -H 'Tags: backup,failure' -d 'Backup job %i FAILED. Check journalctl for details.' http://127.0.0.1:${toString config.ports.ntfy}/alerts";
+    };
+  };
+
   # Increase timeout for restic backup services (SFTP connections can be slow to close)
+  # Add notification hooks for backup success/failure
   systemd.services = {
-    "restic-backups-critical-data".serviceConfig.TimeoutStopSec = "5min";
-    "restic-backups-app-data".serviceConfig.TimeoutStopSec = "5min";
-    "restic-backups-config".serviceConfig.TimeoutStopSec = "5min";
-    "restic-backups-db-dumps".serviceConfig.TimeoutStopSec = "5min";
+    "restic-backups-critical-data" = {
+      serviceConfig.TimeoutStopSec = "5min";
+      onSuccess = ["notify-backup-success@critical-data.service"];
+      onFailure = ["notify-backup-failure@critical-data.service"];
+    };
+    "restic-backups-app-data" = {
+      serviceConfig.TimeoutStopSec = "5min";
+      onSuccess = ["notify-backup-success@app-data.service"];
+      onFailure = ["notify-backup-failure@app-data.service"];
+    };
+    "restic-backups-config" = {
+      serviceConfig.TimeoutStopSec = "5min";
+      onSuccess = ["notify-backup-success@config.service"];
+      onFailure = ["notify-backup-failure@config.service"];
+    };
+    "restic-backups-db-dumps" = {
+      serviceConfig.TimeoutStopSec = "5min";
+      onSuccess = ["notify-backup-success@db-dumps.service"];
+      onFailure = ["notify-backup-failure@db-dumps.service"];
+    };
   };
 
   # Restic backup jobs
@@ -128,6 +163,8 @@ in {
         "/srv/traefik"
         "/srv/wakapi"
         "/srv/couchdb/config"
+        "/srv/ntfy"
+        "/srv/alertmanager"
       ];
 
       extraOptions = [

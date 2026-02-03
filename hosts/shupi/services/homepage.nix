@@ -28,7 +28,7 @@ in {
         };
         "Infrastructure" = {
           style = "row";
-          columns = 3;
+          columns = 4;
         };
         "Network & Security" = {
           style = "row";
@@ -99,6 +99,20 @@ in {
               description = "Backup Management";
             };
           }
+          {
+            Ntfy = {
+              icon = "https://raw.githubusercontent.com/binwiederhier/ntfy/refs/heads/main/web/public/static/images/ntfy.png";
+              href = "https://${config.environment.variables.NTFY_DOMAIN}";
+              description = "Notifications";
+            };
+          }
+          {
+            Alertmanager = {
+              icon = "https://avatars.githubusercontent.com/u/3380462?s=120&v=4";
+              href = "https://${config.environment.variables.ALERTMANAGER_DOMAIN}";
+              description = "Alert Routing";
+            };
+          }
         ];
       }
       {
@@ -154,13 +168,6 @@ in {
               icon = "https://avatars.githubusercontent.com/u/105618662?s=200&v=4";
               href = "https://${config.environment.variables.UMAMI_DOMAIN}";
               description = "Privacy-focused Analytics";
-            };
-          }
-          {
-            Infisical = {
-              icon = "https://infisical.com/infisical.ico";
-              href = "https://${config.environment.variables.INFISICAL_DOMAIN}";
-              description = "Secrets Management";
             };
           }
           {

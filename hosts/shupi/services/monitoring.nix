@@ -89,6 +89,83 @@ in
                   instance: 'shupi'
       '';
 
+      # Alert rules for vmalert
+      environment.etc."srv/prometheus-config/alerts.yml".text = ''
+        groups:
+          - name: system_alerts
+            interval: 1m
+            rules:
+              # High CPU usage
+              - alert: HighCPUUsage
+                expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "High CPU usage on {{ $labels.instance }}"
+                  description: "CPU usage is above 80% (current value: {{ $value | humanize }}%)"
+
+              # Critical CPU usage
+              - alert: CriticalCPUUsage
+                expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+                for: 2m
+                labels:
+                  severity: critical
+                annotations:
+                  summary: "Critical CPU usage on {{ $labels.instance }}"
+                  description: "CPU usage is above 95% (current value: {{ $value | humanize }}%)"
+
+              # High memory usage
+              - alert: HighMemoryUsage
+                expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "High memory usage on {{ $labels.instance }}"
+                  description: "Memory usage is above 80% (current value: {{ $value | humanize }}%)"
+
+              # Critical memory usage
+              - alert: CriticalMemoryUsage
+                expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 95
+                for: 2m
+                labels:
+                  severity: critical
+                annotations:
+                  summary: "Critical memory usage on {{ $labels.instance }}"
+                  description: "Memory usage is above 95% (current value: {{ $value | humanize }}%)"
+
+              # Low disk space
+              - alert: LowDiskSpace
+                expr: 100 - ((node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100) > 80
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Low disk space on {{ $labels.instance }}"
+                  description: "Disk usage is above 80% (current value: {{ $value | humanize }}%)"
+
+              # Critical disk space
+              - alert: CriticalDiskSpace
+                expr: 100 - ((node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100) > 90
+                for: 2m
+                labels:
+                  severity: critical
+                annotations:
+                  summary: "Critical disk space on {{ $labels.instance }}"
+                  description: "Disk usage is above 90% (current value: {{ $value | humanize }}%)"
+
+              # System load high
+              - alert: HighSystemLoad
+                expr: node_load5 > 4
+                for: 5m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "High system load on {{ $labels.instance }}"
+                  description: "5-minute load average is high (current value: {{ $value | humanize }})"
+      '';
+
       virtualisation.oci-containers.containers.vmagent = {
         image = "victoriametrics/vmagent:latest";
         autoStart = true;
@@ -102,6 +179,27 @@ in
         volumes = [
           "/srv/vmagent:/vmagent-data"
           "/etc/srv/prometheus-config/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+        ];
+      };
+
+      # vmalert for processing alert rules
+      virtualisation.oci-containers.containers.vmalert = {
+        image = "victoriametrics/vmalert:latest";
+        autoStart = true;
+        extraOptions = [
+          "--network=host"
+        ];
+        cmd = [
+          "-datasource.url=http://127.0.0.1:${toString vmPort}"
+          "-notifier.url=http://127.0.0.1:${toString config.ports.alertmanager}"
+          "-remoteWrite.url=http://127.0.0.1:${toString vmPort}"
+          "-remoteRead.url=http://127.0.0.1:${toString vmPort}"
+          "-rule=/etc/prometheus/alerts.yml"
+          "-external.url=https://${vmDomain}"
+          "-evaluationInterval=1m"
+        ];
+        volumes = [
+          "/etc/srv/prometheus-config/alerts.yml:/etc/prometheus/alerts.yml:ro"
         ];
       };
 
