@@ -7,6 +7,8 @@
       "defaultbrowser"
       "mole" # MacOS clean up utility
       "opencode"
+      "handbrake"
+      "nvm"
     ];
     taps = [
       "homebrew/services"
@@ -14,6 +16,8 @@
       "tw93/tap"
     ];
     casks = [
+      "obs"
+      "vlc"
       "arc" # Arc - for work
       "zen" # Zen Browser
       "figma"
