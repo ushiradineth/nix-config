@@ -88,17 +88,8 @@ in {
       BACKUP_DIR="/srv/backups/shu-code"
       MAX_AGE_HOURS=48
 
-      if [ ! -d "$BACKUP_DIR" ]; then
-        curl -H "Title: macOS Backup Missing" \
-          -H "Priority: high" \
-          -H "Tags: backup,macos,failure" \
-          -d "Backup directory $BACKUP_DIR does not exist" \
-          http://127.0.0.1:${toString config.ports.ntfy}/alerts
-        exit 0
-      fi
-
       # Check if any file was modified within MAX_AGE_HOURS
-      RECENT=$(find "$BACKUP_DIR" -type f -mmin -$((MAX_AGE_HOURS * 60)) | head -1)
+      RECENT=$(find "$BACKUP_DIR" -type f -mmin -$((MAX_AGE_HOURS * 60)) 2>/dev/null | head -1)
 
       if [ -z "$RECENT" ]; then
         curl -H "Title: macOS Backup Stale" \
