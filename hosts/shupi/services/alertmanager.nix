@@ -1,8 +1,6 @@
 {
   config,
-  pkgs,
   mylib,
-  lib,
   mysecrets,
   hostname,
   ...
@@ -116,21 +114,21 @@ in {
 
   # Create bridge script and env file
   system.activationScripts.alertmanagerNtfyBridgeScript = ''
-    mkdir -p /srv/alertmanager-ntfy-bridge
-    cat > /srv/alertmanager-ntfy-bridge/bridge.py <<'SCRIPT'
-${bridgeScript}
-SCRIPT
-    chmod 755 /srv/alertmanager-ntfy-bridge/bridge.py
+        mkdir -p /srv/alertmanager-ntfy-bridge
+        cat > /srv/alertmanager-ntfy-bridge/bridge.py <<'SCRIPT'
+    ${bridgeScript}
+    SCRIPT
+        chmod 755 /srv/alertmanager-ntfy-bridge/bridge.py
 
-    # Create env file from credentials (user:pass format)
-    NTFY_AUTH=$(cat ${config.age.secrets.ntfy-alertmanager-credentials.path} | tr -d '[:space:]')
-    NTFY_USER=''${NTFY_AUTH%%:*}
-    NTFY_PASS=''${NTFY_AUTH#*:}
-    cat > /srv/alertmanager-ntfy-bridge/env <<EOF
-NTFY_USER=$NTFY_USER
-NTFY_PASS=$NTFY_PASS
-EOF
-    chmod 600 /srv/alertmanager-ntfy-bridge/env
+        # Create env file from credentials (user:pass format)
+        NTFY_AUTH=$(cat ${config.age.secrets.ntfy-alertmanager-credentials.path} | tr -d '[:space:]')
+        NTFY_USER=''${NTFY_AUTH%%:*}
+        NTFY_PASS=''${NTFY_AUTH#*:}
+        cat > /srv/alertmanager-ntfy-bridge/env <<EOF
+    NTFY_USER=$NTFY_USER
+    NTFY_PASS=$NTFY_PASS
+    EOF
+        chmod 600 /srv/alertmanager-ntfy-bridge/env
   '';
 
   # Alertmanager container
@@ -176,32 +174,32 @@ EOF
 
   # Create alertmanager configuration
   system.activationScripts.alertmanagerConfig = ''
-    mkdir -p /srv/alertmanager
-    cat > /srv/alertmanager/config.yml <<EOF
-global:
-  resolve_timeout: 5m
+        mkdir -p /srv/alertmanager
+        cat > /srv/alertmanager/config.yml <<EOF
+    global:
+      resolve_timeout: 5m
 
-route:
-  group_by: ['alertname', 'cluster', 'service']
-  group_wait: 10s
-  group_interval: 10s
-  repeat_interval: 12h
-  receiver: 'ntfy-bridge'
+    route:
+      group_by: ['alertname', 'cluster', 'service']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 12h
+      receiver: 'ntfy-bridge'
 
-receivers:
-  - name: 'ntfy-bridge'
-    webhook_configs:
-      - url: 'http://alertmanager-ntfy-bridge:8080/'
-        send_resolved: true
+    receivers:
+      - name: 'ntfy-bridge'
+        webhook_configs:
+          - url: 'http://alertmanager-ntfy-bridge:8080/'
+            send_resolved: true
 
-inhibit_rules:
-  - source_match:
-      severity: 'critical'
-    target_match:
-      severity: 'warning'
-    equal: ['alertname', 'instance']
-EOF
-    chmod 644 /srv/alertmanager/config.yml
+    inhibit_rules:
+      - source_match:
+          severity: 'critical'
+        target_match:
+          severity: 'warning'
+        equal: ['alertname', 'instance']
+    EOF
+        chmod 644 /srv/alertmanager/config.yml
   '';
 
   # Traefik route
