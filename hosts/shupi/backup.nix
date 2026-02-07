@@ -126,6 +126,9 @@ in {
         "/srv/portainer"
         "/srv/couchdb/data" # CouchDB uses file-based backup (no SQL dump)
         "/srv/infisical/redis" # Redis has no SQL dump alternative
+        "/srv/forgejo/data"
+        "/srv/forgejo/repos"
+        "/srv/forgejo/git"
       ];
 
       extraOptions = [

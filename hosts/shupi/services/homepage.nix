@@ -177,6 +177,13 @@ in {
               description = "Coding Time Tracking";
             };
           }
+          {
+            Forgejo = {
+              icon = "https://forgejo.org/images/forgejo-wordmark.svg";
+              href = "https://${config.environment.variables.FORGEJO_DOMAIN}";
+              description = "Git Hosting & Mirrors";
+            };
+          }
         ];
       }
     ];

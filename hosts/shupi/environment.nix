@@ -27,6 +27,7 @@
     BACKREST_DOMAIN = "backrest.shupi.ushira.com";
     NTFY_DOMAIN = "ntfy.shupi.ushira.com";
     ALERTMANAGER_DOMAIN = "am.shupi.ushira.com";
+    FORGEJO_DOMAIN = "git.shupi.ushira.com";
 
     # Exposed through Cloudflared
     UMAMI_DOMAIN = "umami.ushira.com";

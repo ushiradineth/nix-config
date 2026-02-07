@@ -24,6 +24,7 @@
       ntfy = 48015;
       alertmanager = 48016;
       alertmanager-ntfy = 48017;
+      forgejo = 48018;
     };
   };
 }
