@@ -8,7 +8,10 @@ in {
   virtualisation.oci-containers.containers.uptimekuma = {
     image = "louislam/uptime-kuma:latest";
     autoStart = true;
-    volumes = ["/srv/uptimekuma:/app/data"];
+    volumes = [
+      "/srv/uptimekuma:/app/data"
+      "/var/run/docker.sock:/var/run/docker.sock:ro"
+    ];
     ports = ["127.0.0.1:${toString port}:3001"];
     extraOptions = [
       "--health-cmd=node -e \"require('http').get('http://localhost:3001/api/health', r => r.statusCode === 200 ? process.exit(0) : process.exit(1)).on('error', () => process.exit(1))\""
