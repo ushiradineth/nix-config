@@ -144,6 +144,11 @@ in
         ports = ["127.0.0.1:${toString port}:3000"];
         extraOptions = [
           "--network=forgejo-net"
+          "--health-cmd=curl -sf http://localhost:3000/api/healthz || exit 1"
+          "--health-interval=30s"
+          "--health-timeout=10s"
+          "--health-retries=5"
+          "--health-start-period=60s"
         ];
         environmentFiles = ["/var/lib/forgejo/forgejo.env"];
         environment = {

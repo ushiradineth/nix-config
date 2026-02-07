@@ -105,6 +105,13 @@ in {
       TZ = myvars.timezone;
     };
     ports = ["127.0.0.1:${toString port}:9898"];
+    extraOptions = [
+      "--health-cmd=wget -qO- http://localhost:9898/ || exit 1"
+      "--health-interval=30s"
+      "--health-timeout=10s"
+      "--health-retries=5"
+      "--health-start-period=30s"
+    ];
   };
 
   services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {

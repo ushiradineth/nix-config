@@ -38,6 +38,11 @@ in
         extraOptions = [
           "--shm-size=128mb"
           "--network=immich"
+          "--health-cmd=pg_isready -U postgres -d immich"
+          "--health-interval=30s"
+          "--health-timeout=10s"
+          "--health-retries=5"
+          "--health-start-period=30s"
         ];
         environmentFiles = ["/var/lib/immich/postgres.env"];
         cmd = [
@@ -52,7 +57,14 @@ in
       virtualisation.oci-containers.containers.immich-redis = {
         image = "docker.io/valkey/valkey:8@sha256:81db6d39e1bba3b3ff32bd3a1b19a6d69690f94a3954ec131277b9a26b95b3aa";
         autoStart = true;
-        extraOptions = ["--network=immich"];
+        extraOptions = [
+          "--network=immich"
+          "--health-cmd=valkey-cli ping | grep -q PONG"
+          "--health-interval=30s"
+          "--health-timeout=10s"
+          "--health-retries=5"
+          "--health-start-period=10s"
+        ];
       };
 
       virtualisation.oci-containers.containers.immich-server = {
@@ -64,7 +76,14 @@ in
           "/etc/localtime:/etc/localtime:ro"
         ];
         ports = ["127.0.0.1:${toString port}:2283"];
-        extraOptions = ["--network=immich"];
+        extraOptions = [
+          "--network=immich"
+          "--health-cmd=curl -sf http://localhost:2283/api/server/ping || exit 1"
+          "--health-interval=30s"
+          "--health-timeout=10s"
+          "--health-retries=5"
+          "--health-start-period=60s"
+        ];
         environmentFiles = ["/var/lib/immich/server.env"];
         environment = {
           DB_HOSTNAME = "immich-postgres";
@@ -81,7 +100,14 @@ in
         volumes = [
           "/srv/immich/model-cache:/cache"
         ];
-        extraOptions = ["--network=immich"];
+        extraOptions = [
+          "--network=immich"
+          "--health-cmd=python3 -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:3003/ping\")' || exit 1"
+          "--health-interval=30s"
+          "--health-timeout=10s"
+          "--health-retries=5"
+          "--health-start-period=120s"
+        ];
         environment = {
           TZ = "UTC";
         };

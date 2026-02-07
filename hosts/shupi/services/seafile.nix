@@ -137,6 +137,11 @@ in
         autoStart = true;
         extraOptions = [
           "--network=seafile-net"
+          "--health-cmd=redis-cli ping | grep -q PONG"
+          "--health-interval=30s"
+          "--health-timeout=10s"
+          "--health-retries=5"
+          "--health-start-period=10s"
         ];
       };
 
@@ -150,6 +155,11 @@ in
         ports = ["127.0.0.1:${toString port}:80"];
         extraOptions = [
           "--network=seafile-net"
+          "--health-cmd=curl -sf -H 'Host: ${domain}' http://localhost/ || exit 1"
+          "--health-interval=30s"
+          "--health-timeout=10s"
+          "--health-retries=5"
+          "--health-start-period=120s"
         ];
         environmentFiles = ["/var/lib/seafile/seafile.env"];
       };

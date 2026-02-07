@@ -138,7 +138,14 @@ EOF
     image = "prom/alertmanager:latest";
     autoStart = true;
     ports = ["127.0.0.1:${toString port}:9093"];
-    extraOptions = ["--network=monitoring"];
+    extraOptions = [
+      "--network=monitoring"
+      "--health-cmd=wget -qO- http://localhost:9093/-/healthy || exit 1"
+      "--health-interval=30s"
+      "--health-timeout=10s"
+      "--health-retries=5"
+      "--health-start-period=10s"
+    ];
     volumes = [
       "/srv/alertmanager:/alertmanager"
       "/srv/alertmanager/config.yml:/etc/alertmanager/config.yml:ro"

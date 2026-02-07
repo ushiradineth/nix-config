@@ -61,7 +61,14 @@ in
         autoStart = true;
         dependsOn = ["umami-db"];
         ports = ["127.0.0.1:${toString port}:3000"];
-        extraOptions = ["--network=umami"];
+        extraOptions = [
+          "--network=umami"
+          "--health-cmd=node -e \"require('http').get('http://localhost:3000/api/heartbeat', r => r.statusCode === 200 ? process.exit(0) : process.exit(1)).on('error', () => process.exit(1))\""
+          "--health-interval=30s"
+          "--health-timeout=10s"
+          "--health-retries=5"
+          "--health-start-period=30s"
+        ];
         environmentFiles = ["/var/lib/umami/app.env"];
       };
     }

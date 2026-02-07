@@ -27,7 +27,14 @@ in {
     image = "binwiederhier/ntfy:latest";
     autoStart = true;
     ports = ["127.0.0.1:${toString port}:80"];
-    extraOptions = ["--network=monitoring"];
+    extraOptions = [
+      "--network=monitoring"
+      "--health-cmd=wget -qO- http://localhost:80/v1/health || exit 1"
+      "--health-interval=30s"
+      "--health-timeout=10s"
+      "--health-retries=5"
+      "--health-start-period=10s"
+    ];
     volumes = [
       "/srv/ntfy/cache:/var/cache/ntfy"
       "/srv/ntfy/server.yml:/etc/ntfy/server.yml:ro"
