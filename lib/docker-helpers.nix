@@ -41,9 +41,12 @@
     dumpCommand,
     backupDir ? "/var/backup/databases",
     onCalendar ? "*-*-* 01:45:00",
+    containerDeps ? [],
   }: {
     systemd.services."dump-${name}-db" = {
       inherit description;
+      after = map (c: "docker-${c}.service") containerDeps;
+      requires = map (c: "docker-${c}.service") containerDeps;
       serviceConfig = {
         Type = "oneshot";
         ExecStart = pkgs.writeShellScript "dump-${name}-db" ''

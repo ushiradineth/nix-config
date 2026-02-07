@@ -176,6 +176,7 @@ in
       pkgs = pkgs;
       name = "seafile";
       description = "Dump Seafile MariaDB database";
+      containerDeps = ["seafile-db"];
       dumpCommand = ''
         DB_PASSWORD=$(cat ${config.age.secrets.seafile-db-password.path})
         ${config.virtualisation.docker.package}/bin/docker exec seafile-db \

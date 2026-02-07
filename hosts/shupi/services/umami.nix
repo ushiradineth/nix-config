@@ -78,6 +78,7 @@ in
       pkgs = pkgs;
       name = "umami";
       description = "Dump Umami PostgreSQL database";
+      containerDeps = ["umami-db"];
       dumpCommand = ''
         # Dump to temp file, then atomically replace
         ${config.virtualisation.docker.package}/bin/docker exec umami-db \

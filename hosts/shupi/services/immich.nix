@@ -112,6 +112,7 @@ in
       pkgs = pkgs;
       name = "immich";
       description = "Dump Immich PostgreSQL database";
+      containerDeps = ["immich-postgres"];
       dumpCommand = ''
         ${config.virtualisation.docker.package}/bin/docker exec immich-postgres \
           pg_dumpall -U postgres > "$BACKUP_DIR/immich.sql.tmp"

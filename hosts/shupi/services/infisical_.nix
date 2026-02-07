@@ -122,6 +122,7 @@ in
       pkgs = pkgs;
       name = "infisical";
       description = "Dump Infisical PostgreSQL database";
+      containerDeps = ["infisical-db"];
       dumpCommand = ''
         ${config.virtualisation.docker.package}/bin/docker exec infisical-db \
           pg_dumpall -U infisical > "$BACKUP_DIR/infisical.sql.tmp"
