@@ -21,6 +21,12 @@
   boot.kernelModules = [];
   boot.extraModulePackages = [];
 
+  # Enable memory cgroup for container monitoring (cAdvisor)
+  boot.kernelParams = [
+    "cgroup_memory=1"
+    "cgroup_enable=memory"
+  ];
+
   boot.loader.raspberryPi.bootloader = lib.mkForce "kernel";
 
   hardware.raspberry-pi.config = {

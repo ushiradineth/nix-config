@@ -6,6 +6,9 @@
 }: let
   vmPort = config.ports.victoriametrics;
   vlPort = config.ports.victorialogs;
+  cadvisorPort = config.ports.cadvisor;
+  nodeExporterPort = config.ports.nodeExporter;
+  vmagentPort = config.ports.vmagent;
   vmDomain = config.environment.variables.VICTORIAMETRICS_DOMAIN;
   vlDomain = config.environment.variables.VICTORIALOGS_DOMAIN;
 in
@@ -78,6 +81,28 @@ in
         cmd = ["--config" "/etc/vector/vector.toml"];
       };
 
+      virtualisation.oci-containers.containers.cadvisor = {
+        image = "gcr.io/cadvisor/cadvisor:latest";
+        autoStart = true;
+        ports = ["127.0.0.1:${toString cadvisorPort}:8080"];
+        extraOptions = [
+          "--network=monitoring"
+          "--privileged"
+        ];
+        volumes = [
+          "/:/rootfs:ro"
+          "/var/run:/var/run:ro"
+          "/sys:/sys:ro"
+          "/var/lib/docker/:/var/lib/docker:ro"
+          "/dev/disk/:/dev/disk:ro"
+        ];
+        cmd = [
+          "--docker_only=true"
+          "--store_container_labels=true"
+          "--containerd=/var/run/docker/containerd/containerd.sock"
+        ];
+      };
+
       environment.etc."srv/prometheus-config/prometheus.yml".text = ''
         global:
           scrape_interval: 15s
@@ -85,7 +110,13 @@ in
         scrape_configs:
           - job_name: 'node'
             static_configs:
-              - targets: ['127.0.0.1:9100']
+              - targets: ['127.0.0.1:${toString nodeExporterPort}']
+                labels:
+                  instance: 'shupi'
+
+          - job_name: 'cadvisor'
+            static_configs:
+              - targets: ['127.0.0.1:${toString cadvisorPort}']
                 labels:
                   instance: 'shupi'
       '';
@@ -176,6 +207,7 @@ in
         cmd = [
           "-promscrape.config=/etc/prometheus/prometheus.yml"
           "-remoteWrite.url=http://127.0.0.1:${toString vmPort}/api/v1/write"
+          "-httpListenAddr=127.0.0.1:${toString vmagentPort}"
         ];
         volumes = [
           "/srv/vmagent:/vmagent-data"
@@ -209,6 +241,7 @@ in
       # Native NixOS service keeps metrics collection lightweight.
       services.prometheus.exporters.node = {
         enable = true;
+        port = nodeExporterPort;
         enabledCollectors = [
           "cpu"
           "cpufreq"
@@ -237,6 +270,7 @@ in
         "victoriametrics"
         "victorialogs"
         "vector"
+        "cadvisor"
         "vmagent"
         "vmalert"
         "alertmanager"

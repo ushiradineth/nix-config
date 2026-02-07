@@ -25,6 +25,9 @@
       alertmanager = 48016;
       alertmanager-ntfy = 48017;
       forgejo = 48018;
+      cadvisor = 48019;
+      nodeExporter = 48020;
+      vmagent = 48021;
     };
   };
 }
