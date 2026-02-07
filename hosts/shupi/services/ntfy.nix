@@ -27,6 +27,7 @@ in {
     image = "binwiederhier/ntfy:latest";
     autoStart = true;
     ports = ["127.0.0.1:${toString port}:80"];
+    extraOptions = ["--network=monitoring"];
     volumes = [
       "/srv/ntfy/cache:/var/cache/ntfy"
       "/srv/ntfy/server.yml:/etc/ntfy/server.yml:ro"

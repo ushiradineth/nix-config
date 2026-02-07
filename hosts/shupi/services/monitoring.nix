@@ -19,6 +19,7 @@ in
         cmd = [
           "-storageDataPath=/victoria-metrics-data"
           "-retentionPeriod=12"
+          "-vmalert.proxyURL=http://vmalert:8880"
         ];
         volumes = [
           "/srv/victoriametrics:/victoria-metrics-data"
@@ -187,16 +188,18 @@ in
         image = "victoriametrics/vmalert:latest";
         autoStart = true;
         extraOptions = [
-          "--network=host"
+          "--network=monitoring"
+          "--add-host=host.docker.internal:host-gateway"
         ];
         cmd = [
-          "-datasource.url=http://127.0.0.1:${toString vmPort}"
-          "-notifier.url=http://127.0.0.1:${toString config.ports.alertmanager}"
-          "-remoteWrite.url=http://127.0.0.1:${toString vmPort}"
-          "-remoteRead.url=http://127.0.0.1:${toString vmPort}"
+          "-datasource.url=http://victoriametrics:8428"
+          "-notifier.url=http://alertmanager:9093"
+          "-remoteWrite.url=http://victoriametrics:8428"
+          "-remoteRead.url=http://victoriametrics:8428"
           "-rule=/etc/prometheus/alerts.yml"
           "-external.url=https://${vmDomain}"
           "-evaluationInterval=1m"
+          "-httpListenAddr=:8880"
         ];
         volumes = [
           "/etc/srv/prometheus-config/alerts.yml:/etc/prometheus/alerts.yml:ro"
@@ -235,6 +238,10 @@ in
         "victorialogs"
         "vector"
         "vmagent"
+        "vmalert"
+        "alertmanager"
+        "alertmanager-ntfy-bridge"
+        "ntfy"
       ];
     })
     {
