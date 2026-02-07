@@ -29,8 +29,10 @@ in {
   };
 
   # Backup directory for database dumps (created by individual service dump scripts)
+  # Directory for macOS host (shu) code backups (not backed up to Hetzner)
   systemd.tmpfiles.rules = [
     "d /var/backup/databases 0755 root root -"
+    "d /srv/backups/shu-code 0755 root root -"
   ];
 
   # Notification service templates for backup success/failure
@@ -73,6 +75,47 @@ in {
       serviceConfig.TimeoutStopSec = "5min";
       onSuccess = ["notify-backup-success@db-dumps.service"];
       onFailure = ["notify-backup-failure@db-dumps.service"];
+    };
+  };
+
+  # Monitor for stale macOS backup (shu -> shupi)
+  # Alerts if no backup received within 48 hours
+  systemd.services.check-shu-backup-staleness = {
+    description = "Check if macOS backup is stale";
+    path = with pkgs; [findutils curl coreutils];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      BACKUP_DIR="/srv/backups/shu-code"
+      MAX_AGE_HOURS=48
+
+      if [ ! -d "$BACKUP_DIR" ]; then
+        curl -H "Title: macOS Backup Missing" \
+          -H "Priority: high" \
+          -H "Tags: backup,macos,failure" \
+          -d "Backup directory $BACKUP_DIR does not exist" \
+          http://127.0.0.1:${toString config.ports.ntfy}/alerts
+        exit 0
+      fi
+
+      # Check if any file was modified within MAX_AGE_HOURS
+      RECENT=$(find "$BACKUP_DIR" -type f -mmin -$((MAX_AGE_HOURS * 60)) | head -1)
+
+      if [ -z "$RECENT" ]; then
+        curl -H "Title: macOS Backup Stale" \
+          -H "Priority: high" \
+          -H "Tags: backup,macos,warning" \
+          -d "No macOS backup received in the last $MAX_AGE_HOURS hours" \
+          http://127.0.0.1:${toString config.ports.ntfy}/alerts
+      fi
+    '';
+  };
+
+  systemd.timers.check-shu-backup-staleness = {
+    description = "Timer for macOS backup staleness check";
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnCalendar = "*-*-* 06:00:00"; # Run daily at 6 AM
+      Persistent = true;
     };
   };
 
