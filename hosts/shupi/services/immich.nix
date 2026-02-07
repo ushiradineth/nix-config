@@ -68,7 +68,7 @@ in
       };
 
       virtualisation.oci-containers.containers.immich-server = {
-        image = "ghcr.io/immich-app/immich-server:v2.4.1";
+        image = "ghcr.io/immich-app/immich-server:v2.5.5";
         autoStart = true;
         dependsOn = ["immich-redis" "immich-postgres" "immich-machine-learning"];
         volumes = [

@@ -6,7 +6,7 @@
   port = config.ports.actualbudget;
 in {
   virtualisation.oci-containers.containers.actualbudget = {
-    image = "actualbudget/actual-server:latest";
+    image = "actualbudget/actual-server:26.2.0";
     autoStart = true;
     volumes = ["/srv/actualbudget:/data"];
     ports = ["127.0.0.1:${toString port}:5006"];
