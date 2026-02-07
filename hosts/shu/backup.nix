@@ -8,7 +8,7 @@
     STATE_FILE="/tmp/restic-backup-tailscale-state"
     LOG_FILE="/tmp/restic-backup-code.log"
     PASSWORD_FILE="/Users/shu/.config/restic/password"
-    REPOSITORY="sftp://shu@shupi:/srv/backups/shu-code"
+    REPOSITORY="sftp://shu@shupi//srv/backups/shu-code"
 
     exec > >(tee -a "$LOG_FILE") 2>&1
     echo "=== Backup started at $(date) ==="
