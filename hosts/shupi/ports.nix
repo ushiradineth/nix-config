@@ -19,7 +19,7 @@
       seafile = 48010;
       umami = 48011;
       wakapi = 48012;
-      infisical = 48013;
+      # infisical = 48013;
       backrest = 48014;
       ntfy = 48015;
       alertmanager = 48016;
