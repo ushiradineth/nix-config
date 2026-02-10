@@ -19,15 +19,14 @@
       seafile = 48010;
       umami = 48011;
       wakapi = 48012;
-      # infisical = 48013;
-      backrest = 48014;
-      ntfy = 48015;
-      alertmanager = 48016;
-      alertmanager-ntfy = 48017;
-      forgejo = 48018;
-      cadvisor = 48019;
-      nodeExporter = 48020;
-      vmagent = 48021;
+      backrest = 48013;
+      ntfy = 48014;
+      alertmanager = 48015;
+      alertmanager-ntfy = 48016;
+      forgejo = 48017;
+      cadvisor = 48018;
+      nodeExporter = 48019;
+      vmagent = 48020;
     };
   };
 }

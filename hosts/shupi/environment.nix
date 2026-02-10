@@ -32,6 +32,5 @@
     # Exposed through Cloudflared
     UMAMI_DOMAIN = "umami.ushira.com";
     WAKAPI_DOMAIN = "wakapi.ushira.com";
-    # INFISICAL_DOMAIN = "infisical.ushira.com";
   };
 }
