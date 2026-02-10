@@ -1,4 +1,4 @@
-{lib}: {
+_: {
   mkTraefikRoute = {
     name,
     domain,
@@ -16,7 +16,7 @@
       rule = "Host(`${domain}`)";
       tls.certResolver = certResolver;
       service = name;
-      entrypoints = entrypoints;
+      inherit entrypoints;
     };
   };
 }

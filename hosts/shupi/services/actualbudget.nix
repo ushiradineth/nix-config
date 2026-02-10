@@ -22,6 +22,6 @@ in {
   services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
     name = "actualbudget";
     domain = config.environment.variables.ACTUALBUDGET_DOMAIN;
-    port = port;
+    inherit port;
   };
 }

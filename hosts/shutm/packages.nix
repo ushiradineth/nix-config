@@ -3,6 +3,6 @@
     git
     vim
     spice-vdagent
-    glxinfo
+    mesa-demos
   ];
 }

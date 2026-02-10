@@ -1,4 +1,4 @@
-{...}: {
+_: {
   # Enable keyd service for macOS-style keybinds
   services.keyd = {
     enable = true;

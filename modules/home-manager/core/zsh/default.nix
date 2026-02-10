@@ -56,7 +56,7 @@ in {
       ];
     };
 
-    envExtra = envExtra;
+    inherit envExtra;
     initContent = ''
       ${conditionalInitContent}
 

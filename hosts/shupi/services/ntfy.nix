@@ -94,8 +94,7 @@ in {
   services.traefik.dynamicConfigOptions.http = lib.mkMerge [
     (mylib.traefikHelpers.mkTraefikRoute {
       name = "ntfy";
-      domain = domain;
-      port = port;
+      inherit domain port;
     })
     {
       middlewares."ntfy-auth".basicAuth.usersFile = "/var/lib/ntfy/htpasswd";

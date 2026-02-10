@@ -16,7 +16,7 @@ in
     modules =
       darwin-modules
       ++ [
-        ({...}: {
+        (_: {
           nixpkgs.pkgs = import nixpkgs-darwin {
             inherit system;
             config.allowUnfree = true;

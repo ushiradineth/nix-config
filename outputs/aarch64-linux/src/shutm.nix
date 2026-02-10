@@ -27,7 +27,17 @@
       ++ [disko.nixosModules.disko];
   };
 
-  systemArgs = modules // args // {inherit specialArgs;};
+  systemArgs =
+    modules
+    // args
+    // {
+      inherit
+        specialArgs
+        inputs
+        lib
+        myvars
+        ;
+    };
 in {
   nixosConfigurations.${hostname} = mylib.nixosSystem systemArgs;
   colmena.${hostname} = mylib.colmenaSystem (systemArgs // {inherit tags ssh-user;});

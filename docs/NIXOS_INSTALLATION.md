@@ -42,9 +42,10 @@ wpa_cli -i wlan0
 - Verify the below commands using the references, do not blindly run the below commands
 
 #### BIOS Systems (MBR)
-  [REF](https://nixos.org/manual/nixos/stable/#sec-installation-manual-partitioning-MBR)
 
-- Primary = Rest of the drive 
+[REF](https://nixos.org/manual/nixos/stable/#sec-installation-manual-partitioning-MBR)
+
+- Primary = Rest of the drive
 - Swap = 8GB
 
 ```bash
@@ -147,7 +148,7 @@ reboot
 nix-shell -p just git neovim
 
 # Install the flake
-cd 
+cd
 git clone https://github.com/ushiradineth/nix-config.git
 cd nix-config
 

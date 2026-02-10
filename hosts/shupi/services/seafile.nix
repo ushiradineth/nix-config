@@ -165,7 +165,7 @@ in
       };
     }
     (mylib.dockerHelpers.mkDockerNetwork {
-      config = config;
+      inherit config;
       name = "seafile";
       networkName = "seafile-net";
     })
@@ -176,14 +176,12 @@ in
     {
       services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
         name = "seafile";
-        domain = domain;
-        port = port;
         host = "127.0.0.1";
+        inherit domain port;
       };
     }
     (mylib.dockerHelpers.mkDatabaseDumpService {
-      config = config;
-      pkgs = pkgs;
+      inherit config pkgs;
       name = "seafile";
       description = "Dump Seafile MariaDB database";
       containerDeps = ["seafile-db"];

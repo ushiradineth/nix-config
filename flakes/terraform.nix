@@ -7,7 +7,7 @@
   outputs = inputs:
     inputs.flake-utils.lib.eachDefaultSystem (
       system: let
-        pkgs = import (inputs.nixpkgs) {
+        pkgs = import inputs.nixpkgs {
           inherit system;
           config.allowUnfree = true;
         };

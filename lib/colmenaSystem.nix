@@ -38,6 +38,6 @@ in
         }
       ])
       ++ [
-        ({...}: {_module.args = specialArgs;})
+        (_: {_module.args = specialArgs;})
       ];
   }

@@ -1,4 +1,4 @@
-{...}: {
+_: {
   programs.nixvim.plugins.zen-mode.enable = true;
 
   programs.nixvim.plugins.zen-mode.settings = {

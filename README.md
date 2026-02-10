@@ -18,7 +18,6 @@ This repository drew significant inspiration from the outstanding work done by
 ├── hosts/                            # per-host configurations
 ├── lib/                              # helper functions)
 ├── modules/                          # shared module library
-│   ├── README.md
 │   ├── home-manager/                 # reusable home-manager modules
 │   │   ├── core/
 │   │   ├── darwin/
@@ -45,8 +44,7 @@ This repository drew significant inspiration from the outstanding work done by
 ├── docs/                             # documentation
 │   ├── NIX_DARWIN_INSTALLATION.md    # macOS install guide
 │   ├── NIXOS_INSTALLATION.md         # nixOS install notes
-│   ├── RASPBERRY_PI_INSTALLATION.md  # Raspberry Pi 5 setup notes
-│   └── README.md
+│   └── RASPBERRY_PI_INSTALLATION.md  # Raspberry Pi 5 setup notes
 ├── Justfile                          # helper commands
 └── result -> /nix/store/...          # symlink to last build (if present)
 ```
@@ -62,11 +60,20 @@ This repository drew significant inspiration from the outstanding work done by
 
 ## Colmena & nixos-anywhere
 
-- `just init <hostname>` wraps nixos-anywhere to bootstrap a remote machine. Pick the hostname (e.g. `just init shupi`) and it will run the appropriate flake output against the target over SSH.
-- `just deploy <hostname>` applies changes via Colmena. Tags default to each hostname, so `shupi` affects only `shupi`; group tags can be added in the per-host Colmena definition if needed.
+- `just init <hostname>` wraps nixos-anywhere to bootstrap a remote machine. Pick the hostname (e.g.
+  `just init shupi`) and it will run the appropriate flake output against the target over SSH.
+- `just deploy <hostname>` applies changes via Colmena. Tags default to each hostname, so `shupi`
+  affects only `shupi`; group tags can be added in the per-host Colmena definition if needed.
+
+## Checks
+
+- `just check` runs `nix flake check` (includes pre-commit hooks: alejandra, prettier, deadnix,
+  statix).
 
 ## Shared Host Registry
 
 - `vars/default.nix` defines `hostAddresses`: a shared map of hostnames to IPs.
-- `modules/nix-modules/core/ssh.nix` consumes this list to write `/etc/hosts` and generate SSH aliases everywhere.
-- Update `hostAddresses` whenever a new host is added, and both nix-darwin and NixOS configurations pick it up automatically.
+- `modules/nix-modules/core/ssh.nix` consumes this list to write `/etc/hosts` and generate SSH
+  aliases everywhere.
+- Update `hostAddresses` whenever a new host is added, and both nix-darwin and NixOS configurations
+  pick it up automatically.

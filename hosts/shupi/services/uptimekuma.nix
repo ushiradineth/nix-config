@@ -25,6 +25,6 @@ in {
   services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
     name = "uptimekuma";
     domain = config.environment.variables.UPTIMEKUMA_DOMAIN;
-    port = port;
+    inherit port;
   };
 }

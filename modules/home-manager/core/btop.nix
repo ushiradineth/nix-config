@@ -1,4 +1,4 @@
-{...}: let
+_: let
   shellAliases = {
     top = "btop";
     htop = "btop";

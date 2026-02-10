@@ -1,5 +1,4 @@
-{...}: let
-in {
+_: {
   wayland.windowManager.hyprland.settings = {
     bind = [
       # Launch applications

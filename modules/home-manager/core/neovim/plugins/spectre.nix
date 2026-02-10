@@ -1,4 +1,4 @@
-{...}: {
+_: {
   # Search and replace
   programs.nixvim.plugins.spectre.enable = true;
 

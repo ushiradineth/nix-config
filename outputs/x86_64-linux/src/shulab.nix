@@ -1,7 +1,4 @@
 {
-  # NOTE: the args not used in this file CAN NOT be removed!
-  # because haumea pass argument lazily,
-  # and these arguments are used in the functions like `mylib.macosSystem` and `mylib.nixosSystem`
   inputs,
   lib,
   mylib,
@@ -40,7 +37,18 @@
     ];
   };
 
-  systemArgs = modules // args // {inherit specialArgs;};
+  systemArgs =
+    modules
+    // args
+    // {
+      inherit
+        specialArgs
+        inputs
+        lib
+        myvars
+        nixvim
+        ;
+    };
 in {
   nixosConfigurations.${hostname} = mylib.nixosSystem systemArgs;
 }

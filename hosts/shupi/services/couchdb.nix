@@ -62,8 +62,7 @@ in {
 
   services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
     name = "couchdb";
-    domain = domain;
-    port = port;
+    inherit domain port;
   };
 
   # File-based backup in TIER 2 (more reliable than REST API dumps)

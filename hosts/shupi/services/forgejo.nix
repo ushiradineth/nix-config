@@ -316,7 +316,7 @@ in
       };
     }
     (mylib.dockerHelpers.mkDockerNetwork {
-      config = config;
+      inherit config;
       name = "forgejo";
       networkName = "forgejo-net";
     })
@@ -327,13 +327,11 @@ in
     {
       services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
         name = "forgejo";
-        domain = domain;
-        port = port;
+        inherit domain port;
       };
     }
     (mylib.dockerHelpers.mkDatabaseDumpService {
-      config = config;
-      pkgs = pkgs;
+      inherit config pkgs;
       name = "forgejo";
       description = "Dump Forgejo PostgreSQL database";
       containerDeps = ["forgejo-db"];

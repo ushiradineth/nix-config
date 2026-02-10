@@ -1,8 +1,4 @@
-{
-  lib,
-  modulesPath,
-  ...
-}: {
+{modulesPath, ...}: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
@@ -27,7 +23,7 @@
     "cgroup_enable=memory"
   ];
 
-  boot.loader.raspberryPi.bootloader = lib.mkForce "kernel";
+  boot.loader.raspberryPi.bootloader = "kernel";
 
   hardware.raspberry-pi.config = {
     all = {

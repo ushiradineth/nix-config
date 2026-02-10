@@ -115,40 +115,58 @@ in {
 
   age.secrets.mullvad-account-id.file = "${mysecrets}/${hostname}/mullvad-account-id.age";
 
-  # Set writable settings directory
-  systemd.services."mullvad-daemon".environment.MULLVAD_SETTINGS_DIR = "/var/lib/mullvad-vpn";
+  systemd = {
+    # Set writable settings directory
+    services."mullvad-daemon".environment.MULLVAD_SETTINGS_DIR = "/var/lib/mullvad-vpn";
 
-  # Copy declarative settings to Mullvad directory
-  systemd.tmpfiles.settings."10-mullvad-settings"."/var/lib/mullvad-vpn/settings.json"."C+" = {
-    group = "root";
-    mode = "0700";
-    user = "root";
-    argument = "${mullvadSettings}";
-  };
+    # Copy declarative settings to Mullvad directory
+    tmpfiles.settings."10-mullvad-settings"."/var/lib/mullvad-vpn/settings.json"."C+" = {
+      group = "root";
+      mode = "0700";
+      user = "root";
+      argument = "${mullvadSettings}";
+    };
 
-  # Ensure Mullvad starts after Tailscale
-  systemd.services."mullvad-daemon" = {
-    after = ["tailscaled.service"];
-    wants = ["tailscaled.service"];
-    postStart = let
-      mullvad = config.services.mullvad-vpn.package;
-    in ''
-      # Wait for daemon to be ready
-      while ! ${mullvad}/bin/mullvad status >/dev/null 2>&1; do
-        sleep 1
-      done
+    # Ensure Mullvad starts after Tailscale
+    services."mullvad-daemon" = {
+      after = ["tailscaled.service"];
+      wants = ["tailscaled.service"];
+      postStart = let
+        mullvad = config.services.mullvad-vpn.package;
+      in ''
+        # Wait for daemon to be ready
+        while ! ${mullvad}/bin/mullvad status >/dev/null 2>&1; do
+          sleep 1
+        done
 
-      if ${mullvad}/bin/mullvad account get 2>&1 | grep -qi "Not logged in"; then
-        echo "Logging in to Mullvad..."
-        ACCOUNT_ID=$(cat ${config.age.secrets.mullvad-account-id.path} | tr -d '[:space:]')
-        ${mullvad}/bin/mullvad account login "$ACCOUNT_ID"
-      else
-        echo "Already logged in to Mullvad"
-      fi
+        if ${mullvad}/bin/mullvad account get 2>&1 | grep -qi "Not logged in"; then
+          echo "Logging in to Mullvad..."
+          ACCOUNT_ID=$(cat ${config.age.secrets.mullvad-account-id.path} | tr -d '[:space:]')
+          ${mullvad}/bin/mullvad account login "$ACCOUNT_ID"
+        else
+          echo "Already logged in to Mullvad"
+        fi
 
-      # Enable LAN access (required for local network + Tailscale)
-      ${mullvad}/bin/mullvad lan set allow
-    '';
+        # Enable LAN access (required for local network + Tailscale)
+        ${mullvad}/bin/mullvad lan set allow
+      '';
+    };
+
+    # Ensure Tailscale CGNAT range routes through tailscale0, not Mullvad
+    services.tailscale-route-fix = {
+      description = "Fix Tailscale routing to prevent Mullvad hijacking";
+      after = ["tailscaled.service" "mullvad-daemon.service"];
+      wants = ["tailscaled.service"];
+      wantedBy = ["multi-user.target"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${pkgs.iproute2}/bin/ip route add 100.64.0.0/10 dev tailscale0";
+        ExecStartPost = "${pkgs.coreutils}/bin/sleep 1";
+        # Ignore errors if route already exists
+        SuccessExitStatus = "0 2";
+      };
+    };
   };
 
   # nftables rules for Tailscale + Mullvad coexistence
@@ -174,21 +192,5 @@ in {
         iifname "tailscale0" oifname "wg0-mullvad" masquerade
       }
     '';
-  };
-
-  # Ensure Tailscale CGNAT range routes through tailscale0, not Mullvad
-  systemd.services.tailscale-route-fix = {
-    description = "Fix Tailscale routing to prevent Mullvad hijacking";
-    after = ["tailscaled.service" "mullvad-daemon.service"];
-    wants = ["tailscaled.service"];
-    wantedBy = ["multi-user.target"];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = "${pkgs.iproute2}/bin/ip route add 100.64.0.0/10 dev tailscale0";
-      ExecStartPost = "${pkgs.coreutils}/bin/sleep 1";
-    };
-    # Ignore errors if route already exists
-    serviceConfig.SuccessExitStatus = "0 2";
   };
 }

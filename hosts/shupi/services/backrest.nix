@@ -117,6 +117,6 @@ in {
   services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
     name = "backrest";
     domain = config.environment.variables.BACKREST_DOMAIN;
-    port = port;
+    inherit port;
   };
 }

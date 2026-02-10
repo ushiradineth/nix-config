@@ -19,7 +19,7 @@
 
   users.users."${myvars.username}" = {
     description = myvars.userFullname;
-    initialHashedPassword = myvars.initialHashedPassword;
+    inherit (myvars) initialHashedPassword;
     home = "/home/${myvars.username}";
     group = "${myvars.username}";
     shell = pkgs.zsh;
@@ -34,6 +34,6 @@
   };
 
   users.users.root = {
-    initialHashedPassword = config.users.users."${myvars.username}".initialHashedPassword;
+    inherit (config.users.users."${myvars.username}") initialHashedPassword;
   };
 }

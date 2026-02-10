@@ -1,4 +1,4 @@
-{...}: {
+_: {
   # Code Navigation
   programs.nixvim.plugins.flash.enable = true;
 

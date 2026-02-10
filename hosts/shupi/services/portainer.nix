@@ -18,6 +18,6 @@ in {
   services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
     name = "portainer";
     domain = config.environment.variables.PORTAINER_DOMAIN;
-    port = port;
+    inherit port;
   };
 }

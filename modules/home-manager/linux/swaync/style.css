@@ -35,39 +35,72 @@ slider {
   border-radius: 12px;
 }
 
-.floating-notifications.background .notification-row .notification-background .notification.critical {
+.floating-notifications.background
+  .notification-row
+  .notification-background
+  .notification.critical {
   border-left: 3px solid rgba(255, 255, 255, 0.5);
 }
 
-.floating-notifications.background .notification-row .notification-background .notification .notification-content {
+.floating-notifications.background
+  .notification-row
+  .notification-background
+  .notification
+  .notification-content {
   margin: 8px;
 }
 
-.floating-notifications.background .notification-row .notification-background .notification .notification-content .summary {
+.floating-notifications.background
+  .notification-row
+  .notification-background
+  .notification
+  .notification-content
+  .summary {
   color: #ffffff;
   font-weight: 600;
   font-size: 15px;
   margin-bottom: 4px;
 }
 
-.floating-notifications.background .notification-row .notification-background .notification .notification-content .time {
+.floating-notifications.background
+  .notification-row
+  .notification-background
+  .notification
+  .notification-content
+  .time {
   color: rgba(255, 255, 255, 0.6);
   font-size: 12px;
   font-weight: 400;
 }
 
-.floating-notifications.background .notification-row .notification-background .notification .notification-content .body {
+.floating-notifications.background
+  .notification-row
+  .notification-background
+  .notification
+  .notification-content
+  .body {
   color: #ffffff;
   font-size: 13px;
   font-weight: 400;
   opacity: 0.9;
 }
 
-.floating-notifications.background .notification-row .notification-background .notification > *:last-child > * {
+.floating-notifications.background
+  .notification-row
+  .notification-background
+  .notification
+  > *:last-child
+  > * {
   min-height: 3.4em;
 }
 
-.floating-notifications.background .notification-row .notification-background .notification > *:last-child > * .notification-action {
+.floating-notifications.background
+  .notification-row
+  .notification-background
+  .notification
+  > *:last-child
+  > *
+  .notification-action {
   border-radius: 8px;
   color: #ffffff;
   background: rgba(255, 255, 255, 0.1);
@@ -77,12 +110,24 @@ slider {
   font-weight: 500;
 }
 
-.floating-notifications.background .notification-row .notification-background .notification > *:last-child > * .notification-action:hover {
+.floating-notifications.background
+  .notification-row
+  .notification-background
+  .notification
+  > *:last-child
+  > *
+  .notification-action:hover {
   background: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.3);
 }
 
-.floating-notifications.background .notification-row .notification-background .notification > *:last-child > * .notification-action:active {
+.floating-notifications.background
+  .notification-row
+  .notification-background
+  .notification
+  > *:last-child
+  > *
+  .notification-action:active {
   background: rgba(255, 255, 255, 0.2);
 }
 
@@ -107,7 +152,9 @@ slider {
 }
 
 .control-center {
-  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+  box-shadow:
+    0 16px 64px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(255, 255, 255, 0.05) inset;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin: 20px;
@@ -143,7 +190,7 @@ slider {
 
 .control-center .notification-row .notification-background {
   border-radius: 10px;
-  background: rgba(48, 52, 70, 1.0);
+  background: rgba(48, 52, 70, 1);
   border: 1px solid rgba(255, 255, 255, 0.05);
   margin-top: 8px;
   padding: 0;
@@ -163,17 +210,32 @@ slider {
   margin: 8px;
 }
 
-.control-center .notification-row .notification-background .notification .notification-content .summary {
+.control-center
+  .notification-row
+  .notification-background
+  .notification
+  .notification-content
+  .summary {
   color: #ffffff;
   font-weight: 600;
 }
 
-.control-center .notification-row .notification-background .notification .notification-content .time {
+.control-center
+  .notification-row
+  .notification-background
+  .notification
+  .notification-content
+  .time {
   color: rgba(255, 255, 255, 0.6);
   font-size: 12px;
 }
 
-.control-center .notification-row .notification-background .notification .notification-content .body {
+.control-center
+  .notification-row
+  .notification-background
+  .notification
+  .notification-content
+  .body {
   color: #ffffff;
   opacity: 0.9;
 }
@@ -182,7 +244,13 @@ slider {
   min-height: 3.4em;
 }
 
-.control-center .notification-row .notification-background .notification > *:last-child > * .notification-action {
+.control-center
+  .notification-row
+  .notification-background
+  .notification
+  > *:last-child
+  > *
+  .notification-action {
   border-radius: 8px;
   color: #ffffff;
   background: rgba(255, 255, 255, 0.1);
@@ -192,12 +260,24 @@ slider {
   font-weight: 500;
 }
 
-.control-center .notification-row .notification-background .notification > *:last-child > * .notification-action:hover {
+.control-center
+  .notification-row
+  .notification-background
+  .notification
+  > *:last-child
+  > *
+  .notification-action:hover {
   background: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.3);
 }
 
-.control-center .notification-row .notification-background .notification > *:last-child > * .notification-action:active {
+.control-center
+  .notification-row
+  .notification-background
+  .notification
+  > *:last-child
+  > *
+  .notification-action:active {
   background: rgba(255, 255, 255, 0.2);
 }
 

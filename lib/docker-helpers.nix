@@ -34,7 +34,6 @@
   };
 
   mkDatabaseDumpService = {
-    config,
     pkgs,
     name,
     description,
@@ -42,6 +41,7 @@
     backupDir ? "/var/backup/databases",
     onCalendar ? "*-*-* 01:45:00",
     containerDeps ? [],
+    ...
   }: {
     systemd.services."dump-${name}-db" = {
       inherit description;

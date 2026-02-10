@@ -1,8 +1,4 @@
-{
-  pkgs,
-  lib,
-  ...
-}: let
+{pkgs, ...}: let
   privacyMonitor = pkgs.writeShellScriptBin "privacy-monitor" ''
     #!/usr/bin/env bash
 

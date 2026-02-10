@@ -73,7 +73,7 @@ in
       };
     }
     (mylib.dockerHelpers.mkDockerNetwork {
-      config = config;
+      inherit config;
       name = "umami";
     })
     (mylib.dockerHelpers.mkContainerNetworkDeps {
@@ -81,8 +81,7 @@ in
       containers = ["umami-db" "umami-app"];
     })
     (mylib.dockerHelpers.mkDatabaseDumpService {
-      config = config;
-      pkgs = pkgs;
+      inherit config pkgs;
       name = "umami";
       description = "Dump Umami PostgreSQL database";
       containerDeps = ["umami-db"];

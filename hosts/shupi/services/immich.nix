@@ -114,7 +114,7 @@ in
       };
     }
     (mylib.dockerHelpers.mkDockerNetwork {
-      config = config;
+      inherit config;
       name = "immich";
     })
     (mylib.dockerHelpers.mkContainerNetworkDeps {
@@ -130,12 +130,11 @@ in
       services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
         name = "immich";
         domain = config.environment.variables.IMMICH_DOMAIN;
-        port = port;
+        inherit port;
       };
     }
     (mylib.dockerHelpers.mkDatabaseDumpService {
-      config = config;
-      pkgs = pkgs;
+      inherit config pkgs;
       name = "immich";
       description = "Dump Immich PostgreSQL database";
       containerDeps = ["immich-postgres"];

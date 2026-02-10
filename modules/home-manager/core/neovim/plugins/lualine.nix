@@ -1,4 +1,4 @@
-{...}: let
+_: let
   oil = {
     sections = {
       lualine_a = [{__raw = "";}];

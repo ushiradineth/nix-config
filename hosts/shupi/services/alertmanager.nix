@@ -205,7 +205,6 @@ in {
   # Traefik route
   services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
     name = "alertmanager";
-    domain = domain;
-    port = port;
+    inherit domain port;
   };
 }

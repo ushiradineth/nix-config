@@ -89,16 +89,23 @@ gc:
   nix-collect-garbage --delete-older-than 7d
   nix store optimise
 
-# Format the nix files in this repo.
+# Format source files in this repo.
 [group('nix')]
 fmt:
   bash -eu -o pipefail -c '\
     nix fmt .; \
+    nix run nixpkgs#prettier -- --write --config ./.prettierrc.yaml .; \
+    nix run nixpkgs#statix -- fix .; \
     find . \
       \( -path "./.git" -o -path "./.direnv" -o -path "./result" -o -path "./result-*" -o -path "./node_modules" \) -prune -o \
       -name "*.nix" -print0 | \
       xargs -0 -P "$(getconf _NPROCESSORS_ONLN)" nix-instantiate --parse --strict >/dev/null \
   '
+
+# Run flake checks (includes pre-commit hooks).
+[group('nix')]
+check:
+  nix flake check --extra-experimental-features 'nix-command flakes'
 
 ############################################################################
 #

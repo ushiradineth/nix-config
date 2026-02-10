@@ -1,13 +1,16 @@
 # Raspberry Pi 5 NixOS Installation Guide
 
-Complete guide for setting up NixOS on Raspberry Pi 5 (or any other Raspberry Pi but I haven't tested it).
+Complete guide for setting up NixOS on Raspberry Pi 5 (or any other Raspberry Pi but I haven't
+tested it).
 
 ## Step 1: Build Custom Installer Image
 
-Use the `nixos-raspberrypi` installer image and bake in your SSH key so you can log in on first boot.
+Use the `nixos-raspberrypi` installer image and bake in your SSH key so you can log in on first
+boot.
 
-> Do this build on the Pi itself, it's gonna be slow if you do it on a mismatching architecture.
-> Or enable cross-compilation on your build machine. `boot.binfmt.emulatedSystems = [ "aarch64-linux" ]`
+> Do this build on the Pi itself, it's gonna be slow if you do it on a mismatching architecture. Or
+> enable cross-compilation on your build machine.
+> `boot.binfmt.emulatedSystems = [ "aarch64-linux" ]`
 
 ```bash
 git clone https://github.com/nvmd/nixos-raspberrypi

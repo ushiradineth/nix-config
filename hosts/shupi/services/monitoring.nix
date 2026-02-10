@@ -261,7 +261,7 @@ in
       };
     }
     (mylib.dockerHelpers.mkDockerNetwork {
-      config = config;
+      inherit config;
       name = "monitoring";
     })
     (mylib.dockerHelpers.mkContainerNetworkDeps {

@@ -10,7 +10,7 @@ in {
     mutableSettings = true;
     openFirewall = true;
     host = "0.0.0.0";
-    port = port;
+    inherit port;
 
     settings = {
       users = [
@@ -119,6 +119,6 @@ in {
   services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
     name = "adguard";
     domain = config.environment.variables.ADGUARD_DOMAIN;
-    port = port;
+    inherit port;
   };
 }

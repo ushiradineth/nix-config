@@ -1,4 +1,4 @@
-{...}: {
+_: {
   # Diagnostics
   programs.nixvim.plugins.trouble.enable = true;
 

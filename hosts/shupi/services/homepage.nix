@@ -329,6 +329,6 @@ in {
   services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
     name = "homepage";
     domain = config.environment.variables.HOMEPAGE_DOMAIN;
-    port = port;
+    inherit port;
   };
 }

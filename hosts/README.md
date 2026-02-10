@@ -9,10 +9,11 @@
 ## How to add a new host
 
 - Under `hosts/`
-   1. Create a new folder under `hosts/` with the name of the new host.
-   2. Copy the new host's `hardware-configuration.nix` to the above created folder, and add the new host's `configuration.nix` to `hosts/<name>/default.nix`.
+  1.  Create a new folder under `hosts/` with the name of the new host.
+  2.  Copy the new host's `hardware-configuration.nix` to the above created folder, and add the new
+      host's `configuration.nix` to `hosts/<name>/default.nix`.
 - Under `outputs/`
-   1. Add a new nix file named `outputs/<system-architecture>/src/<name>.nix`.
-   2. Copy the content from one of the existing similar host, and modify it to fit the new host.
+  1.  Add a new nix file named `outputs/<system-architecture>/src/<name>.nix`.
+  2.  Copy the content from one of the existing similar host, and modify it to fit the new host.
       1. Usually, you only need to modify the `name` field.
 - In `vars/default.nix`, add the new host's name under `hostAddresses`.

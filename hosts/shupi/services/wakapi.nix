@@ -51,7 +51,7 @@ in
         };
         settings = {
           server = {
-            port = port;
+            inherit port;
             listen_ipv4 = "127.0.0.1";
             base_path = "/";
             public_url = "https://${domain}";
