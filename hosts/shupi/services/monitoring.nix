@@ -30,7 +30,7 @@ in
       };
 
       virtualisation.oci-containers.containers.victorialogs = {
-        image = "victoriametrics/victoria-logs:v1.135.0";
+        image = "victoriametrics/victoria-logs:v1.45.0";
         autoStart = true;
         ports = ["127.0.0.1:${toString vlPort}:9428"];
         extraOptions = ["--network=monitoring"];
