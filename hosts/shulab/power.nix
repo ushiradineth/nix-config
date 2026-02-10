@@ -35,9 +35,11 @@
   services.system76-scheduler.settings.cfsProfiles.enable = true;
 
   # Keep system up when lid is closed
-  services.logind.lidSwitch = "ignore";
-  services.logind.lidSwitchExternalPower = "ignore";
-  services.logind.lidSwitchDocked = "ignore";
+  services.logind.settings.Login = {
+    HandleLidSwitch = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
+    HandleLidSwitchDocked = "ignore";
+  };
 
   # Prevent suspend
   systemd.sleep.extraConfig = ''
