@@ -1,60 +1,75 @@
 {pkgs, ...}: let
-  # Backup script for restic to shupi over Tailscale
+  passwordFile = "/Users/shu/.config/restic/password";
+  repository = "sftp://shu@shupi//srv/backups/shu-code";
+  tailscale = "/opt/homebrew/bin/tailscale";
+  restic = "${pkgs.restic}/bin/restic";
+  jq = "${pkgs.jq}/bin/jq";
+  maxAgeHours = 24;
+
+  # Backup script: checks if backup is needed (24+ hours old) and runs if so
   backupScript = pkgs.writeShellScript "restic-backup-code" ''
     set -euo pipefail
 
-    TAILSCALE="/opt/homebrew/bin/tailscale"
-    RESTIC="${pkgs.restic}/bin/restic"
+    TAILSCALE="${tailscale}"
+    RESTIC="${restic}"
+    JQ="${jq}"
     STATE_FILE="/tmp/restic-backup-tailscale-state"
     LOG_FILE="/tmp/restic-backup-code.log"
-    PASSWORD_FILE="/Users/shu/.config/restic/password"
-    REPOSITORY="sftp://shu@shupi//srv/backups/shu-code"
+    PASSWORD_FILE="${passwordFile}"
+    REPOSITORY="${repository}"
+    MAX_AGE_HOURS=${toString maxAgeHours}
 
-    exec > >(tee -a "$LOG_FILE") 2>&1
-    echo "=== Backup started at $(date) ==="
+    log() {
+      echo "[$(date)] $1" | tee -a "$LOG_FILE"
+    }
 
     cleanup() {
       if [ -f "$STATE_FILE" ] && [ "$(cat "$STATE_FILE")" = "we_connected" ]; then
-        echo "Disconnecting Tailscale (we connected it for backup)..."
+        log "Disconnecting Tailscale (we connected it for backup)..."
         $TAILSCALE down || true
-      else
-        echo "Leaving Tailscale connected (was already connected)"
       fi
       rm -f "$STATE_FILE"
     }
     trap cleanup EXIT
 
-    # Ensure Tailscale is connected
+    # Check if Tailscale is connected
     if $TAILSCALE status &>/dev/null; then
       echo "already_connected" > "$STATE_FILE"
-      echo "Tailscale already connected"
     else
-      echo "we_connected" > "$STATE_FILE"
-      echo "Tailscale not running, attempting to connect..."
-      $TAILSCALE up --reset
-
-      # Wait for connection (max 30 seconds)
-      for i in {1..30}; do
-        if $TAILSCALE status &>/dev/null; then
-          echo "Tailscale connected"
-          break
-        fi
-        sleep 1
-      done
+      log "Tailscale not connected, skipping backup check"
+      exit 0
     fi
 
-    # Verify shupi is reachable via SSH (what restic will use)
-    if ! ssh -o ConnectTimeout=10 -o BatchMode=yes shu@shupi true &>/dev/null; then
-      echo "ERROR: Cannot reach shupi via SSH"
-      exit 1
+    # Check if shupi is reachable via SSH
+    if ! ssh -o ConnectTimeout=5 -o BatchMode=yes shu@shupi true &>/dev/null; then
+      log "shupi not reachable via SSH, skipping backup check"
+      exit 0
     fi
 
-    echo "Tailscale connected, shupi reachable. Starting backup..."
+    # Check if backup is needed (24+ hours since last snapshot)
+    LATEST_SNAPSHOT=$($RESTIC -r "$REPOSITORY" --password-file "$PASSWORD_FILE" snapshots --latest 1 --json 2>/dev/null | $JQ -r '.[0].time // empty')
+
+    if [ -n "$LATEST_SNAPSHOT" ]; then
+      # Calculate age in hours
+      SNAPSHOT_EPOCH=$(date -j -f "%Y-%m-%dT%H:%M:%S" "$(echo "$LATEST_SNAPSHOT" | cut -d. -f1)" "+%s" 2>/dev/null || echo "0")
+      CURRENT_EPOCH=$(date "+%s")
+      AGE_HOURS=$(( (CURRENT_EPOCH - SNAPSHOT_EPOCH) / 3600 ))
+
+      if [ "$AGE_HOURS" -lt "$MAX_AGE_HOURS" ]; then
+        log "Last backup is ''${AGE_HOURS}h old (< ''${MAX_AGE_HOURS}h), no backup needed"
+        exit 0
+      fi
+      log "Last backup is ''${AGE_HOURS}h old (>= ''${MAX_AGE_HOURS}h), starting backup..."
+    else
+      log "No snapshots found, starting backup..."
+    fi
+
+    # Run backup
+    log "=== Backup started ==="
 
     # Initialize repository if needed (ignore error if already initialized)
     $RESTIC -r "$REPOSITORY" --password-file "$PASSWORD_FILE" init 2>/dev/null || true
 
-    # Run backup
     $RESTIC -r "$REPOSITORY" --password-file "$PASSWORD_FILE" backup \
       /Users/shu/Code \
       --tag=shu-code \
@@ -85,7 +100,8 @@
       --exclude="**/tmp" \
       --exclude="**/temp" \
       --exclude="**/*.log" \
-      --exclude="**/*.tmp"
+      --exclude="**/*.tmp" \
+      2>&1 | tee -a "$LOG_FILE"
 
     # Prune old snapshots
     $RESTIC -r "$REPOSITORY" --password-file "$PASSWORD_FILE" forget \
@@ -93,28 +109,23 @@
       --keep-weekly 4 \
       --keep-monthly 3 \
       --tag=shu-code \
-      --prune
+      --prune \
+      2>&1 | tee -a "$LOG_FILE"
 
-    echo "=== Backup completed at $(date) ==="
+    log "=== Backup completed ==="
   '';
 in {
-  # Install restic
   environment.systemPackages = [pkgs.restic];
 
-  # Launchd agent for daily backup
+  # Run every 2 hours, backup only if last snapshot is 24+ hours old
   launchd.agents.restic-backup-code = {
     serviceConfig = {
       Label = "com.restic.backup-code";
       ProgramArguments = ["${backupScript}"];
-      StartCalendarInterval = [
-        {
-          Hour = 2;
-          Minute = 0;
-        }
-      ];
+      StartInterval = 7200; # Every 2 hours
       StandardOutPath = "/tmp/restic-backup-code-stdout.log";
       StandardErrorPath = "/tmp/restic-backup-code-stderr.log";
-      RunAtLoad = false;
+      RunAtLoad = true; # Check on login
     };
   };
   # Notifications handled by shupi backup staleness monitor
