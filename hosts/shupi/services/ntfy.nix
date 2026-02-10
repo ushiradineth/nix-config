@@ -24,7 +24,7 @@ in {
 
   # Ntfy container
   virtualisation.oci-containers.containers.ntfy = {
-    image = "binwiederhier/ntfy:latest";
+    image = "binwiederhier/ntfy:v2.17.0";
     autoStart = true;
     ports = ["127.0.0.1:${toString port}:80"];
     extraOptions = [

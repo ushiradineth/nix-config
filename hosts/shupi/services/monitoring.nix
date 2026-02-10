@@ -15,7 +15,7 @@ in
   lib.mkMerge [
     {
       virtualisation.oci-containers.containers.victoriametrics = {
-        image = "victoriametrics/victoria-metrics:latest";
+        image = "victoriametrics/victoria-metrics:v1.135.0";
         autoStart = true;
         ports = ["127.0.0.1:${toString vmPort}:8428"];
         extraOptions = ["--network=monitoring"];
@@ -30,7 +30,7 @@ in
       };
 
       virtualisation.oci-containers.containers.victorialogs = {
-        image = "victoriametrics/victoria-logs:latest";
+        image = "victoriametrics/victoria-logs:v1.135.0";
         autoStart = true;
         ports = ["127.0.0.1:${toString vlPort}:9428"];
         extraOptions = ["--network=monitoring"];
@@ -65,7 +65,7 @@ in
       '';
 
       virtualisation.oci-containers.containers.vector = {
-        image = "timberio/vector:latest-alpine";
+        image = "timberio/vector:0.51.1-alpine";
         autoStart = true;
         extraOptions = [
           "--network=monitoring"
@@ -82,7 +82,7 @@ in
       };
 
       virtualisation.oci-containers.containers.cadvisor = {
-        image = "gcr.io/cadvisor/cadvisor:latest";
+        image = "gcr.io/cadvisor/cadvisor:v0.56.2";
         autoStart = true;
         ports = ["127.0.0.1:${toString cadvisorPort}:8080"];
         extraOptions = [
@@ -199,7 +199,7 @@ in
       '';
 
       virtualisation.oci-containers.containers.vmagent = {
-        image = "victoriametrics/vmagent:latest";
+        image = "victoriametrics/vmagent:v1.135.0";
         autoStart = true;
         extraOptions = [
           "--network=host"
@@ -217,7 +217,7 @@ in
 
       # vmalert for processing alert rules
       virtualisation.oci-containers.containers.vmalert = {
-        image = "victoriametrics/vmalert:latest";
+        image = "victoriametrics/vmalert:v1.135.0";
         autoStart = true;
         extraOptions = [
           "--network=monitoring"

@@ -87,7 +87,7 @@ in {
   '';
 
   virtualisation.oci-containers.containers.backrest = {
-    image = "garethgeorge/backrest:latest";
+    image = "garethgeorge/backrest:v1.11.2";
     autoStart = true;
     volumes = [
       "/srv/backrest/data:/data"

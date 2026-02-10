@@ -57,7 +57,7 @@ in
       };
 
       virtualisation.oci-containers.containers.umami-app = {
-        image = "ghcr.io/umami-software/umami:postgresql-latest";
+        image = "ghcr.io/umami-software/umami:3.0.3";
         autoStart = true;
         dependsOn = ["umami-db"];
         ports = ["127.0.0.1:${toString port}:3000"];

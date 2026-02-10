@@ -6,7 +6,7 @@
   port = config.ports.uptimekuma;
 in {
   virtualisation.oci-containers.containers.uptimekuma = {
-    image = "louislam/uptime-kuma:latest";
+    image = "louislam/uptime-kuma:2.1.0";
     autoStart = true;
     volumes = [
       "/srv/uptimekuma:/app/data"

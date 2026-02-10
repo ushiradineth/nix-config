@@ -146,7 +146,7 @@ in
       };
 
       virtualisation.oci-containers.containers.seafile = {
-        image = "seafileltd/seafile-mc:13.0-latest";
+        image = "seafileltd/seafile-mc:13.0.17";
         autoStart = true;
         dependsOn = ["seafile-db" "seafile-redis"];
         volumes = [

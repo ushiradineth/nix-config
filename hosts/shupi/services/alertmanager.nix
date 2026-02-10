@@ -133,7 +133,7 @@ in {
 
   # Alertmanager container
   virtualisation.oci-containers.containers.alertmanager = {
-    image = "prom/alertmanager:latest";
+    image = "prom/alertmanager:v0.31.0";
     autoStart = true;
     ports = ["127.0.0.1:${toString port}:9093"];
     extraOptions = [
