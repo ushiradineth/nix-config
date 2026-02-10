@@ -2,6 +2,26 @@
   programs.nixvim.plugins.zen-mode.enable = true;
 
   programs.nixvim.plugins.zen-mode.settings = {
+    on_open = {
+      __raw = ''
+        function()
+          vim.g._zen_laststatus = vim.o.laststatus
+          vim.o.laststatus = 0
+        end
+      '';
+    };
+    on_close = {
+      __raw = ''
+        function()
+          if vim.g._zen_laststatus ~= nil then
+            vim.o.laststatus = vim.g._zen_laststatus
+            vim.g._zen_laststatus = nil
+          else
+            vim.o.laststatus = 3
+          end
+        end
+      '';
+    };
     # plugins = {
     #   tmux = true;
     # };
@@ -34,6 +54,4 @@
       };
     }
   ];
-
-  # TODO: Add onOpen/onClose events for lualine
 }
