@@ -24,7 +24,7 @@ in {
       layout = {
         "Applications" = {
           style = "row";
-          columns = 3;
+          columns = 2;
         };
         "Infrastructure" = {
           style = "row";
@@ -175,6 +175,13 @@ in {
               icon = "https://wakapi.dev/assets/images/icon.svg";
               href = "https://${config.environment.variables.WAKAPI_DOMAIN}";
               description = "Coding Time Tracking";
+            };
+          }
+          {
+            Linkding = {
+              icon = "https://linkding.link/favicon.svg";
+              href = "https://${config.environment.variables.LINKDING_DOMAIN}";
+              description = "Bookmark Manager";
             };
           }
           {

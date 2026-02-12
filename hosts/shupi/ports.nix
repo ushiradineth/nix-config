@@ -27,6 +27,7 @@
       cadvisor = 48018;
       nodeExporter = 48019;
       vmagent = 48020;
+      linkding = 48021;
     };
   };
 }
