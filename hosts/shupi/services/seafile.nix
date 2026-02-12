@@ -57,6 +57,7 @@ in
         # Server Configuration
         SEAFILE_SERVER_HOSTNAME=${domain}
         SEAFILE_SERVER_PROTOCOL=https
+        FORCE_HTTPS_IN_CONF=true
         TIME_ZONE=${myvars.timezone}
         SITE_ROOT=/
         NON_ROOT=false
@@ -101,17 +102,58 @@ in
         EOF
         chmod 600 /var/lib/seafile/seafile.env
 
-        mkdir -p /srv/seafile
-        cat > /srv/seafile/custom_settings.py << EOF
-        # Custom settings for reverse proxy
+        mkdir -p /srv/seafile/data/seafile/conf
+        cat > /srv/seafile/data/seafile/conf/seahub_settings.py << EOF
+        # Custom settings for reverse proxy.
+        # Keep these explicitly pinned so markdown/file APIs resolve to the public URL.
         SERVICE_URL = "https://${domain}"
         FILE_SERVER_ROOT = "https://${domain}/seafhttp"
-        ALLOWED_HOSTS = ['${domain}']
+        ENABLE_SETTINGS_VIA_WEB = False
+        # Keep host validation permissive behind Traefik to avoid internal host mismatch
+        # during Seafile permission checks on /seafhttp requests.
+        ALLOWED_HOSTS = ['*']
+        USE_X_FORWARDED_HOST = True
+        SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
         CSRF_COOKIE_SECURE = True
         CSRF_COOKIE_SAMESITE = 'Strict'
         CSRF_TRUSTED_ORIGINS = ['https://${domain}']
         EOF
-        chmod 644 /srv/seafile/custom_settings.py
+        chmod 644 /srv/seafile/data/seafile/conf/seahub_settings.py
+
+        # Ensure video streaming-related fileserver settings are enabled.
+        # Seafile reads these values from seafile.conf.
+        SEAFILE_CONF=/srv/seafile/data/seafile/conf/seafile.conf
+        SED_BIN=${pkgs.gnused}/bin/sed
+        JWT_KEY_SED=$("$SED_BIN" 's/[&|\\]/\\&/g' <<< "$JWT_KEY")
+        if [ -f "$SEAFILE_CONF" ]; then
+          if ! grep -q '^\[fileserver\]' "$SEAFILE_CONF"; then
+            printf '\n[fileserver]\nuse_go_fileserver = true\nuse_block_cache = true\nblock_cache_file_types = mp4;mov\njwt_private_key = %s\n' "$JWT_KEY" >> "$SEAFILE_CONF"
+          else
+            if grep -Eq '^[[:space:]]*use_go_fileserver[[:space:]]*=' "$SEAFILE_CONF"; then
+              "$SED_BIN" -i -E 's|^[[:space:]]*use_go_fileserver[[:space:]]*=.*$|use_go_fileserver = true|' "$SEAFILE_CONF"
+            else
+              "$SED_BIN" -i '/^\[fileserver\]/a use_go_fileserver = true' "$SEAFILE_CONF"
+            fi
+
+            if grep -Eq '^[[:space:]]*use_block_cache[[:space:]]*=' "$SEAFILE_CONF"; then
+              "$SED_BIN" -i -E 's|^[[:space:]]*use_block_cache[[:space:]]*=.*$|use_block_cache = true|' "$SEAFILE_CONF"
+            else
+              "$SED_BIN" -i '/^\[fileserver\]/a use_block_cache = true' "$SEAFILE_CONF"
+            fi
+
+            if grep -Eq '^[[:space:]]*block_cache_file_types[[:space:]]*=' "$SEAFILE_CONF"; then
+              "$SED_BIN" -i -E 's|^[[:space:]]*block_cache_file_types[[:space:]]*=.*$|block_cache_file_types = mp4;mov|' "$SEAFILE_CONF"
+            else
+              "$SED_BIN" -i '/^\[fileserver\]/a block_cache_file_types = mp4;mov' "$SEAFILE_CONF"
+            fi
+
+            if grep -Eq '^[[:space:]]*jwt_private_key[[:space:]]*=' "$SEAFILE_CONF"; then
+              "$SED_BIN" -i -E "s|^[[:space:]]*jwt_private_key[[:space:]]*=.*$|jwt_private_key = $JWT_KEY_SED|" "$SEAFILE_CONF"
+            else
+              "$SED_BIN" -i "/^\[fileserver\]/a jwt_private_key = $JWT_KEY" "$SEAFILE_CONF"
+            fi
+          fi
+        fi
       '';
 
       virtualisation.oci-containers.containers.seafile-db = {
