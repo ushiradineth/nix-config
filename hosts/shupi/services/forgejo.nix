@@ -14,7 +14,7 @@
   smtpHost = config.environment.variables.SMTP_HOST;
   smtpPort = config.environment.variables.SMTP_PORT;
   smtpUser = config.environment.variables.SMTP_USER;
-  adminUsername = "ushiradineth";
+  adminUsername = myvars.usernameFull;
 in
   lib.mkMerge [
     {

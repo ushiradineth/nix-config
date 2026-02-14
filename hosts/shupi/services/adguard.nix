@@ -1,6 +1,7 @@
 {
   config,
   mylib,
+  myvars,
   ...
 }: let
   port = config.ports.adguard;
@@ -15,7 +16,7 @@ in {
     settings = {
       users = [
         {
-          name = "ushiradineth";
+          name = myvars.usernameFull;
           password = "$2a$10$MTVeK29as5DfP4GgpZ1IZ.XvxXYQHw2juCnIiE8JPBAu/QQrZ/wz."; # bcrypt hashed
         }
       ];

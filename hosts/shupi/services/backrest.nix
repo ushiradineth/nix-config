@@ -70,7 +70,7 @@ in {
       "auth": {
         "users": [
           {
-            "name": "ushiradineth",
+            "name": "${myvars.usernameFull}",
             "passwordBcrypt": "JDJhJDEwJE5IUy5hQlBKMkxwWnF5L1JUVnFDOU9lMnVNL0FDMlB5ZkFQY0l3RVUuWHhmOE1McDE1VTJ5"
           }
         ]

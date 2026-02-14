@@ -6,6 +6,7 @@ _: let
   };
 in {
   username = "shu";
+  usernameFull = "ushiradineth";
   userFullname = "Ushira Dineth";
   userEmail = "ushiradineth@gmail.com";
   workEmail = "ushira@surge.global";
