@@ -68,6 +68,8 @@ in {
 
       bindkey -s '^As' 't\n'
 
+      ${lib.fileContents ./ignix.zsh}
+
       ${lib.fileContents ./sessionizer.zsh}
     '';
   };

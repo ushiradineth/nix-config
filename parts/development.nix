@@ -48,7 +48,12 @@
           enable = true;
           indent_size = 2;
         };
-        shellcheck.enable = true;
+        shellcheck = {
+          enable = true;
+          excludes = [
+            ".envrc"
+          ];
+        };
         deadnix.enable = true;
         statix.enable = true;
       };
