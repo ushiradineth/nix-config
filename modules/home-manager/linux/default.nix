@@ -10,15 +10,6 @@
     file.".hushlogin" = {
       text = "";
     };
-
-    file.".gitignore_global" = {
-      text = ''
-        ~*
-        .DS_Store
-        .envrc
-        .direnv
-      '';
-    };
   };
 
   imports =

@@ -31,6 +31,18 @@ in {
         rerere.enabled = true;
       };
 
+      ignores = [
+        "~*"
+        ".DS_Store"
+        ".direnv/"
+        ".claude/"
+        "node_modules/"
+        "dist/"
+        "build/"
+        "target/"
+        "result"
+      ];
+
       includes = [
         {
           condition = "gitdir:~/Code/surge/";
