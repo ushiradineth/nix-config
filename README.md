@@ -14,9 +14,15 @@ This repository drew significant inspiration from the outstanding work done by
 
 ```bash
 .
-├── flakes/                           # language/tool flakes
 ├── hosts/                            # per-host configurations
 ├── lib/                              # helper functions)
+├── parts/                            # non-host flake modules
+│   └── development.nix               # formatter/checks/devShell
+├── outputs/                          # host output modules
+│   ├── linux/                        # nixosConfigurations per host
+│   ├── darwin/                       # darwinConfigurations per host
+│   └── colmena/                      # colmena node outputs per host
+├── flakes/                           # standalone dev env templates
 ├── modules/                          # shared module library
 │   ├── home-manager/                 # reusable home-manager modules
 │   │   ├── core/
@@ -26,17 +32,6 @@ This repository drew significant inspiration from the outstanding work done by
 │       ├── core/
 │       ├── darwin/
 │       └── linux/
-├── outputs/                          # flake outputs grouped by system/architecture
-│   ├── aarch64-linux/
-│   │   ├── src/                      # aarch64-linux host entries
-│   │   └── default.nix
-│   ├── aarch64-darwin/
-│   │   ├── src/                      # aarch64-darwin host entries
-│   │   └── default.nix
-│   ├── x86_64-linux/
-│   │   ├── src/                      # x86_64-linux host entries
-│   │   └── default.nix
-│   └── default.nix                   # merges architecture-specific outputs
 ├── vars/                             # shared variables
 ├── flake.nix                         # main entry point
 ├── flake.lock                        # pinned inputs
@@ -65,10 +60,17 @@ This repository drew significant inspiration from the outstanding work done by
 - `just deploy <hostname>` applies changes via Colmena. Tags default to each hostname, so `shupi`
   affects only `shupi`; group tags can be added in the per-host Colmena definition if needed.
 
+## Local Dev Environments
+
+- Copy a template from `flakes/` into the target repo and adjust it there.
+- Global git ignore is configured for local dev-env artifacts (`.envrc`, `.direnv/`, `flake.nix`,
+  `flake.lock`) to reduce accidental commits when bootstrapping non-Nix repos.
+
 ## Checks
 
-- `just check` runs `nix flake check` (includes pre-commit hooks: alejandra, prettier, deadnix,
-  statix).
+- `just fmt` runs treefmt.
+- `just check` runs `nix flake check --all-systems` (includes pre-commit hooks: alejandra, prettier,
+  deadnix, statix).
 
 ## Shared Host Registry
 
