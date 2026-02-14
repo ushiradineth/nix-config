@@ -19,6 +19,15 @@ build:
 
   sudo -E ./result/sw/bin/darwin-rebuild switch --flake .#$(hostname)
 
+# Build and show closure diff without switching.
+[macos]
+[group('macos')]
+build-dry:
+  nix build .#darwinConfigurations.$(hostname).system \
+    --extra-experimental-features 'nix-command flakes'
+
+  nix run nixpkgs#nvd -- diff /nix/var/nix/profiles/system ./result
+
 # Build in debug mode.
 [macos]
 [group('macos')]
@@ -42,6 +51,15 @@ build:
     --quiet --extra-experimental-features 'nix-command flakes'
 
   sudo nixos-rebuild switch --flake .#$(hostname) --quiet
+
+# Build and show closure diff without switching.
+[linux]
+[group('linux')]
+build-dry:
+  nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel \
+    --quiet --extra-experimental-features 'nix-command flakes'
+
+  nix run nixpkgs#nvd -- diff /run/current-system ./result
 
 # Build in debug mode.
 [linux]
@@ -118,3 +136,9 @@ init hostname phases='disko,install,reboot':
 [group('remote')]
 deploy tag:
   colmena apply --on '@{{tag}}' --verbose --show-trace --impure --build-on-target
+
+# Dry-run deployment to remote machine
+[group('remote')]
+deploy-dry tag:
+  colmena apply dry-activate --on '@{{tag}}' --verbose --show-trace --impure --build-on-target
+
