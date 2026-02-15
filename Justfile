@@ -92,18 +92,11 @@ upp input:
 history:
   nix profile history --profile /nix/var/nix/profiles/system
 
-# Remove all generations older than 7 days. On darwin, you may need to switch to root user to run this command.
-[group('nix')]
-clean:
-  sudo nix profile wipe-history --profile /nix/var/nix/profiles/system  --older-than 7d
-
 # Garbage collect all unused nix store entries.
 [group('nix')]
-gc:
-  # garbage collect all unused nix store entries(system-wide)
+cleanup:
+  sudo nix profile wipe-history --profile /nix/var/nix/profiles/system --older-than 7d
   sudo nix-collect-garbage --delete-older-than 7d
-  # garbage collect all unused nix store entries(for the user - home-manager)
-  # https://github.com/NixOS/nix/issues/8508
   nix-collect-garbage --delete-older-than 7d
   nix store optimise
 
@@ -141,4 +134,3 @@ deploy tag:
 [group('remote')]
 deploy-dry tag:
   colmena apply dry-activate --on '@{{tag}}' --verbose --show-trace --impure --build-on-target
-
