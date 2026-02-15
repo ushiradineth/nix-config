@@ -20,6 +20,7 @@ in
           nixpkgs.pkgs = import nixpkgs-darwin {
             inherit system;
             config.allowUnfree = true;
+            overlays = [inputs.self.overlays.default];
           };
         })
       ]

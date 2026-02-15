@@ -20,9 +20,10 @@ in
       targetHost = name; # hostName or IP address
     };
 
-    nixpkgs.hostPlatform = system;
-    nixpkgs.config = {
-      allowUnfree = true;
+    nixpkgs = {
+      hostPlatform = system;
+      config.allowUnfree = true;
+      overlays = [inputs.self.overlays.default];
     };
 
     imports =

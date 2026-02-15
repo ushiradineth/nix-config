@@ -22,6 +22,7 @@ This repository drew significant inspiration from the outstanding work done by
 │   ├── linux/                        # nixosConfigurations per host
 │   ├── darwin/                       # darwinConfigurations per host
 │   └── colmena/                      # colmena node outputs per host
+├── overlays/                         # reusable nixpkgs overlays
 ├── flakes/                           # standalone dev env templates
 ├── modules/                          # shared module library
 │   ├── home-manager/                 # reusable home-manager modules

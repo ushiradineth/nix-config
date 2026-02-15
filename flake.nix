@@ -90,6 +90,7 @@
         ./outputs/linux
         ./outputs/darwin
         ./outputs/colmena
+        ./parts/overlays.nix
         ./parts/development.nix
       ];
     };

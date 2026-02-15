@@ -17,6 +17,7 @@ in
       nixos-modules
       ++ [
         {nixpkgs.hostPlatform = system;}
+        {nixpkgs.overlays = [inputs.self.overlays.default];}
         nixos-generators.nixosModules.all-formats
       ]
       ++ (
