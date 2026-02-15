@@ -100,6 +100,10 @@ in {
       window-padding-x = 5
       window-padding-y = 5
 
+      background = 3f4a62
+      cursor-color = d6c7df
+      cursor-text = 46516c
+
       background-opacity = 0.75
       background-blur = true
 
