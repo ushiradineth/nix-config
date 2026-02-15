@@ -104,10 +104,10 @@ in {
   };
 
   services = {
-    # GPG agent service for key management
     gpg-agent = {
       enable = true;
       enableSshSupport = true;
+      enableZshIntegration = true;
       defaultCacheTtl = 3600; # 1 hour
       pinentry.package = lib.mkIf pkgs.stdenv.isDarwin pkgs.pinentry_mac; # macOS only
     };
