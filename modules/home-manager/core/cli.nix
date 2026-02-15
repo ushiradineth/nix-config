@@ -12,6 +12,7 @@
     cat = "bat";
     c = "clear";
     pip = "pip3";
+    oc = "opencode";
     fman = "compgen -c | fzf | xargs man";
     ftldr = "compgen -c | fzf | xargs tldr";
     grep = "rg";

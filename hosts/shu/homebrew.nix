@@ -5,6 +5,7 @@ _: {
     brews = [
       "posting"
       "defaultbrowser"
+      "agent-browser"
       "mole" # MacOS clean up utility
       "opencode"
       "handbrake"

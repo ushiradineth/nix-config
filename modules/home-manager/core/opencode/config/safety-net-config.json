@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "name": "block-git-no-verify",
+      "command": "git",
+      "subcommand": "commit",
+      "block_args": ["--no-verify", "-n"],
+      "reason": "Git hook bypass is forbidden. Fix the failing check instead."
+    },
+    {
+      "name": "block-git-no-gpg-sign",
+      "command": "git",
+      "subcommand": "commit",
+      "block_args": ["--no-gpg-sign"],
+      "reason": "GPG signing bypass is forbidden. Configure signing correctly."
+    },
+    {
+      "name": "block-git-force-push",
+      "command": "git",
+      "subcommand": "push",
+      "block_args": ["--force", "-f", "--force-with-lease"],
+      "reason": "Force push is restricted. Use a safe push strategy."
+    },
+    {
+      "name": "block-git-reset-hard",
+      "command": "git",
+      "subcommand": "reset",
+      "block_args": ["--hard"],
+      "reason": "Hard reset is destructive. Use safer alternatives."
+    }
+  ]
+}

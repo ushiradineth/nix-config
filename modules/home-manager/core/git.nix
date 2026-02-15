@@ -35,6 +35,8 @@ in {
         "~*"
         ".DS_Store"
         ".direnv/"
+        ".agents/"
+        ".opencode/"
         ".claude/"
         "node_modules/"
         "dist/"
