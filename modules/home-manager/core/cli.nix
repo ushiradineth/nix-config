@@ -16,6 +16,8 @@
     ftldr = "compgen -c | fzf | xargs tldr";
     grep = "rg";
     curl = "curlie";
+    ndu = "nix-du -s 500MB";
+    ntree = "nix-tree";
   };
 
   FZF_CTRL_T_COMMAND = "fd --hidden --strip-cwd-prefix --exclude .git";
@@ -26,6 +28,13 @@
   FZF_ALT_C_OPTS = ["--preview 'eza --tree --color=always {} | head -200'"];
 in {
   home.shellAliases = shellAliases;
+  home.packages = with pkgs; [
+    nvd
+    nix-du
+    nix-tree
+    nix-output-monitor
+    nh
+  ];
   programs.zsh.shellAliases = shellAliases;
   programs = {
     eza = {

@@ -14,8 +14,10 @@ default:
 [macos]
 [group('macos')]
 build:
-  nix build .#darwinConfigurations.$(hostname).system \
+  nix run nixpkgs#nix-output-monitor -- build .#darwinConfigurations.$(hostname).system \
     --extra-experimental-features 'nix-command flakes'
+
+  nix run nixpkgs#nvd -- diff /nix/var/nix/profiles/system ./result
 
   sudo -E ./result/sw/bin/darwin-rebuild switch --flake .#$(hostname)
 
@@ -23,7 +25,7 @@ build:
 [macos]
 [group('macos')]
 build-dry:
-  nix build .#darwinConfigurations.$(hostname).system \
+  nix run nixpkgs#nix-output-monitor -- build .#darwinConfigurations.$(hostname).system \
     --extra-experimental-features 'nix-command flakes'
 
   nix run nixpkgs#nvd -- diff /nix/var/nix/profiles/system ./result
@@ -32,7 +34,7 @@ build-dry:
 [macos]
 [group('macos')]
 debug:
-  nix build .#darwinConfigurations.$(hostname).system --show-trace --verbose \
+  nix run nixpkgs#nix-output-monitor -- build .#darwinConfigurations.$(hostname).system --show-trace --verbose \
     --extra-experimental-features 'nix-command flakes'
 
   sudo -E ./result/sw/bin/darwin-rebuild switch --flake .#$(hostname) --show-trace --verbose
@@ -47,8 +49,10 @@ debug:
 [linux]
 [group('linux')]
 build:
-  nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel \
+  nix run nixpkgs#nix-output-monitor -- build .#nixosConfigurations.$(hostname).config.system.build.toplevel \
     --quiet --extra-experimental-features 'nix-command flakes'
+
+  nix run nixpkgs#nvd -- diff /run/current-system ./result
 
   sudo nixos-rebuild switch --flake .#$(hostname) --quiet
 
@@ -56,7 +60,7 @@ build:
 [linux]
 [group('linux')]
 build-dry:
-  nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel \
+  nix run nixpkgs#nix-output-monitor -- build .#nixosConfigurations.$(hostname).config.system.build.toplevel \
     --quiet --extra-experimental-features 'nix-command flakes'
 
   nix run nixpkgs#nvd -- diff /run/current-system ./result
@@ -65,7 +69,7 @@ build-dry:
 [linux]
 [group('linux')]
 debug:
-  nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel --show-trace --verbose \
+  nix run nixpkgs#nix-output-monitor -- build .#nixosConfigurations.$(hostname).config.system.build.toplevel --show-trace --verbose \
     --extra-experimental-features 'nix-command flakes'
 
   sudo nixos-rebuild switch --flake .#$(hostname) --show-trace --verbose
