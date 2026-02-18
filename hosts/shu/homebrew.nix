@@ -10,6 +10,7 @@ _: {
       "opencode"
       "handbrake"
       "nvm"
+      "czkawka"
     ];
     taps = [
       "homebrew/services"
@@ -53,6 +54,7 @@ _: {
       "codex"
       "insomnia"
       "helium-browser"
+      "cloudflare-warp"
     ];
     masApps = {
       "Davinci Resolve" = 571213070;
