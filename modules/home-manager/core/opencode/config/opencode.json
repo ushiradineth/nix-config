@@ -5,7 +5,7 @@
   "default_agent": "plan",
   "theme": "system",
   "autoupdate": false,
-  "lsp": false,
+  "lsp": {},
   "plugin": ["cc-safety-net", "opencode-openai-codex-auth"],
   "provider": {
     "openai": {
