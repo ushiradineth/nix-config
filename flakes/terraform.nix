@@ -1,13 +1,19 @@
 {
   inputs = {
-    flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
-  outputs = inputs:
-    inputs.flake-utils.lib.eachDefaultSystem (
+  outputs = {nixpkgs, ...}: let
+    systems = [
+      "x86_64-linux"
+      "aarch64-linux"
+      "x86_64-darwin"
+      "aarch64-darwin"
+    ];
+  in
+    nixpkgs.lib.genAttrs systems (
       system: let
-        pkgs = import inputs.nixpkgs {
+        pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
         };
