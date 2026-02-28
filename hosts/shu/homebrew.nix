@@ -52,6 +52,7 @@ _: {
       "insomnia"
       "helium-browser"
       "cloudflare-warp"
+      "yubico-authenticator"
     ];
     masApps = {
       "Davinci Resolve" = 571213070;
