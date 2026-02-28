@@ -1,6 +1,7 @@
-_: {
+{pkgs, ...}: {
   services.vicinae = {
     enable = true;
+    package = pkgs.vicinae;
     settings = {
       theme.name = "vicinae-dark";
       window = {
