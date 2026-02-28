@@ -3,7 +3,7 @@
   lib,
   ...
 }: let
-  path = "$PATH:$HOME/.local/bin:$HOME/go/bin:$HOME/Library/pnpm:$HOME/.cargo/bin";
+  path = "$PATH:$HOME/.local/bin:$HOME/go/bin:$HOME/Library/pnpm:$HOME/.local/share/pnpm:$HOME/.cargo/bin";
   envExtra = ''
     export PATH="${path}"
     export EDITOR="nvim"

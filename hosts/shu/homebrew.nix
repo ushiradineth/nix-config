@@ -7,7 +7,6 @@ _: {
       "defaultbrowser"
       "agent-browser"
       "mole" # MacOS clean up utility
-      "opencode"
       "handbrake"
       "nvm"
       "czkawka"
@@ -45,13 +44,11 @@ _: {
       "notion-calendar"
       "tailscale-app"
       "visual-studio-code" # For Dev Containers
-      "claude-code"
       "drawpen" # For presentations (sketching on the screen)
       "utm" # Virtual Machines
       "affinity" # Photo editing
       "obsidian"
       "seafile-client"
-      "codex"
       "insomnia"
       "helium-browser"
       "cloudflare-warp"

@@ -2,7 +2,6 @@
   environment.systemPackages = with pkgs; [
     ghostty
     bitwarden-desktop
-    claude-code
     seafile-client
     localsend # AirDrop alternative
     figma-linux

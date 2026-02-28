@@ -14,5 +14,8 @@
 
   nix.channel.enable = false;
 
+  # For running dynamically linked binaries
+  programs.nix-ld.enable = true;
+
   system.stateVersion = "25.11";
 }
