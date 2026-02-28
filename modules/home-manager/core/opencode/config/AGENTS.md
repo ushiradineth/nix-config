@@ -98,6 +98,10 @@ Use the smallest available model to generate one commit line.
 
 - Imperative mood
 - No AI attribution
+- No emojis
+- Output format is exactly two lines:
+  - `Msg: <conventional-commit-subject>`
+  - `Description: Signed-off-by: <name> <email>`
 - Suggest only, do not run `git commit`
 
 ## Testing and Validation
@@ -131,6 +135,8 @@ PR and issue writing style:
 - Do not stage unrelated files
 - Use conventional commit subjects only with no commit body, for example
   `fix(api): add transactional queries`
+- If the user has explicitly granted permission to commit, always use `git commit -s` so sign-off
+  attestation is added automatically
 - Use typed branch names like `feature/add-nix-flake` or `fix/ci-builds`
 - Use `gh` CLI for PR creation, updates, checks, comments, and review operations
 - If you raise a PR, monitor checks and wait until required checks are green
