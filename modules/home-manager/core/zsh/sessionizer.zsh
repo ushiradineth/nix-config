@@ -20,7 +20,8 @@ function t() {
             printf '%s\n' "${manual[@]}" "${code[@]}" "${surge[@]}" "${fork[@]}" "${koano[@]}" "${freelance[@]}" \
                 | fzf --reverse --border \
                 --preview-window=right:60% \
-                --preview 'exa --color=always --tree --level=2 --group-directories-first {} | head -50'
+                --preview 'exa --color=always --tree --level=2 --group-directories-first {} | head -50' \
+                < /dev/tty
         )
     fi
 
@@ -54,7 +55,8 @@ function ts() {
     selected=$(
         tmux list-sessions -F "#{session_name}" 2>/dev/null \
             | fzf --reverse --border \
-            --preview 'tmux list-windows -t {}'
+            --preview 'tmux list-windows -t {}' \
+            < /dev/tty
     )
 
     [ -n "$selected" ] && tmux attach -t "$selected"
