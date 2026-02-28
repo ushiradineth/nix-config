@@ -3,7 +3,7 @@ _: {
     bind = [
       # Launch applications
       "$modifier,T,exec,ghostty +new-window"
-      "$modifier,B,exec,zen-beta -P default"
+      "$modifier,B,exec,zen-beta"
       "$modifier,E,exec,nautilus"
       "CTRL,Q,killactive"
 
