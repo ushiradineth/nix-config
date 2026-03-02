@@ -70,6 +70,8 @@ in {
 
       ${lib.fileContents ./ignix.zsh}
 
+      ${lib.fileContents ./nixpkgs.zsh}
+
       ${lib.fileContents ./sessionizer.zsh}
     '';
   };
