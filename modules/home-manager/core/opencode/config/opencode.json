@@ -33,12 +33,22 @@
   },
   "agent": {
     "build": {
-      "description": "Implementation mode with mandatory index-first MCP retrieval",
+      "mode": "primary",
+      "description": "Implementation mode with plan-first execution and index-first discovery",
       "temperature": 0.1,
       "steps": 40,
-      "prompt": "{file:./prompts/build.md}"
+      "prompt": "{file:./prompts/build.md}",
+      "permission": {
+        "bash": {
+          "*": "allow",
+          "git push*": "ask",
+          "rm *": "ask",
+          "sudo *": "ask"
+        }
+      }
     },
     "plan": {
+      "mode": "primary",
       "description": "Research-heavy planning mode with focused questions and executable plans",
       "temperature": 0.1,
       "steps": 30,
@@ -56,7 +66,14 @@
         "list": "allow",
         "webfetch": "allow",
         "websearch": "allow",
-        "bash": "allow",
+        "bash": {
+          "*": "ask",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "ls*": "allow",
+          "pwd": "allow"
+        },
         "edit": {
           "*": "deny",
           ".opencode/plans/**/*.md": "allow",
@@ -65,11 +82,12 @@
         }
       }
     },
-    "init_agents_md": {
-      "description": "Generate repo-specific AGENTS.md files from real project context",
+    "direct": {
+      "mode": "subagent",
+      "description": "Direct implementation for simple tasks without plan-file handoff",
       "temperature": 0.1,
-      "steps": 40,
-      "prompt": "{file:./prompts/init-agents-md.md}",
+      "steps": 30,
+      "prompt": "{file:./prompts/direct.md}",
       "permission": {
         "question": "allow",
         "task": {
@@ -83,13 +101,71 @@
         "list": "allow",
         "webfetch": "allow",
         "websearch": "allow",
-        "bash": "allow",
-        "edit": {
-          "*": "deny",
-          "AGENTS.md": "allow",
-          "**/AGENTS.md": "allow",
-          ".github/agents/*.md": "allow"
-        }
+        "bash": {
+          "*": "allow",
+          "git push*": "ask",
+          "rm *": "ask",
+          "sudo *": "ask"
+        },
+        "edit": "allow"
+      }
+    },
+    "grind": {
+      "mode": "subagent",
+      "description": "Long-running autonomous executor for large tasks with checkpoints",
+      "temperature": 0.1,
+      "steps": 200,
+      "prompt": "{file:./prompts/grind.md}",
+      "permission": {
+        "question": "allow",
+        "task": {
+          "*": "allow",
+          "explore": "allow",
+          "general": "allow",
+          "direct": "allow"
+        },
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "bash": {
+          "*": "allow",
+          "git push*": "ask",
+          "rm *": "ask",
+          "sudo *": "ask"
+        },
+        "edit": "allow"
+      }
+    },
+    "creative": {
+      "mode": "subagent",
+      "description": "Creative writing and UI ideation with stronger variation",
+      "temperature": 0.7,
+      "steps": 40,
+      "prompt": "{file:./prompts/creative.md}",
+      "permission": {
+        "question": "allow",
+        "task": {
+          "*": "allow",
+          "explore": "allow",
+          "general": "allow",
+          "direct": "allow"
+        },
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "bash": {
+          "*": "allow",
+          "git push*": "ask",
+          "rm *": "ask",
+          "sudo *": "ask"
+        },
+        "edit": "allow"
       }
     }
   },

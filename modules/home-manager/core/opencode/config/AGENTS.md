@@ -239,9 +239,9 @@ Format for both files:
 
 - Keep `.agents/MEMORIES.md` and `.agents/PROGRESS.md` current
 - In git worktrees, update `.agents/MEMORIES.md` and `.agents/PROGRESS.md` in the main repo only
-- Do not create new plan files unless the user explicitly asks
+- For multi-step implementation work, plan mode should create `.opencode/plans/P-*.md` by default
 - If a plan file is explicitly requested, use `.opencode/plans/P-*.md`
-- Use `~/.config/opencode/templates/plan-template.md` only when bootstrapping requested plan files
+- Use `~/.config/opencode/templates/plan.md` only when bootstrapping requested plan files
 - Close requested plan files with outcomes, decisions, and stale-entry candidates
 
 ## External References
