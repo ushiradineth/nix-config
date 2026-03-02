@@ -5,23 +5,24 @@ function t() {
     if [[ $# -eq 1 ]]; then
         selected=$1
     else
-        local manual=()
+        local -a candidates
+        local -a manual=()
         [[ -d "$HOME/nix-config" ]] && manual+=("$HOME/nix-config")
         [[ -d "$HOME/nix-secrets" ]] && manual+=("$HOME/nix-secrets")
         [[ -d "$HOME/.config" ]] && manual+=("$HOME/.config")
-        local code=$(find ~/Code -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
-        local surge=$(find ~/Code/surge -mindepth 1 -maxdepth 2 -type d 2>/dev/null)
-        local fork=$(find ~/Code/fork -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
-        local koano=$(find ~/Code/koano -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
-        local freelance=$(find ~/Code/freelance -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
+
+        [[ -d "$HOME/Code" ]] && candidates+=("${(@f)$(find "$HOME/Code" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)}")
+        [[ -d "$HOME/Code/surge" ]] && candidates+=("${(@f)$(find "$HOME/Code/surge" -mindepth 1 -maxdepth 2 -type d 2>/dev/null)}")
+        [[ -d "$HOME/Code/fork" ]] && candidates+=("${(@f)$(find "$HOME/Code/fork" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)}")
+        [[ -d "$HOME/Code/koano" ]] && candidates+=("${(@f)$(find "$HOME/Code/koano" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)}")
+        [[ -d "$HOME/Code/freelance" ]] && candidates+=("${(@f)$(find "$HOME/Code/freelance" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)}")
 
         # Combine and fzf
         selected=$(
-            printf '%s\n' "${manual[@]}" "${code[@]}" "${surge[@]}" "${fork[@]}" "${koano[@]}" "${freelance[@]}" \
+            printf '%s\n' "${manual[@]}" "${candidates[@]}" \
                 | fzf --reverse --border \
                 --preview-window=right:60% \
-                --preview 'exa --color=always --tree --level=2 --group-directories-first {} | head -50' \
-                < /dev/tty
+                --preview 'if command -v eza >/dev/null 2>&1; then eza --color=always --tree --level=2 --group-directories-first {} | head -50; elif command -v exa >/dev/null 2>&1; then exa --color=always --tree --level=2 --group-directories-first {} | head -50; else ls -la {} | head -50; fi'
         )
     fi
 
@@ -52,12 +53,19 @@ function t() {
 }
 
 function ts() {
+    local selected
+
     selected=$(
         tmux list-sessions -F "#{session_name}" 2>/dev/null \
             | fzf --reverse --border \
-            --preview 'tmux list-windows -t {}' \
-            < /dev/tty
+            --preview 'tmux list-windows -t {}'
     )
 
-    [ -n "$selected" ] && tmux attach -t "$selected"
+    [[ -z "$selected" ]] && return 0
+
+    if [[ -n $TMUX ]]; then
+        tmux switch-client -t "$selected"
+    else
+        tmux attach-session -t "$selected"
+    fi
 }
