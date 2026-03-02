@@ -9,6 +9,7 @@
     inputs
     // {
       inherit mylib myvars;
+      managedInstallsEnabled = builtins.getEnv "NIXCFG_ENABLE_MANAGED_INSTALLS" == "1";
 
       pkgs-unstable = import inputs.nixpkgs-unstable {
         inherit system;

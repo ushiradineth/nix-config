@@ -1,7 +1,7 @@
-_: {
+{managedInstallsEnabled ? false, ...}: {
   homebrew = {
-    # Disabled for fast deployments, enable when needed (updates and un/installations)
-    enable = false;
+    # Keep disabled by default for faster rebuilds. Enable with --with-installs.
+    enable = managedInstallsEnabled;
     brews = [
       "posting"
       "defaultbrowser"

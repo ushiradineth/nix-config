@@ -11,15 +11,41 @@ default:
 ############################################################################
 
 # Build in release mode.
+# Default skips managed installs (Homebrew + pnpm globals).
+# Pass --with-installs to enable managed installs for this run.
 [macos]
 [group('macos')]
-build:
+build *flags:
+  #!/usr/bin/env bash
+  set -euo pipefail
+
+  should_enable_managed_installs=0
+  for flag in {{flags}}; do
+    case "$flag" in
+      --with-installs|with-installs)
+        should_enable_managed_installs=1
+        ;;
+      *)
+        echo "Unknown build flag: $flag" >&2
+        echo "Supported: --with-installs" >&2
+        exit 1
+        ;;
+    esac
+  done
+
+  if [ "$should_enable_managed_installs" -eq 1 ]; then
+    export NIXCFG_ENABLE_MANAGED_INSTALLS=1
+    impure_flag=(--impure)
+  else
+    impure_flag=()
+  fi
+
   nix run nixpkgs#nix-output-monitor -- build .#darwinConfigurations.$(hostname).system \
-    --extra-experimental-features 'nix-command flakes'
+    --extra-experimental-features 'nix-command flakes' "${impure_flag[@]}"
 
   nix run nixpkgs#nvd -- diff /nix/var/nix/profiles/system ./result
 
-  sudo -E ./result/sw/bin/darwin-rebuild switch --flake .#$(hostname)
+  sudo -E ./result/sw/bin/darwin-rebuild switch --flake .#$(hostname) "${impure_flag[@]}"
 
 # Build and show closure diff without switching.
 [macos]
@@ -46,15 +72,41 @@ debug:
 ############################################################################
 
 # Build in release mode.
+# Default skips managed installs (Homebrew + pnpm globals).
+# Pass --with-installs to enable managed installs for this run.
 [linux]
 [group('linux')]
-build:
+build *flags:
+  #!/usr/bin/env bash
+  set -euo pipefail
+
+  should_enable_managed_installs=0
+  for flag in {{flags}}; do
+    case "$flag" in
+      --with-installs|with-installs)
+        should_enable_managed_installs=1
+        ;;
+      *)
+        echo "Unknown build flag: $flag" >&2
+        echo "Supported: --with-installs" >&2
+        exit 1
+        ;;
+    esac
+  done
+
+  if [ "$should_enable_managed_installs" -eq 1 ]; then
+    export NIXCFG_ENABLE_MANAGED_INSTALLS=1
+    impure_flag=(--impure)
+  else
+    impure_flag=()
+  fi
+
   nix run nixpkgs#nix-output-monitor -- build .#nixosConfigurations.$(hostname).config.system.build.toplevel \
-    --quiet --extra-experimental-features 'nix-command flakes'
+    --quiet --extra-experimental-features 'nix-command flakes' "${impure_flag[@]}"
 
   nix run nixpkgs#nvd -- diff /run/current-system ./result
 
-  sudo nixos-rebuild switch --flake .#$(hostname) --quiet
+  sudo nixos-rebuild switch --flake .#$(hostname) --quiet "${impure_flag[@]}"
 
 # Build and show closure diff without switching.
 [linux]
