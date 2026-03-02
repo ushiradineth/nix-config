@@ -7,6 +7,23 @@
   "autoupdate": false,
   "lsp": {},
   "plugin": ["cc-safety-net", "opencode-openai-codex-auth"],
+  "mcp": {
+    "veil": {
+      "type": "local",
+      "command": [
+        "nix",
+        "run",
+        "nixpkgs#bun",
+        "--",
+        "run",
+        "--cwd",
+        "/Users/shu/Code/veil",
+        "src/server.ts"
+      ],
+      "enabled": true,
+      "timeout": 120000
+    }
+  },
   "provider": {
     "openai": {
       "options": {
@@ -15,6 +32,12 @@
     }
   },
   "agent": {
+    "build": {
+      "description": "Implementation mode with mandatory index-first MCP retrieval",
+      "temperature": 0.1,
+      "steps": 40,
+      "prompt": "{file:./prompts/build.md}"
+    },
     "plan": {
       "description": "Research-heavy planning mode with focused questions and executable plans",
       "temperature": 0.1,

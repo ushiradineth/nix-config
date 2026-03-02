@@ -16,11 +16,24 @@ Run these early when relevant:
 - `git status --short`
 - `git diff` and `git diff --cached`
 - `git log --oneline -n 15`
+- `/veil status`
 
 Always prefer dedicated tools for file and content operations when available.
 
 Before heavy local validation like build or check flows, suggest using a dedicated git worktree to
 keep scope isolated.
+
+## Index Freshness Protocol
+
+- Treat `.agents/index/*` as required context artifacts when available
+- Before broad repository scans, check freshness with `veil_status`
+- If stale or missing, refresh with `veil_refresh` in `changed` mode
+- Run a full rebuild periodically or after large refactors
+- If `git_head` changed or TTL expired, refresh is mandatory before planning or implementation
+- MCP index tools are active by default and should be used proactively without waiting for a manual
+  `/veil` invocation
+- For search-heavy tasks, use index MCP tools first and only fall back to broad `glob` or `grep`
+  when MCP results are insufficient
 
 ## Worktree Handling
 
@@ -46,7 +59,20 @@ Classify every request before acting.
 | Straight-Forward Fix      | Single file, low risk, clear scope, no architecture decisions        | Execute with concise plan then validate |
 | Multi-Step Implementation | Multiple files, design choices, unknowns, medium or high risk impact | Plan mode then sub-agent workflow       |
 
-When ambiguous, ask one clarifying question after finishing non-blocked investigation.
+When requirements are incomplete, collect context first and ask targeted questions in one batch.
+
+## Documentation Policy
+
+- Do not create new documentation or plans unless the user explicitly asks
+- You may update existing documentation such as `README.md` files and existing code comments when
+  requested work requires it
+- If temporary documentation is needed during execution, place it under `.agents/docs/<doc>`
+
+## Long-Running Tasks
+
+- Track long-running task reminders in `.agents/REMINDERS.md` or an equivalent file under `.agents/`
+- Every reminder entry must include the owning agent session ID
+- Before ending a session, verify reminder completion state and mark completed reminders
 
 ## Risk Gates
 
@@ -80,6 +106,8 @@ No file changes in this phase.
 - Avoid unrelated refactors
 - Verify each logical step before continuing
 - Execute independent tasks concurrently when there is no dependency chain
+- Use sub-agents when work splits cleanly, for example fixing PR comments for `#48` and `#49` in
+  parallel instead of sequentially
 
 ### Phase 3: Style Review Loop
 
@@ -108,10 +136,24 @@ Use the smallest available model to generate one commit line.
 
 - Run the smallest relevant checks first
 - Expand checks when shared or critical paths change
+- Run repository-wide validation commands before ending a session when available, for example
+  `just check`, `just ci`, or `pnpm check`
+- For new features, add or update tests that cover behavior changes
+- For bug fixes, update existing tests or add regression tests
+- Ensure tests pass before ending the session
 - Before pushing to `origin` and opening or updating a PR, run local checks that mimic CI as closely
   as possible
 - Never claim success without command evidence
 - If checks cannot run, report why and provide manual verification steps
+
+## Engineering Quality
+
+- Be efficient and avoid unnecessary output or verbose comments
+- No emojis in code, commit messages, or review artifacts
+- Apply SOLID and DRY principles where they fit the local codebase
+- Avoid god files and preserve single-responsibility boundaries
+- Favor clear abstractions so code remains maintainable and consumable
+- Avoid shortcuts that defer required follow-up work
 
 ## Writing Rules
 
@@ -128,6 +170,9 @@ PR and issue writing style:
 - Casual and concrete
 - Short sentences and fragments are fine
 - No fabricated context
+
+- Collect as much relevant local context as possible before implementation
+- Ask targeted follow-up questions when required details are missing
 
 ## Git Workflow
 
@@ -194,18 +239,24 @@ Format for both files:
 
 - Keep `.agents/MEMORIES.md` and `.agents/PROGRESS.md` current
 - In git worktrees, update `.agents/MEMORIES.md` and `.agents/PROGRESS.md` in the main repo only
-- Use `.opencode/plans/P-*.md` for multi-step plans
-- Use `~/.config/opencode/templates/plan-template.md` as the source template when bootstrapping new
-  plans
-- Close each plan with outcomes, decisions, and stale-entry candidates
+- Do not create new plan files unless the user explicitly asks
+- If a plan file is explicitly requested, use `.opencode/plans/P-*.md`
+- Use `~/.config/opencode/templates/plan-template.md` only when bootstrapping requested plan files
+- Close requested plan files with outcomes, decisions, and stale-entry candidates
 
 ## External References
 
 - If a GitHub repository is referenced, clone it to `/tmp/<repo>` and inspect locally for reliable
   context
+- Use purpose-built CLIs for platform workflows when available, for example use `gh` for GitHub
+  operations instead of direct API `curl` requests when `gh` supports the operation
 - For unclear documentation sources, use DeepWiki first, for example
   `https://deepwiki.com/zed-industries/zed`
 - Use search only when DeepWiki does not cover the tool or topic
+- Reference existing implementation patterns where relevant
+- Respect open source licenses and ownership boundaries
+- If external patterns materially inform implementation, add attribution in the relevant README when
+  documentation updates are in scope
 
 ## Repo AGENTS.md Generation
 

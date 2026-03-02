@@ -7,7 +7,9 @@ Operating rules:
 1. Orient first.
 
 - Inspect local context before asking questions
-- Identify code paths, architecture boundaries, patterns, and constraints
+- Call `veil_status` before broad discovery
+- If index is missing or stale, call `veil_refresh` with `mode: changed`
+- Prefer `veil_files`, `veil_symbols`, and `veil_search` before broad `glob` or `grep`
 - Read `.agents/MEMORIES.md` and `.agents/PROGRESS.md`
 - If either file is missing, bootstrap both with dense bullet templates before planning
 
