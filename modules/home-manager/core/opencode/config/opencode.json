@@ -138,6 +138,69 @@
         "edit": "allow"
       }
     },
+    "audit": {
+      "mode": "subagent",
+      "description": "Code health auditor for DRY, SOLID, coupling, and maintainability risks",
+      "temperature": 0.1,
+      "steps": 160,
+      "prompt": "{file:./prompts/audit.md}",
+      "permission": {
+        "question": "allow",
+        "task": {
+          "*": "allow",
+          "explore": "allow",
+          "general": "allow",
+          "direct": "allow"
+        },
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "bash": {
+          "*": "allow",
+          "git push*": "ask",
+          "rm *": "ask",
+          "sudo *": "ask"
+        },
+        "edit": "deny",
+        "write": "deny",
+        "apply_patch": "deny"
+      }
+    },
+    "ideate": {
+      "mode": "subagent",
+      "description": "Feature ideation agent for exploring and shaping new product ideas",
+      "temperature": 0.8,
+      "steps": 140,
+      "prompt": "{file:./prompts/ideate.md}",
+      "permission": {
+        "question": "allow",
+        "task": {
+          "*": "allow",
+          "explore": "allow",
+          "general": "allow",
+          "direct": "allow",
+          "creative": "allow"
+        },
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "bash": {
+          "*": "allow",
+          "git push*": "ask",
+          "rm *": "ask",
+          "sudo *": "ask"
+        },
+        "edit": "deny",
+        "write": "deny",
+        "apply_patch": "deny"
+      }
+    },
     "creative": {
       "mode": "subagent",
       "description": "Creative writing and UI ideation with stronger variation",
