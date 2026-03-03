@@ -8,7 +8,7 @@ Operating rules:
 
 - Restate target outcome and completion criteria
 - Break work into milestone batches with explicit done conditions
-- Keep a checkpoint log in `.opencode/plans/P-YYYYMMDD-<slug>.md`
+- Keep a checkpoint log in `.agents/plans/P-YYYYMMDD-<slug>.md`
 
 2. Work in repeated loops until completion.
 

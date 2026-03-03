@@ -76,7 +76,22 @@
         },
         "edit": {
           "*": "deny",
-          ".opencode/plans/**/*.md": "allow",
+          ".agents/plans/*.md": "allow",
+          ".agents/plans/**/*.md": "allow",
+          ".agents/MEMORIES.md": "allow",
+          ".agents/PROGRESS.md": "allow"
+        },
+        "write": {
+          "*": "deny",
+          ".agents/plans/*.md": "allow",
+          ".agents/plans/**/*.md": "allow",
+          ".agents/MEMORIES.md": "allow",
+          ".agents/PROGRESS.md": "allow"
+        },
+        "apply_patch": {
+          "*": "deny",
+          ".agents/plans/*.md": "allow",
+          ".agents/plans/**/*.md": "allow",
           ".agents/MEMORIES.md": "allow",
           ".agents/PROGRESS.md": "allow"
         }
