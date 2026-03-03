@@ -24,7 +24,7 @@
     }
 
     cleanup() {
-      if [ -f "$STATE_FILE" ] && [ "$(cat "$STATE_FILE")" = "we_connected" ]; then
+      if [ -f "$STATE_FILE" ] && [ "$(cat "$STATE_FILE")" = "connected_by_us" ]; then
         log "Disconnecting Tailscale (we connected it for backup)..."
         $TAILSCALE down || true
       fi
@@ -32,12 +32,17 @@
     }
     trap cleanup EXIT
 
-    # Check if Tailscale is connected
+    # Ensure Tailscale is connected
     if $TAILSCALE status &>/dev/null; then
       echo "already_connected" > "$STATE_FILE"
     else
-      log "Tailscale not connected, skipping backup check"
-      exit 0
+      log "Tailscale not connected, connecting..."
+      if $TAILSCALE up &>/dev/null; then
+        echo "connected_by_us" > "$STATE_FILE"
+      else
+        log "Failed to connect Tailscale, skipping backup check"
+        exit 0
+      fi
     fi
 
     # Check if shupi is reachable via SSH
@@ -102,6 +107,10 @@
       --exclude="**/*.log" \
       --exclude="**/*.tmp" \
       2>&1 | tee -a "$LOG_FILE"
+
+    # Clear stale locks before prune/forget
+    $RESTIC -r "$REPOSITORY" --password-file "$PASSWORD_FILE" unlock \
+      2>&1 | tee -a "$LOG_FILE" || true
 
     # Prune old snapshots
     $RESTIC -r "$REPOSITORY" --password-file "$PASSWORD_FILE" forget \
