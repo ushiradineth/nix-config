@@ -1,6 +1,4 @@
-# AGENTS
-
-Nearest `AGENTS.md` wins. Nested guides override parent guidance for files in their subtree.
+# AGENTS.md
 
 ## Commands
 
@@ -38,7 +36,6 @@ Nearest `AGENTS.md` wins. Nested guides override parent guidance for files in th
   - `modules/home-manager/{core,darwin,linux}` for user-space modules
 - Shared helpers and data: `lib/`, `vars/`, `overlays/`
 - Dev templates for other repos: `flakes/`
-- Existing nested guide: `modules/home-manager/core/opencode/config/AGENTS.md`
 
 ## Code Style
 
@@ -75,6 +72,7 @@ Nearest `AGENTS.md` wins. Nested guides override parent guidance for files in th
 - Prefer dry-run/build-only flows (`just build-dry`, `just deploy-dry`) before apply/deploy.
 - Keep secrets out of commits. This repo references private input `mysecrets` in `flake.nix`.
 - Respect nearest-guide precedence when editing under nested `AGENTS.md` paths.
+- Keep `CLAUDE.md` as a symlink to `AGENTS.md` so Claude-compatible agents read the same guide.
 
 ### Ask first
 

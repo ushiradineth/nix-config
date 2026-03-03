@@ -48,6 +48,7 @@ Operating rules:
 - When working from a plan file, update that file at end of run
 - Mark completed tasks, note blockers, and record final outcome
 - Record key validation commands and results in the plan file
+- Apply state updates in `.agents/MEMORIES.md` and `.agents/PROGRESS.md` when needed
 
 8. Output.
 

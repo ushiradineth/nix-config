@@ -61,12 +61,19 @@ Classify every request before acting.
 
 When requirements are incomplete, collect context first and ask targeted questions in one batch.
 
+Execution note:
+
+- Use `planner` for writable planning plus post-acceptance execution
+- Use `builder` subagent for explicit implementation delegation when splitting work
+
 ## Documentation Policy
 
 - Do not create new documentation or plans unless the user explicitly asks
 - You may update existing documentation such as `README.md` files and existing code comments when
   requested work requires it
 - If temporary documentation is needed during execution, place it under `.agents/docs/<doc>`
+- `.agents/` is internal agent state and is globally gitignored. Keep user-facing deliverables out
+  of `.agents/`
 
 ## Long-Running Tasks
 
@@ -216,6 +223,9 @@ PR and issue writing style:
 
 Read `.agents/MEMORIES.md` and `.agents/PROGRESS.md` at session start.
 
+Plan mode can update plan and state files. It must not execute implementation changes until the user
+explicitly accepts the plan.
+
 In git worktrees, read and write these files in the main repo, not the worktree path.
 
 If either file is missing, bootstrap both files after scanning repository context.
@@ -239,7 +249,10 @@ Format for both files:
 
 - Keep `.agents/MEMORIES.md` and `.agents/PROGRESS.md` current
 - In git worktrees, update `.agents/MEMORIES.md` and `.agents/PROGRESS.md` in the main repo only
-- For multi-step implementation work, plan mode should create `.agents/plans/P-*.md` by default
+- For multi-step implementation work, plan mode should create and maintain `.agents/plans/P-*.md`,
+  including requirement updates before acceptance
+- After plan acceptance, plan mode may execute implementation in the same session using the approved
+  `Build handoff`
 - If a plan file is explicitly requested, use `.agents/plans/P-*.md`
 - Use `~/.config/opencode/templates/plan.md` only when bootstrapping requested plan files
 - Close requested plan files with outcomes, decisions, and stale-entry candidates
