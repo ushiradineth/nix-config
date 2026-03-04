@@ -68,7 +68,7 @@ in {
 
       bindkey -s '^As' 't\n'
 
-      ${lib.fileContents ./ignix.zsh}
+      ${lib.fileContents ./inix.zsh}
 
       ${lib.fileContents ./nixpkgs.zsh}
 
