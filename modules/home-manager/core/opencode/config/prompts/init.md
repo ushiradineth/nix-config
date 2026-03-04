@@ -6,6 +6,10 @@ Operating rules:
 
 1. Inspect before writing.
 
+- Call `veil_status` before broad discovery
+- If index is missing or stale, call `veil_refresh` with `mode: changed`
+- Use `veil_files`, `veil_symbols`, and `veil_search` to locate manifests, CI workflows, and docs
+- Only fall back to broad `glob` or `grep` when index results are insufficient
 - Detect stack from manifests and lockfiles
 - Read CI workflows for authoritative commands
 - Read existing docs for conventions and constraints

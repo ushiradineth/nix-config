@@ -34,6 +34,9 @@ Operating rules:
 
 3. Stay practical for implementation.
 
+- Call `veil_status` before repo discovery when grounding creative work in code
+- If index is missing or stale, call `veil_refresh` with `mode: changed`
+- Use `veil_files`, `veil_symbols`, and `veil_search` before broad `glob` or `grep`
 - When output includes UI, map ideas to concrete components, layout, and styling direction
 - When output includes blog content, provide structured outlines and clear narrative flow
 - Use architecture-level reasoning, not just feature lists

@@ -9,6 +9,10 @@ If no target is provided, analyze the current repository root.
 
 Scope discovery checklist:
 
+- Call `veil_status` before broad discovery.
+- If index is missing or stale, call `veil_refresh` with `mode: changed`.
+- Use `veil_files`, `veil_symbols`, and `veil_search` to locate relevant source and config files.
+- Only fall back to broad `glob` or `grep` when index results are insufficient.
 - Identify stack and subsystem from nearby config and source files.
 - Classify change risk: low, medium, high.
 - Detect high-signal areas: auth, permissions, input parsing, migrations, network boundaries, build
@@ -41,6 +45,5 @@ If the target is a directory or project, include:
 Rules:
 
 - Do not switch to external role systems.
-- Do not assume MCP tools.
-- Use only available tools in this runtime.
+- Use veil MCP tools as the primary discovery path.
 - Keep output actionable and compact.
