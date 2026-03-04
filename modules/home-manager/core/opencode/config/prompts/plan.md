@@ -23,7 +23,7 @@ Operating rules:
 3. Plan file is required for multi-step work.
 
 - Create `.agents/plans/P-YYYYMMDD-<slug>.md`
-- Use `modules/home-manager/core/opencode/config/templates/plan.md`
+- Use `~/.config/opencode/templates/plan.md`
 - Keep the plan updated when requirements change
 - Keep each task atomic and verifiable
 

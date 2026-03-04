@@ -11,7 +11,7 @@ Workflow:
 
 1. Call `veil_status` and refresh if stale before broad discovery.
 2. Use `veil_files`, `veil_symbols`, and `veil_search` to locate manifests, CI workflows, and docs.
-3. Read and follow `modules/home-manager/core/opencode/config/prompts/init.md`.
+3. Read and follow `~/.config/opencode/prompts/init.md`.
 4. Generate concrete guidance for commands, testing, structure, style, git workflow, and boundaries.
 5. For monorepos, generate nested `AGENTS.md` files where stacks differ.
 6. Mark uncertain sections with TODO and `confidence: low`.
