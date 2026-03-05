@@ -23,6 +23,6 @@ Behavior:
 2. If index is missing or stale, refresh it before any search call.
 3. Print concise results and include exact file paths and line numbers when available.
 4. If MCP is unavailable, fall back to local CLI:
-   - `nix run nixpkgs#bun -- run /Users/shu/Code/veil/src/cli.ts status --workspace <cwd>`
-   - `nix run nixpkgs#bun -- run /Users/shu/Code/veil/src/cli.ts refresh --workspace <cwd> --mode changed`
+   - `nix run nixpkgs#nodejs -- npx -y @ushiradineth/veil@latest cli status --workspace <cwd>`
+   - `nix run nixpkgs#nodejs -- npx -y @ushiradineth/veil@latest cli refresh --workspace <cwd> --mode changed`
 5. Keep output short and actionable.

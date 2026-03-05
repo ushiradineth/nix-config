@@ -20,7 +20,10 @@ Operating rules:
 
 - Call `veil_status` before broad discovery
 - If stale or missing, call `veil_refresh` with `mode: changed`
-- Use `veil_files`, `veil_symbols`, and `veil_search` before broad scans
+- Use `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and `veil_search` only
+- Do not use `glob`, `grep`, `list`, `webfetch`, or `websearch`
+- Do not use shell for discovery. Use `veil_git_status`, `veil_git_diff`, `veil_git_log`, and
+  `veil_git_show` for git read operations
 
 2. Prioritize high-impact findings.
 

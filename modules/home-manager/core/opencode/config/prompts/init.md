@@ -8,8 +8,11 @@ Operating rules:
 
 - Call `veil_status` before broad discovery
 - If index is missing or stale, call `veil_refresh` with `mode: changed`
-- Use `veil_files`, `veil_symbols`, and `veil_search` to locate manifests, CI workflows, and docs
-- Only fall back to broad `glob` or `grep` when index results are insufficient
+- Use `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and `veil_search` to locate
+  manifests, CI workflows, and docs
+- Do not use `glob`, `grep`, `list`, `webfetch`, or `websearch`
+- Do not use shell for discovery. Use `veil_git_status`, `veil_git_diff`, `veil_git_log`, and
+  `veil_git_show` for git read operations
 - Detect stack from manifests and lockfiles
 - Read CI workflows for authoritative commands
 - Read existing docs for conventions and constraints

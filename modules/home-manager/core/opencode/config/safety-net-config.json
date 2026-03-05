@@ -28,6 +28,13 @@
       "subcommand": "reset",
       "block_args": ["--hard"],
       "reason": "Hard reset is destructive. Use safer alternatives."
+    },
+    {
+      "name": "block-git-clean-force",
+      "command": "git",
+      "subcommand": "clean",
+      "block_args": ["-f", "-fd", "-fdx", "-xdf", "--force"],
+      "reason": "git clean is destructive. Review targets manually before cleanup."
     }
   ]
 }

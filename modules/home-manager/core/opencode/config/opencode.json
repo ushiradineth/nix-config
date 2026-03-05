@@ -13,12 +13,12 @@
       "command": [
         "nix",
         "run",
-        "nixpkgs#bun",
+        "nixpkgs#nodejs",
         "--",
-        "run",
-        "--cwd",
-        "/Users/shu/Code/veil",
-        "src/server.ts"
+        "npx",
+        "-y",
+        "@ushiradineth/veil@latest",
+        "server"
       ],
       "enabled": true,
       "timeout": 120000
@@ -32,53 +32,66 @@
     }
   },
   "agent": {
+    "plan": {
+      "disable": true
+    },
+    "build": {
+      "disable": true
+    },
     "planner": {
       "mode": "primary",
-      "description": "Plan-first agent that can write plans and execute after acceptance",
+      "description": "Planning authority that creates handoff plans for builder execution",
       "temperature": 0.1,
       "steps": 120,
       "prompt": "{file:./prompts/plan.md}",
       "permission": {
         "question": "allow",
         "task": {
-          "*": "allow",
-          "builder": "allow",
-          "explore": "allow",
-          "general": "allow"
+          "*": "allow"
         },
         "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "list": "allow",
-        "webfetch": "allow",
-        "websearch": "allow",
-        "bash": {
-          "*": "ask",
-          "git status*": "allow",
-          "git diff*": "allow",
-          "git log*": "allow",
-          "ls*": "allow",
-          "pwd": "allow"
-        },
-        "edit": "allow",
-        "write": "allow",
-        "apply_patch": "allow"
+        "glob": "deny",
+        "grep": "deny",
+        "list": "deny",
+        "webfetch": "deny",
+        "websearch": "deny",
+        "bash": "deny",
+        "edit": {
+          "*": "deny",
+          ".agents/**": "allow"
+        }
       }
     },
     "builder": {
-      "mode": "subagent",
-      "description": "Implementation mode with plan-first execution and index-first discovery",
+      "mode": "primary",
+      "description": "Execution authority that implements approved planner handoffs",
       "temperature": 0.1,
       "steps": 80,
       "prompt": "{file:./prompts/build.md}",
       "permission": {
+        "question": "allow",
+        "task": {
+          "*": "allow",
+          "explore": "allow",
+          "general": "allow",
+          "direct": "allow"
+        },
+        "read": "allow",
+        "glob": "deny",
+        "grep": "deny",
+        "list": "deny",
+        "webfetch": "deny",
+        "websearch": "deny",
         "bash": {
           "*": "allow",
-          "git push*": "ask",
           "rm *": "ask",
+          "git *": "ask",
+          "gh *": "ask",
           "sudo *": "ask"
         },
-        "edit": "allow"
+        "edit": "allow",
+        "write": "allow",
+        "apply_patch": "allow"
       }
     },
     "direct": {
@@ -95,18 +108,16 @@
           "general": "allow"
         },
         "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "list": "allow",
-        "webfetch": "allow",
-        "websearch": "allow",
-        "bash": {
-          "*": "allow",
-          "git push*": "ask",
-          "rm *": "ask",
-          "sudo *": "ask"
-        },
-        "edit": "allow"
+        "glob": "deny",
+        "grep": "deny",
+        "list": "deny",
+        "webfetch": "deny",
+        "websearch": "deny",
+        "bash": "deny",
+        "edit": {
+          "*": "deny",
+          ".agents/**": "allow"
+        }
       }
     },
     "grind": {
@@ -124,15 +135,16 @@
           "direct": "allow"
         },
         "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "list": "allow",
-        "webfetch": "allow",
-        "websearch": "allow",
+        "glob": "deny",
+        "grep": "deny",
+        "list": "deny",
+        "webfetch": "deny",
+        "websearch": "deny",
         "bash": {
           "*": "allow",
-          "git push*": "ask",
           "rm *": "ask",
+          "git *": "ask",
+          "gh *": "ask",
           "sudo *": "ask"
         },
         "edit": "allow"
@@ -153,20 +165,16 @@
           "direct": "allow"
         },
         "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "list": "allow",
-        "webfetch": "allow",
-        "websearch": "allow",
-        "bash": {
-          "*": "allow",
-          "git push*": "ask",
-          "rm *": "ask",
-          "sudo *": "ask"
-        },
-        "edit": "deny",
-        "write": "deny",
-        "apply_patch": "deny"
+        "glob": "deny",
+        "grep": "deny",
+        "list": "deny",
+        "webfetch": "deny",
+        "websearch": "deny",
+        "bash": "deny",
+        "edit": {
+          "*": "deny",
+          ".agents/**": "allow"
+        }
       }
     },
     "ideate": {
@@ -185,20 +193,16 @@
           "creative": "allow"
         },
         "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "list": "allow",
-        "webfetch": "allow",
-        "websearch": "allow",
-        "bash": {
-          "*": "allow",
-          "git push*": "ask",
-          "rm *": "ask",
-          "sudo *": "ask"
-        },
-        "edit": "deny",
-        "write": "deny",
-        "apply_patch": "deny"
+        "glob": "deny",
+        "grep": "deny",
+        "list": "deny",
+        "webfetch": "deny",
+        "websearch": "deny",
+        "bash": "deny",
+        "edit": {
+          "*": "deny",
+          ".agents/**": "allow"
+        }
       }
     },
     "creative": {
@@ -216,33 +220,37 @@
           "direct": "allow"
         },
         "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "list": "allow",
-        "webfetch": "allow",
-        "websearch": "allow",
-        "bash": {
-          "*": "allow",
-          "git push*": "ask",
-          "rm *": "ask",
-          "sudo *": "ask"
-        },
-        "edit": "allow"
+        "glob": "deny",
+        "grep": "deny",
+        "list": "deny",
+        "webfetch": "deny",
+        "websearch": "deny",
+        "bash": "deny",
+        "edit": {
+          "*": "deny",
+          ".agents/**": "allow"
+        }
       }
     }
   },
   "permission": {
     "read": "allow",
     "edit": "allow",
-    "bash": "allow",
-    "glob": "allow",
-    "list": "allow",
-    "grep": "allow",
-    "webfetch": "allow",
-    "websearch": "allow",
+    "bash": "deny",
+    "glob": "deny",
+    "list": "deny",
+    "grep": "deny",
+    "webfetch": "deny",
+    "websearch": "deny",
     "task": "allow",
     "skill": "allow",
     "lsp": "allow",
-    "external_directory": "allow"
+    "external_directory": {
+      "*": "deny",
+      "~/nix-config/**": "allow",
+      "~/.config/**": "allow",
+      "~/Code/**": "allow",
+      "~/Downloads/**": "allow"
+    }
   }
 }

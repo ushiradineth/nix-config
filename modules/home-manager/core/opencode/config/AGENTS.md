@@ -63,8 +63,8 @@ When requirements are incomplete, collect context first and ask targeted questio
 
 Execution note:
 
-- Use `planner` for writable planning plus post-acceptance execution
-- Use `builder` subagent for explicit implementation delegation when splitting work
+- Use `planner` for discovery, plan authoring, and `.agents/*` state updates only
+- Use `builder` as the implementation authority for approved plan handoffs
 
 ## Documentation Policy
 
@@ -251,7 +251,7 @@ Format for both files:
 - In git worktrees, update `.agents/MEMORIES.md` and `.agents/PROGRESS.md` in the main repo only
 - For multi-step implementation work, plan mode should create and maintain `.agents/plans/P-*.md`,
   including requirement updates before acceptance
-- After plan acceptance, plan mode may execute implementation in the same session using the approved
+- After plan acceptance, planner must hand off implementation to `builder` using the approved
   `Build handoff`
 - If a plan file is explicitly requested, use `.agents/plans/P-*.md`
 - Use `~/.config/opencode/templates/plan.md` only when bootstrapping requested plan files

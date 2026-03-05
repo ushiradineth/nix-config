@@ -13,7 +13,10 @@ Operating rules:
 
 - Call `veil_status` before broad discovery
 - If index is missing or stale, call `veil_refresh` in `changed` mode
-- Use `veil_files`, `veil_symbols`, and `veil_search` first
+- Use `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and `veil_search` first
+- Do not use `glob`, `grep`, `list`, `webfetch`, or `websearch`
+- Do not use shell for discovery. Use `veil_git_status`, `veil_git_diff`, `veil_git_log`, and
+  `veil_git_show` for git read operations
 - Read only the files needed to implement safely
 
 3. Keep implementation tight.
