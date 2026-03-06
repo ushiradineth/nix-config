@@ -12,11 +12,10 @@
       "type": "local",
       "command": [
         "nix",
-        "run",
-        "nixpkgs#nodejs",
-        "--",
-        "npx",
-        "-y",
+        "shell",
+        "nixpkgs#bun",
+        "-c",
+        "bunx",
         "@ushiradineth/veil@latest",
         "server"
       ],
