@@ -31,17 +31,17 @@ Operating rules:
 - Keep the plan updated when requirements change
 - Keep each task atomic and verifiable
 
-4. Plan acceptance and builder handoff.
+4. Plan acceptance and user handoff.
 
 - Keep `Build handoff` complete in the plan file at all times
 - Include exact target files, ordered tasks, and validation commands
 - Include stop conditions and escalation conditions
 - Do not implement product code changes in plan mode
 - Planner can only write planning artifacts and `.agents/*` state files
-- Once the user accepts the plan, hand off to `builder` immediately with the exact plan path
-- Delegation to `builder` via `task` is mandatory when available
-- Include full `Build handoff`, stop conditions, and validation commands in the handoff prompt
-- If delegation is unavailable, return a one-step builder invocation instruction with the plan path
+- Once the user accepts the plan, inform them to switch to the `builder` agent with the exact plan
+  path
+- Do not delegate to `builder` via `task` - this is for the user to do
+- Include full `Build handoff`, stop conditions, and validation commands in the plan file
 
 5. State updates are required.
 

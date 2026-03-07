@@ -1,6 +1,6 @@
 ---
 description: Analyze context and produce a focused review game plan
-agent: plan
+agent: planner
 ---
 
 Run a smart review for target: `$ARGUMENTS`.

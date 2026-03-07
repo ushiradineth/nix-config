@@ -1,6 +1,6 @@
 ---
 description: Build, refresh, verify, and query the local repository index
-agent: build
+agent: builder
 ---
 
 Manage repository indexing for the current workspace using MCP tools and local artifacts under

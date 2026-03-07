@@ -1,6 +1,6 @@
 ---
 description: Generate repo-specific AGENTS.md guidance files
-agent: build
+agent: builder
 ---
 
 Create or update repository `AGENTS.md` files from actual project context.

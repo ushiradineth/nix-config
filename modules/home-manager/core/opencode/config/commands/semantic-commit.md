@@ -1,6 +1,6 @@
 ---
 description: Split changes into semantic commits with safe confirmations
-agent: build
+agent: builder
 ---
 
 Process semantic commits using args: `$ARGUMENTS`.
