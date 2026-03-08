@@ -62,6 +62,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    lazytf = {
+      url = "github:ushiradineth/lazytf";
+    };
+
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake/beta";
       inputs = {

@@ -7,6 +7,7 @@
     ls = "eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions";
     ll = "eza -alh --no-time --no-user";
     tree = "eza --tree";
+    lt = "lazytf";
     cd = "z";
     zz = "z -";
     cat = "bat";
