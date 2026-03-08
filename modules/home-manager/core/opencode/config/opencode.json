@@ -18,6 +18,13 @@
         "@ushiradineth/veil@latest",
         "server"
       ],
+      "environment": {
+        "VEIL_SERVER_AUTO_INIT": "1",
+        "VEIL_SERVER_AUTO_REFRESH_ON_QUERY": "1",
+        "VEIL_SERVER_BACKGROUND_REFRESH": "1",
+        "VEIL_SERVER_BACKGROUND_REFRESH_INTERVAL_MS": "300000",
+        "VEIL_SERVER_BACKGROUND_MAX_PER_HOUR": "4"
+      },
       "enabled": true,
       "timeout": 120000
     }
@@ -44,9 +51,7 @@
       "prompt": "{file:./prompts/plan.md}",
       "permission": {
         "question": "allow",
-        "task": {
-          "*": "allow"
-        },
+        "task": "allow",
         "read": "allow",
         "glob": "deny",
         "grep": "deny",
@@ -68,12 +73,7 @@
       "prompt": "{file:./prompts/build.md}",
       "permission": {
         "question": "allow",
-        "task": {
-          "*": "allow",
-          "explore": "allow",
-          "general": "allow",
-          "direct": "allow"
-        },
+        "task": "allow",
         "read": "allow",
         "glob": "deny",
         "grep": "deny",
@@ -93,29 +93,30 @@
       }
     },
     "direct": {
-      "mode": "subagent",
-      "description": "Direct implementation for simple tasks without plan-file handoff",
+      "mode": "primary",
+      "description": "Direct implementation for simple tasks with guarded bash and full file editing",
       "temperature": 0.1,
-      "steps": 60,
+      "steps": 120,
       "prompt": "{file:./prompts/direct.md}",
       "permission": {
         "question": "allow",
-        "task": {
-          "*": "allow",
-          "explore": "allow",
-          "general": "allow"
-        },
+        "task": "allow",
         "read": "allow",
         "glob": "deny",
         "grep": "deny",
         "list": "deny",
         "webfetch": "deny",
         "websearch": "deny",
-        "bash": "deny",
-        "edit": {
-          "*": "deny",
-          ".agents/**": "allow"
-        }
+        "bash": {
+          "*": "allow",
+          "rm *": "ask",
+          "git *": "ask",
+          "gh *": "ask",
+          "sudo *": "ask"
+        },
+        "edit": "allow",
+        "write": "allow",
+        "apply_patch": "allow"
       }
     },
     "grind": {
@@ -126,12 +127,7 @@
       "prompt": "{file:./prompts/grind.md}",
       "permission": {
         "question": "allow",
-        "task": {
-          "*": "allow",
-          "explore": "allow",
-          "general": "allow",
-          "direct": "allow"
-        },
+        "task": "allow",
         "read": "allow",
         "glob": "deny",
         "grep": "deny",
@@ -156,12 +152,7 @@
       "prompt": "{file:./prompts/audit.md}",
       "permission": {
         "question": "allow",
-        "task": {
-          "*": "allow",
-          "explore": "allow",
-          "general": "allow",
-          "direct": "allow"
-        },
+        "task": "allow",
         "read": "allow",
         "glob": "deny",
         "grep": "deny",
@@ -183,13 +174,7 @@
       "prompt": "{file:./prompts/ideate.md}",
       "permission": {
         "question": "allow",
-        "task": {
-          "*": "allow",
-          "explore": "allow",
-          "general": "allow",
-          "direct": "allow",
-          "creative": "allow"
-        },
+        "task": "allow",
         "read": "allow",
         "glob": "deny",
         "grep": "deny",
@@ -211,12 +196,7 @@
       "prompt": "{file:./prompts/creative.md}",
       "permission": {
         "question": "allow",
-        "task": {
-          "*": "allow",
-          "explore": "allow",
-          "general": "allow",
-          "direct": "allow"
-        },
+        "task": "allow",
         "read": "allow",
         "glob": "deny",
         "grep": "deny",
@@ -240,7 +220,12 @@
     "grep": "deny",
     "webfetch": "deny",
     "websearch": "deny",
-    "task": "allow",
+    "task": {
+      "*": "allow",
+      "planner": "deny",
+      "builder": "deny",
+      "direct": "deny"
+    },
     "skill": "allow",
     "lsp": "allow",
     "external_directory": {

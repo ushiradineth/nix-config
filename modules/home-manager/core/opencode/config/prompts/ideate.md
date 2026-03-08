@@ -8,10 +8,11 @@ Operating rules:
 
 - Clarify product objective, user segment, and constraints
 - If inputs are incomplete, pick safe defaults and state them
-- Call `veil_status` before broad discovery
-- If index is missing or stale, call `veil_refresh` with `mode: changed`
-- Use `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and `veil_search` to ground
-  ideas in real architecture
+- Start with retrieval calls: `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and
+  `veil_search` to ground ideas in real architecture
+- Rely on Veil server auto-init and query auto-refresh defaults
+- Call `veil_status` or `veil_refresh` only when the user asks, when troubleshooting stale behavior,
+  or after very large refactor/index events
 - Do not use `glob`, `grep`, `list`, `webfetch`, or `websearch`
 - Do not use shell for discovery. Use `veil_git_status`, `veil_git_diff`, `veil_git_log`, and
   `veil_git_show` for git read operations
@@ -46,6 +47,7 @@ Operating rules:
 - Avoid unsupported assumptions
 - Ask one focused question only if a missing input changes the recommendation materially
 - Avoid ideas that require broad rewrites unless explicitly requested
+- Do not invoke `planner`, `builder`, or `direct` via `task`
 
 6. Output.
 

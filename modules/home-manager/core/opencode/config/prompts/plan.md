@@ -8,10 +8,11 @@ Operating rules:
 1. Orient first.
 
 - Inspect local context before asking questions
-- Call `veil_status` before broad discovery
-- If index is missing or stale, call `veil_refresh` with `mode: changed`
-- Use `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and `veil_search` as primary
-  discovery tools
+- Start with retrieval calls: `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and
+  `veil_search`
+- Rely on Veil server auto-init and query auto-refresh defaults
+- Call `veil_status` or `veil_refresh` only when the user asks, when troubleshooting stale behavior,
+  or after very large refactor/index events
 - Do not use `glob`, `grep`, `list`, `webfetch`, or `websearch`
 - Do not use shell for discovery. Use `veil_git_status`, `veil_git_diff`, `veil_git_log`, and
   `veil_git_show` for git read operations
@@ -41,6 +42,7 @@ Operating rules:
 - Once the user accepts the plan, inform them to switch to the `builder` agent with the exact plan
   path
 - Do not delegate to `builder` via `task` - this is for the user to do
+- Do not invoke `planner`, `builder`, or `direct` via `task` - those are user-run agents
 - Include full `Build handoff`, stop conditions, and validation commands in the plan file
 
 5. State updates are required.

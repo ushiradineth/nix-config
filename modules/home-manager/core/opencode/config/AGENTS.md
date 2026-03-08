@@ -16,7 +16,6 @@ Run these early when relevant:
 - `git status --short`
 - `git diff` and `git diff --cached`
 - `git log --oneline -n 15`
-- `/veil status`
 
 Always prefer dedicated tools for file and content operations when available.
 
@@ -26,10 +25,13 @@ keep scope isolated.
 ## Index Freshness Protocol
 
 - Treat `.agents/index/*` as required context artifacts when available
-- Before broad repository scans, check freshness with `veil_status`
-- If stale or missing, refresh with `veil_refresh` in `changed` mode
+- Start with retrieval calls (`veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`,
+  `veil_search`)
+- Rely on Veil server auto-init and query auto-refresh defaults for normal operation
+- Use `veil_status` or `veil_refresh` only when explicitly requested, troubleshooting stale
+  behavior, or after very large refactor/index events
 - Run a full rebuild periodically or after large refactors
-- If `git_head` changed or TTL expired, refresh is mandatory before planning or implementation
+- If retrieval appears stale after `git_head` or TTL changes, run `veil_refresh` before continuing
 - MCP index tools are active by default and should be used proactively without waiting for a manual
   `/veil` invocation
 - For search-heavy tasks, use index MCP tools first and only fall back to broad `glob` or `grep`
@@ -205,6 +207,9 @@ PR and issue writing style:
 - Explain what changed and why
 - Keep `.agents/MEMORIES.md` and `.agents/PROGRESS.md` current
 - In git worktrees, keep `.agents/MEMORIES.md` and `.agents/PROGRESS.md` synced in the main repo
+- Keep `planner`, `builder`, and `direct` as user-invoked primary agents only
+- Deny task invocation for `planner`, `builder`, and `direct` at global permission scope
+- Allow other task-invoked agents by default so new subagents work without per-agent edits
 
 ### Ask First
 

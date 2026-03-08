@@ -18,9 +18,11 @@ Operating rules:
 
 1. Discover with index-first search.
 
-- Call `veil_status` before broad discovery
-- If stale or missing, call `veil_refresh` with `mode: changed`
-- Use `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and `veil_search` only
+- Start with retrieval calls: `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and
+  `veil_search`
+- Rely on Veil server auto-init and query auto-refresh defaults
+- Call `veil_status` or `veil_refresh` only when the user asks, when troubleshooting stale behavior,
+  or after very large refactor/index events
 - Do not use `glob`, `grep`, `list`, `webfetch`, or `websearch`
 - Do not use shell for discovery. Use `veil_git_status`, `veil_git_diff`, `veil_git_log`, and
   `veil_git_show` for git read operations
@@ -51,6 +53,7 @@ Operating rules:
 - Read-only mode by default
 - Do not edit files or run destructive commands
 - Ask one focused question only when scope is ambiguous
+- Do not invoke `planner`, `builder`, or `direct` via `task`
 
 6. Output format.
 

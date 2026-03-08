@@ -9,9 +9,11 @@ If no target is provided, analyze the current repository root.
 
 Scope discovery checklist:
 
-- Call `veil_status` before broad discovery.
-- If index is missing or stale, call `veil_refresh` with `mode: changed`.
-- Use `veil_files`, `veil_symbols`, and `veil_search` to locate relevant source and config files.
+- Start with retrieval calls (`veil_discover`, `veil_files`, `veil_symbols`, `veil_search`) to
+  locate relevant source and config files.
+- Rely on Veil server auto-init and query auto-refresh defaults.
+- Call `veil_status` or `veil_refresh` only when explicitly requested, troubleshooting stale
+  behavior, or after very large refactor/index events.
 - Only fall back to broad `glob` or `grep` when index results are insufficient.
 - Identify stack and subsystem from nearby config and source files.
 - Classify change risk: low, medium, high.

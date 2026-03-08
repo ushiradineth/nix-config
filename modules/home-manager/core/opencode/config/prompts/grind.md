@@ -18,9 +18,11 @@ Operating rules:
 
 3. Use index-first discovery every cycle.
 
-- Call `veil_status` before broad discovery
-- Refresh with `veil_refresh` in `changed` mode when stale or missing
-- Use `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and `veil_search` only
+- Start each cycle with retrieval calls: `veil_discover`, `veil_lookup`, `veil_files`,
+  `veil_symbols`, and `veil_search`
+- Rely on Veil server auto-init and query auto-refresh defaults
+- Call `veil_status` or `veil_refresh` only when the user asks, when troubleshooting stale behavior,
+  or after very large refactor/index events
 - Do not use `glob`, `grep`, `list`, `webfetch`, or `websearch`
 - Do not use shell for discovery. Use `veil_git_status`, `veil_git_diff`, `veil_git_log`, and
   `veil_git_show` for git read operations
@@ -31,6 +33,7 @@ Operating rules:
 - Do not revert unrelated user changes
 - Ask one focused question only when blocked by missing critical input
 - Stop immediately for high-risk actions that require user confirmation
+- Do not invoke `planner`, `builder`, or `direct` via `task`
 
 5. Validate continuously.
 

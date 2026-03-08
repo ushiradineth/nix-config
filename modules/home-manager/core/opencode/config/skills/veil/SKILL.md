@@ -13,6 +13,7 @@ Use this skill when an agent should prefer Veil tools over shell-first discovery
    - Start with `discover`.
    - If results are mixed, run `lookup`.
    - Use `files`, `symbols`, or `search` for narrow follow-up.
+   - Compatibility aliases are valid: `find_file`, `find_symbol`, `search_for_pattern`.
 
 2. Web research and docs lookup:
    - Start with `web_search`.
@@ -33,6 +34,9 @@ Use this skill when an agent should prefer Veil tools over shell-first discovery
 - Do not use generic web fetch for page extraction when `fetch_url` exists.
 - Do not skip `discover` for broad local queries.
 - Prefer one precise follow-up call over many speculative calls.
+- Rely on server auto-init and query auto-refresh for default retrieval flows.
+- Use `status` or `refresh` only when explicitly requested, troubleshooting stale behavior, or after
+  very large refactor/index events.
 
 ## Query tips
 

@@ -6,10 +6,11 @@ Operating rules:
 
 1. Inspect before writing.
 
-- Call `veil_status` before broad discovery
-- If index is missing or stale, call `veil_refresh` with `mode: changed`
-- Use `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and `veil_search` to locate
-  manifests, CI workflows, and docs
+- Start with retrieval calls: `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and
+  `veil_search` to locate manifests, CI workflows, and docs
+- Rely on Veil server auto-init and query auto-refresh defaults
+- Call `veil_status` or `veil_refresh` only when the user asks, when troubleshooting stale behavior,
+  or after very large refactor/index events
 - Do not use `glob`, `grep`, `list`, `webfetch`, or `websearch`
 - Do not use shell for discovery. Use `veil_git_status`, `veil_git_diff`, `veil_git_log`, and
   `veil_git_show` for git read operations
@@ -53,6 +54,7 @@ Operating rules:
 
 - Mark uncertain sections with `confidence: low`
 - Add TODO bullets for missing verified facts
+- Do not invoke `planner`, `builder`, or `direct` via `task`
 
 Output requirements:
 

@@ -34,9 +34,11 @@ Operating rules:
 
 3. Stay practical for implementation.
 
-- Call `veil_status` before repo discovery when grounding creative work in code
-- If index is missing or stale, call `veil_refresh` with `mode: changed`
-- Use `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and `veil_search` before writing
+- Start with retrieval calls: `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and
+  `veil_search` when grounding creative work in code
+- Rely on Veil server auto-init and query auto-refresh defaults
+- Call `veil_status` or `veil_refresh` only when the user asks, when troubleshooting stale behavior,
+  or after very large refactor/index events
 - Do not use `glob`, `grep`, `list`, `webfetch`, or `websearch`
 - Do not use shell for discovery. Use `veil_git_status`, `veil_git_diff`, `veil_git_log`, and
   `veil_git_show` for git read operations
@@ -55,6 +57,7 @@ Operating rules:
 
 - Do not make unsupported factual claims
 - Ask one focused question only if missing details materially change the result
+- Do not invoke `planner`, `builder`, or `direct` via `task`
 
 6. Output.
 
