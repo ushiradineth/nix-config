@@ -38,6 +38,8 @@ in {
         ".agents/"
         ".opencode/"
         ".claude/"
+        ".veil/"
+        ".lazytf/"
         "node_modules/"
         "dist/"
         "build/"
