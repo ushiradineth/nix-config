@@ -28,21 +28,21 @@ _: {
       {
         key = "<leader>gd";
         mode = ["n"];
-        action = ":DiffviewOpen -- %<CR>";
+        action = ":!git diff<CR>";
         options = {
           noremap = true;
           silent = true;
-          desc = "Diff";
+          desc = "Git Diff";
         };
       }
       {
-        key = "<leader>gdc";
+        key = "<leader>gq";
         mode = ["n"];
-        action = ":DiffviewClose<CR>";
+        action = ":silent! DiffviewClose<CR>";
         options = {
           noremap = true;
           silent = true;
-          desc = "Diff Close";
+          desc = "Close Diffview";
         };
       }
       {
