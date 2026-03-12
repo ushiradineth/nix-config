@@ -11,11 +11,11 @@ function t() {
         [[ -d "$HOME/nix-secrets" ]] && manual+=("$HOME/nix-secrets")
         [[ -d "$HOME/.config" ]] && manual+=("$HOME/.config")
 
-        [[ -d "$HOME/Code" ]] && candidates+=("${(@f)$(find "$HOME/Code" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)}")
-        [[ -d "$HOME/Code/surge" ]] && candidates+=("${(@f)$(find "$HOME/Code/surge" -mindepth 1 -maxdepth 2 -type d 2>/dev/null)}")
-        [[ -d "$HOME/Code/fork" ]] && candidates+=("${(@f)$(find "$HOME/Code/fork" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)}")
-        [[ -d "$HOME/Code/koano" ]] && candidates+=("${(@f)$(find "$HOME/Code/koano" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)}")
-        [[ -d "$HOME/Code/freelance" ]] && candidates+=("${(@f)$(find "$HOME/Code/freelance" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)}")
+        [[ -d "$HOME/Code" ]] && candidates+=("${(@f)$(find "$HOME/Code" -mindepth 1 -maxdepth 1 -type d ! -name '.*' 2>/dev/null)}")
+        [[ -d "$HOME/Code/surge" ]] && candidates+=("${(@f)$(find "$HOME/Code/surge" -mindepth 1 -maxdepth 2 -type d ! -name '.*' 2>/dev/null)}")
+        [[ -d "$HOME/Code/fork" ]] && candidates+=("${(@f)$(find "$HOME/Code/fork" -mindepth 1 -maxdepth 1 -type d ! -name '.*' 2>/dev/null)}")
+        [[ -d "$HOME/Code/koano" ]] && candidates+=("${(@f)$(find "$HOME/Code/koano" -mindepth 1 -maxdepth 1 -type d ! -name '.*' 2>/dev/null)}")
+        [[ -d "$HOME/Code/freelance" ]] && candidates+=("${(@f)$(find "$HOME/Code/freelance" -mindepth 1 -maxdepth 1 -type d ! -name '.*' 2>/dev/null)}")
 
         # Combine and fzf
         selected=$(
