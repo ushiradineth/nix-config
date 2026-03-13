@@ -19,7 +19,7 @@ in {
     shutm = "192.168.64.3";
     shupi = "100.74.32.50";
     shuos = "192.168.1.5";
-    # Add shulab once their static IPs are assigned.
+    shulab = "192.168.1.6";
   };
   authorizedKeys = [publicKeys.shu publicKeys.shuos]; # Authorized to access all machines
   inherit publicKeys;

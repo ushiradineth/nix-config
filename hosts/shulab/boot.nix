@@ -1,13 +1,16 @@
-{
-  pkgs,
-  lib,
-  ...
-}: {
-  boot = {
-    loader.grub = {
+{pkgs, ...}: {
+  boot.loader = {
+    efi.canTouchEfiVariables = true;
+
+    limine = {
       enable = true;
-      device = "/dev/sda";
+      secureBoot.enable = true;
+      maxGenerations = 3;
     };
-    kernelPackages = lib.mkForce pkgs.linuxPackages_6_1;
   };
+
+  environment.systemPackages = with pkgs; [
+    sbctl
+    efibootmgr
+  ];
 }

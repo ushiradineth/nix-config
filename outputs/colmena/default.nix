@@ -17,5 +17,6 @@ in {
     // {
       shupi = import ./shupi.nix {inherit inputs;};
       shutm = import ./shutm.nix {inherit inputs;};
+      shulab = import ./shulab.nix {inherit inputs;};
     };
 }

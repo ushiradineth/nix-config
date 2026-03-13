@@ -1,5 +1,5 @@
 {inputs}: let
-  hostname = "shupi";
+  hostname = "shulab";
   helpers = import ../../lib/hosts.nix {inherit inputs;};
   inherit
     (helpers)
@@ -9,8 +9,8 @@
 in
   mkColmenaSystem {
     inherit hostname;
-    system = "aarch64-linux";
-    tags = ["shupi"];
+    system = "x86_64-linux";
+    tags = ["shulab"];
     ssh-user = "root";
     nixos-modules =
       map mylib.relativeToRoot [
@@ -19,20 +19,11 @@ in
         "modules/nix-modules/linux/core.nix"
         "modules/nix-modules/linux/i18n.nix"
         "modules/nix-modules/linux/user.nix"
-        "modules/nix-modules/linux/secrets.nix"
         "hosts/${hostname}"
       ]
       ++ [
-        inputs.agenix.nixosModules.default
         inputs.disko.nixosModules.disko
-      ]
-      ++ (with inputs.nixos-raspberrypi.nixosModules; [
-        raspberry-pi-5.base
-        inputs.nixos-raspberrypi.lib.inject-overlays
-        trusted-nix-caches
-        raspberry-pi-5.page-size-16k
-        usb-gadget-ethernet
-      ]);
+      ];
     home-modules = map mylib.relativeToRoot [
       "modules/home-manager/core/zsh"
       "modules/home-manager/core/cli.nix"

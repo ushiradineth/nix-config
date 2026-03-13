@@ -14,7 +14,6 @@ outputs/
 ├── README.md
 ├── linux/
 │   ├── default.nix   # aggregates nixosConfigurations
-│   ├── shulab.nix
 │   └── shuos.nix
 ├── darwin/
 │   ├── default.nix   # aggregates darwinConfigurations
@@ -22,5 +21,6 @@ outputs/
 └── colmena/
     ├── default.nix   # colmena meta + node aggregation
     ├── shupi.nix
-    └── shutm.nix
+    ├── shutm.nix
+    └── shulab.nix
 ```

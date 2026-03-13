@@ -1,4 +1,9 @@
-{config, ...}: {
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}: {
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = false;
@@ -18,6 +23,9 @@
       intelBusId = "PCI:0:2:0";
     };
   };
+
+  # Nvidia driver version 390 is not supported after kernel 6.1
+  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_6_1;
 
   # Due to legacy nvidia drivers
   nixpkgs.config.allowBroken = true;
