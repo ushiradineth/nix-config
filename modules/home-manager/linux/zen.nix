@@ -5,6 +5,7 @@
 }: {
   programs.zen-browser = {
     enable = true;
+    suppressXdgMigrationWarning = true;
     package = zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default.override {
       nativeMessagingHosts = [pkgs.firefoxpwa];
     };
