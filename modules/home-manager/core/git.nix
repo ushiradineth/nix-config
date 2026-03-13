@@ -110,7 +110,7 @@ in {
   services = {
     gpg-agent = {
       enable = true;
-      enableSshSupport = true;
+      enableSshSupport = false;
       enableZshIntegration = true;
       defaultCacheTtl = 3600; # 1 hour
       pinentry.package = lib.mkIf pkgs.stdenv.isDarwin pkgs.pinentry_mac; # macOS only
