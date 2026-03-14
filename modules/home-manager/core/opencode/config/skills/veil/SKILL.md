@@ -1,52 +1,59 @@
 ---
-name: veil
-description: Route agent tasks to Veil MCP tools with a practical local-first then web workflow.
+name: veil-mcp
+description:
+  Use this skill whenever Veil MCP tools are available and the task involves repository retrieval,
+  git context, web references, or GitHub context. Trigger on direct or indirect phrasing like "find
+  where", "investigate", "what changed", "summarize from web", or "check PR context", even when the
+  user suggests shell-style discovery.
 ---
 
-# Veil Skill
+# Veil MCP Skill
 
-Use this skill when an agent should prefer Veil tools over shell-first discovery.
+## Trigger Conditions
 
-## Routing order
+Use this skill when the task asks for any of these outcomes:
 
-1. Local code or architecture questions:
-   - Start with `discover`.
-   - If results are mixed, run `lookup`.
-   - Use `files`, `symbols`, or `search` for narrow follow-up.
-   - Compatibility aliases are valid: `find_file`, `find_symbol`, `search_for_pattern`.
+- locate files, symbols, or relevant code paths quickly
+- inspect branch status, commit history, or diffs before changes
+- gather external references and summarize source pages
+- inspect GitHub repository, issue, PR, or checks context
 
-2. Web research and docs lookup:
-   - Start with `web_search`.
-   - Open selected links with `fetch_url` using `format=markdown`.
+Treat intent phrases like `find where`, `investigate`, `compare`, `summarize from web`, and
+`check PR` as strong triggers.
 
-3. Repository history or dirty tree context:
-   - Use `git_status`, `git_log`, `git_diff`, `git_show`.
+Prefer Veil MCP tools when supported so outputs stay structured and follow-on steps are cheaper.
 
-4. GitHub metadata:
-   - Use `gh_lookup`.
+Veil MCP responses are compact TOON payloads. Guidance fields appear only on low-confidence or
+missing-context responses.
 
-5. Tool health and performance:
-   - Use `diagnostics`.
+## Retrieval Workflow
 
-## Rules
+1. Start broad once with `veil_discover`.
+2. Narrow once with `veil_lookup` or one targeted call: `veil_files|veil_symbols|veil_search`.
+3. Add context branches only as needed: git, web, or GitHub.
+4. Return concise findings with paths or URLs, then continue implementation.
 
-- Do not use shell `find` or `grep` for normal repo discovery when Veil tools fit.
-- Do not use generic web fetch for page extraction when `fetch_url` exists.
-- Do not skip `discover` for broad local queries.
-- Prefer one precise follow-up call over many speculative calls.
-- Rely on server auto-init and query auto-refresh for default retrieval flows.
-- Use `status` or `refresh` only when explicitly requested, troubleshooting stale behavior, or after
-  very large refactor/index events.
+## Intent Branches
 
-## Query tips
+- Local retrieval: `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, `veil_search`.
+- Git context: `veil_git_status`, `veil_git_log`, `veil_git_diff`, `veil_git_show`.
+- Web context: `veil_web_search`, then `veil_fetch_url`.
+- GitHub context: `veil_gh_lookup`.
 
-- `discover`: user phrasing is usually enough.
-- `lookup`: use specific intent phrasing, for example `where is <symbol> defined`.
-- `web_search`: start short, then refine.
-- `fetch_url`: set `format=markdown` and keep timeout and size bounded.
+## Anti-pattern Corrections
 
-## Output expectations
+- Shell-first discovery with ad hoc tools -> start with `veil_discover`, then narrow once.
+- Repeating broad retrieval calls -> rewrite query with entity + intent, then run one focused
+  follow-up.
+- Jumping to `veil_fetch_url` without candidates -> use `veil_web_search` first.
+- Raw `git` reads for normal context -> use
+  `veil_git_status|veil_git_log|veil_git_diff|veil_git_show`.
+- Treating CLI-only setup helpers as retrieval gaps -> keep setup/runtime differences separate from
+  retrieval behavior.
 
-- Keep responses concise.
-- Include source URLs for web-derived claims.
-- Clearly mark unsupported or partial results.
+## Quick Examples
+
+- `Find implementation points for a feature request` -> `veil_discover` then `veil_lookup`.
+- `Check what changed on this branch before editing` -> `veil_git_status`, `veil_git_log`, then
+  `veil_git_diff`.
+- `Summarize dependency docs with source links` -> `veil_web_search`, then `veil_fetch_url`.

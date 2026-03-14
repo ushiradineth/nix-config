@@ -12,6 +12,7 @@ in {
       "@anthropic-ai/claude-code"
       "opencode-ai"
       "@openai/codex"
+      "@ushiradineth/veil"
     ];
   };
 

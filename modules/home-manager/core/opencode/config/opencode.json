@@ -12,19 +12,14 @@
       "command": [
         "nix",
         "shell",
+        "nixpkgs#nodejs",
         "nixpkgs#bun",
         "-c",
         "bunx",
         "@ushiradineth/veil@latest",
+        "mcp",
         "server"
       ],
-      "environment": {
-        "VEIL_SERVER_AUTO_INIT": "1",
-        "VEIL_SERVER_AUTO_REFRESH_ON_QUERY": "1",
-        "VEIL_SERVER_BACKGROUND_REFRESH": "1",
-        "VEIL_SERVER_BACKGROUND_REFRESH_INTERVAL_MS": "300000",
-        "VEIL_SERVER_BACKGROUND_MAX_PER_HOUR": "4"
-      },
       "enabled": true,
       "timeout": 120000
     }
@@ -214,8 +209,8 @@
   "permission": {
     "read": "allow",
     "edit": "allow",
-    "bash": "deny",
     "glob": "deny",
+    "bash": "deny",
     "list": "deny",
     "grep": "deny",
     "webfetch": "deny",
