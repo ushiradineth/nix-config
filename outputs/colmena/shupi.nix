@@ -32,7 +32,6 @@
 
   home-modules = map mylib.relativeToRoot [
     "modules/home-manager/core/zsh"
-    "modules/home-manager/core/cli.nix"
     "modules/home-manager/core/btop.nix"
     "modules/home-manager/core/ssh.nix"
     "modules/home-manager/core/home.nix"
