@@ -47,15 +47,7 @@
 
     relay_settings = {
       normal = {
-        location = {
-          only = {
-            location = {
-              country = "sg";
-              city = "sin";
-              hostname = "sg-sin-wg-001";
-            };
-          };
-        };
+        location.only.location.country = "sg";
         openvpn_constraints.port = "any";
         ownership = "any";
         providers = "any";
@@ -64,6 +56,7 @@
           ip_version = "any";
           port = "any";
           use_multihop = false;
+          entry_location.only.location.country = "sg";
         };
       };
     };
@@ -75,10 +68,10 @@
 
     tunnel_options = {
       openvpn.mssfix = null;
-      generic.enable_ipv6 = true;
+      generic.enable_ipv6 = false;
       wireguard = {
         mtu = null;
-        quantum_resistant = "auto";
+        quantum_resistant = "on";
         rotation_interval = null;
         daita = {
           enabled = true;
@@ -96,10 +89,11 @@
           block_gambling = false;
           block_social_media = false;
         };
+        custom_options.addresses = [];
       };
     };
 
-    settings_version = 10;
+    settings_version = 12;
     show_beta_releases = false;
   });
 in {
@@ -119,18 +113,14 @@ in {
     # Set writable settings directory
     services."mullvad-daemon".environment.MULLVAD_SETTINGS_DIR = "/var/lib/mullvad-vpn";
 
-    # Copy declarative settings to Mullvad directory
-    tmpfiles.settings."10-mullvad-settings"."/var/lib/mullvad-vpn/settings.json"."C+" = {
-      group = "root";
-      mode = "0700";
-      user = "root";
-      argument = "${mullvadSettings}";
-    };
-
     # Ensure Mullvad starts after Tailscale
     services."mullvad-daemon" = {
       after = ["tailscaled.service"];
       wants = ["tailscaled.service"];
+      preStart = ''
+        cp --no-preserve=all ${mullvadSettings} /var/lib/mullvad-vpn/settings.json
+        chmod 600 /var/lib/mullvad-vpn/settings.json
+      '';
       postStart = let
         mullvad = config.services.mullvad-vpn.package;
       in ''
@@ -149,6 +139,7 @@ in {
 
         # Enable LAN access (required for local network + Tailscale)
         ${mullvad}/bin/mullvad lan set allow
+        ${mullvad}/bin/mullvad connect
       '';
     };
 
@@ -178,6 +169,8 @@ in {
         type route hook output priority dstnat; policy accept;
         # Mark locally-generated traffic TO Tailscale peers (CGNAT range) to bypass Mullvad
         ip daddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65
+        # Mark traffic from tailscale0 interface to bypass Mullvad (coordination server etc.)
+        oifname "tailscale0" ct mark set 0x00000f41 meta mark set 0x6d6f6c65
       }
     '';
   };

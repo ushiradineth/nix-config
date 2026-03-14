@@ -15,9 +15,11 @@
       "modules/nix-modules/linux/core.nix"
       "modules/nix-modules/linux/i18n.nix"
       "modules/nix-modules/linux/user.nix"
+      "modules/nix-modules/linux/secrets.nix"
       "hosts/${hostname}"
     ]
     ++ [
+      inputs.agenix.nixosModules.default
       inputs.disko.nixosModules.disko
     ];
 

@@ -3,6 +3,7 @@ _: let
     shu = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICG/8RWB3RvaLc9T3vGy7Gm4+tOYZwVdodE28YHXr98t shu@shu";
     shupi = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMZl3bh9/8hTnd4bGE46sX247Uhyzid/168ytiFy4/Zq shu@shupi";
     shuos = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKjBz32Mi31WhyjZJpYTjtP/NcT+JDOcjqNlIfNUXqGj shu@shuos";
+    shulab = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFfdU7AQoLa+8Q7EJsJVTTrCSAnnAtwJDWlazzKR40zO shu@shulab";
   };
 in {
   username = "shu";
