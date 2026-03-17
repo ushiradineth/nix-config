@@ -106,11 +106,6 @@ accordion-padding = 30
     # Reload config
     esc = ['reload-config', 'mode main']
 
-# Move Arc to workspace 1
-[[on-window-detected]]
-if.app-id = 'company.thebrowser.Browser'
-run = 'move-node-to-workspace 1'
-
 # Move Zen to workspace 1
 [[on-window-detected]]
 if.app-id = 'app.zen-browser.zen'
@@ -146,9 +141,14 @@ run = 'move-node-to-workspace 4'
 if.app-id = 'com.cron.electron'
 run = 'move-node-to-workspace 4'
 
-# Move Figma to workspace 5
+# Move Figma to workspace 4
 [[on-window-detected]]
 if.app-id = 'com.figma.Desktop'
+run = 'move-node-to-workspace 4'
+
+# Move Arc to workspace 5
+[[on-window-detected]]
+if.app-id = 'company.thebrowser.Browser'
 run = 'move-node-to-workspace 5'
 
 # Move Bitwarden to workspace 6
