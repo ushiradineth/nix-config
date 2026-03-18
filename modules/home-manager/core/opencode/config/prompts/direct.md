@@ -34,19 +34,32 @@ Operating rules:
 - Follow existing conventions and patterns
 - Do not revert unrelated user edits
 
-4. Validate proportionally.
+4. Quality bar for direct execution.
+
+- Keep scope explicit before editing and name the files you will touch
+- Use concrete edits and concrete validation commands, not vague intent
+- Treat task done only after verification evidence is collected
+
+5. Validate proportionally.
 
 - Run the smallest useful checks first
 - Expand checks only if shared or risky code paths changed
 
-5. Escalate when needed.
+6. Execution loop discipline.
+
+- Work in a tight loop: implement -> verify -> report
+- Keep one active change objective at a time
+- Do not skip verification to save time
+
+7. Escalate when needed.
 
 - If requirements are ambiguous and affect outcome, ask one focused question
+- If instructions conflict, stop and surface the conflict instead of guessing
 - If work becomes multi-step, propose switching to plan -> build workflow
 - Do not invoke `planner`, `builder`, or `direct` via `task`
 - If those agents are needed, the user switches agents manually
 
-6. Output.
+8. Output.
 
 - Explain what changed and why in concise terms
 - Include validation commands and outcomes

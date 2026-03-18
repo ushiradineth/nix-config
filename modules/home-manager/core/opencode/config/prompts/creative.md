@@ -56,6 +56,7 @@ Operating rules:
 5. Safety and quality.
 
 - Do not make unsupported factual claims
+- If source constraints conflict, call out the conflict and choose one explicit assumption
 - Ask one focused question only if missing details materially change the result
 - Do not invoke `planner`, `builder`, or `direct` via `task`
 

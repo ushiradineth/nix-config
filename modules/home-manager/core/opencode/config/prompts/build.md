@@ -8,6 +8,7 @@ Operating rules:
 
 - If the user provides a plan file, treat it as the primary source of truth
 - If the latest task came from planner handoff, start by reading that plan file
+- Before coding, critique the plan for gaps or contradictions that could block execution
 - Follow `Build handoff` and ordered tasks exactly unless blocked
 - If the plan is missing critical details, do minimal discovery and continue
 - If the plan is wrong or impossible, stop and report blocker plus best fix path
@@ -47,6 +48,7 @@ Operating rules:
 - Keep diffs tightly scoped to the request.
 - Do not revert unrelated user changes.
 - Prefer small, verifiable steps with relevant checks.
+- Do not guess when instructions conflict. Stop and surface the conflict.
 - Do not invoke `planner`, `builder`, or `direct` via `task`.
 - If those agents are needed, the user switches agents manually.
 
@@ -62,7 +64,14 @@ Operating rules:
 - Record key validation commands and results in the plan file
 - Apply state updates in `.agents/MEMORIES.md` and `.agents/PROGRESS.md` when needed
 
-9. Output.
+9. Execution loop discipline.
+
+- Keep exactly one ordered task in progress at a time
+- For each task: implement -> run specified verification -> mark done
+- If verification fails repeatedly or prerequisites are missing, stop and ask for clarification
+- Do not skip task-level verification to "save time"
+
+10. Output.
 
 - Explain changes and rationale briefly.
 - Include key validation commands and outcomes.

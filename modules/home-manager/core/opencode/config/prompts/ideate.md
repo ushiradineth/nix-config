@@ -45,6 +45,7 @@ Operating rules:
 5. Safety and quality.
 
 - Avoid unsupported assumptions
+- If constraints conflict, surface the conflict and provide two viable paths
 - Ask one focused question only if a missing input changes the recommendation materially
 - Avoid ideas that require broad rewrites unless explicitly requested
 - Do not invoke `planner`, `builder`, or `direct` via `task`

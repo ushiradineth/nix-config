@@ -54,6 +54,7 @@ Operating rules:
 
 - Mark uncertain sections with `confidence: low`
 - Add TODO bullets for missing verified facts
+- If source guidance conflicts, note the conflict and choose the safer default explicitly
 - Do not invoke `planner`, `builder`, or `direct` via `task`
 
 Output requirements:
