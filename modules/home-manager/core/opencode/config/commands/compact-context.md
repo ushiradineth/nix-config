@@ -1,0 +1,58 @@
+---
+description: Use when .agents context is bloated and needs safe compaction
+agent: builder
+---
+
+Compact agent state using args: `$ARGUMENTS`.
+
+Use this command to reduce `.agents` context size while preserving active work, referenced IDs, and
+high-signal history.
+
+Target scope:
+
+- `.agents/MEMORIES.md`
+- `.agents/PROGRESS.md`
+- `.agents/plans/*.md`
+- `.agents/REMINDERS.md` when present
+
+Workflow:
+
+1. Start with retrieval calls (`veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`,
+   `veil_search`) to locate relevant `.agents` files.
+2. Rely on Veil server auto-init and query auto-refresh defaults.
+3. Call `veil_status` or `veil_refresh` only when explicitly requested, troubleshooting stale
+   behavior, or after very large refactor/index events.
+4. Read all relevant state files before any edits.
+5. Build a reference map of active IDs:
+   - memory IDs (`M-xxxx`)
+   - decision IDs (`D-xxxx`)
+   - active plan IDs (`P-YYYYMMDD-*` with `outcome: partial|blocked` or unchecked tasks)
+   - open reminders and unresolved blockers
+6. Apply compaction rules:
+   - Keep all entries referenced by active plans, open reminders, or unresolved blockers.
+   - Keep durable repo constraints and non-obvious facts that prevent rediscovery.
+   - Remove duplicate bullets and stale superseded entries.
+   - Merge repetitive bullets when meaning is unchanged.
+   - Preserve ID integrity for every kept item.
+   - Never delete IDs still referenced elsewhere.
+   - Preserve file conventions (dense bullets, no long prose).
+7. If compaction would remove historically important but unreferenced context, summarize it into one
+   concise archival bullet instead of dropping it silently.
+8. Apply edits only to `.agents/*` state files unless explicitly asked to touch other files.
+9. If stale vs active cannot be decided confidently, keep the entry and flag it for escalation.
+
+Output contract:
+
+Always return all sections:
+
+1. `Compacted`: files changed and exact reductions made.
+2. `Preserved`: active IDs and critical context intentionally retained.
+3. `Archived`: condensed historical bullets created during compaction.
+4. `Escalations`: ambiguous stale entries, reference conflicts, or blocked edits.
+
+Safety gates:
+
+- Never remove unresolved blockers, active reminders, or currently referenced IDs.
+- Never rewrite semantics of security, deployment, or irreversible-operation decisions.
+- Never reinterpret an ID to a new meaning to make compaction easier.
+- If a rule conflicts with active references, preserve entries and report under `Escalations`.
