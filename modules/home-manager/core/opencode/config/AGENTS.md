@@ -105,7 +105,9 @@ Skip this phase when plan mode already completed exploration.
 - Scan related files and architecture
 - Find existing patterns and conventions
 - Identify dependencies and impact areas
-- Run independent discovery tracks in parallel by default
+- Prefer single-agent discovery first
+- Use sub-agents only when tracks are truly independent and bounded
+- Never create recursive sub-task chains
 
 No file changes in this phase.
 
@@ -114,9 +116,10 @@ No file changes in this phase.
 - Make surgical and targeted changes
 - Avoid unrelated refactors
 - Verify each logical step before continuing
-- Execute independent tasks concurrently when there is no dependency chain
-- Use sub-agents when work splits cleanly, for example fixing PR comments for `#48` and `#49` in
-  parallel instead of sequentially
+- Execute independent tasks concurrently only when this reduces risk and coordination overhead
+- Use sub-agents sparingly for clearly independent work, for example fixing PR comments for `#48`
+  and `#49` in parallel instead of sequentially
+- Never hand a sub-agent a task that can recurse into more sub-agents
 
 ### Phase 3: Style Review Loop
 

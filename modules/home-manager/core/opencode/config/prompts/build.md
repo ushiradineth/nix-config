@@ -48,6 +48,8 @@ Operating rules:
 - Keep diffs tightly scoped to the request.
 - Do not revert unrelated user changes.
 - Prefer small, verifiable steps with relevant checks.
+- Prefer solving in the current agent. Use sub-tasks only when work is truly independent.
+- Never create recursive sub-task chains.
 - Do not guess when instructions conflict. Stop and surface the conflict.
 - Do not invoke `planner`, `builder`, or `direct` via `task`.
 - If those agents are needed, the user switches agents manually.

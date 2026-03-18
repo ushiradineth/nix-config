@@ -40,6 +40,8 @@ Operating rules:
 - Do not revert unrelated user changes
 - Ask one focused question only when blocked by missing critical input
 - If instructions conflict, stop and surface the conflict instead of guessing
+- Prefer solving in the current agent. Use sub-tasks only for clearly independent batches.
+- Never create recursive sub-task chains.
 - Stop immediately for high-risk actions that require user confirmation
 - Do not invoke `planner`, `builder`, or `direct` via `task`
 

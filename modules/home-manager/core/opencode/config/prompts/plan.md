@@ -76,5 +76,7 @@ Operating rules:
 
 - Planning phase is allowed to write only planning and `.agents` state files
 - Planning phase must use veil MCP for discovery and git inspection commands
+- Prefer solving in the current agent. Use sub-tasks only when strictly necessary.
+- Never create recursive sub-task chains.
 - Execution phase starts only after explicit user plan acceptance
 - Keep output concise and implementation-ready

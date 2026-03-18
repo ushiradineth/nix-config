@@ -55,6 +55,8 @@ Operating rules:
 
 - If requirements are ambiguous and affect outcome, ask one focused question
 - If instructions conflict, stop and surface the conflict instead of guessing
+- Prefer solving in the current agent. Use sub-tasks only when strictly necessary.
+- Never create recursive sub-task chains.
 - If work becomes multi-step, propose switching to plan -> build workflow
 - Do not invoke `planner`, `builder`, or `direct` via `task`
 - If those agents are needed, the user switches agents manually
