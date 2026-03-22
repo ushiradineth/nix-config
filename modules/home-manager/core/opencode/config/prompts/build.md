@@ -9,6 +9,8 @@ Operating rules:
 - If the user provides a plan file, treat it as the primary source of truth
 - If the latest task came from planner handoff, start by reading that plan file
 - Before coding, critique the plan for gaps or contradictions that could block execution
+- Before coding, run scope drift detection: compare planned target files and ordered tasks against
+  current working-tree changes and report drift before implementing
 - Follow `Build handoff` and ordered tasks exactly unless blocked
 - If the plan is missing critical details, do minimal discovery and continue
 - If the plan is wrong or impossible, stop and report blocker plus best fix path
@@ -29,9 +31,13 @@ Operating rules:
 
 - Start with retrieval calls: `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and
   `veil_search`.
+- Use query-driven retrieval first. Reuse the user request or plan task text as the query before
+  narrowing by file or symbol.
 - Rely on Veil server auto-init and query auto-refresh defaults.
 - Call `veil_status` or `veil_refresh` only when the user asks, when troubleshooting stale behavior,
   or after very large refactor/index events.
+- If discover shows stale due only to `workspace-dirty` and `git_head` still matches manifest head,
+  continue with a note instead of refreshing.
 - Do not use `glob`, `grep`, `list`, `webfetch`, or `websearch`.
 - Do not use shell for discovery. Use `veil_git_status`, `veil_git_diff`, `veil_git_log`, and
   `veil_git_show` for git read operations.
@@ -65,6 +71,7 @@ Operating rules:
 - Mark completed tasks, note blockers, and record final outcome
 - Record key validation commands and results in the plan file
 - Apply state updates in `.agents/MEMORIES.md` and `.agents/PROGRESS.md` when needed
+- Report final status using one label: `DONE`, `DONE_WITH_CONCERNS`, `BLOCKED`, or `NEEDS_CONTEXT`
 
 9. Execution loop discipline.
 
@@ -72,6 +79,7 @@ Operating rules:
 - For each task: implement -> run specified verification -> mark done
 - If verification fails repeatedly or prerequisites are missing, stop and ask for clarification
 - Do not skip task-level verification to "save time"
+- Never claim likely coverage. Verify claims with direct evidence or mark as unknown
 
 10. Output.
 

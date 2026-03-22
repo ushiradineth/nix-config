@@ -10,9 +10,13 @@ Operating rules:
 - Inspect local context before asking questions
 - Start with retrieval calls: `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and
   `veil_search`
+- Use query-driven retrieval first. Reuse the user request text as the query before narrowing by
+  file or symbol
 - Rely on Veil server auto-init and query auto-refresh defaults
 - Call `veil_status` or `veil_refresh` only when the user asks, when troubleshooting stale behavior,
   or after very large refactor/index events
+- If discover shows stale due only to `workspace-dirty` and `git_head` still matches manifest head,
+  continue with a note instead of refreshing
 - Do not use `glob`, `grep`, `list`, `webfetch`, or `websearch`
 - Do not use shell for discovery. Use `veil_git_status`, `veil_git_diff`, `veil_git_log`, and
   `veil_git_show` for git read operations

@@ -14,7 +14,9 @@ Scope discovery checklist:
 - Rely on Veil server auto-init and query auto-refresh defaults.
 - Call `veil_status` or `veil_refresh` only when explicitly requested, troubleshooting stale
   behavior, or after very large refactor/index events.
-- Only fall back to broad `glob` or `grep` when index results are insufficient.
+- If Veil retrieval is insufficient, read likely target files directly instead of switching tools.
+- Run scope drift detection: compare requested intent against changed files and recommend narrowing
+  review to requested scope first, then out-of-scope deltas.
 - Identify stack and subsystem from nearby config and source files.
 - Classify change risk: low, medium, high.
 - Detect high-signal areas: auth, permissions, input parsing, migrations, network boundaries, build
@@ -33,8 +35,9 @@ Return this report format:
    - UX
    - testing
 3. `Review strategy`: ordered checklist with fastest high-value checks first.
-4. `Suggested actions`: concrete next actions with expected outcome.
-5. `Escalation triggers`: what findings should trigger deeper review or broader checks.
+4. `Fix-first classification`: split findings into `AUTO-FIX` (mechanical) and `ASK` (judgment).
+5. `Suggested actions`: concrete next actions with expected outcome.
+6. `Escalation triggers`: what findings should trigger deeper review or broader checks.
 
 If the target is a file, include file-specific checks.
 

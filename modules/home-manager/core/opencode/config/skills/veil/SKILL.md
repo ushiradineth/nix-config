@@ -1,5 +1,6 @@
 ---
-name: veil-mcp
+name: veil
+version: 2.0.0
 description:
   Use this skill whenever Veil MCP tools are available and the task involves repository retrieval,
   git context, web references, or GitHub context. Trigger on direct or indirect phrasing like "find
@@ -7,7 +8,7 @@ description:
   user suggests shell-style discovery.
 ---
 
-# Veil MCP Skill
+# Veil Skill
 
 ## Trigger Conditions
 
@@ -26,30 +27,54 @@ Prefer Veil MCP tools when supported so outputs stay structured and follow-on st
 Veil MCP responses are compact TOON payloads. Guidance fields appear only on low-confidence or
 missing-context responses.
 
+## Your Task
+
+1. Route discovery and context gathering through Veil MCP tools first.
+2. Keep calls minimal: one broad retrieval tool, then one narrowing tool.
+3. Add git, web, or GitHub branches only when they change the answer.
+4. Return concise findings with file paths or URLs, then continue implementation.
+
 ## Retrieval Workflow
+
+Retrieval query tools refresh index state on stale or dirty worktrees by default.
 
 1. Start broad once with `veil_discover`.
 2. Narrow once with `veil_lookup` or one targeted call: `veil_files|veil_symbols|veil_search`.
-3. Add context branches only as needed: git, web, or GitHub.
-4. Return concise findings with paths or URLs, then continue implementation.
+3. Fetch full code only when needed with `veil_chunk` using chunk ids from prior results.
+4. Add context branches only as needed: git, web, or GitHub.
+5. Return concise findings with paths or URLs, then continue implementation.
+
+Prefer required args only by default. Add optional args only when you need behavior different from
+defaults. Prefer compact defaults (`veil_lookup` compact reasons, git path lists off unless asked,
+bounded `veil_fetch_url` output).
 
 ## Intent Branches
 
-- Local retrieval: `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, `veil_search`.
+- Local retrieval: `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, `veil_search`,
+  `veil_chunk`.
 - Git context: `veil_git_status`, `veil_git_log`, `veil_git_diff`, `veil_git_show`.
 - Web context: `veil_web_search`, then `veil_fetch_url`.
 - GitHub context: `veil_gh_lookup`.
+- Setup and operations (non-retrieval): `veil_build`, `veil_grammar_list|install|remove|update`,
+  `veil_diagnostics` with `reset`.
 
 ## Anti-pattern Corrections
 
 - Shell-first discovery with ad hoc tools -> start with `veil_discover`, then narrow once.
 - Repeating broad retrieval calls -> rewrite query with entity + intent, then run one focused
   follow-up.
+- Asking for full code in broad calls -> keep compact defaults and fetch only selected chunk ids
+  with `veil_chunk`.
 - Jumping to `veil_fetch_url` without candidates -> use `veil_web_search` first.
 - Raw `git` reads for normal context -> use
   `veil_git_status|veil_git_log|veil_git_diff|veil_git_show`.
-- Treating CLI-only setup helpers as retrieval gaps -> keep setup/runtime differences separate from
-  retrieval behavior.
+- Treating setup helpers as retrieval gaps -> keep setup/runtime operations separate from retrieval
+  behavior.
+
+## When Not to Use
+
+- One-file local reads where path is already known and no retrieval is needed.
+- Pure write/edit steps that do not require lookup, git context, web context, or GitHub context.
 
 ## Quick Examples
 

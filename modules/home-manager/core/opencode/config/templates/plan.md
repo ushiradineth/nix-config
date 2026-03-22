@@ -20,6 +20,14 @@
 - Escalation conditions:
   - ...
 
+## Critical blockers
+
+- ...
+
+## User checkpoints
+
+- ...
+
 ## Atomic tasks
 
 - [ ] T1 ...
