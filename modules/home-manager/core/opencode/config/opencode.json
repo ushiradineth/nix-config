@@ -114,6 +114,16 @@
         "apply_patch": "allow"
       }
     },
+    "sudo": {
+      "mode": "primary",
+      "description": "High-authority execution agent for explicit user-directed actions only",
+      "temperature": 0.1,
+      "steps": 160,
+      "prompt": "{file:./prompts/sudo.md}",
+      "permission": {
+        "*": "allow"
+      }
+    },
     "grind": {
       "mode": "subagent",
       "description": "Long-running autonomous executor for large tasks with checkpoints",
@@ -219,7 +229,8 @@
       "*": "allow",
       "planner": "deny",
       "builder": "deny",
-      "direct": "deny"
+      "direct": "deny",
+      "sudo": "deny"
     },
     "skill": "allow",
     "lsp": "allow",
