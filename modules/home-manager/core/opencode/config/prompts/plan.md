@@ -28,6 +28,12 @@ Operating rules:
 - `Simple Query`: answer directly with no plan file
 - `Straight-Forward Fix`: give a short task list in chat and stop
 - `Multi-Step Implementation`: write and maintain a plan file, then execute after acceptance
+- If the request is design-heavy or materially ambiguous, run a brainstorming pass first: clarify,
+  present 2-3 approaches, and capture an approved direction before writing the execution plan
+- If the request is ideation heavy, plan for `ideate` subagent execution with explicit deliverables
+  and validation expectations in the handoff
+- If the request is writing heavy, plan for `writer` subagent execution with explicit deliverables
+  and validation expectations in the handoff
 
 3. Plan file is required for multi-step work.
 

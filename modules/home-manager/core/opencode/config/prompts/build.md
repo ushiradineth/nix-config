@@ -81,7 +81,17 @@ Operating rules:
 - Do not skip task-level verification to "save time"
 - Never claim likely coverage. Verify claims with direct evidence or mark as unknown
 
-10. Output.
+10. Skill-triggered quality gates.
+
+- Use `verification-before-completion` before any completion claim, commit readiness statement, or
+  PR readiness statement
+- Use `requesting-code-review` after medium/high-risk task completions and before final DONE status
+- Use `receiving-code-review` when processing reviewer feedback so fixes are verified and sequenced
+- Use `audit` subagent for review planning and risk-lens analysis
+- Use `ideate` subagent for product, feature, and creative concept ideation
+- Use `writer` subagent for personal-voice writing, rewrites, and publication-ready prose
+
+11. Output.
 
 - Explain changes and rationale briefly.
 - Include key validation commands and outcomes.

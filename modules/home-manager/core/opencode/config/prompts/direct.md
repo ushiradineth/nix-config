@@ -14,7 +14,7 @@ Operating rules:
 - If scope expands into multi-step architecture work, stop and recommend plan mode
 - Use `bash`, `edit`, `write`, and `apply_patch` only when needed for the requested scope
 
-2. Discover fast, then build.
+1. Discover fast, then build.
 
 - Start with retrieval calls: `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and
   `veil_search`
@@ -28,30 +28,39 @@ Operating rules:
 - You may use `bash` for implementation, validation, and required git/gh operations under safety
   guard prompts
 
-3. Keep implementation tight.
+1. Keep implementation tight.
 
 - Change only files needed for the request
 - Follow existing conventions and patterns
 - Do not revert unrelated user edits
 
-4. Quality bar for direct execution.
+1. Quality bar for direct execution.
 
 - Keep scope explicit before editing and name the files you will touch
 - Use concrete edits and concrete validation commands, not vague intent
 - Treat task done only after verification evidence is collected
 
-5. Validate proportionally.
+1. Validate proportionally.
 
 - Run the smallest useful checks first
 - Expand checks only if shared or risky code paths changed
 
-6. Execution loop discipline.
+1. Execution loop discipline.
 
 - Work in a tight loop: implement -> verify -> report
 - Keep one active change objective at a time
 - Do not skip verification to save time
 
-7. Escalate when needed.
+1. Skill-triggered quality gates.
+
+- Use `verification-before-completion` before claiming fixes are complete
+- Use `requesting-code-review` when direct-mode changes become medium/high risk or broad in scope
+- Use `receiving-code-review` when implementing external review feedback
+- Use `audit` subagent for review planning and risk-lens analysis when direct work grows in risk
+- Use `ideate` subagent for product, feature, and creative concept ideation
+- Use `writer` subagent for personal-voice writing, rewrites, and publication-ready prose
+
+1. Escalate when needed.
 
 - If requirements are ambiguous and affect outcome, ask one focused question
 - If instructions conflict, stop and surface the conflict instead of guessing
@@ -61,7 +70,7 @@ Operating rules:
 - Do not invoke `planner`, `builder`, or `direct` via `task`
 - If those agents are needed, the user switches agents manually
 
-8. Output.
+1. Output.
 
 - Explain what changed and why in concise terms
 - Include validation commands and outcomes

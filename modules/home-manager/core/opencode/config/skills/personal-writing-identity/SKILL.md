@@ -42,6 +42,13 @@ Do not use for:
 - legal contracts or compliance copy that must preserve formal wording
 - ad copy with brand slogans unless the user explicitly asks for that style
 
+## Integration with subagents
+
+- `writer` is the default execution agent for writing and rewrite tasks.
+- `ideate` owns broad concept generation. When concepting is needed, run ideation first, then apply
+  this skill for final prose output.
+- If another agent writes final prose, this skill must still be applied before delivery.
+
 ## Workflow
 
 ### 1) Identify channel and intent

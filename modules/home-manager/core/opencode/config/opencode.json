@@ -173,9 +173,9 @@
     },
     "ideate": {
       "mode": "subagent",
-      "description": "Feature ideation agent for exploring and shaping new product ideas",
-      "temperature": 0.8,
-      "steps": 140,
+      "description": "Consolidated feature and creative ideation agent for optioning and direction",
+      "temperature": 0.75,
+      "steps": 160,
       "prompt": "{file:./prompts/ideate.md}",
       "permission": {
         "question": "allow",
@@ -193,12 +193,12 @@
         }
       }
     },
-    "creative": {
+    "writer": {
       "mode": "subagent",
-      "description": "Creative writing and UI ideation with stronger variation",
-      "temperature": 0.7,
-      "steps": 80,
-      "prompt": "{file:./prompts/creative.md}",
+      "description": "Personal-voice writing agent for publishable drafts, rewrites, and documentation",
+      "temperature": 0.75,
+      "steps": 160,
+      "prompt": "{file:./prompts/writer.md}",
       "permission": {
         "question": "allow",
         "task": "allow",
