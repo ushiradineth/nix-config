@@ -1,6 +1,6 @@
 ---
 name: veil
-version: 2.0.0
+version: 2.2.3
 description:
   Use this skill whenever Veil MCP tools are available and the task involves repository retrieval,
   git context, web references, or GitHub context. Trigger on direct or indirect phrasing like "find
@@ -18,6 +18,7 @@ Use this skill when the task asks for any of these outcomes:
 - inspect branch status, commit history, or diffs before changes
 - gather external references and summarize source pages
 - inspect GitHub repository, issue, PR, or checks context
+- detect unsupported or disabled parser coverage and guide grammar installation via approval loop
 
 Treat intent phrases like `find where`, `investigate`, `compare`, `summarize from web`, and
 `check PR` as strong triggers.
@@ -44,6 +45,12 @@ Retrieval query tools refresh index state on stale or dirty worktrees by default
 4. Add context branches only as needed: git, web, or GitHub.
 5. Return concise findings with paths or URLs, then continue implementation.
 
+## Skill version drift signal
+
+- Read local installed Veil skill frontmatter version once per session.
+- Send that value as `reported_skill_version` on `veil_discover` and `veil_status` calls.
+- Re-send when session state is uncertain or local skill file changes.
+
 Prefer required args only by default. Add optional args only when you need behavior different from
 defaults. Prefer compact defaults (`veil_lookup` compact reasons, git path lists off unless asked,
 bounded `veil_fetch_url` output).
@@ -55,8 +62,14 @@ bounded `veil_fetch_url` output).
 - Git context: `veil_git_status`, `veil_git_log`, `veil_git_diff`, `veil_git_show`.
 - Web context: `veil_web_search`, then `veil_fetch_url`.
 - GitHub context: `veil_gh_lookup`.
-- Setup and operations (non-retrieval): `veil_build`, `veil_grammar_list|install|remove|update`,
-  `veil_diagnostics` with `reset`.
+- Setup and operations (non-retrieval): `veil_status`, `veil_update_check`, `veil_build`,
+  `veil_grammar_list|install|remove|update`, `veil_diagnostics` with `reset`.
+- Grammar improvement loop: `veil_grammar_recommend` then (after explicit user approval)
+  `veil_grammar_runtime_install`.
+- Grammar runtime installs are workspace and state-root scoped (`<state_root>/grammars-runtime`) and
+  reused by later MCP server instances targeting the same workspace.
+- For known installable parsers, treat runtime fallback as strict by default. Only rely on fallback
+  paths when install is recorded as failed or no known runtime package mapping exists.
 
 ## Anti-pattern Corrections
 
@@ -70,6 +83,8 @@ bounded `veil_fetch_url` output).
   `veil_git_status|veil_git_log|veil_git_diff|veil_git_show`.
 - Treating setup helpers as retrieval gaps -> keep setup/runtime operations separate from retrieval
   behavior.
+- Auto-installing parser runtimes during retrieval -> never auto-install, recommend first and
+  require explicit approval before `veil_grammar_runtime_install`.
 
 ## When Not to Use
 
