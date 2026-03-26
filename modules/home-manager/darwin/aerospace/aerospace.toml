@@ -111,6 +111,11 @@ accordion-padding = 30
 if.app-id = 'app.zen-browser.zen'
 run = 'move-node-to-workspace 1'
 
+# Move Vivaldi to workspace 1
+[[on-window-detected]]
+if.app-id = 'com.vivaldi.Vivaldi'
+run = 'move-node-to-workspace 1'
+
 # Move WezTerm to workspace 2
 [[on-window-detected]]
 if.app-id = 'com.github.wez.wezterm'
@@ -144,6 +149,11 @@ run = 'move-node-to-workspace 4'
 # Move Figma to workspace 4
 [[on-window-detected]]
 if.app-id = 'com.figma.Desktop'
+run = 'move-node-to-workspace 4'
+
+# Move Affinity to workspace 4
+[[on-window-detected]]
+if.app-id = 'com.canva.affinity'
 run = 'move-node-to-workspace 4'
 
 # Move Arc to workspace 5
