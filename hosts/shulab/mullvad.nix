@@ -81,12 +81,12 @@
       dns_options = {
         state = "default";
         default_options = {
-          block_ads = true;
-          block_trackers = true;
-          block_malware = true;
-          block_adult_content = true;
-          block_gambling = true;
-          block_social_media = true;
+          block_ads = false;
+          block_trackers = false;
+          block_malware = false;
+          block_adult_content = false;
+          block_gambling = false;
+          block_social_media = false;
         };
         custom_options.addresses = [];
       };

@@ -1,6 +1,9 @@
 {hostname, ...}: {
   networking.hostName = hostname;
-  networking.networkmanager.enable = true;
+  networking.networkmanager = {
+    enable = true;
+    dns = "none";
+  };
 
   networking.nftables.enable = true;
 
