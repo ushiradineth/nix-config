@@ -69,11 +69,14 @@ Write with the voice contract from `references/voice-signature.md`.
 
 Hard guardrails during drafting:
 
+- start with a direct scope statement in the first one to two lines
 - concise and direct
 - simplified language, no intellectual theater
 - no corporate buzzword soup
 - no fake authority phrases or vague attributions
 - no keyword stuffing for SEO
+- anchor claims with concrete specifics when available (versions, dates, counts, outcomes)
+- state tradeoffs directly when they exist
 - symbol emoticons only when the user wants playful tone
 - use semicolons and commas naturally for flow
 - use "I" or "we" where it fits the channel
