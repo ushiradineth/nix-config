@@ -14,4 +14,8 @@
     home = "/Users/${myvars.username}";
     shell = pkgs.zsh;
   };
+
+  environment.systemPackages = with pkgs; [
+    terminal-notifier # macOS notifications
+  ];
 }
