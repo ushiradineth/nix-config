@@ -12,6 +12,8 @@
     package = lazytf.packages.${pkgs.system}.default;
     settings = {
       history.enabled = true;
+      mouse = true;
+      notification = true;
     };
   };
 
