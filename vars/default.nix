@@ -20,7 +20,7 @@ in {
     shutm = "192.168.64.3";
     shupi = "100.74.32.50";
     shuos = "192.168.1.5";
-    shulab = "192.168.1.6";
+    shulab = "100.111.240.122";
   };
   authorizedKeys = [publicKeys.shu publicKeys.shuos]; # Authorized to access all machines
   inherit publicKeys;
