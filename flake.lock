@@ -310,11 +310,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1775174519,
-        "narHash": "sha256-RPryYQ/0xT5MQ74FTuGdvbtTHWOTq2Tp2xD23QrgGcY=",
+        "lastModified": 1775329480,
+        "narHash": "sha256-bK+5tRghesJAckpAvra6UoVOTKmeNzItqWO5uSpHwbA=",
         "owner": "ushiradineth",
         "repo": "lazytf",
-        "rev": "39fcb4e566c04018856f6ac6be9944621a0647d2",
+        "rev": "e3e960d322586956abe61bf0ffc22a3cd426c05c",
         "type": "github"
       },
       "original": {
