@@ -5,7 +5,8 @@
   "default_agent": "planner",
   "autoupdate": false,
   "lsp": {},
-  "plugin": ["cc-safety-net", "opencode-openai-codex-auth"],
+  "plugin": ["cc-safety-net", "opencode-wakatime", "@mohak34/opencode-notifier@latest"],
+  "instructions": ["~/.config/opencode/instructions/shell.md"],
   "mcp": {
     "veil": {
       "type": "local",
