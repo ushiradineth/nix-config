@@ -8,7 +8,7 @@
   "showIcon": true,
   "suppressWhenFocused": true,
   "enableOnDesktop": false,
-  "notificationSystem": "ghostty",
+  "notificationSystem": "osascript",
   "linux": {
     "grouping": false
   },
@@ -20,26 +20,26 @@
   },
   "events": {
     "permission": { "sound": true, "notification": true, "command": true, "bell": false },
-    "complete": { "sound": true, "notification": true, "command": true, "bell": false },
-    "subagent_complete": { "sound": false, "notification": false, "command": true, "bell": false },
-    "error": { "sound": true, "notification": true, "command": true, "bell": false },
-    "question": { "sound": true, "notification": true, "command": true, "bell": false },
-    "user_cancelled": { "sound": false, "notification": false, "command": true, "bell": false },
-    "plan_exit": { "sound": true, "notification": true, "command": true, "bell": false },
-    "session_started": { "sound": true, "notification": false, "command": true, "bell": false },
-    "user_message": { "sound": true, "notification": false, "command": true, "bell": false },
-    "client_connected": { "sound": true, "notification": false, "command": true, "bell": false }
+    "complete": { "sound": true, "notification": true, "command": false, "bell": false },
+    "subagent_complete": { "sound": false, "notification": false, "command": false, "bell": false },
+    "error": { "sound": true, "notification": true, "command": false, "bell": false },
+    "question": { "sound": true, "notification": true, "command": false, "bell": false },
+    "user_cancelled": { "sound": false, "notification": false, "command": false, "bell": false },
+    "plan_exit": { "sound": true, "notification": true, "command": false, "bell": false },
+    "session_started": { "sound": true, "notification": false, "command": false, "bell": false },
+    "user_message": { "sound": true, "notification": false, "command": false, "bell": false },
+    "client_connected": { "sound": true, "notification": false, "command": false, "bell": false }
   },
   "messages": {
-    "permission": "Session needs permission: {sessionTitle}",
-    "complete": "Session has finished: {sessionTitle}",
-    "subagent_complete": "Subagent task completed: {sessionTitle}",
-    "error": "Session encountered an error: {sessionTitle}",
-    "question": "Session has a question: {sessionTitle}",
-    "user_cancelled": "Session was cancelled by user: {sessionTitle}",
-    "plan_exit": "Plan ready for review: {sessionTitle}",
-    "session_started": "Session started: {sessionTitle}",
-    "user_message": "User sent a message: {sessionTitle}",
+    "permission": "Blocked: {sessionTitle}",
+    "complete": "Done: {sessionTitle}",
+    "subagent_complete": null,
+    "error": "Blocked: {sessionTitle}",
+    "question": "Blocked: {sessionTitle}",
+    "user_cancelled": null,
+    "plan_exit": "Ready: {sessionTitle}",
+    "session_started": null,
+    "user_message": null,
     "client_connected": "OpenCode connected"
   },
   "sounds": {

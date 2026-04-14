@@ -258,7 +258,8 @@
       "~/nix-config/**": "allow",
       "~/.config/**": "allow",
       "~/Code/**": "allow",
-      "~/Downloads/**": "allow"
+      "~/Downloads/**": "allow",
+      "~/Seafile/Obsidian Vault/**": "allow"
     }
   }
 }
