@@ -14,27 +14,6 @@
       "subcommand": "commit",
       "block_args": ["--no-gpg-sign"],
       "reason": "GPG signing bypass is forbidden. Configure signing correctly."
-    },
-    {
-      "name": "block-git-force-push",
-      "command": "git",
-      "subcommand": "push",
-      "block_args": ["--force", "-f", "--force-with-lease"],
-      "reason": "Force push is restricted. Use a safe push strategy."
-    },
-    {
-      "name": "block-git-reset-hard",
-      "command": "git",
-      "subcommand": "reset",
-      "block_args": ["--hard"],
-      "reason": "Hard reset is destructive. Use safer alternatives."
-    },
-    {
-      "name": "block-git-clean-force",
-      "command": "git",
-      "subcommand": "clean",
-      "block_args": ["-f", "-fd", "-fdx", "-xdf", "--force"],
-      "reason": "git clean is destructive. Review targets manually before cleanup."
     }
   ]
 }
