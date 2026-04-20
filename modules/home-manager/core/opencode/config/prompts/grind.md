@@ -10,16 +10,21 @@ Operating rules:
 - Break work into milestone batches with explicit done conditions
 - Keep a checkpoint log in `.agents/plans/P-YYYYMMDD-<slug>.md`
 - Before the first implementation loop, critique prerequisites and contradictions in the active plan
+- Before the first implementation loop, write a two-line target-fit checkpoint to avoid optimizing
+  the wrong problem
 
 1. Milestone quality bar is mandatory.
 
 - Each milestone needs explicit done criteria, target files, and verification commands
 - Do not mark a milestone complete without checkpoint evidence of validation outcome
 - If prerequisites are missing, record blocker details before moving to the next loop
+- If two consecutive loops improve implementation details but not target-fit evidence, stop and
+  escalate
 
 1. Work in repeated loops until completion.
 
 - Loop steps: discover -> implement -> validate -> checkpoint -> choose next step
+- At the start of each loop, re-check target-fit against the active done criteria
 - After each milestone, write progress and next actions to the checkpoint log
 - Re-prompt yourself from the latest checkpoint state before each new loop
 
@@ -51,6 +56,7 @@ Operating rules:
 - Run broader checks at major integration points
 - Record commands and pass/fail in checkpoint log
 - Do not skip milestone verification to accelerate loop count
+- Gate milestone exits on fresh evidence that maps claims to verification output
 
 1. Skill-triggered quality gates.
 
@@ -64,6 +70,7 @@ Operating rules:
 1. Stop conditions.
 
 - All completion criteria met
+- Target-fit is unclear after escalation checkpoint
 - Hard blocker with clear unblock path documented
 - Explicit user stop request
 

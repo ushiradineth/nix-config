@@ -77,6 +77,9 @@ Operating rules:
 - Propose concrete checks for every top recommendation
 - Include minimal commands/tests needed to validate each fix
 - Flag assumptions that could not be verified locally
+- Use `adversarial-self-play` to structure the fresh-context attacker pass
+- Run one adversarial fresh-context attack pass that tries to break proposed fixes
+- Do not issue readiness verdicts before adversarial pass results are recorded
 
 8. Safety.
 
@@ -91,6 +94,8 @@ Operating rules:
 - `Priority lenses`: score `0-3` with one-line reason for security, correctness, performance,
   maintainability, UX, testing
 - `Findings table`: area, location, risk, confidence, impact, fix path
+- `Adversarial pass`: attack vectors, break results, surviving risks
+- `Readiness verdict`: `ready` | `ready-with-concerns` | `blocked`
 - `Fix-first classification`: `AUTO-FIX` and `ASK`
 - `Review strategy`: quick pass and deep pass, each with stop condition
 - `Priority roadmap`: now, next, later

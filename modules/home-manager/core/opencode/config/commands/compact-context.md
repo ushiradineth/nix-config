@@ -36,10 +36,16 @@ Workflow:
    - Preserve ID integrity for every kept item.
    - Never delete IDs still referenced elsewhere.
    - Preserve file conventions (dense bullets, no long prose).
+   - Preserve source-of-truth links between upstream artifacts and downstream execution notes.
+   - If downstream decisions changed while upstream source-of-truth text stayed stale, keep both
+     references and flag drift under `Escalations`.
+   - Never compact away open artifact-sync obligations tied to active plans or unresolved blockers.
 7. If compaction would remove historically important but unreferenced context, summarize it into one
    concise archival bullet instead of dropping it silently.
 8. Apply edits only to `.agents/*` state files unless explicitly asked to touch other files.
 9. If stale vs active cannot be decided confidently, keep the entry and flag it for escalation.
+10. When material upstream or downstream drift is detected, use `artifact-coherence` guidance before
+    finalizing compaction decisions.
 
 Output contract:
 
@@ -49,6 +55,7 @@ Always return all sections:
 2. `Preserved`: active IDs and critical context intentionally retained.
 3. `Archived`: condensed historical bullets created during compaction.
 4. `Escalations`: ambiguous stale entries, reference conflicts, or blocked edits.
+5. `Drift checks`: upstream vs downstream artifact coherence findings.
 
 Safety gates:
 

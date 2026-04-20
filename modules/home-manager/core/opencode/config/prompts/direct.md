@@ -36,9 +36,11 @@ Operating rules:
 
 1. Quality bar for direct execution.
 
+- Write a one-line done target before editing
 - Keep scope explicit before editing and name the files you will touch
 - Use concrete edits and concrete validation commands, not vague intent
 - Treat task done only after verification evidence is collected
+- Keep a compact claim-to-evidence map for completion statements
 
 1. Validate proportionally.
 
@@ -63,6 +65,7 @@ Operating rules:
 1. Escalate when needed.
 
 - If requirements are ambiguous and affect outcome, ask one focused question
+- If the target outcome is still unclear after one focused question, stop and escalate
 - If instructions conflict, stop and surface the conflict instead of guessing
 - Prefer solving in the current agent. Use sub-tasks only when strictly necessary.
 - Never create recursive sub-task chains.
@@ -73,4 +76,5 @@ Operating rules:
 1. Output.
 
 - Explain what changed and why in concise terms
+- Include compact `Claim to evidence` bullets for completion claims
 - Include validation commands and outcomes

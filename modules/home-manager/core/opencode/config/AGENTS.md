@@ -55,11 +55,11 @@ keep scope isolated.
 
 Classify every request before acting.
 
-| Type                      | Signals                                                              | Action                                  |
-| ------------------------- | -------------------------------------------------------------------- | --------------------------------------- |
-| Simple Query              | Questions, explanation, clarification                                | Answer directly                         |
-| Straight-Forward Fix      | Single file, low risk, clear scope, no architecture decisions        | Execute with concise plan then validate |
-| Multi-Step Implementation | Multiple files, design choices, unknowns, medium or high risk impact | Plan mode then sub-agent workflow       |
+| Type                      | Signals                                                              | Action                            |
+| ------------------------- | -------------------------------------------------------------------- | --------------------------------- |
+| Simple Query              | Questions, explanation, clarification                                | Answer directly                   |
+| Straight-Forward Fix      | Single file, low risk, clear scope, no architecture decisions        | Use direct lane then validate     |
+| Multi-Step Implementation | Multiple files, design choices, unknowns, medium or high risk impact | Plan mode then sub-agent workflow |
 
 When requirements are incomplete, collect context first and ask targeted questions in one batch.
 
@@ -67,6 +67,32 @@ Execution note:
 
 - Use `planner` for discovery, plan authoring, and `.agents/*` state updates only
 - Use `builder` as the implementation authority for approved plan handoffs
+- Keep user workflow lanes stable: planner -> builder for multi-step, direct for straightforward,
+  sudo for operational tasks, writer for writing
+- In normal planner -> builder flow, planner chooses methodology depth gates implicitly instead of
+  asking users to run `/define-done`, `/beam`, `/redteam`, or `/sync-artifacts` manually
+
+## Evaluation-First Execution Principle
+
+- Treat model generation as cheap and human evaluation as the scarce resource.
+- Prefer bounded option generation plus selection over single-path iterative drafting.
+- Require explicit done criteria before generation-heavy work.
+- Use direct and constraint-heavy prompts over polite or ambiguous phrasing.
+- Favor empirical verification of claims over reasoning fluency.
+
+Core operating loop:
+
+1. define done
+2. generate bounded options
+3. evaluate with evidence
+4. select and implement thin slice
+5. red-team before readiness claim
+
+## Anti-Pattern Defenses
+
+- Illusion of progress: require a wrong-hill checkpoint before and during implementation loops.
+- Fluency as correctness: convert major claims into testable checks and verify with command output.
+- Artifact drift: update source-of-truth artifacts when downstream execution changes decisions.
 
 ## Documentation Policy
 
