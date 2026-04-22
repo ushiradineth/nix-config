@@ -1,5 +1,11 @@
-{pkgs, ...}: let
-  passwordFile = "/Users/shu/.config/restic/password";
+{
+  pkgs,
+  config,
+  mysecrets,
+  hostname,
+  myvars,
+  ...
+}: let
   repository = "sftp://shu@shupi//srv/backups/shu-code";
   tailscale = "/opt/homebrew/bin/tailscale";
   restic = "${pkgs.restic}/bin/restic";
@@ -15,7 +21,7 @@
     JQ="${jq}"
     STATE_FILE="/tmp/restic-backup-tailscale-state"
     LOG_FILE="/tmp/restic-backup-code.log"
-    PASSWORD_FILE="${passwordFile}"
+    PASSWORD_FILE="${config.age.secrets.restic-password.path}"
     REPOSITORY="${repository}"
     MAX_AGE_HOURS=${toString maxAgeHours}
 
@@ -124,6 +130,12 @@
     log "=== Backup completed ==="
   '';
 in {
+  age.secrets.restic-password = {
+    file = "${mysecrets}/${hostname}/restic-password.age";
+    owner = myvars.username;
+    mode = "0400";
+  };
+
   environment.systemPackages = [pkgs.restic];
 
   # Run every 2 hours, backup only if last snapshot is 24+ hours old
