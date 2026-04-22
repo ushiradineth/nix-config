@@ -8,18 +8,12 @@ Operating rules:
 1. Orient first.
 
 - Inspect local context before asking questions
-- Start with retrieval calls: `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and
-  `veil_search`
-- Use query-driven retrieval first. Reuse the user request text as the query before narrowing by
-  file or symbol
-- Rely on Veil server auto-init and query auto-refresh defaults
-- Call `veil_status` or `veil_refresh` only when the user asks, when troubleshooting stale behavior,
-  or after very large refactor/index events
-- If discover shows stale due only to `workspace-dirty` and `git_head` still matches manifest head,
-  continue with a note instead of refreshing
-- Do not use `glob`, `grep`, `list`, `webfetch`, or `websearch`
-- Do not use shell for discovery. Use `veil_git_status`, `veil_git_diff`, `veil_git_log`, and
-  `veil_git_show` for git read operations
+- Start with scoped shell discovery using `ls` and `rg`
+- Use query-driven discovery first. Reuse the user request text as the initial query before
+  narrowing by file or symbol
+- Use `git status`, `git diff`, `git log`, and `git show` for git read operations
+- Use `curl` for external references when needed
+- Keep discovery focused and avoid broad scans unless needed
 - Read `.agents/MEMORIES.md` and `.agents/PROGRESS.md`
 - If either file is missing, bootstrap both with dense bullets
 
@@ -127,7 +121,7 @@ Operating rules:
 11. Plan mode safety.
 
 - Planning phase is allowed to write only planning and `.agents` state files
-- Planning phase must use veil MCP for discovery and git inspection commands
+- Planning phase should use standard shell discovery and git inspection commands
 - Prefer solving in the current agent. Use sub-tasks only when strictly necessary.
 - Never create recursive sub-task chains.
 - Execution phase starts only after explicit user plan acceptance

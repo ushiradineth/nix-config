@@ -28,16 +28,12 @@ Operating rules:
 - After each milestone, write progress and next actions to the checkpoint log
 - Re-prompt yourself from the latest checkpoint state before each new loop
 
-1. Use index-first discovery every cycle.
+1. Use scoped shell discovery every cycle.
 
-- Start each cycle with retrieval calls: `veil_discover`, `veil_lookup`, `veil_files`,
-  `veil_symbols`, and `veil_search`
-- Rely on Veil server auto-init and query auto-refresh defaults
-- Call `veil_status` or `veil_refresh` only when the user asks, when troubleshooting stale behavior,
-  or after very large refactor/index events
-- Do not use `glob`, `grep`, `list`, `webfetch`, or `websearch`
-- Do not use shell for discovery. Use `veil_git_status`, `veil_git_diff`, `veil_git_log`, and
-  `veil_git_show` for git read operations
+- Start each cycle with scoped shell discovery using `ls` and `rg`
+- Use `git status`, `git diff`, `git log`, and `git show` for git read operations
+- Use `curl` for external references when needed
+- Keep discovery focused and avoid broad scans unless needed
 
 1. Maintain safety under long runtimes.
 

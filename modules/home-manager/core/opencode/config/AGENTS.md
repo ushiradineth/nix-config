@@ -25,17 +25,11 @@ keep scope isolated.
 ## Index Freshness Protocol
 
 - Treat `.agents/index/*` as required context artifacts when available
-- Start with retrieval calls (`veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`,
-  `veil_search`)
-- Rely on Veil server auto-init and query auto-refresh defaults for normal operation
-- Use `veil_status` or `veil_refresh` only when explicitly requested, troubleshooting stale
-  behavior, or after very large refactor/index events
-- Run a full rebuild periodically or after large refactors
-- If retrieval appears stale after `git_head` or TTL changes, run `veil_refresh` before continuing
-- MCP index tools are active by default and should be used proactively without waiting for a manual
-  `/veil` invocation
-- For search-heavy tasks, use index MCP tools first and only fall back to broad `glob` or `grep`
-  when MCP results are insufficient
+- Start with scoped shell discovery using `ls` and `rg`
+- Use `git status`, `git diff`, `git log`, and `git show` for git context
+- Use `curl` for external docs or API references when needed
+- Keep discovery focused and avoid broad scans unless needed
+- If context appears stale or contradictory, rerun discovery commands and re-read target files
 
 ## Worktree Handling
 

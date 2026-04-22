@@ -17,11 +17,9 @@ Target scope:
 
 Workflow:
 
-1. Start with retrieval calls (`veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`,
-   `veil_search`) to locate relevant `.agents` files.
-2. Rely on Veil server auto-init and query auto-refresh defaults.
-3. Call `veil_status` or `veil_refresh` only when explicitly requested, troubleshooting stale
-   behavior, or after very large refactor/index events.
+1. Start with scoped shell discovery (`ls`, `rg`) to locate relevant `.agents` files.
+2. Use targeted reads to gather exact context before any edits.
+3. If context looks stale or incomplete, rerun discovery and verify paths before continuing.
 4. Read all relevant state files before any edits.
 5. Build a reference map of active IDs:
    - memory IDs (`M-xxxx`)

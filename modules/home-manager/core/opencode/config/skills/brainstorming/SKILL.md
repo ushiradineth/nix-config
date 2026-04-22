@@ -24,7 +24,7 @@ Do not implement code changes until a design direction is presented and accepted
 ## Workflow
 
 1. Ground in current context first.
-   - Run Veil retrieval first to map relevant modules and constraints.
+   - Run scoped shell discovery (`ls`, `rg`) first to map relevant modules and constraints.
 2. Clarify one thing at a time.
    - Ask focused questions only where ambiguity changes implementation.
 3. Propose options.

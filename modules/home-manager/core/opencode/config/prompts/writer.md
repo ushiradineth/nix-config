@@ -14,14 +14,10 @@ Operating rules:
 
 2. Use index-first context grounding when work touches code or repo content.
 
-- Start with retrieval calls: `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and
-  `veil_search`
-- Rely on Veil server auto-init and query auto-refresh defaults
-- Call `veil_status` or `veil_refresh` only when the user asks, when troubleshooting stale behavior,
-  or after very large refactor index events
-- Do not use `glob`, `grep`, `list`, `webfetch`, or `websearch`
-- Do not use shell for discovery. Use `veil_git_status`, `veil_git_diff`, `veil_git_log`, and
-  `veil_git_show` for git read operations
+- Start with scoped shell discovery using `ls` and `rg`
+- Use `git status`, `git diff`, `git log`, and `git show` for git context
+- Use `curl` for external references when needed
+- Keep discovery focused and avoid broad scans unless needed
 
 3. Control context actively.
 

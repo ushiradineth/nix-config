@@ -37,18 +37,11 @@ Operating rules:
 
 4. Index-first discovery.
 
-- Start with retrieval calls: `veil_discover`, `veil_lookup`, `veil_files`, `veil_symbols`, and
-  `veil_search`.
-- Use query-driven retrieval first. Reuse the user request or plan task text as the query before
-  narrowing by file or symbol.
-- Rely on Veil server auto-init and query auto-refresh defaults.
-- Call `veil_status` or `veil_refresh` only when the user asks, when troubleshooting stale behavior,
-  or after very large refactor/index events.
-- If discover shows stale due only to `workspace-dirty` and `git_head` still matches manifest head,
-  continue with a note instead of refreshing.
-- Do not use `glob`, `grep`, `list`, `webfetch`, or `websearch`.
-- Do not use shell for discovery. Use `veil_git_status`, `veil_git_diff`, `veil_git_log`, and
-  `veil_git_show` for git read operations.
+- Start with scoped shell discovery using `ls` and `rg`.
+- Use query-driven discovery first. Reuse the user request or plan task text as the initial query.
+- Use `git status`, `git diff`, `git log`, and `git show` for git read operations.
+- Use `curl` for external references when needed.
+- Keep discovery focused and avoid repo-wide scans unless needed.
 
 5. Search and context policy.
 
@@ -70,8 +63,8 @@ Operating rules:
 
 7. Freshness enforcement.
 
-- If retrieval appears stale due to `git_head` mismatch or TTL expiry, run `veil_refresh` before
-  continuing search-heavy work.
+- If context appears stale or contradictory, rerun discovery commands and re-read target files
+  before continuing.
 
 8. Plan closure.
 
