@@ -39,13 +39,13 @@
         "bash": {
           "*": "allow",
           "rm *": "ask",
+          "git *": "ask",
           "git status*": "allow",
           "git diff*": "allow",
           "git log*": "allow",
           "git show*": "allow",
           "git rev-parse*": "allow",
           "git ls-files*": "allow",
-          "git *": "ask",
           "gh *": "ask",
           "sudo *": "ask"
         },
@@ -73,13 +73,13 @@
         "bash": {
           "*": "allow",
           "rm *": "ask",
+          "git *": "ask",
           "git status*": "allow",
           "git diff*": "allow",
           "git log*": "allow",
           "git show*": "allow",
           "git rev-parse*": "allow",
           "git ls-files*": "allow",
-          "git *": "ask",
           "gh *": "ask",
           "sudo *": "ask"
         },
@@ -106,13 +106,13 @@
         "bash": {
           "*": "allow",
           "rm *": "ask",
+          "git *": "ask",
           "git status*": "allow",
           "git diff*": "allow",
           "git log*": "allow",
           "git show*": "allow",
           "git rev-parse*": "allow",
           "git ls-files*": "allow",
-          "git *": "ask",
           "gh *": "ask",
           "sudo *": "ask"
         },
@@ -149,13 +149,13 @@
         "bash": {
           "*": "allow",
           "rm *": "ask",
+          "git *": "ask",
           "git status*": "allow",
           "git diff*": "allow",
           "git log*": "allow",
           "git show*": "allow",
           "git rev-parse*": "allow",
           "git ls-files*": "allow",
-          "git *": "ask",
           "gh *": "ask",
           "sudo *": "ask"
         },
@@ -180,13 +180,13 @@
         "bash": {
           "*": "allow",
           "rm *": "ask",
+          "git *": "ask",
           "git status*": "allow",
           "git diff*": "allow",
           "git log*": "allow",
           "git show*": "allow",
           "git rev-parse*": "allow",
           "git ls-files*": "allow",
-          "git *": "ask",
           "gh *": "ask",
           "sudo *": "ask"
         },
@@ -214,13 +214,13 @@
         "bash": {
           "*": "allow",
           "rm *": "ask",
+          "git *": "ask",
           "git status*": "allow",
           "git diff*": "allow",
           "git log*": "allow",
           "git show*": "allow",
           "git rev-parse*": "allow",
           "git ls-files*": "allow",
-          "git *": "ask",
           "gh *": "ask",
           "sudo *": "ask"
         },
@@ -248,13 +248,13 @@
         "bash": {
           "*": "allow",
           "rm *": "ask",
+          "git *": "ask",
           "git status*": "allow",
           "git diff*": "allow",
           "git log*": "allow",
           "git show*": "allow",
           "git rev-parse*": "allow",
           "git ls-files*": "allow",
-          "git *": "ask",
           "gh *": "ask",
           "sudo *": "ask"
         },

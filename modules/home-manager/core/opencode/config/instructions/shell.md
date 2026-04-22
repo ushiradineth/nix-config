@@ -55,8 +55,8 @@ No TTY or PTY. Any prompt can hang.
 
 ## Safe patterns
 
-- Git: `git commit -m "msg"`, `git merge --no-edit <branch>`, `git pull --no-edit`,
-  `git --no-pager log -n 20`, `git --no-pager diff`
+- Git: `git commit -m "msg"`, `git merge --no-edit <branch>`, `git pull --no-edit`, `git log -n 20`,
+  `git diff`
 - Files: `rm -f`, `cp -f`, `mv -f`, `unzip -o`
 - Network: `curl -fsSL`, `wget -q`
 - Docker: never use `-it`
