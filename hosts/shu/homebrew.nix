@@ -40,7 +40,6 @@
       "krita"
       "wacom-tablet"
       "medibangpaintpro"
-      "notion"
       "notion-calendar"
       "tailscale-app"
       "visual-studio-code" # For Dev Containers

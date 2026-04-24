@@ -5,7 +5,6 @@
     seafile-client
     localsend # AirDrop alternative
     figma-linux
-    notion-app-enhanced
     obsidian
     obs-studio
     vesktop # Discord client

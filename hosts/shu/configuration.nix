@@ -21,9 +21,11 @@
         expose-group-apps = true;
         persistent-apps = [
           "/Applications/Zen.app"
+          "/Applications/Vivaldi.app"
           "/Applications/Ghostty.app"
-          "/Applications/Notion.app"
           "/Applications/Notion Calendar.app"
+          "/Applications/Obsidian.app"
+          "/Applications/Bitwarden.app"
         ];
         tilesize = 32;
       };

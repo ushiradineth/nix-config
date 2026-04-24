@@ -90,11 +90,8 @@
         # Move Obsidian to workspace 3
         "workspace 3, class:^(obsidian)$"
 
-        # Move Notion to workspace 4
-        "workspace 4, class:^(notion-app-enhanced)$"
-
-        # Move Figma to workspace 5
-        "workspace 5, class:^(figma-linux)$"
+        # Move Figma to workspace 4
+        "workspace 4, class:^(figma-linux)$"
 
         # Move Bitwarden to workspace 6
         "workspace 6, class:^(Bitwarden)$"

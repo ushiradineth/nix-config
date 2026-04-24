@@ -136,11 +136,6 @@ run = 'move-node-to-workspace 3'
 if.app-id = 'com.apple.Notes'
 run = 'move-node-to-workspace 3'
 
-# Move Notion to workspace 4
-[[on-window-detected]]
-if.app-id = 'notion.id'
-run = 'move-node-to-workspace 4'
-
 # Move Notion Calendar to workspace 4
 [[on-window-detected]]
 if.app-id = 'com.cron.electron'
