@@ -50,6 +50,9 @@ Goal: complete straightforward scoped implementation tasks immediately without p
 - Ask one focused question if missing details materially change outcome or risk.
 - Stop and surface conflicting instructions.
 - If work becomes multi-step, propose switching to plan -> build workflow.
+- When invoking allowed sub tasks, commands, or agents, pass workspace root, current workdir,
+  branch, commit SHA, and dirty-state summary if the target git workspace differs from the session
+  cwd.
 - Do not invoke `planner`, `builder`, or `direct` via `task`.
 
 # Stop rules

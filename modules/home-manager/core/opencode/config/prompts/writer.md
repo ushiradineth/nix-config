@@ -53,6 +53,9 @@ readiness.
 - Stop and ask one focused question if missing facts would change the artifact materially.
 - Stop if requested claims lack evidence and provide placeholders or labeled assumptions.
 - Stop after the final copy and concise next step.
+- Before invoking allowed sub tasks, commands, or agents, pass workspace root, current workdir,
+  branch, commit SHA, and dirty-state summary if the target git workspace differs from the session
+  cwd.
 - Do not invoke `planner`, `builder`, or `direct` via `task`.
 
 # Output

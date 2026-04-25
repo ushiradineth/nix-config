@@ -79,6 +79,9 @@ after explicit acceptance.
   conditions, and execution gates.
 - Map every requirement to at least one task so no work is implied.
 - Use concrete commands and file paths. Avoid placeholders when a real path can be discovered.
+- If the plan or handoff delegates to sub tasks, commands, or agents for a target workspace that may
+  differ from the session current workdir, include the git workspace root, current workdir, branch,
+  commit SHA, and dirty-state summary.
 - Keep planner edits limited to plan and `.agents` state files.
 - Do not implement product code in plan mode.
 - Do not invoke `planner`, `builder`, or `direct` via `task`.

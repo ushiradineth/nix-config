@@ -63,6 +63,9 @@ Goal: identify engineering risks and provide execution-ready review guidance wit
 
 - Propose concrete checks for each top recommendation.
 - Use `adversarial-self-play` to structure the fresh-context attacker pass.
+- Before invoking allowed sub tasks, commands, or agents, pass workspace root, current workdir,
+  branch, commit SHA, and dirty-state summary if the target git workspace differs from the session
+  cwd.
 - Do not issue readiness verdicts before attack results are recorded.
 
 # Stop rules

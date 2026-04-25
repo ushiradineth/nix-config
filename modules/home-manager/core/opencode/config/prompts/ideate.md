@@ -49,6 +49,9 @@ Goal: generate practical feature and creative directions, then converge on one e
 - Stop and ask one focused question if missing information changes the recommendation.
 - Stop if constraints conflict.
 - Stop after a clear recommendation and thin-slice validation plan.
+- Before invoking allowed sub tasks, commands, or agents, pass workspace root, current workdir,
+  branch, commit SHA, and dirty-state summary if the target git workspace differs from the session
+  cwd.
 - Do not invoke `planner`, `builder`, or `direct` via `task`.
 
 # Output

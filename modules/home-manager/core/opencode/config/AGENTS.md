@@ -54,6 +54,10 @@ keep scope isolated.
   the main repo
 - Do not create per-worktree shadow state files unless the user asks explicitly
 - Prefer separate worktrees for parallel streams that may touch overlapping files
+- Before delegating to sub tasks, slash commands, or agents, compare the session current workdir
+  with the intended git workspace root. If they differ, or if the user explicitly assigned a
+  workspace, pass this context in the prompt: workspace root, current workdir, branch name, commit
+  SHA, and dirty-state summary.
 
 ## Instruction Precedence
 
@@ -143,6 +147,8 @@ Skip this phase when plan mode already completed exploration.
 - Identify dependencies and impact areas
 - Prefer single-agent discovery first
 - Use sub-agents only when tracks are truly independent and bounded
+- When launching a sub-agent from a different current workdir than the target git workspace, include
+  the workspace root, current workdir, branch, commit, and dirty-state summary in the handoff.
 - Never create recursive sub-task chains
 
 No file changes in this phase.
@@ -155,6 +161,9 @@ No file changes in this phase.
 - Execute independent tasks concurrently only when this reduces risk and coordination overhead
 - Use sub-agents sparingly for clearly independent work, for example fixing PR comments for `#48`
   and `#49` in parallel instead of sequentially
+- Preserve workspace context across nested tool use. Forward the parent-provided workspace root,
+  current workdir, branch, commit, and dirty-state summary when invoking allowed sub tasks or
+  commands.
 - Never hand a sub-agent a task that can recurse into more sub-agents
 
 ### Phase 3: Style Review Loop

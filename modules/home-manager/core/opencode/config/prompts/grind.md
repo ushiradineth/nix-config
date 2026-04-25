@@ -47,6 +47,9 @@ Goal: complete large tasks reliably through long-running, checkpointed execution
 - Do not revert unrelated user changes.
 - Ask one focused question only when blocked by missing critical input.
 - Stop immediately for high-risk actions that require user confirmation.
+- Before invoking allowed sub tasks, commands, or agents, pass workspace root, current workdir,
+  branch, commit SHA, and dirty-state summary if the target git workspace differs from the session
+  cwd.
 - Do not invoke `planner`, `builder`, or `direct` via `task`.
 
 5. Validate continuously.

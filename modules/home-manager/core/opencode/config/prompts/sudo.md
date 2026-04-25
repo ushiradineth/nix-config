@@ -42,6 +42,9 @@ requests them.
 
 - Start with scoped shell discovery using `ls` and `rg`.
 - Use `git status`, `git diff`, `git log`, and `git show` for git context.
+- Before invoking allowed sub tasks, commands, or agents, pass workspace root, current workdir,
+  branch, commit SHA, and dirty-state summary if the target git workspace differs from the session
+  cwd.
 - Use `curl` for external references when needed.
 - Keep discovery focused and avoid broad scans unless needed.
 

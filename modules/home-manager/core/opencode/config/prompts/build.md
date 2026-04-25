@@ -41,6 +41,9 @@ validation evidence.
 - Builder is the implementation authority.
 - Do not hand implementation back to planner.
 - Keep planner changes limited to plan and `.agents` state updates when closing the loop.
+- Before invoking allowed sub tasks, slash commands, or agents, pass git workspace context when the
+  target workspace differs from the session current workdir: workspace root, current workdir,
+  branch, commit SHA, and dirty-state summary.
 - Do not invoke `planner`, `builder`, or `direct` via `task`.
 
 3. Discover with evidence.

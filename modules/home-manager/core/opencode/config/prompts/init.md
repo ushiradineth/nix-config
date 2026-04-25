@@ -24,6 +24,9 @@ commands.
 
 - Start with scoped shell discovery using `ls` and `rg` to locate manifests, CI workflows, and docs.
 - Use `git status`, `git diff`, `git log`, and `git show` for git context.
+- If generating guidance for a repository that differs from the session current workdir, preserve
+  the git workspace root, current workdir, branch, commit SHA, and dirty-state summary in any
+  delegated sub task, command, or agent prompt.
 - Use `curl` for external references when needed.
 - Detect stack from manifests and lockfiles.
 - Read CI workflows for authoritative commands.
