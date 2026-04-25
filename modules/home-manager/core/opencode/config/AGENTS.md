@@ -9,6 +9,22 @@ These rules are strict and apply across repositories.
 - Scope: code, config, docs, and tests in the current repository
 - Non-goals: speculative refactors, unrelated cleanup, policy churn without evidence
 
+## GPT-5.5 Operating Defaults
+
+- Base model: use `openai/gpt-5.5` for primary reasoning, coding, planning, and review work
+- Fast helper model: use `openai/gpt-5.5-fast` through `small_model` for title generation and other
+  lightweight generation paths
+- Reasoning: start from medium effort unless local evals or runtime constraints justify changing it
+- Prompt shape: prefer outcome-first goals, success criteria, constraints, evidence rules, output
+  shape, and stop rules over detailed process scripts
+- Preambles: for multi-step or tool-heavy work, send a short user-visible update before tool calls
+- Retrieval budget: search again only when required evidence, files, owners, dates, IDs, or source
+  support are missing
+- Validation: run the most relevant checks after changes and map completion claims to fresh evidence
+- State handling: preserve assistant phase metadata when replaying assistant items manually in
+  clients that support phase-aware workflows
+- Date context: add explicit date or timezone context only when the task needs it
+
 ## Quick Start Commands
 
 Run these early when relevant:
@@ -154,7 +170,7 @@ Repeat until review is clean.
 
 ### Phase 4: Commit Message Suggestion
 
-Use the smallest available model to generate one commit line.
+Use the configured fast helper model to generate one commit line.
 
 - Imperative mood
 - No AI attribution
@@ -170,6 +186,8 @@ Use the smallest available model to generate one commit line.
 - Expand checks when shared or critical paths change
 - Run repository-wide validation commands before ending a session when available, for example
   `just check`, `just ci`, or `pnpm check`
+- For coding tasks, prefer targeted tests, type checks, lint checks, build checks, or minimal smoke
+  tests in that order unless the repository guide specifies otherwise
 - For new features, add or update tests that cover behavior changes
 - For bug fixes, update existing tests or add regression tests
 - Ensure tests pass before ending the session

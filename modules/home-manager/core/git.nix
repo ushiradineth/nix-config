@@ -115,7 +115,7 @@ in {
                 echo "No changes to commit"
                 exit 1
               fi
-              MSG=$(echo "$DIFF" | opencode run --agent direct --pure --model "opencode/minimax-m2.5-free" "You are a commit message generator. Analyze the provided git diff and output in this format: <type>(<scope>): <msg>. Rules: Use conventional commit format: <type>(<scope>): <msg> (e.g., fix(api): add transactional queries). Imperative mood. No period at end. Max 50 chars. Describe WHAT changed, not why. Be specific. Plain English." 2>/dev/null)
+              MSG=$(echo "$DIFF" | opencode run --agent direct --pure --model "openai/gpt-5.5-fast" "Generate one concise Conventional Commit subject for the provided git diff. Success means the output is only <type>(<scope>): <msg>, uses imperative mood, has no period, stays under 50 characters, and describes the concrete change. If the diff is unclear, choose the safest accurate scope and type without explaining." 2>/dev/null)
               if [ -n "$MSG" ]; then
                 git commit -e -m "$MSG"
               fi

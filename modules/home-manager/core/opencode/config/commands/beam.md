@@ -5,39 +5,33 @@ agent: planner
 
 Run beam-style option generation using args: `$ARGUMENTS`.
 
-Use this command when one linear draft is likely to miss better alternatives.
+GPT-5.5 intent: create a small set of meaningfully different options, score them with evidence, then
+converge.
 
 Default workflow role:
 
-- Planner should apply beam-style methodology implicitly when triage signals deep scope or high
-  ambiguity.
-- Use this command as an optional manual override for explicit control or debugging.
-
-Planning boundary:
-
+- Planner applies this methodology implicitly when triage shows deep scope, high ambiguity, or real
+  path tradeoffs.
+- Use this command only as an optional manual override for explicit control or debugging.
 - This command is planning-only and must not execute implementation changes.
 
-Workflow:
+Success criteria:
 
-1. Parse constraints from user request and active plan.
-2. Generate `N` distinct variants (default `N=3`, max `N=7`).
-3. Score each variant on correctness, risk, effort, and reversibility.
-4. Select the strongest variant and explain why.
-5. List weak spots that still need improvement.
-6. Propose a thin-slice next action for the selected variant.
+- Options are distinct and bounded.
+- Scoring criteria are explicit.
+- The selected option has a thin-slice next action and verification hint.
+- Rejected options have concrete rejection reasons.
 
-Output contract:
-
-Return all sections:
+Output:
 
 1. `Constraints`: required limits and exclusions.
-2. `Variants`: short summary for each candidate.
-3. `Score matrix`: per-criterion scores and brief evidence.
+2. `Variants`: 3 default, 7 maximum, each with a short summary.
+3. `Score matrix`: correctness, risk, effort, reversibility, and evidence.
 4. `Selection`: chosen variant and rationale.
 5. `Next thin slice`: first implementation candidate and verification hint, planning only.
 
-Safety gates:
+Stop rules:
 
-- Keep `N` bounded to prevent unproductive variant sprawl.
-- Reject near-duplicate variants.
-- If constraints are missing, ask one focused question or use a safe default and state it.
+- Stop if variants become near-duplicates.
+- Stop and ask one focused question if constraints are too incomplete to score safely.
+- Do not optimize for novelty over correctness or reversibility.

@@ -13,6 +13,15 @@
 
 - Target summary: ...
 
+## GPT-5.5 prompt contract
+
+- Outcome-first goal: ...
+- Success criteria summary: ...
+- Constraints and allowed side effects: ...
+- Retrieval budget: ...
+- Output shape: ...
+- Stop rules: ...
+
 ## Evaluation rubric
 
 - Criterion 1: ... | pass bar: ...
@@ -84,6 +93,11 @@
 
 - `command` -> expected result
 - `command` -> expected result
+
+## Claim to evidence
+
+- Claim: ... | Evidence: `command` or file read -> result
+- Claim: ... | Evidence: `command` or file read -> result
 
 ## Open assumptions
 
