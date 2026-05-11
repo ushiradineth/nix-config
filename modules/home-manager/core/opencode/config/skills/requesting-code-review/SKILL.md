@@ -26,7 +26,9 @@ Review context must be explicit and scoped. Do not ask for a vague "quick check"
    - Summarize what changed and what requirements it should satisfy.
 2. Dispatch reviewer.
    - Use a focused review request command.
-   - Route review analysis through the `audit` subagent.
+   - Primary agents may route review analysis through the `audit` subagent.
+   - If this skill is used inside a subagent, do not launch `audit`. Return a scoped review handoff
+     to the caller because subagents are leaf executors.
    - Provide exact files, diff range, and expected behavior.
 3. Process findings by severity.
    - `Critical`: fix before any next step.

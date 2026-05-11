@@ -139,7 +139,7 @@
       "prompt": "{file:./prompts/grind.md}",
       "permission": {
         "question": "allow",
-        "task": "allow",
+        "task": "deny",
         "read": "allow",
         "glob": "allow",
         "grep": "allow",
@@ -170,7 +170,7 @@
       "prompt": "{file:./prompts/audit.md}",
       "permission": {
         "question": "allow",
-        "task": "allow",
+        "task": "deny",
         "read": "allow",
         "glob": "allow",
         "grep": "allow",
@@ -204,7 +204,7 @@
       "prompt": "{file:./prompts/ideate.md}",
       "permission": {
         "question": "allow",
-        "task": "allow",
+        "task": "deny",
         "read": "allow",
         "glob": "allow",
         "grep": "allow",
@@ -238,7 +238,7 @@
       "prompt": "{file:./prompts/writer.md}",
       "permission": {
         "question": "allow",
-        "task": "allow",
+        "task": "deny",
         "read": "allow",
         "glob": "allow",
         "grep": "allow",

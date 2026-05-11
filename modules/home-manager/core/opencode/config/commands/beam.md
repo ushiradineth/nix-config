@@ -5,7 +5,7 @@ agent: planner
 
 Run beam-style option generation using args: `$ARGUMENTS`.
 
-GPT-5.5 intent: create a small set of meaningfully different options, score them with evidence, then
+Intent: create a small set of meaningfully different options, score them with evidence, then
 converge.
 
 Default workflow role:

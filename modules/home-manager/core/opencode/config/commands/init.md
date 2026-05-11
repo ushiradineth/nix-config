@@ -7,8 +7,7 @@ Create or update repository `AGENTS.md` files from actual project context.
 
 Args: `$ARGUMENTS`
 
-GPT-5.5 intent: produce a practical, evidence-backed operating guide that future agents can follow
-safely.
+Intent: produce a practical, evidence-backed operating guide that future agents can follow safely.
 
 Success criteria:
 

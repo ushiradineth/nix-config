@@ -5,7 +5,7 @@ agent: builder
 
 Run adversarial review using args: `$ARGUMENTS`.
 
-GPT-5.5 intent: challenge the artifact before readiness claims and keep the attack tied to evidence.
+Intent: challenge the artifact before readiness claims and keep the attack tied to evidence.
 
 Default workflow role:
 

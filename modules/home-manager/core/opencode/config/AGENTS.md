@@ -9,11 +9,11 @@ These rules are strict and apply across repositories.
 - Scope: code, config, docs, and tests in the current repository
 - Non-goals: speculative refactors, unrelated cleanup, policy churn without evidence
 
-## GPT-5.5 Operating Defaults
+## Model Operating Defaults
 
-- Base model: use `openai/gpt-5.5` for primary reasoning, coding, planning, and review work
-- Fast helper model: use `openai/gpt-5.5-fast` through `small_model` for title generation and other
-  lightweight generation paths
+- Base model routing is configured in `opencode.json` and should not be repeated in prompt prose
+- Fast helper routing uses the configured `small_model` for title generation and other lightweight
+  generation paths
 - Reasoning: start from medium effort unless local evals or runtime constraints justify changing it
 - Prompt shape: prefer outcome-first goals, success criteria, constraints, evidence rules, output
   shape, and stop rules over detailed process scripts
@@ -108,6 +108,19 @@ Core operating loop:
 - Fluency as correctness: convert major claims into testable checks and verify with command output.
 - Artifact drift: update source-of-truth artifacts when downstream execution changes decisions.
 
+## Quality Guardrails
+
+Apply these directly when writing, reviewing, or refactoring code.
+
+- Think before coding: state assumptions, name material ambiguity, and push back when a simpler path
+  better fits the request.
+- Simplicity first: avoid speculative features, one-off abstractions, and configurability that was
+  not requested.
+- Surgical changes: every changed line should trace to the user request, accepted plan, or a
+  validation fix caused by the current change.
+- Goal-driven execution: pair each implementation step with a verification check and stop when the
+  success criteria are met.
+
 ## Documentation Policy
 
 - Do not create new documentation or plans unless the user explicitly asks
@@ -138,6 +151,16 @@ For high risk work:
 
 ## Sub-Agent Workflow
 
+### Leaf subagent policy
+
+- Primary agents may dispatch first-level subagents when the work is independent, bounded, and
+  useful.
+- Task-invoked subagents are leaf executors. They must not invoke `task` for any agent, including
+  themselves or other subagents.
+- If a subagent discovers more work that needs another agent, it must return a scoped handoff,
+  blocker, or recommendation to the caller instead of launching the task itself.
+- Never create recursive or cross-subagent task chains.
+
 ### Phase 1: Parallel Exploration
 
 Skip this phase when plan mode already completed exploration.
@@ -147,6 +170,7 @@ Skip this phase when plan mode already completed exploration.
 - Identify dependencies and impact areas
 - Prefer single-agent discovery first
 - Use sub-agents only when tracks are truly independent and bounded
+- Tell launched sub-agents they are leaves and must not spawn further task agents.
 - When launching a sub-agent from a different current workdir than the target git workspace, include
   the workspace root, current workdir, branch, commit, and dirty-state summary in the handoff.
 - Never create recursive sub-task chains
@@ -161,8 +185,8 @@ No file changes in this phase.
 - Execute independent tasks concurrently only when this reduces risk and coordination overhead
 - Use sub-agents sparingly for clearly independent work, for example fixing PR comments for `#48`
   and `#49` in parallel instead of sequentially
-- Preserve workspace context across nested tool use. Forward the parent-provided workspace root,
-  current workdir, branch, commit, and dirty-state summary when invoking allowed sub tasks or
+- Preserve workspace context across delegated tool use. Forward the parent-provided workspace root,
+  current workdir, branch, commit, and dirty-state summary when invoking first-level sub tasks or
   commands.
 - Never hand a sub-agent a task that can recurse into more sub-agents
 
@@ -259,7 +283,8 @@ PR and issue writing style:
 - In git worktrees, keep `.agents/MEMORIES.md` and `.agents/PROGRESS.md` synced in the main repo
 - Keep `planner`, `builder`, and `direct` as user-invoked primary agents only
 - Deny task invocation for `planner`, `builder`, and `direct` at global permission scope
-- Allow other task-invoked agents by default so new subagents work without per-agent edits
+- Keep subagents as leaf task targets. Do not grant task invocation permission to subagents unless
+  the user explicitly asks for a reviewed exception.
 
 ### Ask First
 

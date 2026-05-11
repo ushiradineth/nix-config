@@ -35,8 +35,10 @@ Do not implement code changes until a design direction is presented and accepted
 5. Transition cleanly.
    - For multi-step work, hand off to planner workflow and plan file creation.
    - For simple approved work, continue in direct execution mode.
-   - For ideation deliverables, route execution through the `ideate` subagent.
-   - For writing deliverables, route execution through the `writer` subagent.
+   - Primary agents may route ideation deliverables through the `ideate` subagent.
+   - Primary agents may route writing deliverables through the `writer` subagent.
+   - If this skill is used inside a subagent, return a scoped handoff to the caller instead of
+     launching another agent because subagents are leaf executors.
 
 ## Output contract
 

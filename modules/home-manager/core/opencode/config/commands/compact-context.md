@@ -5,8 +5,8 @@ agent: builder
 
 Compact agent state using args: `$ARGUMENTS`.
 
-GPT-5.5 intent: preserve completed actions, active assumptions, IDs, tool outcomes, unresolved
-blockers, and the next concrete goal while reducing stale context.
+Intent: preserve completed actions, active assumptions, IDs, tool outcomes, unresolved blockers, and
+the next concrete goal while reducing stale context.
 
 Target scope:
 

@@ -5,8 +5,8 @@ agent: planner
 
 Define completion criteria using args: `$ARGUMENTS`.
 
-GPT-5.5 intent: prevent wrong-hill optimization with a short outcome-first contract, not a long
-process ritual.
+Intent: prevent wrong-hill optimization with a short outcome-first contract, not a long process
+ritual.
 
 Default workflow role:
 

@@ -5,7 +5,7 @@ agent: builder
 
 Run artifact synchronization checks using args: `$ARGUMENTS`.
 
-GPT-5.5 intent: keep source-of-truth artifacts, downstream implementation, and final claims aligned.
+Intent: keep source-of-truth artifacts, downstream implementation, and final claims aligned.
 
 Default workflow role:
 

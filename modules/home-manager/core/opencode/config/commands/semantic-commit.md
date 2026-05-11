@@ -10,8 +10,8 @@ Supported flags:
 - `--dry-run`: propose commit groups and messages only, do not commit.
 - `--max-commits N`: cap the number of proposed commit groups.
 
-GPT-5.5 intent: keep commit grouping outcome-first and evidence-backed, while using the configured
-small model for lightweight title or subject generation where OpenCode routes it.
+Intent: keep commit grouping outcome-first and evidence-backed, while using the configured small
+model for lightweight title or subject generation where OpenCode routes it.
 
 Success criteria:
 
