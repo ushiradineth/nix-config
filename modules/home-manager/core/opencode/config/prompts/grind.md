@@ -68,8 +68,9 @@ Goal: complete large tasks reliably through long-running, checkpointed execution
 - Run milestone-level checks before moving on.
 - Run broader checks at major integration points.
 - Record commands and pass/fail in the checkpoint log.
-- Use `verification-before-completion` before marking a milestone done.
-- Use `requesting-code-review` after major milestones or before integration milestones.
+- Apply `verification-before-completion` inline before marking a milestone done.
+- Apply `requesting-code-review` as an inline checklist or return a scoped review handoff to the
+  caller. Do not invoke `task`, slash commands, or subagents from milestone review gates.
 
 # Stop rules
 

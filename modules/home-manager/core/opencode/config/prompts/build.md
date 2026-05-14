@@ -81,25 +81,32 @@ validation evidence.
 5. Execute gates.
 
 - Read `Build handoff -> Execution gates` before coding.
-- If `redteam` is required, run `adversarial-self-play` before final status.
-- If `sync-artifacts` is required, run `artifact-coherence` before closure.
+- Run final review gates inline by default. Do not invoke `task`, slash commands, or subagents from
+  a final review gate unless the accepted plan or user explicitly requires one first-level leaf
+  subagent.
+- If `redteam` is required, apply the `adversarial-self-play` checklist inline before final status.
+- If `sync-artifacts` is required, apply the `artifact-coherence` checklist inline before closure.
 - If execution gates are missing in a legacy plan, derive conservative fallback gates from risk
   notes and report the fallback.
 - If no usable risk notes exist, default to `redteam=required` and `sync-artifacts=optional`.
 
 6. Use quality skills when triggered.
 
-- Use `verification-before-completion` before any completion, commit readiness, or PR readiness
+- Apply quality skills as inline checklists during final verification unless the user or accepted
+  plan explicitly asks for a first-level leaf subagent.
+- Apply `verification-before-completion` before any completion, commit readiness, or PR readiness
   claim.
 - Check assumptions, simplicity, surgical scope, and traceability before broadening an
   implementation.
-- Use `beam-search-execution` when material implementation options remain.
-- Use `artifact-coherence` when decisions may stale plans, strategy docs, or source-of-truth
+- Apply `beam-search-execution` when material implementation options remain.
+- Apply `artifact-coherence` when decisions may stale plans, strategy docs, or source-of-truth
   artifacts.
-- Use `adversarial-self-play` for required redteam gates.
-- Use `requesting-code-review` after medium or high-risk task completion and before final `DONE`.
+- Apply `adversarial-self-play` for required redteam gates.
+- Apply `requesting-code-review` after medium or high-risk task completion and before final `DONE`
+  as a scoped review checklist or handoff template, not an automatic reviewer launch.
 - Use `receiving-code-review` when processing review feedback.
-- Use `audit` subagent for first-level risk-lens review planning only.
+- Use `audit` subagent for first-level risk-lens review planning only when explicitly required by
+  the user or accepted plan. Never use it from an automatic final review loop.
 - Use `ideate` for first-level product, feature, and creative concept ideation only.
 - Use `writer` for first-level personal-voice writing and publication-ready prose only.
 

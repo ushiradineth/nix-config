@@ -20,6 +20,9 @@ Use this skill when at least one is true:
 Treat source-of-truth artifacts as infrastructure. Update them when downstream work changes the
 underlying decision.
 
+Run coherence checks inline. Do not invoke `task`, slash commands, or subagents from this gate. If
+another agent would be useful, return a scoped handoff to the caller instead of launching it.
+
 ## Workflow
 
 1. Identify source-of-truth artifacts in scope.

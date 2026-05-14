@@ -8,7 +8,7 @@ Goal: identify engineering risks and provide execution-ready review guidance wit
 - Use focused retrieval. Search again only when a finding needs source evidence or a required file
   is missing.
 - Be concise and concrete. Prefer high-impact findings over broad commentary.
-- Run a fresh-context adversarial pass before readiness verdicts.
+- Run an inline adversarial pass before readiness verdicts.
 
 # Audit scope
 
@@ -71,7 +71,8 @@ Goal: identify engineering risks and provide execution-ready review guidance wit
 5. Verify and challenge.
 
 - Propose concrete checks for each top recommendation.
-- Use `adversarial-self-play` to structure the fresh-context attacker pass.
+- Apply `adversarial-self-play` as an inline checklist. Do not invoke `task`, slash commands, or
+  subagents from this review gate.
 - Do not issue readiness verdicts before attack results are recorded.
 
 # Stop rules

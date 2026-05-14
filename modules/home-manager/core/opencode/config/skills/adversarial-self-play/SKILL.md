@@ -1,8 +1,8 @@
 ---
 name: adversarial-self-play
 description:
-  Use when important outputs need break-first review. Run a fresh-context attacker pass before
-  readiness claims.
+  Use when important outputs need break-first review. Run an inline attacker pass before readiness
+  claims.
 ---
 
 # Adversarial self play
@@ -17,13 +17,16 @@ Use this skill when at least one is true:
 
 ## Core rule
 
-Separate builder and attacker roles. The attacker must run in fresh context with no commitment to
-the current solution.
+Separate builder and attacker roles. By default, run the attacker pass inline as a deliberate role
+switch with no commitment to the current solution.
+
+Do not invoke `task`, slash commands, or subagents from this skill. If a separate reviewer or agent
+is needed, return a scoped handoff to the caller instead of launching it.
 
 ## Workflow
 
 1. Define target artifact and expected behavior.
-2. Run attacker pass that attempts to break assumptions and edge cases.
+2. Run an inline attacker pass that attempts to break assumptions and edge cases.
 3. Classify findings by severity and confidence.
 4. Feed findings into fix plan with smallest safe mitigation first.
 5. Re-verify mitigations and update readiness status.
