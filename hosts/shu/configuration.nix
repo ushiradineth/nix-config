@@ -21,7 +21,6 @@
         expose-group-apps = true;
         persistent-apps = [
           "/Applications/Zen.app"
-          "/Applications/Vivaldi.app"
           "/Applications/Ghostty.app"
           "/Applications/Notion Calendar.app"
           "/Applications/Obsidian.app"
