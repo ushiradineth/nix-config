@@ -75,6 +75,11 @@
 - Escalation conditions:
   - ...
 
+## Fresh builder prompt
+
+- Copy line: `Builder prompt: Implement .agents/plans/P-YYYYMMDD-<slug>.md`
+- Rule: planner final response must end with the copy line and no prose after it.
+
 ## Critical blockers
 
 - ...
@@ -122,3 +127,4 @@
 - completed tasks: T1, T2
 - blockers: none
 - validations run: `command` -> pass | fail
+- final builder copy line emitted: yes | no

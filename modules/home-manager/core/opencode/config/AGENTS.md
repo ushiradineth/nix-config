@@ -69,6 +69,22 @@ keep scope isolated.
 
 Classify every request before acting.
 
+## Four-lane operating model
+
+Normal user-facing workflow has four lanes:
+
+- `planner` plus `builder`: big tasks, architecture changes, risky edits, or any work that benefits
+  from a written handoff. Planner creates the plan. Builder executes it in a fresh session when the
+  user accepts.
+- `direct`: small or incremental work, including UI iterations from a design, when scope is local
+  and validation is clear.
+- `sudo`: explicit operational chores and high-authority actions, such as homelab debugging, PR
+  operations, pipeline fixes, and shell-heavy maintenance.
+- `init`: repository setup and `AGENTS.md` generation.
+
+Skills provide hidden workflow capability inside these lanes. Do not make the user choose niche
+agents or methodology commands when the active lane can apply the skill internally.
+
 | Type                      | Signals                                                              | Action                            |
 | ------------------------- | -------------------------------------------------------------------- | --------------------------------- |
 | Simple Query              | Questions, explanation, clarification                                | Answer directly                   |
@@ -82,9 +98,11 @@ Execution note:
 - Use `planner` for discovery, plan authoring, and `.agents/*` state updates only
 - Use `builder` as the implementation authority for approved plan handoffs
 - Keep user workflow lanes stable: planner -> builder for multi-step, direct for straightforward,
-  sudo for operational tasks, writer for writing
+  sudo for operational tasks, init for repository setup
 - In normal planner -> builder flow, planner chooses methodology depth gates implicitly instead of
   asking users to run `/define-done`, `/beam`, `/redteam`, or `/sync-artifacts` manually
+- `audit`, `grind`, `ideate`, and `writer` are internal leaf capabilities. Use them only when a
+  primary lane explicitly needs their lens. Do not present them as normal workflow lanes.
 
 ## Evaluation-First Execution Principle
 
@@ -299,16 +317,23 @@ PR and issue writing style:
 - Bypass git hooks with `--no-verify` or `--no-gpg-sign`
 - Run force push to protected branches
 
-## Memory System
+## Internal Context and Memory System
 
-Read `.agents/MEMORIES.md` and `.agents/PROGRESS.md` at session start.
+Read `.agents/CONTEXT.md`, `.agents/MEMORIES.md`, and `.agents/PROGRESS.md` at session start when
+they exist.
 
 Plan mode can update plan and state files. It must not execute implementation changes until the user
 explicitly accepts the plan.
 
 In git worktrees, read and write these files in the main repo, not the worktree path.
 
-If either file is missing, bootstrap both files after scanning repository context.
+If state files are missing, bootstrap them after scanning repository context.
+
+- `.agents/CONTEXT.md`
+  - Store shared language, operating model, durable rules, state-file responsibilities, and flagged
+    ambiguities.
+  - Keep it internal. Do not create repo-facing `CONTEXT.md` unless the user explicitly asks.
+  - Do not use it as a decision log or plan archive.
 
 - `.agents/MEMORIES.md`
   - Store stack, preferences, patterns, and durable constraints
@@ -319,7 +344,7 @@ If either file is missing, bootstrap both files after scanning repository contex
   - Record why decisions were made, not routine file edits
   - Link decisions to memory entries when relevant
 
-Format for both files:
+Format for state files:
 
 - Dense bullets only
 - No long prose
@@ -327,12 +352,16 @@ Format for both files:
 
 ## File Lifecycle
 
-- Keep `.agents/MEMORIES.md` and `.agents/PROGRESS.md` current
+- Keep `.agents/CONTEXT.md`, `.agents/MEMORIES.md`, and `.agents/PROGRESS.md` current
 - In git worktrees, update `.agents/MEMORIES.md` and `.agents/PROGRESS.md` in the main repo only
 - For multi-step implementation work, plan mode should create and maintain `.agents/plans/P-*.md`,
   including requirement updates before acceptance
 - After plan acceptance, planner must hand off implementation to `builder` using the approved
   `Build handoff`
+- Planner final responses for multi-step plans must end with exactly one copyable line:
+  `Builder prompt: Implement <plan-path>`
+- That copy line must be the final line of the response so the user can start a fresh builder
+  session.
 - If a plan file is explicitly requested, use `.agents/plans/P-*.md`
 - Use `~/.config/opencode/templates/plan.md` only when bootstrapping requested plan files
 - Close requested plan files with outcomes, decisions, and stale-entry candidates

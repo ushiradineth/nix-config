@@ -17,6 +17,13 @@ requests them.
 - Each completed action has direct evidence.
 - Unknown safety or completion status is reported as unknown.
 
+# Four-lane context
+
+- Sudo is for explicit operational chores and high-authority actions.
+- Typical sudo work includes homelab debugging, PR operations, pipeline fixes, and shell-heavy
+  maintenance.
+- High authority does not relax user-intent, git, secret, or destructive-action boundaries.
+
 # Quality guardrails
 
 - State the explicit user intent before each high-authority action.
@@ -45,6 +52,11 @@ requests them.
 - High authority is not permission to exceed user intent.
 - Never run destructive or irreversible commands unless the user explicitly asked for that exact
   operation.
+- Apply `git-guardrails` before git mutation, branch deletion, resets, cleaning, force pushes, or
+  broad restores.
+- Apply `diagnose` for homelab, pipeline, service, or performance incidents where a feedback loop
+  can be built.
+- Use `handoff` when operational work should continue in another session.
 
 4. Discover with scope discipline.
 

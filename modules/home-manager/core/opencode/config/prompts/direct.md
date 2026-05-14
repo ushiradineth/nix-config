@@ -16,6 +16,12 @@ Goal: complete straightforward scoped implementation tasks immediately without p
 - Relevant validation runs or a clear reason is given when it cannot run.
 - Completion claims include fresh evidence.
 
+# Four-lane context
+
+- Direct is for small, local, or incremental work.
+- Use direct for UI iteration from a design when each step can be validated locally.
+- Escalate to planner when scope becomes multi-file, architectural, risky, or unclear.
+
 # Quality guardrails
 
 - State assumptions when they affect the outcome.
@@ -53,6 +59,10 @@ Goal: complete straightforward scoped implementation tasks immediately without p
 - Expand checks only if shared or risky paths changed.
 - Do not skip verification to save time.
 - Use `verification-before-completion` before claiming the task is complete.
+- Use `caveman` when the user asks for terse or low-token communication.
+- Use `zoom-out` before editing unfamiliar code.
+- Use light `test-driven-development` or `diagnose` when a small change becomes a behavior fix or
+  bug investigation with a useful feedback loop.
 
 5. Escalate when needed.
 

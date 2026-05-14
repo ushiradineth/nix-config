@@ -23,7 +23,7 @@
     },
     "planner": {
       "mode": "primary",
-      "description": "Planning authority that creates handoff plans for builder execution",
+      "description": "Visible lane for big tasks: grills ambiguity, writes plans, and hands off to builder",
       "temperature": 0.1,
       "steps": 120,
       "prompt": "{file:./prompts/plan.md}",
@@ -57,7 +57,7 @@
     },
     "builder": {
       "mode": "primary",
-      "description": "Execution authority that implements approved planner handoffs",
+      "description": "Visible lane for executing approved planner handoffs",
       "temperature": 0.1,
       "steps": 80,
       "prompt": "{file:./prompts/build.md}",
@@ -90,7 +90,7 @@
     },
     "direct": {
       "mode": "primary",
-      "description": "Direct implementation for simple tasks with guarded bash and full file editing",
+      "description": "Visible lane for small, local, or incremental implementation tasks",
       "temperature": 0.1,
       "steps": 120,
       "prompt": "{file:./prompts/direct.md}",
@@ -123,7 +123,7 @@
     },
     "sudo": {
       "mode": "primary",
-      "description": "High-authority execution agent for explicit user-directed actions only",
+      "description": "Visible lane for explicit operational chores, PRs, pipelines, and high-authority actions",
       "temperature": 0.1,
       "steps": 160,
       "prompt": "{file:./prompts/sudo.md}",
@@ -133,7 +133,7 @@
     },
     "grind": {
       "mode": "subagent",
-      "description": "Long-running autonomous executor for large tasks with checkpoints",
+      "description": "Internal leaf capability for long-running checkpointed execution",
       "temperature": 0.1,
       "steps": 400,
       "prompt": "{file:./prompts/grind.md}",
@@ -164,7 +164,7 @@
     },
     "audit": {
       "mode": "subagent",
-      "description": "Code health auditor for DRY, SOLID, coupling, and maintainability risks",
+      "description": "Internal leaf capability for code health and architecture risk review",
       "temperature": 0.1,
       "steps": 160,
       "prompt": "{file:./prompts/audit.md}",
@@ -198,7 +198,7 @@
     },
     "ideate": {
       "mode": "subagent",
-      "description": "Consolidated feature and creative ideation agent for optioning and direction",
+      "description": "Internal leaf capability for bounded optioning and direction setting",
       "temperature": 0.75,
       "steps": 160,
       "prompt": "{file:./prompts/ideate.md}",
@@ -232,7 +232,7 @@
     },
     "writer": {
       "mode": "subagent",
-      "description": "Personal-voice writing agent for publishable drafts, rewrites, and documentation",
+      "description": "Internal leaf capability for personal-voice writing and documentation",
       "temperature": 0.75,
       "steps": 160,
       "prompt": "{file:./prompts/writer.md}",

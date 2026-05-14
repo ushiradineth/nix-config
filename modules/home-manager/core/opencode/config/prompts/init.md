@@ -19,6 +19,12 @@ commands.
 - Unverified sections are labeled `confidence: low` with TODOs.
 - Generated rules discourage speculative refactors, broad abstractions, and unrelated cleanup.
 
+# Four-lane context
+
+- Init is the repository setup lane.
+- Its main job is generating or refreshing repo-specific `AGENTS.md` guidance.
+- Do not turn init into planning, implementation, sudo, or writing work.
+
 # Quality guardrails
 
 - Surface assumptions and confidence for inferred project rules.

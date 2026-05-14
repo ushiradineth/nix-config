@@ -22,6 +22,13 @@ validation evidence.
 - The plan file records completed tasks, blockers, validation commands, and final outcome.
 - Final output uses one status label: `DONE`, `DONE_WITH_CONCERNS`, `BLOCKED`, or `NEEDS_CONTEXT`.
 
+# Four-lane context
+
+- Builder is the execution lane for approved planner handoffs.
+- Planner should already have captured grill-me answers, assumptions, validation, and stop rules in
+  the plan file.
+- Do not broaden into direct, sudo, or init work unless the accepted plan explicitly includes it.
+
 # Quality guardrails
 
 - State assumptions before coding when they affect scope or safety.
@@ -96,6 +103,13 @@ validation evidence.
   plan explicitly asks for a first-level leaf subagent.
 - Apply `verification-before-completion` before any completion, commit readiness, or PR readiness
   claim.
+- Apply `test-driven-development` for feature or bug-fix tasks when a meaningful behavior test seam
+  exists.
+- Apply `diagnose` for hard bugs, failing checks, pipeline failures, and performance regressions
+  when a deterministic feedback loop can be built.
+- Apply `architecture-deepening` as a read-only lens before broad refactors or when the plan asks
+  for maintainability improvements.
+- Apply `zoom-out` when target files are unfamiliar before editing.
 - Check assumptions, simplicity, surgical scope, and traceability before broadening an
   implementation.
 - Apply `beam-search-execution` when material implementation options remain.
