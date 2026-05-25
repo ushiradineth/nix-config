@@ -2,6 +2,7 @@
   config,
   hostname,
   mysecrets,
+  lib,
   ...
 }: {
   age.secrets.cloudflare-tunnel-token.file = "${mysecrets}/${hostname}/cloudflare-tunnel-token.age";
@@ -16,8 +17,19 @@
     };
   };
 
-  systemd.services."cloudflared-tunnel-shupi".environment = {
-    # Avoid tunnel startup failures when local DNS (127.0.0.1) is temporarily unavailable.
-    TUNNEL_DNS_RESOLVER_ADDRS = "1.1.1.1:53,1.0.0.1:53";
+  systemd.services."cloudflared-tunnel-shupi" = {
+    environment = {
+      # Avoid tunnel startup failures when local DNS (127.0.0.1) is temporarily unavailable.
+      TUNNEL_DNS_RESOLVER_ADDRS = "1.1.1.1:53,1.0.0.1:53";
+    };
+
+    unitConfig = {
+      StartLimitIntervalSec = 0;
+    };
+
+    serviceConfig = {
+      Restart = lib.mkForce "always";
+      RestartSec = "30s";
+    };
   };
 }
