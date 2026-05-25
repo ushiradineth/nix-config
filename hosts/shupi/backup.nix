@@ -35,16 +35,8 @@ in {
     "d /srv/backups/shu-code 0755 root root -"
   ];
 
-  # Notification service templates for backup success/failure
+  # Notification service template for backup failures
   # Uses localhost HTTP to ntfy container (no auth needed internally)
-  systemd.services."notify-backup-success@" = {
-    description = "Notify backup success for %i";
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.curl}/bin/curl -H 'Title: Backup Success: %i' -H 'Priority: default' -H 'Tags: backup' -d 'Backup job %i completed successfully' http://127.0.0.1:${toString config.ports.ntfy}/alerts";
-    };
-  };
-
   systemd.services."notify-backup-failure@" = {
     description = "Notify backup failure for %i";
     serviceConfig = {
@@ -54,26 +46,22 @@ in {
   };
 
   # Increase timeout for restic backup services (SFTP connections can be slow to close)
-  # Add notification hooks for backup success/failure
+  # Add notification hooks for backup failures
   systemd.services = {
     "restic-backups-critical-data" = {
       serviceConfig.TimeoutStopSec = "5min";
-      onSuccess = ["notify-backup-success@critical-data.service"];
       onFailure = ["notify-backup-failure@critical-data.service"];
     };
     "restic-backups-app-data" = {
       serviceConfig.TimeoutStopSec = "5min";
-      onSuccess = ["notify-backup-success@app-data.service"];
       onFailure = ["notify-backup-failure@app-data.service"];
     };
     "restic-backups-config" = {
       serviceConfig.TimeoutStopSec = "5min";
-      onSuccess = ["notify-backup-success@config.service"];
       onFailure = ["notify-backup-failure@config.service"];
     };
     "restic-backups-db-dumps" = {
       serviceConfig.TimeoutStopSec = "5min";
-      onSuccess = ["notify-backup-success@db-dumps.service"];
       onFailure = ["notify-backup-failure@db-dumps.service"];
     };
   };

@@ -61,6 +61,10 @@
                 severity = labels.get("severity", "warning")
                 instance = labels.get("instance", "unknown")
 
+                if status != "firing" or severity != "critical":
+                    print(f"Skipping alert: {alertname} status={status} severity={severity}")
+                    continue
+
                 summary = annotations.get("summary", alertname)
                 description = annotations.get("description", "No description")
 
@@ -190,7 +194,7 @@ in {
       - name: 'ntfy-bridge'
         webhook_configs:
           - url: 'http://alertmanager-ntfy-bridge:8080/'
-            send_resolved: true
+            send_resolved: false
 
     inhibit_rules:
       - source_match:

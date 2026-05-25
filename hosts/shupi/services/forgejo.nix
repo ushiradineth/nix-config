@@ -276,13 +276,6 @@ in
           done <<< "$REPOS"
 
           echo "GitHub sync completed successfully"
-
-          # Send success notification to ntfy (localhost, no auth needed)
-          ${pkgs.curl}/bin/curl -H "Title: Forgejo GitHub Sync Success" \
-            -H "Priority: default" \
-            -H "Tags: forgejo,github" \
-            -d "Successfully synced GitHub repositories to Forgejo" \
-            http://127.0.0.1:${toString config.ports.ntfy}/alerts
         '';
 
         onFailure = ["forgejo-sync-failure.service"];
