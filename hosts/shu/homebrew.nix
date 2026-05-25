@@ -52,6 +52,7 @@
       "helium-browser"
       "cloudflare-warp"
       "yubico-authenticator"
+      "codex-app"
     ];
     masApps = {
       "Davinci Resolve" = 571213070;
