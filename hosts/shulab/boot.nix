@@ -4,7 +4,7 @@
 
     limine = {
       enable = true;
-      secureBoot.enable = true;
+      secureBoot.enable = false;
       maxGenerations = 3;
     };
   };

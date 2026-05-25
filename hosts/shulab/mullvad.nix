@@ -112,6 +112,7 @@ in {
     services."mullvad-daemon".environment.MULLVAD_SETTINGS_DIR = "/var/lib/mullvad-vpn";
 
     services."mullvad-daemon".preStart = ''
+      mkdir -p /var/lib/mullvad-vpn
       cp --no-preserve=all ${mullvadSettings} /var/lib/mullvad-vpn/settings.json
       chmod 600 /var/lib/mullvad-vpn/settings.json
     '';
