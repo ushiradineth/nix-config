@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   mylib,
   myvars,
   hostname,
@@ -65,6 +66,12 @@ in {
           "uri": "${repoBase}/db-dumps",
           "guid": "1b0feae9a9b9ea9cd974936591be4a4cdff3378ea18325a17b37e74f9ee25d27",
           "password": "$RESTIC_PASSWORD"
+        },
+        {
+          "id": "shu-code",
+          "uri": "/repos/shu-code",
+          "guid": "e8a4e2f6179b40d8866d3bdcb4e2515d68aee481dc7bfb2b4ed3b11f2dfcb8f9",
+          "password": "$RESTIC_PASSWORD"
         }
       ],
       "auth": {
@@ -84,6 +91,20 @@ in {
     EOF
           chmod 600 /srv/backrest/config/config.json
         fi
+
+        if ! ${pkgs.jq}/bin/jq -e '.repos[]? | select(.id == "shu-code")' /srv/backrest/config/config.json >/dev/null; then
+          tmp=$(mktemp)
+          ${pkgs.jq}/bin/jq --arg password "$RESTIC_PASSWORD" '
+            .repos += [{
+              id: "shu-code",
+              uri: "/repos/shu-code",
+              guid: "e8a4e2f6179b40d8866d3bdcb4e2515d68aee481dc7bfb2b4ed3b11f2dfcb8f9",
+              password: $password
+            }]
+          ' /srv/backrest/config/config.json > "$tmp"
+          install -m 600 "$tmp" /srv/backrest/config/config.json
+          rm -f "$tmp"
+        fi
   '';
 
   virtualisation.oci-containers.containers.backrest = {
@@ -96,6 +117,7 @@ in {
       "/srv/backrest/tmp:/tmp"
       "/srv/backrest/ssh/known_hosts:/root/.ssh/known_hosts:ro"
       "/srv/backrest/ssh/id_rsa:/root/.ssh/id_rsa:ro"
+      "/srv/backups/shu-code:/repos/shu-code"
     ];
     environment = {
       BACKREST_DATA = "/data";

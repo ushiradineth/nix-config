@@ -10,6 +10,7 @@
   tailscale = "/opt/homebrew/bin/tailscale";
   restic = "${pkgs.restic}/bin/restic";
   jq = "${pkgs.jq}/bin/jq";
+  python = "${pkgs.python3}/bin/python3";
   maxAgeHours = 24;
 
   # Backup script: checks if backup is needed (24+ hours old) and runs if so
@@ -19,14 +20,22 @@
     TAILSCALE="${tailscale}"
     RESTIC="${restic}"
     JQ="${jq}"
+    PYTHON="${python}"
     STATE_FILE="/tmp/restic-backup-tailscale-state"
     LOG_FILE="/tmp/restic-backup-code.log"
     PASSWORD_FILE="${config.age.secrets.restic-password.path}"
     REPOSITORY="${repository}"
     MAX_AGE_HOURS=${toString maxAgeHours}
+    SSH_IDENTITY="/Users/shu/.ssh/shu"
 
     log() {
       echo "[$(date)] $1" | tee -a "$LOG_FILE"
+    }
+
+    restic_cmd() {
+      $RESTIC \
+        -o "sftp.command=ssh -i $SSH_IDENTITY -o IdentitiesOnly=yes -o BatchMode=yes shu@shupi -s sftp" \
+        "$@"
     }
 
     cleanup() {
@@ -52,17 +61,17 @@
     fi
 
     # Check if shupi is reachable via SSH
-    if ! ssh -o ConnectTimeout=5 -o BatchMode=yes shu@shupi true &>/dev/null; then
+    if ! ssh -i "$SSH_IDENTITY" -o IdentitiesOnly=yes -o ConnectTimeout=5 -o BatchMode=yes shu@shupi true &>/dev/null; then
       log "shupi not reachable via SSH, skipping backup check"
       exit 0
     fi
 
     # Check if backup is needed (24+ hours since last snapshot)
-    LATEST_SNAPSHOT=$($RESTIC -r "$REPOSITORY" --password-file "$PASSWORD_FILE" snapshots --latest 1 --json 2>/dev/null | $JQ -r '.[0].time // empty')
+    LATEST_SNAPSHOT=$(restic_cmd -r "$REPOSITORY" --password-file "$PASSWORD_FILE" snapshots --latest 1 --json 2>/dev/null | $JQ -r '.[0].time // empty')
 
     if [ -n "$LATEST_SNAPSHOT" ]; then
       # Calculate age in hours
-      SNAPSHOT_EPOCH=$(date -j -f "%Y-%m-%dT%H:%M:%S" "$(echo "$LATEST_SNAPSHOT" | cut -d. -f1)" "+%s" 2>/dev/null || echo "0")
+      SNAPSHOT_EPOCH=$($PYTHON -c 'from datetime import datetime; import sys; print(int(datetime.fromisoformat(sys.argv[1].replace("Z", "+00:00")).timestamp()))' "$LATEST_SNAPSHOT" 2>/dev/null || echo "0")
       CURRENT_EPOCH=$(date "+%s")
       AGE_HOURS=$(( (CURRENT_EPOCH - SNAPSHOT_EPOCH) / 3600 ))
 
@@ -79,9 +88,9 @@
     log "=== Backup started ==="
 
     # Initialize repository if needed (ignore error if already initialized)
-    $RESTIC -r "$REPOSITORY" --password-file "$PASSWORD_FILE" init 2>/dev/null || true
+    restic_cmd -r "$REPOSITORY" --password-file "$PASSWORD_FILE" init 2>/dev/null || true
 
-    $RESTIC -r "$REPOSITORY" --password-file "$PASSWORD_FILE" backup \
+    restic_cmd -r "$REPOSITORY" --password-file "$PASSWORD_FILE" backup \
       /Users/shu/Code \
       --tag=shu-code \
       --tag=macos \
@@ -115,11 +124,11 @@
       2>&1 | tee -a "$LOG_FILE"
 
     # Clear stale locks before prune/forget
-    $RESTIC -r "$REPOSITORY" --password-file "$PASSWORD_FILE" unlock \
+    restic_cmd -r "$REPOSITORY" --password-file "$PASSWORD_FILE" unlock \
       2>&1 | tee -a "$LOG_FILE" || true
 
     # Prune old snapshots
-    $RESTIC -r "$REPOSITORY" --password-file "$PASSWORD_FILE" forget \
+    restic_cmd -r "$REPOSITORY" --password-file "$PASSWORD_FILE" forget \
       --keep-daily 7 \
       --keep-weekly 4 \
       --keep-monthly 3 \
@@ -138,16 +147,43 @@ in {
 
   environment.systemPackages = [pkgs.restic];
 
-  # Run every 2 hours, backup only if last snapshot is 24+ hours old
-  launchd.agents.restic-backup-code = {
-    serviceConfig = {
-      Label = "com.restic.backup-code";
-      ProgramArguments = ["${backupScript}"];
-      StartInterval = 7200; # Every 2 hours
-      StandardOutPath = "/tmp/restic-backup-code-stdout.log";
-      StandardErrorPath = "/tmp/restic-backup-code-stderr.log";
-      RunAtLoad = true; # Check on login
-    };
-  };
+  home-manager.users.${myvars.username}.home.file."Library/LaunchAgents/com.restic.backup-code.plist".text = ''
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+    <dict>
+      <key>Label</key>
+      <string>com.restic.backup-code</string>
+      <key>ProgramArguments</key>
+      <array>
+        <string>/bin/bash</string>
+        <string>${backupScript}</string>
+      </array>
+      <key>StartInterval</key>
+      <integer>7200</integer>
+      <key>StandardOutPath</key>
+      <string>/tmp/restic-backup-code-stdout.log</string>
+      <key>StandardErrorPath</key>
+      <string>/tmp/restic-backup-code-stderr.log</string>
+      <key>RunAtLoad</key>
+      <true/>
+    </dict>
+    </plist>
+  '';
+
+  system.activationScripts.remove-system-restic-backup-code-agent.text = ''
+    if [ -e /Library/LaunchAgents/com.restic.backup-code.plist ]; then
+      /bin/launchctl bootout gui/$(id -u ${myvars.username}) /Library/LaunchAgents/com.restic.backup-code.plist >/dev/null 2>&1 || true
+      rm -f /Library/LaunchAgents/com.restic.backup-code.plist
+    fi
+  '';
+
+  system.activationScripts.load-user-restic-backup-code-agent.text = ''
+    agent=/Users/${myvars.username}/Library/LaunchAgents/com.restic.backup-code.plist
+    if [ -e "$agent" ]; then
+      /bin/launchctl bootout gui/$(id -u ${myvars.username}) "$agent" >/dev/null 2>&1 || true
+      /bin/launchctl bootstrap gui/$(id -u ${myvars.username}) "$agent" >/dev/null 2>&1 || true
+    fi
+  '';
   # Notifications handled by shupi backup staleness monitor
 }

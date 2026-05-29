@@ -50,18 +50,22 @@ in {
   systemd.services = {
     "restic-backups-critical-data" = {
       serviceConfig.TimeoutStopSec = "5min";
+      serviceConfig.RuntimeMaxSec = "12h";
       onFailure = ["notify-backup-failure@critical-data.service"];
     };
     "restic-backups-app-data" = {
       serviceConfig.TimeoutStopSec = "5min";
+      serviceConfig.RuntimeMaxSec = "12h";
       onFailure = ["notify-backup-failure@app-data.service"];
     };
     "restic-backups-config" = {
       serviceConfig.TimeoutStopSec = "5min";
+      serviceConfig.RuntimeMaxSec = "12h";
       onFailure = ["notify-backup-failure@config.service"];
     };
     "restic-backups-db-dumps" = {
       serviceConfig.TimeoutStopSec = "5min";
+      serviceConfig.RuntimeMaxSec = "12h";
       onFailure = ["notify-backup-failure@db-dumps.service"];
     };
   };
@@ -70,7 +74,7 @@ in {
   services.restic.backups = {
     # TIER 1: Critical Data (photos, files) - 2:00 AM
     critical-data = {
-      initialize = true;
+      initialize = false;
       repository = "${repoBase}/critical-data";
       passwordFile = config.age.secrets.restic-password.path;
 
@@ -105,7 +109,7 @@ in {
 
     # TIER 2: Application Data - 2:30 AM
     app-data = {
-      initialize = true;
+      initialize = false;
       repository = "${repoBase}/app-data";
       passwordFile = config.age.secrets.restic-password.path;
 
@@ -147,7 +151,7 @@ in {
 
     # TIER 3: Configuration Files - 3:00 AM
     config = {
-      initialize = true;
+      initialize = false;
       repository = "${repoBase}/config";
       passwordFile = config.age.secrets.restic-password.path;
 
@@ -187,7 +191,7 @@ in {
     # Note: Individual services create their own dump scripts/timers at 1:45 AM
     # This tier just backs up the /var/backup/databases directory
     db-dumps = {
-      initialize = true;
+      initialize = false;
       repository = "${repoBase}/db-dumps";
       passwordFile = config.age.secrets.restic-password.path;
 
