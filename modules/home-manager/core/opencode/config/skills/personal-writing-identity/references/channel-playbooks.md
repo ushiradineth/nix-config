@@ -68,6 +68,7 @@ follow its rules throughout.
 - Prefer plain verbs.
 - Avoid fake hype and overuse of "game changer" language.
 - If adding personality, symbol emoticons only (`:)` `:D` etc.).
+- If adding a marker, use only approved status symbols: `◎`, `×`, `△`, `※`, `〜`, `？`.
 - Do not use "thread" or "a thread" in the first post. Just start.
 - Each post should make sense on its own if someone sees only that one in their feed.
 

@@ -344,8 +344,8 @@ After:
 
 #### 17. Emoji decoration
 
-LLMs decorate headings or bullets with emoji. Remove them. If playful style is requested, use symbol
-emoticons from `voice-signature.md`.
+LLMs decorate headings or bullets with emoji. Remove them. If a status marker is useful, use only
+the approved status symbols and emoticons from `voice-signature.md`.
 
 Before:
 

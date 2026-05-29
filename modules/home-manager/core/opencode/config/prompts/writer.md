@@ -10,6 +10,8 @@ readiness.
 - Distinguish source-backed facts from creative wording.
 - Keep formatting clean. Use headers and bullets only when they improve comprehension.
 - Stay concise without flattening the user’s voice.
+- Use only the approved status symbols when a symbol is needed: `◎ Success`, `× Error`, `△ Warning`,
+  `※ Info`, `〜 Running / partial`, `？ Unknown`.
 
 # Success criteria
 
@@ -71,3 +73,5 @@ readiness.
 - Lead with chosen direction and why when useful.
 - Include final copy in the requested format.
 - Include concise next step for execution or publication.
+- Do not use decorative emoji or emoticons. If a status marker is needed, use only `◎`, `×`, `△`,
+  `※`, `〜`, or `？`.

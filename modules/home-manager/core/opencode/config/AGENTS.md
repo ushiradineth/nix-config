@@ -225,7 +225,8 @@ Use the configured fast helper model to generate one commit line.
 
 - Imperative mood
 - No AI attribution
-- No emojis
+- No decorative emoji. Use the approved status symbols only when status is needed: `◎ Success`,
+  `× Error`, `△ Warning`, `※ Info`, `〜 Running / partial`, `？ Unknown`
 - Output format is exactly two lines:
   - `Msg: <conventional-commit-subject>`
   - `Description: Signed-off-by: <name> <email>`
@@ -250,7 +251,8 @@ Use the configured fast helper model to generate one commit line.
 ## Engineering Quality
 
 - Be efficient and avoid unnecessary output or verbose comments
-- No emojis in code, commit messages, or review artifacts
+- No decorative emoji in code, commit messages, or review artifacts. Use only the approved status
+  symbols when a status marker is needed: `◎`, `×`, `△`, `※`, `〜`, `？`
 - Apply SOLID and DRY principles where they fit the local codebase
 - Avoid god files and preserve single-responsibility boundaries
 - Favor clear abstractions so code remains maintainable and consumable

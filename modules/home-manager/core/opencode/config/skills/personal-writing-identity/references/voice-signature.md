@@ -70,6 +70,14 @@ Avoid or heavily limit these patterns:
   - `:)` `:D` `:P`
   - `(^_^)` `(>_<)`
 - Do not inject emoticons by default in serious or formal output.
+- Use only these status symbols when a marker is useful:
+  - `◎ Success`
+  - `× Error`
+  - `△ Warning`
+  - `※ Info`
+  - `〜 Running / partial`
+  - `？ Unknown`
+- Do not inject symbols by default in serious or formal output.
 - Light humor or informality is fine in tweets and short posts. Keep technical articles grounded.
 
 ## Code and technical references in prose

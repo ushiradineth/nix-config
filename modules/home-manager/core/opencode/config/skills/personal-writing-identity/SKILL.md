@@ -78,6 +78,7 @@ Hard guardrails during drafting:
 - anchor claims with concrete specifics when available (versions, dates, counts, outcomes)
 - state tradeoffs directly when they exist
 - symbol emoticons only when the user wants playful tone
+- approved status symbols only when a marker is useful: `◎`, `×`, `△`, `※`, `〜`, `？`
 - use semicolons and commas naturally for flow
 - use "I" or "we" where it fits the channel
 - use code blocks and inline code formatting for technical content
@@ -100,7 +101,8 @@ Then run the full pattern checklist from `references/humanizer-patterns.md`. At 
 - language tells: AI vocabulary clusters, copula avoidance, synonym cycling
 - structural tells: negative parallelism, forced rule-of-three, false ranges
 - filler: -ing tail phrases, hedging stacks, verbose filler phrases
-- formatting: emoji, bold spam, inline-header lists, title-case headings, curly quotes
+- formatting: decorative emoji, unapproved symbols, bold spam, inline-header lists, title-case
+  headings, curly quotes
 - chatbot residue: servile tone, helper phrases, cutoff disclaimers
 - soullessness: uniform rhythm, no opinions, no first-person stance where it fits
 
