@@ -53,6 +53,7 @@
       "cloudflare-warp"
       "yubico-authenticator"
       "codex-app"
+      "spotify"
     ];
     masApps = {
       "Davinci Resolve" = 571213070;
