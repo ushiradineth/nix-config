@@ -1,8 +1,14 @@
 {
   pkgs,
   config,
-}: {
-  mkGlobalInstall = packages:
+}: let
+  mkPackageArray = packages:
+    builtins.concatStringsSep "\n" (map (pkg: "        " + pkgs.lib.escapeShellArg pkg) packages);
+
+  mkGlobalInstall = {
+    packages,
+    postinstallPackages ? [],
+  }:
     config.lib.dag.entryAfter ["writeBoundary"] ''
             export PNPM_HOME="$HOME/.local/share/pnpm"
             export PATH="${pkgs.pnpm}/bin:${pkgs.nodejs}/bin:$PNPM_HOME:$PATH"
@@ -11,7 +17,11 @@
             mkdir -p "$PNPM_HOME"
 
             desired_packages=(
-      ${builtins.concatStringsSep "\n" (map (pkg: "        " + pkgs.lib.escapeShellArg pkg) packages)}
+      ${mkPackageArray packages}
+            )
+
+            postinstall_packages=(
+      ${mkPackageArray postinstallPackages}
             )
 
             if [ -f "$state_file" ]; then
@@ -37,9 +47,27 @@
               pnpm update -g --latest "''${desired_packages[@]}"
             fi
 
+            if [ "''${#postinstall_packages[@]}" -gt 0 ]; then
+              global_root="$(pnpm root -g)"
+
+              for pkg in "''${postinstall_packages[@]}"; do
+                package_dir="$global_root/$pkg"
+                postinstall_script="$package_dir/postinstall.mjs"
+
+                if [ ! -f "$postinstall_script" ]; then
+                  printf "Expected postinstall script not found: %s\n" "$postinstall_script" >&2
+                  exit 1
+                fi
+
+                (cd "$package_dir" && node postinstall.mjs)
+              done
+            fi
+
             : > "$state_file"
             for pkg in "''${desired_packages[@]}"; do
               printf "%s\n" "$pkg" >> "$state_file"
             done
     '';
+in {
+  inherit mkGlobalInstall;
 }

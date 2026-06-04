@@ -8,11 +8,15 @@
   pnpm = import ../../../../lib/pnpm.nix {inherit pkgs config;};
 in {
   home.activation = lib.mkIf managedInstallsEnabled {
-    pnpmGlobalInstall = pnpm.mkGlobalInstall [
-      "@anthropic-ai/claude-code"
-      "opencode-ai"
-      "@openai/codex"
-    ];
+    pnpmGlobalInstall = pnpm.mkGlobalInstall {
+      packages = [
+        "@anthropic-ai/claude-code"
+        "opencode-ai"
+        "@openai/codex"
+      ];
+
+      postinstallPackages = ["opencode-ai"];
+    };
   };
 
   home.file = {
