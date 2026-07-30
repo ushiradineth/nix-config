@@ -151,6 +151,11 @@ run = 'move-node-to-workspace 4'
 if.app-id = 'com.canva.affinity'
 run = 'move-node-to-workspace 4'
 
+# Move Davinci Resolve to workspace 4
+[[on-window-detected]]
+if.app-id = 'com.blackmagic-design.DaVinciResolveLite'
+run = 'move-node-to-workspace 4'
+
 # Move Arc to workspace 5
 [[on-window-detected]]
 if.app-id = 'company.thebrowser.Browser'
@@ -184,6 +189,11 @@ run = 'layout floating'
 # Move League of Legends to workspace 7
 [[on-window-detected]]
 if.app-id = 'com.riotgames.LeagueofLegends.LeagueClientUx'
+run = 'move-node-to-workspace 7'
+
+# Move Discord to workspace 7
+[[on-window-detected]]
+if.app-id = 'com.hnc.Discord'
 run = 'move-node-to-workspace 7'
 
 # Open League of Legends in floating mode
