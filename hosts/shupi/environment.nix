@@ -1,4 +1,14 @@
 {myvars, ...}: {
+  environment.etc."systemd/journald.conf".text = ''
+    [Journal]
+    Storage=persistent
+    RateLimitInterval=30s
+    RateLimitBurst=10000
+    SystemMaxUse=1G
+    RuntimeMaxUse=256M
+    Audit=keep
+  '';
+
   environment.variables = {
     ACME_EMAIL = myvars.userEmail;
     EMAIL_DOMAIN = "shupi.ushira.com";

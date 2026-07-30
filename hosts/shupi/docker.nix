@@ -8,6 +8,7 @@
       autoPrune = {
         enable = true;
         dates = "weekly";
+        flags = ["--all"];
       };
     };
   };

@@ -153,6 +153,14 @@ in
               "$SED_BIN" -i "/^\[fileserver\]/a jwt_private_key = $JWT_KEY" "$SEAFILE_CONF"
             fi
           fi
+
+          if ! grep -q '^\[history\]' "$SEAFILE_CONF"; then
+            printf '\n[history]\nkeep_days = 7\n' >> "$SEAFILE_CONF"
+          elif grep -Eq '^[[:space:]]*keep_days[[:space:]]*=' "$SEAFILE_CONF"; then
+            "$SED_BIN" -i -E 's|^[[:space:]]*keep_days[[:space:]]*=.*$|keep_days = 7|' "$SEAFILE_CONF"
+          else
+            "$SED_BIN" -i '/^\[history\]/a keep_days = 7' "$SEAFILE_CONF"
+          fi
         fi
       '';
 

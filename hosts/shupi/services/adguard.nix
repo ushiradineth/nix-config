@@ -6,6 +6,15 @@
 }: let
   port = config.ports.adguard;
 in {
+  systemd.tmpfiles.rules = [
+    "d /srv/adguard 0700 adguardhome adguardhome -"
+  ];
+
+  fileSystems."/var/lib/private/AdGuardHome" = {
+    device = "/srv/adguard";
+    options = ["bind"];
+  };
+
   services.adguardhome = {
     enable = true;
     mutableSettings = true;
@@ -41,6 +50,7 @@ in {
       querylog = {
         enabled = true;
         file_enabled = true;
+        interval = "24h";
       };
 
       statistics = {
