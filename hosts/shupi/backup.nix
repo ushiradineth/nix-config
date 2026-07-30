@@ -91,6 +91,11 @@ in {
         "--tag=critical-data"
         "--tag=shupi"
         "--tag=automated"
+        "--exclude=/srv/seafile/data/logs"
+        "--exclude=/srv/seafile/data/seafile/logs"
+        "--exclude=/srv/seafile/data/seafile/seafile-data/httptemp"
+        "--exclude=/srv/seafile/data/seafile/seafile-data/tmpfiles"
+        "--exclude=/srv/seafile/data/seafile/seahub-data/thumbnail"
       ];
 
       pruneOpts = [

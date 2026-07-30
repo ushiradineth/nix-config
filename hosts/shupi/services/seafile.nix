@@ -213,6 +213,25 @@ in
         ];
         environmentFiles = ["/var/lib/seafile/seafile.env"];
       };
+
+      systemd.services.seafile-gc = {
+        description = "Run Seafile garbage collection";
+        after = ["docker-seafile.service"];
+        wants = ["docker-seafile.service"];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${config.virtualisation.docker.package}/bin/docker exec seafile /opt/seafile/seafile-server-latest/seaf-gc.sh";
+        };
+      };
+
+      systemd.timers.seafile-gc = {
+        wantedBy = ["timers.target"];
+        timerConfig = {
+          OnCalendar = "weekly";
+          Persistent = true;
+          RandomizedDelaySec = "30m";
+        };
+      };
     }
     (mylib.dockerHelpers.mkDockerNetwork {
       inherit config;

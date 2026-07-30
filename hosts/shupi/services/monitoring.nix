@@ -177,23 +177,33 @@ in
 
               # Low disk space
               - alert: LowDiskSpace
-                expr: 100 - ((node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100) > 80
+                expr: 100 - ((node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100) > 75
                 for: 5m
                 labels:
                   severity: warning
                 annotations:
                   summary: "Low disk space on {{ $labels.instance }}"
-                  description: "Disk usage is above 80% (current value: {{ $value | humanize }}%)"
+                  description: "Disk usage is above 75% (current value: {{ $value | humanize }}%)"
 
               # Critical disk space
               - alert: CriticalDiskSpace
-                expr: 100 - ((node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100) > 90
+                expr: 100 - ((node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100) > 85
                 for: 2m
                 labels:
                   severity: critical
                 annotations:
                   summary: "Critical disk space on {{ $labels.instance }}"
-                  description: "Disk usage is above 90% (current value: {{ $value | humanize }}%)"
+                  description: "Disk usage is above 85% (current value: {{ $value | humanize }}%)"
+
+              # Root filesystem predicted to run low soon
+              - alert: RootFilesystemFillingSoon
+                expr: predict_linear(node_filesystem_avail_bytes{mountpoint="/"}[6h], 24 * 3600) < 100 * 1024 * 1024 * 1024
+                for: 15m
+                labels:
+                  severity: warning
+                annotations:
+                  summary: "Root filesystem is filling quickly on {{ $labels.instance }}"
+                  description: "Available root disk is projected below 100 GiB within 24 hours."
 
               # System load high
               - alert: HighSystemLoad
