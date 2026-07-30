@@ -42,7 +42,7 @@ in {
     volumes = ["/srv/linkding:/etc/linkding/data"];
     environmentFiles = ["/var/lib/linkding/linkding.env"];
     extraOptions = [
-      "--health-cmd=wget -qO- http://localhost:9090/health || exit 1"
+      "--health-cmd=python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:9090/health\", timeout=5)' || exit 1"
       "--health-interval=30s"
       "--health-timeout=10s"
       "--health-retries=5"

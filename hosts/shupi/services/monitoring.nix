@@ -65,7 +65,7 @@ in
       '';
 
       virtualisation.oci-containers.containers.vector = {
-        image = "timberio/vector:0.51.1-alpine";
+        image = "timberio/vector:0.51.1-debian";
         autoStart = true;
         extraOptions = [
           "--network=monitoring"
@@ -82,7 +82,7 @@ in
       };
 
       virtualisation.oci-containers.containers.cadvisor = {
-        image = "gcr.io/cadvisor/cadvisor:v0.56.2";
+        image = "ghcr.io/google/cadvisor:v0.60.5";
         autoStart = true;
         ports = ["127.0.0.1:${toString cadvisorPort}:8080"];
         extraOptions = [
@@ -101,6 +101,14 @@ in
           "--store_container_labels=true"
           "--containerd=/var/run/docker/containerd/containerd.sock"
         ];
+      };
+
+      systemd.services.docker-cadvisor = {
+        unitConfig.StartLimitIntervalSec = 0;
+        serviceConfig = {
+          Restart = lib.mkForce "always";
+          RestartSec = "30s";
+        };
       };
 
       environment.etc."srv/prometheus-config/prometheus.yml".text = ''
