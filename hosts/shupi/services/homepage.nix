@@ -46,7 +46,7 @@ in {
       favicon = "https://ushira.com/favicon.svg";
       cardBlur = "lg";
       background = {
-        image = "https://sf.shupi.ushira.com/seafhttp/files/ce5e2b0f-5d55-4616-96d9-f96d16795811/2d1baef67bcb2d35e6cbe508c084fe46.png";
+        image = "https://sf.shupi.ushira.com/seafhttp/f/17ce8a9973d542b58e98/?op=view";
         blur = "md";
         saturate = "50";
         brightness = "50";
