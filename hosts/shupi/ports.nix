@@ -28,6 +28,7 @@
       nodeExporter = 48019;
       vmagent = 48020;
       linkding = 48021;
+      homeassistant = 48022;
     };
   };
 }

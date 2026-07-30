@@ -39,6 +39,7 @@
     ALERTMANAGER_DOMAIN = "am.shupi.ushira.com";
     FORGEJO_DOMAIN = "git.shupi.ushira.com";
     LINKDING_DOMAIN = "ld.shupi.ushira.com";
+    HOMEASSISTANT_DOMAIN = "ha.shupi.ushira.com";
 
     # Exposed through Cloudflared
     UMAMI_DOMAIN = "umami.ushira.com";

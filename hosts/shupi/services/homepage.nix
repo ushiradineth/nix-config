@@ -191,6 +191,13 @@ in {
               description = "Git Hosting & Mirrors";
             };
           }
+          {
+            "Home Assistant" = {
+              icon = "https://avatars.githubusercontent.com/u/13844975?s=200&v=4";
+              href = "https://${config.environment.variables.HOMEASSISTANT_DOMAIN}";
+              description = "Smart Home Control";
+            };
+          }
         ];
       }
       {
