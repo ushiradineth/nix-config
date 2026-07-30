@@ -55,7 +55,7 @@ in
       };
 
       virtualisation.oci-containers.containers.immich-redis = {
-        image = "docker.io/valkey/valkey:8@sha256:81db6d39e1bba3b3ff32bd3a1b19a6d69690f94a3954ec131277b9a26b95b3aa";
+        image = "docker.io/valkey/valkey:9@sha256:8e8d64b405ce18f41b8e5ee20aa4687a8ed0022d1298f2ce31cdcf3a76e09411";
         autoStart = true;
         extraOptions = [
           "--network=immich"
@@ -68,7 +68,7 @@ in
       };
 
       virtualisation.oci-containers.containers.immich-server = {
-        image = "ghcr.io/immich-app/immich-server:v2.5.5";
+        image = "ghcr.io/immich-app/immich-server:v3.1.0";
         autoStart = true;
         dependsOn = ["immich-redis" "immich-postgres" "immich-machine-learning"];
         volumes = [
@@ -95,7 +95,7 @@ in
       };
 
       virtualisation.oci-containers.containers.immich-machine-learning = {
-        image = "ghcr.io/immich-app/immich-machine-learning:v2";
+        image = "ghcr.io/immich-app/immich-machine-learning:v3.1.0";
         autoStart = true;
         volumes = [
           "/srv/immich/model-cache:/cache"
