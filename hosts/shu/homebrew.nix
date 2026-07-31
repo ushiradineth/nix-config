@@ -1,4 +1,27 @@
-{managedInstallsEnabled ? false, ...}: {
+{
+  managedInstallsEnabled ? false,
+  myvars,
+  ...
+}: {
+  nix-homebrew = {
+    enable = managedInstallsEnabled;
+    user = myvars.username;
+    enableRosetta = true;
+
+    # Automatically migrate existing Homebrew installations
+    autoMigrate = true;
+
+    trust = {
+      casks = ["nikitabobko/tap/aerospace"];
+      taps = [
+        "tw93/tap"
+        "nikitabobko/tap"
+      ];
+      # commands = ["user/repo/command"];
+      # formulae = ["user/repo/formula"];
+    };
+  };
+
   homebrew = {
     # Keep disabled by default for faster rebuilds. Enable with --with-installs.
     enable = managedInstallsEnabled;
@@ -38,7 +61,6 @@
       "modrinth" # Minecraft Launcher
       "discord"
       "krita"
-      "wacom-tablet"
       "medibangpaintpro"
       "notion-calendar"
       "tailscale-app"
@@ -56,10 +78,11 @@
       "spotify"
     ];
     masApps = {
-      "Davinci Resolve" = 571213070;
+      "Xcode" = 497799835;
     };
+
     onActivation = {
-      autoUpdate = true; # Fetch the newest stable branch of Homebrew's git repo
+      autoUpdate = false; # Fetch the newest stable branch of Homebrew's git repo
       upgrade = true; # Upgrade outdated casks, formulae, and App Store apps
       # 'zap': uninstalls all formulae(and related files) not listed in the generated Brewfile
       cleanup = "zap";

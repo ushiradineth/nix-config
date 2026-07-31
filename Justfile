@@ -65,6 +65,11 @@ debug:
 
   sudo -E ./result/sw/bin/darwin-rebuild switch --flake .#$(hostname) --show-trace --verbose
 
+[macos]
+[group('desktop')]
+brew-upgrade:
+  brew upgrade --cask --greedy
+
 ############################################################################
 #
 #  Linux server related commands
