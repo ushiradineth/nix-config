@@ -10,6 +10,19 @@
 }: let
   port = config.ports.seafile;
   domain = config.environment.variables.SEAFILE_DOMAIN;
+  gunicornConfig = pkgs.writeText "seafile-gunicorn.conf.py" ''
+    import os
+
+    daemon = True
+    workers = 2
+    bind = "127.0.0.1:8000"
+
+    pids_dir = "/opt/seafile/pids"
+    pidfile = os.path.join(pids_dir, "seahub.pid")
+
+    timeout = 1200
+    limit_request_line = 8190
+  '';
 in
   lib.mkMerge [
     {
@@ -103,6 +116,8 @@ in
         chmod 600 /var/lib/seafile/seafile.env
 
         mkdir -p /srv/seafile/data/seafile/conf
+        ${pkgs.coreutils}/bin/install -m 0644 ${gunicornConfig} /srv/seafile/data/seafile/conf/gunicorn.conf.py
+
         cat > /srv/seafile/data/seafile/conf/seahub_settings.py << EOF
         # Custom settings for reverse proxy.
         # Keep these explicitly pinned so markdown/file APIs resolve to the public URL.
@@ -213,6 +228,8 @@ in
         ];
         environmentFiles = ["/var/lib/seafile/seafile.env"];
       };
+
+      systemd.services.docker-seafile.restartTriggers = [gunicornConfig];
 
       systemd.services.seafile-gc = {
         description = "Run Seafile garbage collection";

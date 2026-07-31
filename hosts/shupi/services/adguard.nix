@@ -12,6 +12,7 @@ in {
 
   fileSystems."/var/lib/private/AdGuardHome" = {
     device = "/srv/adguard";
+    fsType = "none";
     options = ["bind"];
   };
 
@@ -85,8 +86,8 @@ in {
         }
         {
           enabled = true;
-          url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_44.txt";
-          name = "HaGeZi's Threat Intelligence Feeds";
+          url = "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.medium.txt";
+          name = "HaGeZi's Threat Intelligence Feeds Medium";
           id = 5;
         }
         {
