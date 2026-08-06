@@ -178,8 +178,8 @@ in
           # Wait for Forgejo to be ready (403 is expected with REQUIRE_SIGNIN_VIEW)
           echo "Waiting for Forgejo to be ready..."
           for i in $(seq 1 30); do
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:${toString port}/ || echo "000")
-            if [ "$HTTP_CODE" != "000" ]; then
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:${toString port}/ || true)
+            if [ -n "$HTTP_CODE" ] && [ "$HTTP_CODE" != "000" ]; then
               echo "Forgejo is ready (HTTP $HTTP_CODE)"
               break
             fi
