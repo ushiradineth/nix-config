@@ -21,7 +21,7 @@
             pkgs.pnpm
             # pkgs.yarn
 
-            pkgs.nodePackages.typescript-language-server
+            pkgs.typescript-language-server
             pkgs.vimPlugins.nvim-treesitter-parsers.typescript
             pkgs.tailwindcss-language-server
             pkgs.vimPlugins.tailwindcss-colors-nvim

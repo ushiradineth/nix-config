@@ -80,6 +80,7 @@ in {
     lazygit = {
       enable = true;
       settings = {
+        gui.fileTreeSortOrder = "foldersFirst";
         git = {
           overrideGpg = true;
           commit = {

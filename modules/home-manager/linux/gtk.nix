@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   home.sessionVariables = {
     GTK_USE_PORTAL = "1";
     GTK_THEME = "Adwaita-dark";
@@ -24,9 +28,12 @@
       gtk-font-name = "Geist 11";
     };
 
-    gtk4.extraConfig = {
-      gtk-application-prefer-dark-theme = true;
-      gtk-font-name = "Geist 11";
+    gtk4 = {
+      theme = config.gtk.theme;
+      extraConfig = {
+        gtk-application-prefer-dark-theme = true;
+        gtk-font-name = "Geist 11";
+      };
     };
   };
 

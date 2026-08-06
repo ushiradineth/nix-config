@@ -9,7 +9,7 @@
 
   programs.lazytf = {
     enable = true;
-    package = lazytf.packages.${pkgs.system}.default;
+    package = lazytf.packages.${pkgs.stdenv.hostPlatform.system}.default;
     settings = {
       history.enabled = true;
       mouse = true;

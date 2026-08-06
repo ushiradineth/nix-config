@@ -68,6 +68,7 @@ in {
     userDirs = {
       enable = true;
       createDirectories = true;
+      setSessionVariables = true;
       documents = "$HOME/Documents";
       download = "$HOME/Downloads";
       videos = "$HOME/Videos";

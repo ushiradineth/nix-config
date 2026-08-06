@@ -41,8 +41,10 @@ in
       services.wakapi = {
         enable = true;
         stateDir = "/srv/wakapi";
-        passwordSaltFile = "/var/lib/wakapi/password-salt.env";
-        smtpPasswordFile = "/var/lib/wakapi/smtp.env";
+        environmentFiles = [
+          "/var/lib/wakapi/password-salt.env"
+          "/var/lib/wakapi/smtp.env"
+        ];
         database = {
           createLocally = true;
           dialect = "postgres";

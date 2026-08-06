@@ -15,7 +15,7 @@
       style = {
         interface = {
           branding = "shuos";
-          brandingColor = 7; # gray
+          brandingColor = "AAAAAA"; # gray
         };
       };
     };

@@ -13,7 +13,7 @@
     libnotify
     brightnessctl
     swayosd
-    swww
+    awww
     grim
     slurp
     swappy
@@ -28,6 +28,7 @@
 
   wayland.windowManager.hyprland = {
     enable = true;
+    configType = "hyprlang";
     systemd = {
       enable = true;
       enableXdgAutostart = true;
@@ -57,8 +58,8 @@
         "killall -q swaync;sleep .5 && swaync"
         "swayosd-server"
 
-        "swww-daemon"
-        "swww img /home/${myvars.username}/wallpaper.jpg"
+        "awww-daemon"
+        "awww img /home/${myvars.username}/wallpaper.jpg"
 
         "hyprctl setcursor macOS 24"
       ];

@@ -11,7 +11,7 @@
   }:
     config.lib.dag.entryAfter ["writeBoundary"] ''
             export PNPM_HOME="$HOME/.local/share/pnpm"
-            export PATH="${pkgs.pnpm}/bin:${pkgs.nodejs}/bin:$PNPM_HOME:$PATH"
+            export PATH="${pkgs.pnpm}/bin:${pkgs.nodejs}/bin:$PNPM_HOME/bin:$PNPM_HOME:$PATH"
             state_file="$PNPM_HOME/.hm-global-packages"
 
             mkdir -p "$PNPM_HOME"
@@ -48,10 +48,11 @@
             fi
 
             if [ "''${#postinstall_packages[@]}" -gt 0 ]; then
-              global_root="$(pnpm root -g)"
-
               for pkg in "''${postinstall_packages[@]}"; do
-                package_dir="$global_root/$pkg"
+                package_dir="$(
+                  pnpm list -g --depth=-1 --json \
+                    | ${pkgs.jq}/bin/jq -r --arg pkg "$pkg" '.[0].dependencies[$pkg].path // empty'
+                )"
                 postinstall_script="$package_dir/postinstall.mjs"
 
                 if [ ! -f "$postinstall_script" ]; then

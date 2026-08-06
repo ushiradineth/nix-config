@@ -9,9 +9,11 @@ in {
     enable = true;
     listenPort = port;
 
-    environmentFile = builtins.toFile "homepage-env" ''
-      HOMEPAGE_ALLOWED_HOSTS=${config.environment.variables.HOMEPAGE_DOMAIN}
-    '';
+    environmentFiles = [
+      (builtins.toFile "homepage-env" ''
+        HOMEPAGE_ALLOWED_HOSTS=${config.environment.variables.HOMEPAGE_DOMAIN}
+      '')
+    ];
 
     settings = {
       title = "shupi";

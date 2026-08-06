@@ -198,7 +198,7 @@
                   }
                   {
                     name = "channel";
-                    value = "25.11";
+                    value = "26.05";
                   }
                   {
                     name = "query";
@@ -217,7 +217,7 @@
                 params = [
                   {
                     name = "channel";
-                    value = "25.11";
+                    value = "26.05";
                   }
                   {
                     name = "query";
@@ -240,7 +240,7 @@
                   }
                   {
                     name = "release";
-                    value = "release-25.11";
+                    value = "release-26.05";
                   }
                 ];
               }

@@ -15,6 +15,7 @@
         alejandra.enable = true;
         prettier = {
           enable = true;
+          package = pkgs.prettier;
           settings = {
             write = true;
             configPath = "./.prettierrc.yaml";
@@ -33,6 +34,7 @@
         alejandra.enable = true;
         prettier = {
           enable = true;
+          package = pkgs.prettier;
           includes = [
             "*.json"
             "*.md"
