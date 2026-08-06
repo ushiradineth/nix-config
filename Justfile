@@ -189,9 +189,9 @@ init hostname phases='disko,install,reboot':
 # Deploy to remote machine
 [group('remote')]
 deploy tag:
-  colmena apply --on '@{{tag}}' --verbose --show-trace --impure --build-on-target
+  colmena apply -f hive.nix --on '@{{tag}}' --verbose --show-trace --impure --build-on-target
 
 # Dry-run deployment to remote machine
 [group('remote')]
 deploy-dry tag:
-  colmena apply dry-activate --on '@{{tag}}' --verbose --show-trace --impure --build-on-target
+  colmena apply -f hive.nix dry-activate --on '@{{tag}}' --verbose --show-trace --impure --build-on-target

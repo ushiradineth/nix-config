@@ -77,6 +77,14 @@
         ;
       specialArgs = (genSpecialArgs system) // {inherit hostname;};
     };
+
+  scanColmenaHosts = path:
+    builtins.listToAttrs (
+      map (hostPath: {
+        name = lib.removeSuffix ".nix" (builtins.baseNameOf hostPath);
+        value = import hostPath {inherit inputs;};
+      }) (mylib.scanPaths path)
+    );
 in {
   inherit
     mylib
@@ -84,5 +92,6 @@ in {
     mkLinuxNixosSystem
     mkDarwinSystem
     mkColmenaSystem
+    scanColmenaHosts
     ;
 }
