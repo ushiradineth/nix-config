@@ -26,7 +26,6 @@
       raspberry-pi-5.base
       inputs.nixos-raspberrypi.lib.inject-overlays
       trusted-nix-caches
-      raspberry-pi-5.page-size-16k
       usb-gadget-ethernet
     ]);
 

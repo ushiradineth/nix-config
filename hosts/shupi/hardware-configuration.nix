@@ -1,7 +1,21 @@
-{modulesPath, ...}: {
+{
+  lib,
+  modulesPath,
+  pkgs,
+  ...
+}: let
+  kernel4k = pkgs.linux_rpi5.override {
+    structuredExtraConfig = with lib.kernel; {
+      ARM64_4K_PAGES = lib.mkForce yes;
+      ARM64_16K_PAGES = lib.mkForce no;
+    };
+  };
+in {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
+
+  boot.kernelPackages = pkgs.linuxPackagesFor kernel4k;
 
   boot.initrd.availableKernelModules = [
     "xhci_pci"
