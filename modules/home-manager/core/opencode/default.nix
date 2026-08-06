@@ -10,9 +10,7 @@ in {
   home.activation = lib.mkIf managedInstallsEnabled {
     pnpmGlobalInstall = pnpm.mkGlobalInstall {
       packages = [
-        "@anthropic-ai/claude-code"
         "opencode-ai"
-        "@openai/codex"
       ];
 
       postinstallPackages = ["opencode-ai"];
