@@ -76,7 +76,6 @@ This repository drew significant inspiration from the outstanding work done by
 ## Shared Host Registry
 
 - `vars/default.nix` defines `hostAddresses`: a shared map of hostnames to IPs.
-- `modules/nix-modules/core/ssh.nix` consumes this list to write `/etc/hosts` and generate SSH
-  aliases everywhere.
+- `modules/nix-modules/core/ssh.nix` consumes this list to generate system SSH aliases.
 - Update `hostAddresses` whenever a new host is added, and both nix-darwin and NixOS configurations
   pick it up automatically.

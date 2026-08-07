@@ -1,11 +1,18 @@
 {
   lib,
   myvars,
+  pkgs,
   ...
 }: {
-  services.openssh = {
-    enable = true;
-  };
+  services.openssh =
+    {enable = true;}
+    // lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+      settings = {
+        PermitRootLogin = "prohibit-password";
+        PasswordAuthentication = false;
+        KbdInteractiveAuthentication = false;
+      };
+    };
 
   users.users.${myvars.username}.openssh.authorizedKeys.keys = myvars.authorizedKeys;
   users.users.root.openssh.authorizedKeys.keys = myvars.authorizedKeys;
