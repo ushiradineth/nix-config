@@ -1,0 +1,7 @@
+[default.extend-identifiers]
+canva = "canva"
+daita = "daita"
+imput = "imput"
+
+[default.extend-words]
+Sur = "Sur"

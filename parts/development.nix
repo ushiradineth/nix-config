@@ -23,6 +23,13 @@
         };
         deadnix.enable = true;
         statix.enable = true;
+        typos = {
+          enable = true;
+          settings = {
+            configPath = "./.typos.toml";
+            write = true;
+          };
+        };
       };
     };
   in {
@@ -58,6 +65,10 @@
         };
         deadnix.enable = true;
         statix.enable = true;
+        typos = {
+          enable = true;
+          configFile = ".typos.toml";
+        };
       };
     };
 

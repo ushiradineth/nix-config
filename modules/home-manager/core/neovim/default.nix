@@ -15,7 +15,6 @@
     go # For plugins that require go
 
     # Formatters and Linters
-    typos
     biome
     prettierd
     markdownlint-cli

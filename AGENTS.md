@@ -18,7 +18,7 @@
 
 - Primary validation path: `just check`
 - Flake checks include pre-commit hooks configured in `parts/development.nix`: `alejandra`,
-  `prettier`, `deadnix`, `statix`
+  `prettier`, `deadnix`, `statix`, `typos`
 - Run formatter before check when touching multiple files: `just fmt && just check`
 - For host-specific changes, run a non-switching build first: `just build-dry`
 - confidence: low

@@ -1,0 +1,6 @@
+# Personal words and identifiers accepted in every project.
+# Project-specific entries belong in that project's .typos.toml.
+
+[default.extend-identifiers]
+
+[default.extend-words]

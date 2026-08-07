@@ -76,7 +76,6 @@ _: {
       nginx_language_server.enable = true;
 
       diagnosticls.enable = true; # Diagnostics engine
-      typos_lsp.enable = true;
     };
   };
 

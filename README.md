@@ -72,7 +72,10 @@ This repository drew significant inspiration from the outstanding work done by
 
 - `just fmt` runs treefmt.
 - `just check` runs `nix flake check --all-systems` (includes pre-commit hooks: alejandra, prettier,
-  deadnix, statix).
+  deadnix, statix, typos).
+- Global typo ignores live in `modules/home-manager/core/typos.toml`. Project-specific ignores live
+  in a `.typos.toml` at that project's root. The shell command and Neovim LSP combine both files,
+  with global settings taking precedence when the same key exists in both.
 
 ## Shared Host Registry
 
