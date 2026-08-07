@@ -1,21 +1,11 @@
 {
-  lib,
+  llm-agents,
   pkgs,
-  config,
-  managedInstallsEnabled ? false,
   ...
-}: let
-  pnpm = import ../../../../lib/pnpm.nix {inherit pkgs config;};
-in {
-  home.activation = lib.mkIf managedInstallsEnabled {
-    pnpmGlobalInstall = pnpm.mkGlobalInstall {
-      packages = [
-        "opencode-ai"
-      ];
-
-      postinstallPackages = ["opencode-ai"];
-    };
-  };
+}: {
+  home.packages = [
+    llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode
+  ];
 
   home.file = {
     ".cc-safety-net/config.json" = {

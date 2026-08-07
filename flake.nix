@@ -25,6 +25,7 @@
 
     flake-parts.url = "github:hercules-ci/flake-parts";
     treefmt-nix.url = "github:numtide/treefmt-nix";
+    llm-agents.url = "github:numtide/llm-agents.nix";
 
     nixvim = {
       url = "github:nix-community/nixvim/nixos-26.05";
