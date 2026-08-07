@@ -1,6 +1,5 @@
 {myvars, ...}: {
-  environment.etc."systemd/journald.conf".text = ''
-    [Journal]
+  services.journald.extraConfig = ''
     Storage=persistent
     RateLimitInterval=30s
     RateLimitBurst=10000
