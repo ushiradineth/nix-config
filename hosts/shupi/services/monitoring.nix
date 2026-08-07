@@ -15,7 +15,7 @@ in
   lib.mkMerge [
     {
       virtualisation.oci-containers.containers.victoriametrics = {
-        image = "victoriametrics/victoria-metrics:v1.135.0";
+        image = "victoriametrics/victoria-metrics:v1.135.0@sha256:647f1a19274a362692c0968b926f4acecfdac9488bbf70f1985925d1717063b5";
         autoStart = true;
         ports = ["127.0.0.1:${toString vmPort}:8428"];
         extraOptions = ["--network=monitoring"];
@@ -30,7 +30,7 @@ in
       };
 
       virtualisation.oci-containers.containers.victorialogs = {
-        image = "victoriametrics/victoria-logs:v1.45.0";
+        image = "victoriametrics/victoria-logs:v1.45.0@sha256:01bfa0f80d8d6134753b0be0f206c3458f74a14e81bb570f8c3d2f20af2a24a0";
         autoStart = true;
         ports = ["127.0.0.1:${toString vlPort}:9428"];
         extraOptions = ["--network=monitoring"];
@@ -65,7 +65,7 @@ in
       '';
 
       virtualisation.oci-containers.containers.vector = {
-        image = "timberio/vector:0.51.1-debian";
+        image = "timberio/vector:0.51.1-debian@sha256:31c01788f10c47530a99a51bb22d37582d557e3b8edd02dc5bd62f58b2659e34";
         autoStart = true;
         extraOptions = [
           "--network=monitoring"
@@ -82,7 +82,7 @@ in
       };
 
       virtualisation.oci-containers.containers.cadvisor = {
-        image = "ghcr.io/google/cadvisor:v0.60.5";
+        image = "ghcr.io/google/cadvisor:v0.60.5@sha256:763aecf1c32c2be8a1a75f9abfc2fc461005c9dbbaa39cb356b354aac1296dbe";
         autoStart = true;
         ports = ["127.0.0.1:${toString cadvisorPort}:8080"];
         extraOptions = [
@@ -217,7 +217,7 @@ in
       '';
 
       virtualisation.oci-containers.containers.vmagent = {
-        image = "victoriametrics/vmagent:v1.135.0";
+        image = "victoriametrics/vmagent:v1.135.0@sha256:9054315db53dbafc8f85afad63232081ee5d699b10200173cb9cbe2d6b2c74d7";
         autoStart = true;
         extraOptions = [
           "--network=host"
@@ -235,7 +235,7 @@ in
 
       # vmalert for processing alert rules
       virtualisation.oci-containers.containers.vmalert = {
-        image = "victoriametrics/vmalert:v1.135.0";
+        image = "victoriametrics/vmalert:v1.135.0@sha256:fe9a738c9b5f3419100c41a9343a889231ef0570ec01f6d5a5094f417714328d";
         autoStart = true;
         extraOptions = [
           "--network=monitoring"

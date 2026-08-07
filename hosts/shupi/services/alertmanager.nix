@@ -137,7 +137,7 @@ in {
 
   # Alertmanager container
   virtualisation.oci-containers.containers.alertmanager = {
-    image = "prom/alertmanager:v0.31.0";
+    image = "prom/alertmanager:v0.31.0@sha256:cc54cc450174ada901b32eb2538de5fc70ee259a1ac551ed38023f2ca2ad00e3";
     autoStart = true;
     ports = ["127.0.0.1:${toString port}:9093"];
     extraOptions = [
@@ -162,7 +162,7 @@ in {
 
   # Bridge container on monitoring network
   virtualisation.oci-containers.containers.alertmanager-ntfy-bridge = {
-    image = "python:3.12-alpine";
+    image = "python:3.12-alpine@sha256:6d43704baacd1bfbe7c295d7f13079d5d8104ed33568873133f8fc69980419df";
     autoStart = true;
     extraOptions = ["--network=monitoring"];
     volumes = [

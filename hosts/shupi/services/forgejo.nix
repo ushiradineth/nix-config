@@ -115,7 +115,7 @@ in
 
       # PostgreSQL database container
       virtualisation.oci-containers.containers.forgejo-db = {
-        image = "postgres:16-alpine";
+        image = "postgres:16-alpine@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777";
         autoStart = true;
         volumes = [
           "/srv/forgejo/db:/var/lib/postgresql/data"
@@ -132,7 +132,7 @@ in
 
       # Main Forgejo application
       virtualisation.oci-containers.containers.forgejo = {
-        image = "codeberg.org/forgejo/forgejo:9";
+        image = "codeberg.org/forgejo/forgejo:9@sha256:3c34f11fe8b9983096eef3f8f25c2d2c21c4ae7504960cb203f0b075d1d8ed73";
         autoStart = true;
         dependsOn = ["forgejo-db"];
         volumes = [

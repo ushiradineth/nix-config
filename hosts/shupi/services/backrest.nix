@@ -108,7 +108,7 @@ in {
   '';
 
   virtualisation.oci-containers.containers.backrest = {
-    image = "garethgeorge/backrest:v1.11.2";
+    image = "garethgeorge/backrest:v1.11.2@sha256:6ecf25925dafcb6b37ab871d23c1d424a6f5008191a631c0b520641ec22a3f84";
     autoStart = true;
     volumes = [
       "/srv/backrest/data:/data"

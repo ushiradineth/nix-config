@@ -180,7 +180,7 @@ in
       '';
 
       virtualisation.oci-containers.containers.seafile-db = {
-        image = "mariadb:10.11";
+        image = "mariadb:10.11@sha256:de61fed4a40d3842f3ee09944ba52792156cfd9adf489b2cc670fc6ded28df8d";
         autoStart = true;
         volumes = [
           "/srv/seafile/db:/var/lib/mysql"
@@ -198,7 +198,7 @@ in
       };
 
       virtualisation.oci-containers.containers.seafile-redis = {
-        image = "redis:7-alpine";
+        image = "redis:7-alpine@sha256:e7723ff73d963f5cc6d9c4643ea3d989527a402a319239054e9472a7fb9219a2";
         autoStart = true;
         extraOptions = [
           "--network=seafile-net"
@@ -211,7 +211,7 @@ in
       };
 
       virtualisation.oci-containers.containers.seafile = {
-        image = "seafileltd/seafile-mc:13.0.17";
+        image = "seafileltd/seafile-mc:13.0.17@sha256:a77a2a0a00f7cfaac7b443c15d9de2dfb9f16b2c28f9b0bcdbf0cb4bc2122389";
         autoStart = true;
         dependsOn = ["seafile-db" "seafile-redis"];
         volumes = [

@@ -40,7 +40,7 @@ in
       '';
 
       virtualisation.oci-containers.containers.umami-db = {
-        image = "postgres:15-alpine";
+        image = "postgres:15-alpine@sha256:3d0f7584ed7d04e27fa050d6683a74746608faf21f202be78460d679cc56461f";
         autoStart = true;
         volumes = [
           "/srv/umami/db:/var/lib/postgresql/data"
@@ -57,7 +57,7 @@ in
       };
 
       virtualisation.oci-containers.containers.umami-app = {
-        image = "ghcr.io/umami-software/umami:3.0.3";
+        image = "ghcr.io/umami-software/umami:3.0.3@sha256:28f263fe06f79ebffa5a6a6e9bd33b7a278e9342a88e0bdac812416c9f9e4361";
         autoStart = true;
         dependsOn = ["umami-db"];
         ports = ["127.0.0.1:${toString port}:3000"];

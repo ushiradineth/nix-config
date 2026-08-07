@@ -36,7 +36,7 @@ in {
   '';
 
   virtualisation.oci-containers.containers.linkding = {
-    image = "sissbruecker/linkding:1.42.0";
+    image = "sissbruecker/linkding:1.42.0@sha256:12ffd6f3b48c5d46543d2f38030de1f476d8dcff5f486eb75c9c7cb5941e7127";
     autoStart = true;
     ports = ["127.0.0.1:${toString port}:9090"];
     volumes = ["/srv/linkding:/etc/linkding/data"];

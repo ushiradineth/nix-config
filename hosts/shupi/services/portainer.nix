@@ -6,7 +6,7 @@
   port = config.ports.portainer;
 in {
   virtualisation.oci-containers.containers.portainer = {
-    image = "portainer/portainer-ce:2.33.6";
+    image = "portainer/portainer-ce:2.33.6@sha256:4786931dc7c588ff1c242696fe1eb3f7f9c5dafb136b6c713aff7745dd5bd407";
     autoStart = true;
     volumes = [
       "/srv/portainer:/data"
