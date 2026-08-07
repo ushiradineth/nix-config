@@ -11,7 +11,7 @@
 - Linux apply local host: `just build`
 - Linux build only: `just build-dry`
 - Remote bootstrap: `just init <hostname>`
-- Remote deploy via colmena tag: `just deploy <tag>`
+- Remote deploy via colmena tag: `just deploy <tag> [switch|boot|dry-activate]`
 - Remote deploy dry-run: `just deploy-dry <tag>`
 
 ## Testing

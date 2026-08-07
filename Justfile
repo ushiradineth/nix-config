@@ -188,10 +188,23 @@ init hostname phases='disko,install,reboot':
 
 # Deploy to remote machine
 [group('remote')]
-deploy tag:
-  colmena apply -f hive.nix --on '@{{tag}}' --verbose --show-trace --impure --build-on-target
+deploy tag mode='switch':
+  #!/usr/bin/env bash
+  set -euo pipefail
+
+  mode="{{mode}}"
+  case "$mode" in
+    switch|boot|dry-activate) ;;
+    *)
+      echo "Invalid deploy mode: $mode" >&2
+      echo "Supported: switch, boot, dry-activate" >&2
+      exit 2
+      ;;
+  esac
+
+  colmena apply -f hive.nix "$mode" --on '@{{tag}}' --verbose --show-trace --impure --build-on-target
 
 # Dry-run deployment to remote machine
 [group('remote')]
 deploy-dry tag:
-  colmena apply -f hive.nix dry-activate --on '@{{tag}}' --verbose --show-trace --impure --build-on-target
+  just deploy {{tag}} dry-activate

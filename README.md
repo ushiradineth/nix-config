@@ -58,8 +58,9 @@ This repository drew significant inspiration from the outstanding work done by
 
 - `just init <hostname>` wraps nixos-anywhere to bootstrap a remote machine. Pick the hostname (e.g.
   `just init shupi`) and it will run the appropriate flake output against the target over SSH.
-- `just deploy <hostname>` applies changes via Colmena. Tags default to each hostname, so `shupi`
-  affects only `shupi`; group tags can be added in the per-host Colmena definition if needed.
+- `just deploy <hostname> [mode]` applies changes via Colmena. The mode defaults to `switch` and can
+  be `switch`, `boot`, or `dry-activate`. Tags default to each hostname, so `shupi` affects only
+  `shupi`; group tags can be added in the per-host Colmena definition if needed.
 
 ## Local Dev Environments
 
