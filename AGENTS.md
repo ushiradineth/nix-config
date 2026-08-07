@@ -73,6 +73,8 @@
 - Keep secrets out of commits. This repo references private input `mysecrets` in `flake.nix`.
 - Respect nearest-guide precedence when editing under nested `AGENTS.md` paths.
 - Keep `CLAUDE.md` as a symlink to `AGENTS.md` so Claude-compatible agents read the same guide.
+- Treat NixOS and Home Manager state versions as lifecycle contracts. Do not bump them during
+  release upgrades.
 
 ### Ask first
 

@@ -4,4 +4,6 @@
     ++ [
       ./services/default.nix
     ];
+
+  system.stateVersion = "25.11";
 }
