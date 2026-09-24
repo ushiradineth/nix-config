@@ -35,7 +35,7 @@ in {
         # Only generate initial config.json if it doesn't exist
         # This preserves user settings (auth, instance, etc.) between deployments
         if [ ! -f /srv/backrest/config/config.json ]; then
-          # Generate initial config.json with all four existing repositories
+          # Generate initial config.json with the configured repositories
           # SSH key authentication is configured automatically using /home/shu/.ssh/hetzner
           cat > /srv/backrest/config/config.json << EOF
     {
@@ -65,6 +65,12 @@ in {
           "id": "db-dumps",
           "uri": "${repoBase}/db-dumps",
           "guid": "1b0feae9a9b9ea9cd974936591be4a4cdff3378ea18325a17b37e74f9ee25d27",
+          "password": "$RESTIC_PASSWORD"
+        },
+        {
+          "id": "minecraft-cshu",
+          "uri": "${repoBase}/minecraft-cshu",
+          "autoInitialize": true,
           "password": "$RESTIC_PASSWORD"
         },
         {
@@ -99,6 +105,20 @@ in {
               id: "shu-code",
               uri: "/repos/shu-code",
               guid: "e8a4e2f6179b40d8866d3bdcb4e2515d68aee481dc7bfb2b4ed3b11f2dfcb8f9",
+              password: $password
+            }]
+          ' /srv/backrest/config/config.json > "$tmp"
+          install -m 600 "$tmp" /srv/backrest/config/config.json
+          rm -f "$tmp"
+        fi
+
+        if ! ${pkgs.jq}/bin/jq -e '.repos[]? | select(.id == "minecraft-cshu")' /srv/backrest/config/config.json >/dev/null; then
+          tmp=$(mktemp)
+          ${pkgs.jq}/bin/jq --arg password "$RESTIC_PASSWORD" '
+            .repos += [{
+              id: "minecraft-cshu",
+              uri: "${repoBase}/minecraft-cshu",
+              autoInitialize: true,
               password: $password
             }]
           ' /srv/backrest/config/config.json > "$tmp"

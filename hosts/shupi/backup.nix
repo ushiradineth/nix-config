@@ -8,8 +8,77 @@
   hetznerUser = config.environment.variables.HETZNER_USER;
   hetznerHost = config.environment.variables.HETZNER_HOST;
   repoBase = "sftp://${hetznerUser}@${hetznerHost}:23/backups/shupi";
+  cshuModrinthHost = "cshuu.modrinth.gg";
+  cshuModrinthBackupDir = "/var/backup/minecraft/cshu";
+  cshuModrinthServerDir = "/var/backup/minecraft/cshu-server";
+  pullCshuModrinthBackups = pkgs.writeShellApplication {
+    name = "pull-cshu-modrinth-backups";
+    runtimeInputs = [pkgs.rclone];
+    text = ''
+      credential="$(<${config.age.secrets.cshu-modrinth-sftp.path})"
+      username="''${credential%%:*}"
+      password="''${credential#*:}"
+
+      if [[ -z "$username" || -z "$password" || "$password" == "$credential" ]]; then
+        echo "Invalid cshu Modrinth SFTP credential format" >&2
+        exit 1
+      fi
+
+      export RCLONE_CONFIG_MODRINTH_TYPE=sftp
+      export RCLONE_CONFIG_MODRINTH_HOST=${cshuModrinthHost}
+      export RCLONE_CONFIG_MODRINTH_USER="$username"
+      export RCLONE_CONFIG_MODRINTH_PORT=2222
+      export RCLONE_CONFIG_MODRINTH_SHELL_TYPE=none
+      export RCLONE_CONFIG_MODRINTH_DISABLE_HASHCHECK=true
+      export RCLONE_CONFIG_MODRINTH_KNOWN_HOSTS_FILE=/etc/ssh/ssh_known_hosts
+      RCLONE_CONFIG_MODRINTH_PASS="$(rclone obscure "$password")"
+      export RCLONE_CONFIG_MODRINTH_PASS
+      unset credential password
+
+      rclone sync \
+        modrinth:simplebackups \
+        ${cshuModrinthBackupDir} \
+        --config /dev/null \
+        --immutable \
+        --min-age 10m \
+        --check-first \
+        --delete-after \
+        --max-delete 30 \
+        --transfers 1 \
+        --checkers 2 \
+        --multi-thread-streams 0 \
+        --timeout 2m \
+        --log-level INFO
+
+      rclone sync \
+        modrinth: \
+        ${cshuModrinthServerDir} \
+        --config /dev/null \
+        --include '/mods/**' \
+        --include '/config/**' \
+        --include '/defaultconfigs/**' \
+        --include '/configureddefaults/**' \
+        --include '/server.properties' \
+        --include '/user_jvm_args.txt' \
+        --include '/ops.json' \
+        --include '/whitelist.json' \
+        --include '/banned-ips.json' \
+        --include '/banned-players.json' \
+        --include '/server-icon.png' \
+        --exclude '*' \
+        --check-first \
+        --delete-after \
+        --max-delete 50 \
+        --transfers 1 \
+        --checkers 2 \
+        --multi-thread-streams 0 \
+        --timeout 2m \
+        --log-level INFO
+    '';
+  };
 in {
   environment.systemPackages = with pkgs; [
+    rclone
     restic
   ];
 
@@ -24,14 +93,25 @@ in {
     mode = "0400";
   };
 
+  age.secrets.cshu-modrinth-sftp = {
+    file = "${mysecrets}/${hostname}/cshu-modrinth-sftp.age";
+    mode = "0400";
+  };
+
   programs.ssh.knownHosts = {
     "u522887.your-storagebox.de".publicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5EB5p/5Hp3hGW1oHok+PIOH9Pbn7cnUiGmUEBrCVjnAw+HrKyN8bYVV0dIGllswYXwkG/+bgiBlE6IVIBAq+JwVWu1Sss3KarHY3OvFJUXZoZyRRg/Gc/+LRCE7lyKpwWQ70dbelGRyyJFH36eNv6ySXoUYtGkwlU5IVaHPApOxe4LHPZa/qhSRbPo2hwoh0orCtgejRebNtW5nlx00DNFgsvn8Svz2cIYLxsPVzKgUxs8Zxsxgn+Q/UvR7uq4AbAhyBMLxv7DjJ1pc7PJocuTno2Rw9uMZi1gkjbnmiOh6TTXIEWbnroyIhwc8555uto9melEUmWNQ+C+PwAK+MPw==";
+    "cshu-modrinth" = {
+      hostNames = ["[${cshuModrinthHost}]:2222"];
+      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL4xJqeIWv/mXoFBOne4H2UxZ0iQEuoc8OvK/5acHBzD";
+    };
   };
 
   # Backup directory for database dumps (created by individual service dump scripts)
   # Directory for macOS host (shu) code backups (not backed up to Hetzner)
   systemd.tmpfiles.rules = [
     "d /var/backup/databases 0755 root root -"
+    "d ${cshuModrinthBackupDir} 0700 root root -"
+    "d ${cshuModrinthServerDir} 0700 root root -"
     "d /srv/backups/shu-code 0755 root root -"
   ];
 
@@ -67,6 +147,14 @@ in {
       serviceConfig.TimeoutStopSec = "5min";
       serviceConfig.RuntimeMaxSec = "12h";
       onFailure = ["notify-backup-failure@db-dumps.service"];
+    };
+    "restic-backups-minecraft-cshu" = {
+      serviceConfig = {
+        ExecStartPre = "${pullCshuModrinthBackups}/bin/pull-cshu-modrinth-backups";
+        TimeoutStartSec = "12h";
+        TimeoutStopSec = "5min";
+      };
+      onFailure = ["notify-backup-failure@minecraft-cshu.service"];
     };
   };
 
@@ -225,6 +313,41 @@ in {
 
       timerConfig = {
         OnCalendar = "*-*-* 02:15:00";
+        Persistent = true;
+        RandomizedDelaySec = "5m";
+      };
+    };
+
+    # Minecraft Simple Backups pulled from Modrinth - 4:00 AM
+    minecraft-cshu = {
+      initialize = true;
+      repository = "${repoBase}/minecraft-cshu";
+      passwordFile = config.age.secrets.restic-password.path;
+
+      paths = [
+        cshuModrinthBackupDir
+        cshuModrinthServerDir
+      ];
+
+      extraOptions = [
+        "sftp.command='${pkgs.sshpass}/bin/sshpass -f ${config.age.secrets.hetzner-password.path} -- ssh -4 ${hetznerHost} -l ${hetznerUser} -s sftp'"
+      ];
+
+      extraBackupArgs = [
+        "--tag=minecraft-cshu"
+        "--tag=shupi"
+        "--tag=automated"
+      ];
+
+      pruneOpts = [
+        "--keep-daily 14"
+        "--keep-weekly 8"
+        "--keep-monthly 12"
+        "--tag=minecraft-cshu"
+      ];
+
+      timerConfig = {
+        OnCalendar = "*-*-* 04:00:00";
         Persistent = true;
         RandomizedDelaySec = "5m";
       };
