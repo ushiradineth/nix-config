@@ -2,10 +2,10 @@
 name: personal-writing-identity
 description:
   Use when writing technical articles, blog posts, X/Twitter threads, LinkedIn posts, documentation,
-  runbooks, or any text that must sound like a specific person, not a generic assistant. Also use
-  when the user asks to humanize text, remove AI-sounding language, rewrite in their voice, or
-  convert rough notes into publishable content. Trigger even when the user just says "write this up"
-  or "draft a post about X" without explicitly mentioning voice or tone.
+  runbooks, or any text that must sound like the user's personal voice, not a generic assistant.
+  Also use when the user asks to rewrite in their voice, convert rough notes into publishable
+  content, "write this up," or "draft a post about X." Use `humanizer` alone for generic AI-pattern
+  cleanup that does not need the user's personal style.
 ---
 
 # Personal writing identity
@@ -25,7 +25,9 @@ Read these references before drafting anything:
 
 - `references/voice-signature.md` (voice, rhythm, tone, formatting, real samples)
 - `references/channel-playbooks.md` (per-channel rules, constraints, templates)
-- `references/humanizer-patterns.md` (AI pattern detection, audit workflow, examples)
+
+Use the `humanizer` skill as the canonical AI-pattern, fact-preservation, and final rewrite pass. Do
+not maintain a second pattern list in this skill.
 
 ## When to use
 
@@ -47,7 +49,8 @@ Do not use for:
 - `writer` is the default execution agent for writing and rewrite tasks.
 - `ideate` owns broad concept generation. When concepting is needed, run ideation first, then apply
   this skill for final prose output.
-- If another agent writes final prose, this skill must still be applied before delivery.
+- If another agent writes personal or publication-ready prose, it must apply this skill and
+  `humanizer` before delivery.
 
 ## Workflow
 
@@ -84,29 +87,27 @@ Hard guardrails during drafting:
 - use code blocks and inline code formatting for technical content
 - link to external docs and repos with direct URLs
 
-### 3) Humanizer audit pass (mandatory)
+### 3) Humanizer pass (mandatory)
 
-This step is not optional. Run it on every draft before output.
+Load and apply the `humanizer` skill to every draft before output. Treat
+`references/voice-signature.md` as the writer sample that calibrates rhythm, wording, punctuation,
+and deliberate quirks.
 
-Two-step self-audit:
+Apply this precedence when instructions compete:
 
-1. Ask yourself: "What makes the below so obviously AI generated?"
-2. List remaining tells as brief bullets.
-3. Ask yourself: "Now make it not obviously AI generated."
-4. Rewrite while preserving meaning and intent.
+1. Explicit user request and required artifact format.
+2. Exact facts, claims, quotations, citations, code, commands, paths, identifiers, and link targets.
+3. Channel rules from `references/channel-playbooks.md`.
+4. Personal voice from `references/voice-signature.md`.
+5. Generic `humanizer` style defaults.
 
-Then run the full pattern checklist from `references/humanizer-patterns.md`. At minimum, check for:
+The pass must:
 
-- content inflation: significance puffing, notability stacking, fake importance framing
-- language tells: AI vocabulary clusters, copula avoidance, synonym cycling
-- structural tells: negative parallelism, forced rule-of-three, false ranges
-- filler: -ing tail phrases, hedging stacks, verbose filler phrases
-- formatting: decorative emoji, unapproved symbols, bold spam, inline-header lists, title-case
-  headings, curly quotes
-- chatbot residue: servile tone, helper phrases, cutoff disclaimers
-- soullessness: uniform rhythm, no opinions, no first-person stance where it fits
-
-If three or more AI vocabulary words appear in one paragraph, rewrite the whole paragraph.
+- preserve every supplied fact and claim
+- remove AI patterns without flattening the user's voice
+- keep neutral technical, legal, security, and incident prose neutral when personality would reduce
+  clarity or trust
+- use the Humanizer embedded output mode unless the user explicitly asks to see the draft and audit
 
 ### 4) Channel fit pass
 
@@ -121,15 +122,14 @@ Check:
 
 ### 5) Output
 
-Default output blocks:
+Default output for explicit pasted-text rewrites:
 
 1. `Draft` (the first clean version after voice and humanizer passes)
-2. `What makes the below so obviously AI generated?` (brief bullets)
+2. `What still sounds AI-generated?` (brief bullets)
 3. `Final` (revised version addressing those tells)
 
-If the user asks for only the final copy, return only `Final`. If the user asks for a quick draft,
-skip the audit display but still run it internally. For documentation and runbooks, skip the
-three-block format and output the final version directly.
+For embedded writing tasks, documentation, runbooks, or requests for only final copy, return only
+the final text. If the user asks for a quick draft, keep the audit internal.
 
 ## Style rules (always active)
 

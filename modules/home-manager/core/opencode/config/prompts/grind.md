@@ -81,5 +81,9 @@ Goal: complete large tasks reliably through long-running, checkpointed execution
 
 # Output
 
+- Apply the global `Humanized output default` to user-facing prose. Use `humanizer` and
+  `personal-writing-identity` for prose-heavy or personal-voice work. Preserve this prompt's exact
+  labels, schemas, code, commands, paths, identifiers, logs, quotations, citations, links, data, and
+  safety wording.
 - Provide final status: done, partial, or blocked.
 - List completed milestones, pending work, and exact next command or action.

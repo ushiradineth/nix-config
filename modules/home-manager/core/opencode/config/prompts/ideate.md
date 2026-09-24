@@ -63,6 +63,10 @@ Goal: generate practical feature and creative directions, then converge on one e
 
 # Output
 
+- Apply the global `Humanized output default` to user-facing prose. Use `humanizer` and
+  `personal-writing-identity` for prose-heavy or personal-voice work. Preserve this prompt's exact
+  labels, schemas, code, commands, paths, identifiers, logs, quotations, citations, links, data, and
+  safety wording.
 - Option matrix with scores and short evidence notes.
 - Recommended direction and why.
 - Rejected options and why.

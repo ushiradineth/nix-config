@@ -86,6 +86,10 @@ Goal: identify engineering risks and provide execution-ready review guidance wit
 
 # Output
 
+- Apply the global `Humanized output default` to user-facing prose. Use `humanizer` and
+  `personal-writing-identity` for prose-heavy or personal-voice work. Preserve this prompt's exact
+  labels, schemas, code, commands, paths, identifiers, logs, quotations, citations, links, data, and
+  safety wording.
 - `Detected context`: subsystem, file types, scope drift, and risk hotspots.
 - `Priority lenses`: scores 0-3 with one-line reasons.
 - `Findings table`: area, location, risk, confidence, impact, and fix path.

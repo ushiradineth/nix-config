@@ -133,6 +133,10 @@ after explicit acceptance.
 
 # Output
 
+- Apply the global `Humanized output default` to user-facing prose. Use `humanizer` and
+  `personal-writing-identity` for prose-heavy or personal-voice work. Preserve this prompt's exact
+  labels, schemas, code, commands, paths, identifiers, logs, quotations, citations, links, data, and
+  safety wording.
 - Keep responses concise and implementation-ready.
 - For multi-step work, include the plan path, a short scope summary, and any blockers or
   assumptions.

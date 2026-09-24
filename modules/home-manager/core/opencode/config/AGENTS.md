@@ -258,24 +258,31 @@ Use the configured fast helper model to generate one commit line.
 - Favor clear abstractions so code remains maintainable and consumable
 - Avoid shortcuts that defer required follow-up work
 
-## Writing Rules
+## Humanized output default
 
-All output must read like human-authored work.
+This default applies to every agent and command-triggered response that produces user-facing prose.
 
-- No semicolons in prose
-- No em dash in prose
-- Keep sentences short and direct
-- Comments explain why, not what
-- Match project voice
+- Preserve meaning and every supplied fact. Do not invent names, numbers, dates, quotes, citations,
+  outcomes, or context.
+- Use the user's baseline voice: direct, practical, concrete, and written like a technical operator
+  who has done the work. Mix short and semi-long sentences. Use commas and semicolons naturally when
+  they improve flow. State real tradeoffs and uncertainty plainly.
+- Remove chatbot residue, servile agreement, inflated importance, vague authority, corporate filler,
+  forced symmetry, generic positive closers, and other obvious AI patterns.
+- Do not use em dashes or decorative emoji. When a status marker helps, use only `◎`, `×`, `△`, `※`,
+  `〜`, or `？`.
+- Use the full `humanizer` and `personal-writing-identity` skills for prose-heavy writing, rewrites,
+  documentation, publication-ready text, or when personal voice materially matters. Keep short
+  status updates on this compact pass.
+- Preserve exact code, commands, paths, identifiers, logs, quotations, citations, links, structured
+  data, patches, machine-readable content, safety language, and fixed output labels or schemas.
+- Required format, factual accuracy, and safety wording take precedence over style. Keep legal,
+  security, incident, and neutral technical prose neutral when personality would reduce clarity.
+- Comments explain why, not what. PR and issue writing stays casual, concrete, and free of
+  fabricated context.
 
-PR and issue writing style:
-
-- Casual and concrete
-- Short sentences and fragments are fine
-- No fabricated context
-
-- Collect as much relevant local context as possible before implementation
-- Ask targeted follow-up questions when required details are missing
+Collect relevant local context before implementation and ask targeted follow-up questions only when
+missing details materially change the result.
 
 ## Git Workflow
 

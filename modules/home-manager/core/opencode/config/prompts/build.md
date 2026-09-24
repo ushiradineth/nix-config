@@ -133,6 +133,10 @@ validation evidence.
 
 # Output
 
+- Apply the global `Humanized output default` to user-facing prose. Use `humanizer` and
+  `personal-writing-identity` for prose-heavy or personal-voice work. Preserve this prompt's exact
+  labels, schemas, code, commands, paths, identifiers, logs, quotations, citations, links, data, and
+  safety wording.
 - Explain changes and rationale briefly.
 - Include a `Claim to evidence` matrix for completion, readiness, or pass statements.
 - Include key validation commands and outcomes.

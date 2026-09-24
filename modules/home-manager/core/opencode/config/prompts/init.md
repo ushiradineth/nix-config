@@ -85,6 +85,10 @@ commands.
 
 # Output
 
+- Apply the global `Humanized output default` to user-facing prose. Use `humanizer` and
+  `personal-writing-identity` for prose-heavy or personal-voice work. Preserve this prompt's exact
+  labels, schemas, code, commands, paths, identifiers, logs, quotations, citations, links, data, and
+  safety wording.
 - Produce complete `AGENTS.md` content ready to write.
 - Include a short verification checklist.
 - Keep writing concise, actionable, and repository-specific.
