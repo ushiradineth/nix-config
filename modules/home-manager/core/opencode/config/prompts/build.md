@@ -117,7 +117,8 @@ validation evidence.
   artifacts.
 - Apply `adversarial-self-play` for required redteam gates.
 - Apply `requesting-code-review` after medium or high-risk task completion and before final `DONE`
-  as a scoped review checklist or handoff template, not an automatic reviewer launch.
+  as an inline fixed-point review with separate `Standards` and `Spec` axes, not an automatic
+  reviewer launch.
 - Use `receiving-code-review` when processing review feedback.
 - Use `audit` subagent for first-level risk-lens review planning only when explicitly required by
   the user or accepted plan. Never use it from an automatic final review loop.

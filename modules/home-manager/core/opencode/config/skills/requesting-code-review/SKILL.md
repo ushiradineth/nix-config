@@ -1,8 +1,8 @@
 ---
 name: requesting-code-review
 description:
-  Use after substantial implementation and before merge to request structured review with explicit
-  diff scope, severity levels, and readiness verdict.
+  Use after substantial implementation and before merge to review a fixed diff separately for
+  repository standards and specification fidelity.
 ---
 
 # Requesting code review
@@ -17,39 +17,53 @@ Use this skill when:
 
 ## Core rule
 
-Review context must be explicit and scoped. Do not ask for a vague "quick check".
+Pin the review to a fixed point and keep two axes separate:
+
+- `Standards`: does the diff follow repository guidance and avoid unsupported quality regressions?
+- `Spec`: does the diff implement the accepted request without omissions, wrong behavior, or scope
+  creep?
+
+One axis must not hide or rerank the other.
 
 ## Workflow
 
-1. Define review range and intent.
-   - Capture base and head references.
-   - Summarize what changed and what requirements it should satisfy.
-2. Prepare the review request.
-   - Produce a focused review checklist or handoff template inline.
+1. Pin the fixed point.
+   - Resolve the supplied commit, branch, tag, or merge-base before reviewing.
+   - Record the exact three-dot diff command, commit range, and changed files.
+   - Stop on a missing ref or empty diff.
+2. Identify sources.
+   - Spec source: accepted plan, user request, issue, or other originating artifact.
+   - Standards sources: nearest `AGENTS.md`, contributing or coding guidance, and established local
+     patterns. Skip rules already enforced by passing deterministic tooling.
+3. Review both axes inline.
+   - `Standards` findings cite the documented rule. Label uncodified smells as judgement calls.
+   - `Spec` findings cite the originating requirement and identify missing, partial, incorrect, or
+     unrequested behavior such as scope creep.
    - Do not invoke `task`, slash commands, or subagents from this skill.
-   - Primary agents may route review analysis through the `audit` subagent only when the user or
-     accepted plan explicitly requests one first-level leaf review.
-   - If this skill is used inside a subagent, return a scoped review handoff to the caller because
-     subagents are leaf executors.
-   - Provide exact files, diff range, and expected behavior.
-3. Process findings by severity.
+   - Primary agents may route analysis through `audit` only when the user or accepted plan
+     explicitly requests one first-level leaf review.
+   - A subagent returns a scoped review handoff because it is a leaf executor.
+4. Process findings by severity within each axis.
    - `Critical`: fix before any next step.
    - `Important`: fix before declaring completion.
    - `Minor`: optionally defer with rationale.
-4. Re-verify after fixes.
+5. Re-verify after fixes.
    - Re-run relevant validation commands.
 
 ## Output contract
 
 Return:
 
-1. `Review scope`: base/head refs and changed files.
-2. `Findings`: critical, important, minor.
-3. `Actions`: fixes applied or explicit deferrals.
-4. `Readiness`: ready, ready-with-concerns, or blocked.
+1. `Review scope`: fixed point, head, diff command, commits, and changed files.
+2. `Standards`: severity, location, cited rule or `judgement call`, and impact.
+3. `Spec`: severity, location, cited requirement, and fidelity issue.
+4. `Actions`: fixes applied or explicit deferrals.
+5. `Readiness`: ready, ready-with-concerns, or blocked.
 
 ## Anti-patterns
 
 - requesting review without clear requirements or diff range
+- merging Standards and Spec into one score or priority list
+- treating a judgement call as a documented violation
 - ignoring critical or important findings without technical rationale
 - treating review as optional for risky changes

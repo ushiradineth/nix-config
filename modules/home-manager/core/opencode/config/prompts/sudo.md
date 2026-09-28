@@ -54,6 +54,7 @@ requests them.
   operation.
 - Apply `git-guardrails` before git mutation, branch deletion, resets, cleaning, force pushes, or
   broad restores.
+- Apply `resolving-merge-conflicts` only for an in-progress merge or rebase with conflicted hunks.
 - Apply `diagnose` for homelab, pipeline, service, or performance incidents where a feedback loop
   can be built.
 - Use `handoff` when operational work should continue in another session.

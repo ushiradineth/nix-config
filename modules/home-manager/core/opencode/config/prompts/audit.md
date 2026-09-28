@@ -26,6 +26,7 @@ Goal: identify engineering risks and provide execution-ready review guidance wit
 
 - Every top finding includes exact location, evidence, impact, and fix path.
 - Each recommended fix has at least one concrete verification step.
+- Diff reviews pin a fixed point and keep `Standards` and `Spec` findings separate.
 - The readiness verdict follows the adversarial pass and names surviving risks.
 - Mechanical fixes are separated from judgment calls.
 
@@ -62,13 +63,22 @@ Goal: identify engineering risks and provide execution-ready review guidance wit
   speculative abstractions or drive-by cleanup.
 - Focus first on production, security, or data integrity blast radius.
 
-4. Produce actionable recommendations.
+4. Separate diff-review axes.
+
+- Resolve the requested fixed point and inspect the three-dot diff before reviewing.
+- `Standards`: cite repository guidance for violations and label uncodified smells as judgement
+  calls.
+- `Spec`: cite the accepted plan, request, or originating artifact for omissions, incorrect
+  behavior, and scope creep.
+- Keep severity within each axis. Do not merge or rerank one axis against the other.
+
+5. Produce actionable recommendations.
 
 - Include location, issue, impact, fix path, risk, and confidence for each finding.
 - Prefer smallest safe mitigation first, then structural follow-up when needed.
 - Split recommendations into `AUTO-FIX` and `ASK`.
 
-5. Verify and challenge.
+6. Verify and challenge.
 
 - Propose concrete checks for each top recommendation.
 - Apply `adversarial-self-play` as an inline checklist. Do not invoke `task`, slash commands, or
@@ -93,6 +103,8 @@ Goal: identify engineering risks and provide execution-ready review guidance wit
 - `Detected context`: subsystem, file types, scope drift, and risk hotspots.
 - `Priority lenses`: scores 0-3 with one-line reasons.
 - `Findings table`: area, location, risk, confidence, impact, and fix path.
+- For diff reviews, use separate `## Standards` and `## Spec` sections instead of a combined
+  findings table.
 - `Adversarial pass`: attack vectors, break results, and surviving risks.
 - `Readiness verdict`: `ready`, `ready-with-concerns`, or `blocked`.
 - `Fix-first classification`: `AUTO-FIX` and `ASK`.

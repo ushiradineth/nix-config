@@ -30,7 +30,22 @@ Prefer deep modules: simple interface, useful behavior behind it, clear test sur
 - Are tests forced to mock internals because the real interface is not testable?
 - Would two adapters make this seam real, or is it hypothetical?
 
+## Interface alternatives
+
+When materially different interface designs remain, apply `beam-search-execution` inline. Generate
+three bounded alternatives with different interface constraints, then score each on:
+
+- depth and caller leverage
+- locality of change and knowledge
+- seam placement and adapter evidence
+- implementation effort
+- reversibility
+
+Select one design, explain why the others lost, and name the smallest validation slice. Do not run
+the beam for a trivial rename or an interface already fixed by the accepted plan.
+
 ## Output
 
 Return candidates with files, problem, smallest safe improvement, test impact, risk, and confidence.
-Do not implement broad refactors unless an accepted plan authorizes them.
+When alternatives were evaluated, include the score matrix and selection. Do not implement broad
+refactors unless an accepted plan authorizes them.

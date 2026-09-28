@@ -33,6 +33,12 @@ Use prompt and permission safety. Do not add hook scripts unless the user explic
 Commit only when the user explicitly asks. If committing, use repository style and do not bypass
 hooks.
 
+## Merge and rebase conflicts
+
+Apply `resolving-merge-conflicts` when an operation has unmerged entries. Resolve from both sides'
+primary sources and inspect each hunk. Staging, continuing, aborting, and committing remain separate
+git mutations that require explicit user intent.
+
 ## Output
 
 State the intended git action, the evidence inspected, and the safety decision: proceed, ask, or

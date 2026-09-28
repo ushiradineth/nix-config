@@ -103,6 +103,8 @@ Execution note:
   asking users to run `/define-done`, `/beam`, `/redteam`, or `/sync-artifacts` manually
 - `audit`, `grind`, `ideate`, and `writer` are internal leaf capabilities. Use them only when a
   primary lane explicitly needs their lens. Do not present them as normal workflow lanes.
+- In the sudo lane, apply `resolving-merge-conflicts` only for an in-progress conflicted merge or
+  rebase, under `git-guardrails` and explicit user-intent checks.
 
 ## Evaluation-First Execution Principle
 

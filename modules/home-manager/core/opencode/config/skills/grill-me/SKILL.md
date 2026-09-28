@@ -12,13 +12,21 @@ description:
 Interview only when the answer matters. Ask one decisive question at a time and include your
 recommended answer.
 
+Model unresolved choices as a decision tree. The frontier is the next decision whose prerequisites
+are settled. Work one frontier question at a time so later questions do not assume an unanswered
+choice.
+
 ## Workflow
 
-1. Explore first when the answer is available in code, docs, git history, or existing state.
-2. Name the decision branch the question controls.
-3. Ask one question.
-4. Provide a recommended answer and why.
-5. Continue when the user answers, or record a safe assumption when the ambiguity is not critical.
+1. Map the known decisions, unresolved branches, and their prerequisites.
+2. Separate facts from decisions. Find facts in code, docs, git history, tools, or existing state.
+   Ask the user only for decisions that require their intent or judgement.
+3. Choose the single frontier question that most changes scope, architecture, acceptance, safety, or
+   validation.
+4. Name the branch it controls, ask one decisive question, and provide a recommended answer with the
+   reason.
+5. Recompute the frontier after the answer. Record a safe assumption only when the unresolved branch
+   is non-critical and does not risk building the wrong thing.
 
 ## Good question shape
 
@@ -34,3 +42,4 @@ or also touches `opencode.json`.
 - Stop and ask when proceeding could build the wrong thing.
 - Do not ask preference questions that do not affect implementation.
 - Do not batch many questions unless the user asks for a questionnaire.
+- Stop grilling when the decision tree has no material unresolved frontier.
