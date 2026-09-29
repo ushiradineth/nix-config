@@ -58,7 +58,6 @@
       "orbstack" # Drop in replacement for Docker Desktop
       "whatsapp"
       "google-drive"
-      "modrinth" # Minecraft Launcher
       "discord"
       "krita"
       "medibangpaintpro"
@@ -76,6 +75,8 @@
       "yubico-authenticator"
       "codex-app"
       "spotify"
+      "modrinth" # Minecraft Launcher
+      "osu"
     ];
     masApps = {
       "Xcode" = 497799835;
