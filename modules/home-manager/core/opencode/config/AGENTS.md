@@ -103,6 +103,10 @@ Execution note:
   asking users to run `/define-done`, `/beam`, `/redteam`, or `/sync-artifacts` manually
 - `audit`, `grind`, `ideate`, and `writer` are internal leaf capabilities. Use them only when a
   primary lane explicitly needs their lens. Do not present them as normal workflow lanes.
+- `security-audit` is a cross-lane defensive review skill. Use guidance mode by default. Treat an
+  explicit full audit as multi-step planner -> builder work, with only primary agents coordinating
+  first-level leaf executors. Without the upstream OS sandbox controls, stay source-only, mark
+  dynamic checks `needs_validation`, and never execute target-controlled code.
 - In the sudo lane, apply `resolving-merge-conflicts` only for an in-progress conflicted merge or
   rebase, under `git-guardrails` and explicit user-intent checks.
 

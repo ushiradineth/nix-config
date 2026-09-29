@@ -285,6 +285,7 @@
     "lsp": "allow",
     "external_directory": {
       "*": "deny",
+      "~/security-audit-skill/**": "allow",
       "~/nix-config/**": "allow",
       "~/.config/**": "allow",
       "~/Code/**": "allow",

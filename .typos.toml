@@ -1,3 +1,9 @@
+[files]
+extend-exclude = [
+  "modules/home-manager/core/opencode/config/skills/security-audit/DESKTOP-MOBILE-AND-LOCAL-IPC.md",
+  "modules/home-manager/core/opencode/config/skills/security-audit/validate-findings.test.cjs",
+]
+
 [default.extend-identifiers]
 canva = "canva"
 daita = "daita"

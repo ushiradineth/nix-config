@@ -5,6 +5,7 @@
 }: {
   home.packages = [
     llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode
+    pkgs.nodejs
   ];
 
   home.file = {

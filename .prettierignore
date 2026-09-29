@@ -7,3 +7,4 @@ cache
 temp
 .temp
 modules/home-manager/core/opencode/config/skills/humanizer/SKILL.md
+modules/home-manager/core/opencode/config/skills/security-audit/**
