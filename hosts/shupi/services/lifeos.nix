@@ -132,8 +132,16 @@ in {
       extraOptions = common.extraOptions ++ ["--network=lifeos-finance" "--network-alias=actual" "--memory=512m"];
     };
   };
+  # Use the same systemd restart-trigger mechanism as other shupi container configuration.
+  systemd.services.docker-lifeos-postgres.restartTriggers = [config.age.secrets.lifeos-postgres-env.file];
+  systemd.services.docker-lifeos-web.restartTriggers = [config.age.secrets.lifeos-web-env.file];
+  systemd.services.docker-lifeos-worker.restartTriggers = [config.age.secrets.lifeos-worker-env.file];
+  systemd.services.docker-lifeos-agent.restartTriggers = [config.age.secrets.lifeos-agent-env.file];
+  systemd.services.docker-lifeos-actual.restartTriggers = [config.age.secrets.lifeos-actual-env.file config.age.secrets.lifeos-actual-config.file];
+
   systemd.services.lifeos-activity = {
     description = "Collect read-only LifeOS coding and public commit summaries";
+    restartTriggers = [config.age.secrets.lifeos-wakapi-key.file];
     after = ["network-online.target" "wakapi.service"];
     wants = ["network-online.target"];
     environment.WAKAPI_KEY_FILE = secret "wakapi-key";
