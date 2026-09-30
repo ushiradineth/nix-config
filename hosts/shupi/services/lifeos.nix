@@ -70,6 +70,30 @@ in {
       OnUnitActiveSec = "15min";
     };
   };
+  systemd.services.lifeos-activity = {
+    description = "Collect read-only LifeOS coding and public commit summaries";
+    after = ["network-online.target" "wakapi.service"];
+    wants = ["network-online.target"];
+    serviceConfig = {
+      Type = "oneshot";
+      User = "shu";
+      StateDirectory = "lifeos-activity";
+      StateDirectoryMode = "0755";
+      ExecStart = "${pkgs.python3}/bin/python /home/shu/lifeos/scripts/collect-activity.py";
+      ProtectSystem = "strict";
+      ProtectHome = "read-only";
+      PrivateTmp = true;
+      NoNewPrivileges = true;
+      TimeoutStartSec = 90;
+    };
+  };
+  systemd.timers.lifeos-activity = {
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnBootSec = "3min";
+      OnUnitActiveSec = "15min";
+    };
+  };
   systemd.services.lifeos-db-dump = {
     description = "Dump LifeOS PostgreSQL into the existing database backup tier";
     after = ["docker.service"];
