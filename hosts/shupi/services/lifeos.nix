@@ -8,7 +8,7 @@
   ...
 }: let
   port = config.ports.lifeos;
-  image = "lifeos:b004a6f";
+  image = "lifeos:55b088f";
   origin = "https://${config.environment.variables.LIFEOS_DOMAIN}";
   secret = name: config.age.secrets."lifeos-${name}".path;
   network = name: internal: containers: {
