@@ -207,6 +207,8 @@ in {
       passwordFile = config.age.secrets.restic-password.path;
 
       paths = [
+        "/srv/lifeos/actual"
+        "/srv/lifeos/codex-home"
         "/srv/actualbudget"
         "/srv/umami"
         "/srv/uptimekuma"

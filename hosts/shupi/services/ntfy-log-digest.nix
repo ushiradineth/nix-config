@@ -3,6 +3,7 @@
   pkgs,
   ...
 }: let
+  journalSummary = pkgs.writeText "journal-summary.py" (builtins.readFile ./journal-summary.py);
   ntfyUrl = "http://127.0.0.1:${toString config.ports.ntfy}/log";
 in {
   systemd.services.ntfy-log-digest = {
@@ -19,10 +20,12 @@ in {
       restic
       sqlite
       systemd
+      python3
     ];
 
     serviceConfig = {
       Type = "oneshot";
+      StateDirectory = "shupi-status";
     };
 
     script = ''
@@ -165,12 +168,18 @@ in {
 
       issue_count=0
 
+      observations=$(mktemp)
+      trap 'rm -f "$report" "$send_report" "$issues" "$website_issues" "$observations"' EXIT
+
       unit_check() {
         category="$1"
         unit="$2"
         label="$3"
 
         if ! systemctl cat "$unit" >/dev/null 2>&1; then
+          if [ "$category" = "backup" ]; then
+            jq -nc --arg unit "$unit" '{unit:$unit,status:"unknown",error:"Unit unavailable"}' >> "$observations"
+          fi
           issue_count=$((issue_count + 1))
           printf -- "%s %s: unit not found: %s\n" "$error" "$label" "$unit" >> "$issues"
 
@@ -183,44 +192,18 @@ in {
           return
         fi
 
-        result=$(systemctl show "$unit" -P Result 2>/dev/null || echo unknown)
+        observation=$(journalctl "UNIT=$unit" JOB_TYPE=start --since '14 days ago' -n 60 -o json --no-pager 2>/dev/null | python ${journalSummary} --unit "$unit" || jq -nc --arg unit "$unit" '{unit:$unit,status:"unknown"}')
+        result=$(printf '%s' "$observation" | jq -r '.lastAttemptResult // "unknown"')
+        last_attempt=$(printf '%s' "$observation" | jq -r '.lastAttempt // empty')
         active_state=$(systemctl show "$unit" -P ActiveState 2>/dev/null || echo unknown)
         exec_status=$(systemctl show "$unit" -P ExecMainStatus 2>/dev/null || echo unknown)
-
-        if [ -z "$result" ]; then
-          result="unknown"
-        fi
-
-        failed=0
-
-        if [ "$result" != "success" ]; then
-          failed=1
-        fi
-
-        if [ "$active_state" = "failed" ]; then
-          failed=1
-        fi
-
-        if [ "$exec_status" != "0" ] && [ "$exec_status" != "" ]; then
-          failed=1
-        fi
-
-        # Require evidence that the unit ran during today's job window.
+        failed=1
         ran_today=0
-        if journalctl -u "$unit" \
-          --since "$job_since" \
-          --until "$job_until" \
-          --no-pager \
-          -o cat 2>/dev/null \
-          | sed '/^$/d' \
-          | head -n 1 \
-          | grep -q .; then
+        if [ -n "$last_attempt" ] && [ "$(date -d "$last_attempt" +%s)" -ge "$(date -d "$job_since" +%s)" ]; then
           ran_today=1
         fi
-
-        if [ "$ran_today" -eq 0 ]; then
-          failed=1
-        fi
+        if [ "$result" = "done" ] && [ "$ran_today" -eq 1 ]; then failed=0; fi
+        if [ "$category" = "backup" ]; then printf '%s\n' "$observation" >> "$observations"; fi
 
         case "$category" in
           backup)
@@ -320,6 +303,7 @@ in {
       unit_check backup "restic-backups-app-data.service" "app-data backup"
       unit_check backup "restic-backups-config.service" "config backup"
       unit_check backup "restic-backups-minecraft-cshu.service" "Minecraft backup"
+      unit_check backup "dump-lifeos-db.service" "LifeOS PostgreSQL dump"
       macos_code_backup_check
 
       unit_check sync "forgejo-sync-github.service" "Forgejo GitHub sync"
@@ -328,14 +312,14 @@ in {
       website_down=0
 
       if [ -f /srv/uptimekuma/kuma.db ]; then
-        website_total=$(sqlite3 /srv/uptimekuma/kuma.db "
+        website_total=$(sqlite3 -readonly /srv/uptimekuma/kuma.db "
           select count(*)
           from monitor
           where active = 1
             and type != 'group';
         " 2>/dev/null || echo 0)
 
-        sqlite3 -noheader -separator '|' /srv/uptimekuma/kuma.db "
+        sqlite3 -readonly -noheader -separator '|' /srv/uptimekuma/kuma.db "
           with latest as (
             select
               h.monitor_id,
@@ -432,6 +416,22 @@ in {
           fi
         fi
       } > "$report"
+
+      journalctl --since "$yesterday_iso 00:00:00" --until "$today_iso 00:00:00" -p warning -n 2000 -o json --no-pager \
+        | python ${journalSummary} > /var/lib/shupi-status/journal.tmp || \
+        echo '{"issues":[],"journalError":"Journal summary unavailable"}' > /var/lib/shupi-status/journal.tmp
+      monitors=$(sqlite3 -readonly -json /srv/uptimekuma/kuma.db "
+        select m.name, h.status, h.time as seen
+        from monitor m left join heartbeat h on h.monitor_id=m.id
+          and h.id=(select id from heartbeat where monitor_id=m.id order by time desc,id desc limit 1)
+        where m.active=1 and m.type != 'group' order by m.name;
+      " 2>/dev/null || echo 'null')
+      jq -s --argjson monitors "$monitors" --arg collected "$(date --iso-8601=seconds)" --arg day "$yesterday_iso" \
+        --slurpfile journal /var/lib/shupi-status/journal.tmp \
+        '{collectedAt:$collected,reportDay:$day,backups:.,services:[],failedUnits:null,monitors:$monitors} + $journal[0]' "$observations" > /var/lib/shupi-status/report.tmp
+      chmod 644 /var/lib/shupi-status/report.tmp
+      mv /var/lib/shupi-status/report.tmp /var/lib/shupi-status/report.json
+      rm /var/lib/shupi-status/journal.tmp
 
       max_bytes=3500
 

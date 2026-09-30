@@ -3,6 +3,7 @@
     config,
     name,
     networkName ? name,
+    internal ? false,
   }: {
     systemd.services."init-${name}-network" = {
       description = "Create Docker network for ${name}";
@@ -15,7 +16,7 @@
       };
       script = ''
         ${config.virtualisation.docker.package}/bin/docker network inspect ${networkName} >/dev/null 2>&1 || \
-        ${config.virtualisation.docker.package}/bin/docker network create ${networkName}
+        ${config.virtualisation.docker.package}/bin/docker network create ${lib.optionalString internal "--internal"} ${networkName}
       '';
     };
   };

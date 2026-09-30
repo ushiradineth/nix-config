@@ -23,6 +23,7 @@
 
     # Exposed through Tailscale tailnet
     UPTIMEKUMA_DOMAIN = "up.shupi.ushira.com";
+    LIFEOS_DOMAIN = "lifeos.shupi.ushira.com";
     ACTUALBUDGET_DOMAIN = "ab.shupi.ushira.com";
     PORTAINER_DOMAIN = "pt.shupi.ushira.com";
     ADGUARD_DOMAIN = "ad.shupi.ushira.com";

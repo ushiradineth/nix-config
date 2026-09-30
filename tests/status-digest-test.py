@@ -3,11 +3,11 @@ import importlib.util
 import unittest
 import sys
 sys.dont_write_bytecode = True
-spec = importlib.util.spec_from_file_location('observer', 'hosts/shupi/services/lifeos-observer.py')
+spec = importlib.util.spec_from_file_location('observer', 'hosts/shupi/services/journal-summary.py')
 o = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(o)
 NOW = dt.datetime(2026, 9, 30, 5, tzinfo=dt.timezone.utc)
-UNIT = o.UNITS[0]
+UNIT = 'restic-backups-app-data.service'
 
 def event(hours, result):
     return {'UNIT': UNIT, 'JOB_TYPE': 'start', 'JOB_RESULT': result, '__REALTIME_TIMESTAMP': str(int((NOW - dt.timedelta(hours=hours)).timestamp() * 1000000))}
