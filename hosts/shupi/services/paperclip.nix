@@ -59,6 +59,8 @@ in {
     environment = {
       PAPERCLIP_DEPLOYMENT_MODE = "authenticated";
       PAPERCLIP_DEPLOYMENT_EXPOSURE = "private";
+      # Keep controller-internal MCP callbacks off the tailnet-only public route.
+      PAPERCLIP_API_URL = "http://127.0.0.1:3100";
       PAPERCLIP_PUBLIC_URL = "https://${domain}";
       PAPERCLIP_ALLOWED_HOSTNAMES = domain;
       PAPERCLIP_TELEMETRY_DISABLED = "1";
