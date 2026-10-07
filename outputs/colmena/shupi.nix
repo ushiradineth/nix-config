@@ -35,6 +35,7 @@
     "modules/home-manager/core/btop.nix"
     "modules/home-manager/core/ssh.nix"
     "modules/home-manager/core/home.nix"
+    "modules/home-manager/core/atuin.nix"
   ];
 in {
   nixosConfiguration = mkLinuxNixosSystem {

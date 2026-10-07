@@ -30,6 +30,7 @@
       linkding = 48021;
       homeassistant = 48022;
       lifeos = 48023;
+      atuin = 48024;
     };
   };
 }
