@@ -303,7 +303,6 @@ in {
       unit_check backup "restic-backups-app-data.service" "app-data backup"
       unit_check backup "restic-backups-config.service" "config backup"
       unit_check backup "restic-backups-minecraft-cshu.service" "Minecraft backup"
-      unit_check backup "dump-lifeos-db.service" "LifeOS PostgreSQL dump"
       macos_code_backup_check
 
       unit_check sync "forgejo-sync-github.service" "Forgejo GitHub sync"
