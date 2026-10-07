@@ -32,6 +32,7 @@
       lifeos = 48023;
       atuin = 48024;
       paperclip = 48025;
+      snapotter = 48026;
     };
   };
 }

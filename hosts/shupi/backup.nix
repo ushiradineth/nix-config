@@ -169,6 +169,7 @@ in {
       paths = [
         "/srv/immich/library"
         "/srv/seafile/data"
+        "/srv/snapotter/data"
       ];
 
       extraOptions = [
@@ -222,6 +223,7 @@ in {
         "/srv/backrest/config"
         "/srv/backrest/data"
         "/srv/paperclip"
+        "/srv/snapotter/redis"
       ];
 
       extraOptions = [
