@@ -224,6 +224,7 @@ in {
         "/srv/backrest/data"
         "/srv/paperclip"
         "/srv/snapotter/redis"
+        "/srv/google-mcp"
       ];
 
       extraOptions = [
