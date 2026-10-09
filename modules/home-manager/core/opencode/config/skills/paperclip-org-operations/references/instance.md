@@ -64,6 +64,11 @@ built-in agent. Do not broaden Summarizer's authority to compensate for another 
 - The bounded `SHU-28` pilot renamed its task with `set_task_title`, found Google MCP with
   `connections_search`, and ran `ssh shu 'printf native-ssh-ok'` successfully before the migration
   was widened.
+- The pinned runner rejects semantic tool text when a sensitive noun followed by whitespace looks
+  like a shell-style credential pair, even if the text only describes setup. A one-option question
+  is also invalid. Follow the generic detector-safe confirmation pattern in `service-access.md` for
+  every missing-value request.
+
 - Before a future adapter or transport migration, keep a rollback revision and prove one real
   bounded run through the same agent-visible path before widening the change.
 

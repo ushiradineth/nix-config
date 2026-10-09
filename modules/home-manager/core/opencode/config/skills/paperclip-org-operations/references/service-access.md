@@ -9,7 +9,7 @@
    it, use an authorized board or company-scoped connection inventory instead of guessing a callback
    route.
 3. Follow the returned setup or usage instruction. If no usable connection exists, explain what is
-   missing and ask the user to authorize or supply the required credential.
+   missing and ask the user to authorize or securely provide the required credential.
 4. Prefer OAuth or device authorization. For API keys and passwords, use Paperclip's secure secret
    or connection input rather than issue comments, prompts, shell history, or repository files.
 5. Request the smallest scopes and bind access only to the agent or group that needs it.
@@ -26,6 +26,47 @@ Make the request one concise question. Name the service and identity, the exact 
 scopes, where authorization must happen, where Paperclip will store the result, which agent receives
 it, and the harmless test that will follow. Ask the user to complete the secure authorization flow,
 not to paste a token, password, OAuth code, or secret into the conversation.
+
+## Secret requests and proposals
+
+Use Paperclip's proposal API when the requested access can be represented by a real secret or an
+existing binding. Search for `secret proposal` with `search_api`, then use the exact
+`POST /api/agents/me/secret-proposals` operation ID returned by the catalog with `call_api`.
+
+- If the secret is already bound to the proposing agent, submit `kind: "binding"` with its existing
+  `sourceConfigPath`, the required `configPath`, a concise justification, and `targetAgentId` only
+  for an authorized report. Paperclip creates the human-only confirmation card automatically.
+- If a credential arrives from an approved secure source, submit `kind: "secret"` immediately and
+  pass the value directly from memory or that source. Never place the value in a comment, document,
+  file, transcript, shell argument, or tool narration. Then submit the required binding proposal.
+- If the credential value is not available, do not invent a placeholder or claim that an empty
+  secret proposal was created. Paperclip secret proposals require a value. Use `request_human_input`
+  with `continuationPolicy: "wake_assignee"` to ask the user to create or bind it through
+  Paperclip's Secrets UI, naming the service, identity, least-privilege access, destination `env.*`
+  or `access.*` path, grantee, reason, and harmless follow-up test. Tell the user to answer only
+  when setup is ready and never to enter the credential in the response.
+
+Use a confirmation card for this request, not a one-option question. On runners that scan semantic
+tool text, descriptive wording can look like a supplied value. Use this detector-safe shape, replace
+the angle-bracket placeholders, and do not add option descriptions or extra tool fields:
+
+```json
+{
+  "idempotencyKey": "<service>-<config-path>-setup-v1",
+  "interactionKind": "confirmation",
+  "title": "<service> setup",
+  "prompt": "Open Paperclip Secrets. Add the <service> entry. Bind <grantees> at <config-path>. Select Confirm only after setup. Do not include the value.",
+  "continuationPolicy": "wake_assignee"
+}
+```
+
+Keep the config path sentence-final before punctuation. The card must identify the service, intended
+identity, minimum access, grantees, reason, and harmless test either in the substituted prompt or in
+the task context. Never include the missing value.
+
+After a proposal card resolves, list agent-visible secret metadata again and verify the expected
+binding exists. An accepted card is not proof of execution; missing metadata or a failed execution
+status remains blocked.
 
 ## Permission tiers
 

@@ -12,11 +12,12 @@
   runtimeDir = "/run/google-mcp";
   clientSecret = "${runtimeDir}/client-secret.json";
   dataDir = "/srv/google-mcp";
+  permissions = "gmail:send calendar:full drive:full docs:full sheets:full";
   environmentVersion = pkgs.writeText "google-mcp-environment-version" ''
     MCP_ENABLE_OAUTH21=true
     WORKSPACE_MCP_STATELESS_MODE=true
     WORKSPACE_MCP_OAUTH_PROXY_STORAGE_BACKEND=disk
-    WORKSPACE_MCP_PERMISSIONS=gmail:readonly drive:readonly calendar:readonly
+    WORKSPACE_MCP_PERMISSIONS=${permissions}
     WORKSPACE_EXTERNAL_URL=https://${domain}
     GOOGLE_OAUTH_REDIRECT_URI=https://${domain}/oauth2callback
     WORKSPACE_MCP_ALLOWED_CLIENT_REDIRECT_URIS=https://${config.environment.variables.PAPERCLIP_DOMAIN}/api/tools/oauth/callback
@@ -69,7 +70,7 @@ in {
       WORKSPACE_MCP_STATELESS_MODE = "true";
       WORKSPACE_MCP_OAUTH_PROXY_STORAGE_BACKEND = "disk";
       WORKSPACE_MCP_OAUTH_PROXY_DISK_DIRECTORY = "/data/oauth-proxy";
-      WORKSPACE_MCP_PERMISSIONS = "gmail:readonly drive:readonly calendar:readonly";
+      WORKSPACE_MCP_PERMISSIONS = permissions;
       WORKSPACE_MCP_HOST = "0.0.0.0";
       WORKSPACE_MCP_PORT = "8000";
       WORKSPACE_EXTERNAL_URL = "https://${domain}";
