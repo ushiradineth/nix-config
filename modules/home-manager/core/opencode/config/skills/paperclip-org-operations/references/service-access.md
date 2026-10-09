@@ -83,6 +83,13 @@ sharing it with all agents.
 
 ## Current Google access
 
+Always use the existing Paperclip connection named `Google MCP` for Google services. Do not request,
+create, or fall back to Paperclip's built-in Google Drive, Gmail, Calendar, Docs, or Sheets
+connectors; those connector paths are not supported on this instance. If `connections_search`
+returns multiple Google options, choose `Google MCP`. If it is missing or unavailable to the current
+agent, ask the board to grant or repair that exact connection instead of opening a built-in Google
+connector setup flow.
+
 The approved self-hosted connection exposes:
 
 - Gmail read-only

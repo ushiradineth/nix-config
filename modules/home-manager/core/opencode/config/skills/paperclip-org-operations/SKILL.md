@@ -65,6 +65,9 @@ operation. A skill may describe a semantic tool that the current runtime does no
 - For service access, call `connections_search` before any service tool. If it is absent, use an
   authorized board or company-scoped connection inventory; do not treat a bridge-denied connection
   route as proof that no connection exists.
+- For Google services, select the existing connection named `Google MCP`. Do not request or create
+  Paperclip's built-in Google Drive, Gmail, Calendar, Docs, or Sheets connectors. If `Google MCP` is
+  not available to the current agent, request that exact existing connection be granted or repaired.
 - Report the exact missing tool, denied route, or runtime constraint when an operation is blocked.
   Distinguish runtime capability failures from authentication and permission failures.
 
