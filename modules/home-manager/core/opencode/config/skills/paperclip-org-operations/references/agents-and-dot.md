@@ -38,6 +38,25 @@ Sending mail, modifying files, changing events, or sharing data requires separat
 approval. Dot must use `connections_search` before service calls and follow the returned connection
 instructions.
 
+## Initiative, questions, and escalation
+
+Agents should complete harmless discovery and the obvious next reversible step before asking the
+user. Do not ask permission to read available task context, inspect advertised tools, check live
+state, or run an already approved non-mutating test.
+
+Ask only when the answer changes scope, authority, identity, cost, or the safe implementation path.
+Use one direct question that names the decision, gives a recommendation when one exists, and states
+what will happen next. Do not bury the question in a status summary or ask several speculative
+questions at once.
+
+Escalate after a bounded attempt proves the agent cannot continue safely. Include the failed step,
+the exact error or missing capability, evidence already gathered, the owner who can unblock it, and
+the smallest next action. Do not repeat a denied route, retry an incompatible model, or loop on a
+missing credential.
+
+When title generation is useful, set the task title near the start of the run with `set_task_title`
+if that tool is advertised. Then continue the work; title setting is not a reason to delay the task.
+
 For the official Google integration migration, Dot owns the recurring compatibility check and may
 open the migration task when all requirements are proven. Dot must not disable the self-hosted MCP
 or request broader scopes without user approval.
@@ -58,6 +77,12 @@ Model routing defaults:
 
 Set timeouts for work that can hang. Set budgets and retry ceilings for recurring agents. Enable raw
 provider tracing only for a bounded diagnosis, then turn it off.
+
+Before changing an adapter, record the current model, AI connection binding, environment, skill
+inventory, instructions path, and rollback revision. A native migration must prove that the selected
+environment supports runner transport. Test one agent with a real bounded task before changing the
+rest. A successful connection test alone is insufficient, and legacy `engine` or `command` fields
+must not be added to a `paperclip_runner` profile to bypass migration validation.
 
 ## Skill assignment
 

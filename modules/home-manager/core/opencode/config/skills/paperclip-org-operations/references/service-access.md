@@ -4,8 +4,10 @@
 
 1. Describe the task capability, not a vendor credential: for example, "read upcoming calendar
    events" rather than "get a Google token".
-2. Call `connections_search` for the service or capability before using any service tool, even when
-   a connection appears to exist.
+2. Call the semantic `connections_search` tool for the service or capability before using any
+   service tool, even when a connection appears to exist. If the current runtime does not advertise
+   it, use an authorized board or company-scoped connection inventory instead of guessing a callback
+   route.
 3. Follow the returned setup or usage instruction. If no usable connection exists, explain what is
    missing and ask the user to authorize or supply the required credential.
 4. Prefer OAuth or device authorization. For API keys and passwords, use Paperclip's secure secret
@@ -19,6 +21,11 @@ It is acceptable to ask for credentials when access cannot be established otherw
 what is needed and why. Never ask the user to post a credential in a public issue or normal agent
 comment. If a credential is supplied in an unsafe channel, do not repeat it; move it into the
 approved secret store and recommend rotation when exposure is material.
+
+Make the request one concise question. Name the service and identity, the exact read or write
+scopes, where authorization must happen, where Paperclip will store the result, which agent receives
+it, and the harmless test that will follow. Ask the user to complete the secure authorization flow,
+not to paste a token, password, OAuth code, or secret into the conversation.
 
 ## Permission tiers
 

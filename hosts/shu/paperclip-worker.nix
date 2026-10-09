@@ -7,7 +7,7 @@
   paperclipRoot = "/Users/${myvars.username}/.paperclip";
 in {
   users.users.${myvars.username}.openssh.authorizedKeys.keys = [
-    ''from="100.74.32.50",restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEU7Xo2OG8Jj1zlbLs/3dfyBT0eEy05k45lQ3uDLrnKT paperclip@shupi''
+    ''from="100.74.32.50",restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFk1LV9zkEobez4+2FSML3FMeknRGjVwMwUNDRVCudys paperclip@shupi''
   ];
 
   system.activationScripts.postActivation.text = lib.mkAfter ''

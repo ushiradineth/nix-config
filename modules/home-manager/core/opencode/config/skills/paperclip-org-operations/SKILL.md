@@ -1,7 +1,7 @@
 ---
 name: paperclip-org-operations
 description:
-  Use whenever operating, maintaining, troubleshooting, or expanding Shu's self-hosted Paperclip
+  Use when operating, maintaining, troubleshooting, or expanding Shu's self-hosted Paperclip
   organization; managing Dot or another agent; creating roles, routines, goals, or projects;
   choosing agent models; connecting agents to services or information; requesting credentials;
   reviewing permissions; or planning a connector migration. Consult this skill for any Paperclip
@@ -51,6 +51,26 @@ PAPERCLIP_API_BASE="${PAPERCLIP_API_BASE%/api}"
 Use the run-scoped `PAPERCLIP_API_KEY`, company ID, agent ID, and task ID already present in the
 environment. Never print those values. Consult Paperclip's OpenAPI document before guessing a route
 or payload.
+
+## Runtime-aware tool use
+
+Inspect the current run's adapter, environment, and advertised tool inventory before choosing an
+operation. A skill may describe a semantic tool that the current runtime does not expose.
+
+- Use a semantic Paperclip tool when it is advertised. It carries the active run, task, and user
+  context without reconstructing a REST call.
+- For task titles, call `set_task_title` early. Use a REST title route only when the semantic tool
+  is absent and the live OpenAPI plus the current bridge allow that route. Do not retry a route
+  after the bridge returns `Route not allowed`.
+- For service access, call `connections_search` before any service tool. If it is absent, use an
+  authorized board or company-scoped connection inventory; do not treat a bridge-denied connection
+  route as proof that no connection exists.
+- Report the exact missing tool, denied route, or runtime constraint when an operation is blocked.
+  Distinguish runtime capability failures from authentication and permission failures.
+
+Do not infer native execution from an enabled feature flag or a selected adapter. A bounded run must
+show `paperclip_runner` dispatch and successful transport before native-only tools are considered
+available.
 
 ## Authority and credential handling
 

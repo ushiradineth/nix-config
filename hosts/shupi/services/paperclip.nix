@@ -8,8 +8,23 @@
   port = config.ports.paperclip;
   domain = config.environment.variables.PAPERCLIP_DOMAIN;
   envFile = "/var/lib/paperclip/paperclip.env";
+  sshDir = "/var/lib/paperclip/ssh";
   dockerSubnet = "172.17.0.0/16";
   workerHost = "100.120.236.115";
+  sshConfig = pkgs.writeText "paperclip-ssh-config" ''
+    Host shu
+      HostName ${workerHost}
+      User shu
+      IdentityFile /etc/ssh/paperclip_id_ed25519
+      IdentitiesOnly yes
+      BatchMode yes
+      StrictHostKeyChecking yes
+      UserKnownHostsFile /etc/ssh/paperclip_known_hosts
+      UpdateHostKeys no
+  '';
+  sshKnownHosts = pkgs.writeText "paperclip-ssh-known-hosts" ''
+    ${workerHost} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOesw4LmRS/uw1s9kTUmddcq2OMM25HV1oi+4A6IYWS
+  '';
   route = mylib.traefikHelpers.mkTraefikRoute {
     name = "paperclip";
     host = "127.0.0.1";
@@ -19,6 +34,7 @@ in {
   systemd.tmpfiles.rules = [
     "d /srv/paperclip 0700 1000 1000 -"
     "d /var/lib/paperclip 0700 root root -"
+    "d ${sshDir} 0700 1000 1000 -"
   ];
 
   systemd.services.paperclip-secrets = {
@@ -51,11 +67,37 @@ in {
     '';
   };
 
+  systemd.services.paperclip-ssh-files = {
+    description = "Prepare Paperclip SSH client files";
+    path = [pkgs.coreutils];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      UMask = "0077";
+    };
+    script = ''
+      set -euo pipefail
+
+      test -s ${sshDir}/id_ed25519
+      chown 1000:1000 ${sshDir}/id_ed25519 ${sshDir}/id_ed25519.pub
+      chmod 0600 ${sshDir}/id_ed25519
+      chmod 0644 ${sshDir}/id_ed25519.pub
+      install -m 0644 -o 1000 -g 1000 ${sshConfig} ${sshDir}/config
+      install -m 0644 -o 1000 -g 1000 ${sshKnownHosts} ${sshDir}/known_hosts
+    '';
+  };
+
   virtualisation.oci-containers.containers.paperclip = {
     image = "ghcr.io/paperclipai/paperclip:2026.1005.0@sha256:de762433b50d56ed9180fef96a13fa236b37856c5c7a7718e8f19afe3d1e8670";
     autoStart = true;
     ports = ["127.0.0.1:${toString port}:3100"];
-    volumes = ["/srv/paperclip:/paperclip"];
+    volumes = [
+      "/srv/paperclip:/paperclip"
+      "${sshDir}:/paperclip/.ssh:ro"
+      "${sshDir}/config:/etc/ssh/ssh_config.d/99-paperclip.conf:ro"
+      "${sshDir}/id_ed25519:/etc/ssh/paperclip_id_ed25519:ro"
+      "${sshDir}/known_hosts:/etc/ssh/paperclip_known_hosts:ro"
+    ];
     environment = {
       PAPERCLIP_DEPLOYMENT_MODE = "authenticated";
       PAPERCLIP_DEPLOYMENT_EXPOSURE = "private";
@@ -68,6 +110,10 @@ in {
     environmentFiles = [envFile];
     extraOptions = [
       "--pids-limit=2048"
+      # Codex ACP creates a nested Bubblewrap sandbox. Docker's default seccomp
+      # profile blocks its namespace syscalls; avoid granting CAP_SYS_ADMIN.
+      "--security-opt=seccomp=unconfined"
+      "--security-opt=no-new-privileges:true"
       "--health-cmd=node -e \"require('http').get('http://127.0.0.1:3100/api/health', r => r.statusCode === 200 ? process.exit(0) : process.exit(1)).on('error', () => process.exit(1))\""
       "--health-interval=30s"
       "--health-timeout=10s"
@@ -77,8 +123,14 @@ in {
   };
 
   systemd.services.docker-paperclip = {
-    after = ["paperclip-secrets.service"];
-    requires = ["paperclip-secrets.service"];
+    after = [
+      "paperclip-secrets.service"
+      "paperclip-ssh-files.service"
+    ];
+    requires = [
+      "paperclip-secrets.service"
+      "paperclip-ssh-files.service"
+    ];
   };
 
   systemd.services.paperclip-backup = {
