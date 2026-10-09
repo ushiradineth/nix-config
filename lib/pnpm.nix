@@ -8,11 +8,13 @@
   mkGlobalInstall = {
     packages,
     postinstallPackages ? [],
+    stateFile ? ".hm-global-packages",
+    updatePackages ? true,
   }:
     config.lib.dag.entryAfter ["writeBoundary"] ''
             export PNPM_HOME="$HOME/.local/share/pnpm"
             export PATH="${pkgs.pnpm}/bin:${pkgs.nodejs}/bin:$PNPM_HOME/bin:$PNPM_HOME:$PATH"
-            state_file="$PNPM_HOME/.hm-global-packages"
+            state_file="$PNPM_HOME/${stateFile}"
 
             mkdir -p "$PNPM_HOME"
 
@@ -44,7 +46,9 @@
 
             if [ "''${#desired_packages[@]}" -gt 0 ]; then
               pnpm add -g "''${desired_packages[@]}"
-              pnpm update -g --latest "''${desired_packages[@]}"
+      ${pkgs.lib.optionalString updatePackages ''
+        pnpm update -g --latest "''${desired_packages[@]}"
+      ''}
             fi
 
             if [ "''${#postinstall_packages[@]}" -gt 0 ]; then

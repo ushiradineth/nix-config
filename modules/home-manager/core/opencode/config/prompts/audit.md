@@ -81,6 +81,10 @@ Goal: identify engineering risks and provide execution-ready review guidance wit
 6. Verify and challenge.
 
 - Propose concrete checks for each top recommendation.
+- Use repository-local scanner and Fallow output as candidate evidence, not proof. Verify source,
+  data flow, reachability, and impact before labeling a security defect.
+- Never run dynamic scans automatically. Without explicit intent and a disposable local target,
+  limit review to static harness evidence and mark runtime behavior `needs_validation`.
 - Apply `adversarial-self-play` as an inline checklist. Do not invoke `task`, slash commands, or
   subagents from this review gate.
 - Do not issue readiness verdicts before attack results are recorded.

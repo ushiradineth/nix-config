@@ -107,6 +107,10 @@ Execution note:
   explicit full audit as multi-step planner -> builder work, with only primary agents coordinating
   first-level leaf executors. Without the upstream OS sandbox controls, stay source-only, mark
   dynamic checks `needs_validation`, and never execute target-controlled code.
+- Use `shift-left-security` for repository-local SAST, staged policy, SQL safety, and explicitly
+  requested disposable DAST; use `fallow` for advisory JS/TS codebase evidence. Run applicable local
+  SAST after relevant edits and before readiness, verify candidates before action, and never run
+  dynamic scans automatically.
 - In the sudo lane, apply `resolving-merge-conflicts` only for an in-progress conflicted merge or
   rebase, under `git-guardrails` and explicit user-intent checks.
 

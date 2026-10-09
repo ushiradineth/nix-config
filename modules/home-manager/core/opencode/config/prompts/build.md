@@ -115,6 +115,10 @@ validation evidence.
 - Apply `beam-search-execution` when material implementation options remain.
 - Apply `artifact-coherence` when decisions may stale plans, strategy docs, or source-of-truth
   artifacts.
+- Apply `shift-left-security` after relevant edits and before readiness; run applicable local SAST
+  and use `fallow` for JS/TS codebase evidence without replacing repository-native checks.
+- Never run dynamic scans automatically. They require explicit user intent and a disposable local
+  target; otherwise validate only the harness structure and report `needs_validation`.
 - Apply `adversarial-self-play` for required redteam gates.
 - Apply `requesting-code-review` after medium or high-risk task completion and before final `DONE`
   as an inline fixed-point review with separate `Standards` and `Spec` axes, not an automatic

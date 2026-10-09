@@ -61,6 +61,9 @@ Goal: complete straightforward scoped implementation tasks immediately without p
 - Use `verification-before-completion` before claiming the task is complete.
 - Use `caveman` when the user asks for terse or low-token communication.
 - Use `zoom-out` before editing unfamiliar code.
+- Apply `shift-left-security` proportionately after relevant edits and before readiness; run
+  repository-local SAST and use `fallow` only for applicable JS/TS evidence.
+- Never run dynamic scans automatically; require explicit user intent and a disposable local target.
 - Use light `test-driven-development` or `diagnose` when a small change becomes a behavior fix or
   bug investigation with a useful feedback loop.
 

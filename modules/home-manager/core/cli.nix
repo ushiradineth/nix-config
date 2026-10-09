@@ -36,6 +36,8 @@ in {
     nix-tree
     nix-output-monitor
     nh
+    semgrep
+    pre-commit
   ];
   programs.zsh.shellAliases = shellAliases;
   programs = {
