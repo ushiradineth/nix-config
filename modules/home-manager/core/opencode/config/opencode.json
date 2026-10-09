@@ -290,7 +290,7 @@
       "~/.config/**": "allow",
       "~/Code/**": "allow",
       "~/Downloads/**": "allow",
-      "~/Users/shu/Documents/Obsidian Vault/**": "allow"
+      "/Users/shu/Documents/Obsidian Vault/**": "allow"
     }
   }
 }
