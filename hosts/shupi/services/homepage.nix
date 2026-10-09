@@ -145,6 +145,20 @@ in {
       {
         "Applications" = [
           {
+            "Paperclip" = {
+              icon = "https://raw.githubusercontent.com/paperclipai/paperclip/d6024b3ca5343d6a1aeb1abc776846f0dcee8ba4/ui/public/favicon.svg";
+              href = "https://paperclip.shupi.ushira.com";
+              description = "Agent Management Platform";
+            };
+          }
+          {
+            "SnapOtter" = {
+              icon = "https://raw.githubusercontent.com/snapotter-hq/SnapOtter/8aa5d9a5f20b7c1b9791dce329f23718f97d3dd4/branding/logo-128.png";
+              href = "https://snapotter.shupi.ushira.com";
+              description = "Local File Processing";
+            };
+          }
+          {
             "Actual Budget" = {
               icon = "https://avatars.githubusercontent.com/u/37879538?v=4";
               href = "https://${config.environment.variables.ACTUALBUDGET_DOMAIN}";
