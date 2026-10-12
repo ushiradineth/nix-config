@@ -93,6 +93,7 @@ in {
     ports = ["127.0.0.1:${toString port}:3100"];
     volumes = [
       "/srv/paperclip:/paperclip"
+      "${pkgs.pkgsStatic.bubblewrap}/bin/bwrap:/usr/local/bin/bwrap:ro"
       "${sshDir}:/paperclip/.ssh:ro"
       "${sshDir}/config:/etc/ssh/ssh_config.d/99-paperclip.conf:ro"
       "${sshDir}/id_ed25519:/etc/ssh/paperclip_id_ed25519:ro"
