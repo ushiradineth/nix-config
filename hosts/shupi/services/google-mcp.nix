@@ -15,7 +15,8 @@
   permissions = "gmail:send calendar:full drive:full docs:full sheets:full";
   environmentVersion = pkgs.writeText "google-mcp-environment-version" ''
     MCP_ENABLE_OAUTH21=true
-    WORKSPACE_MCP_STATELESS_MODE=true
+    WORKSPACE_MCP_STATELESS_MODE=false
+    WORKSPACE_MCP_MAX_FILE_BYTES=16777216
     WORKSPACE_MCP_OAUTH_PROXY_STORAGE_BACKEND=disk
     WORKSPACE_MCP_PERMISSIONS=${permissions}
     WORKSPACE_EXTERNAL_URL=https://${domain}
@@ -57,7 +58,7 @@ in {
   };
 
   virtualisation.oci-containers.containers.google-mcp = {
-    image = "ghcr.io/taylorwilsdon/google_workspace_mcp:sha-2e9e9e7@sha256:52ce59e89e0dbc45725e78b6600c37dfacd529480a35f784eb483582f0f61512";
+    image = "ghcr.io/ushiradineth/google-workspace-mcp:file-handles-2311c8735e68@sha256:ac54d4630e732b3eeeb6901dc0d5db275431410815f0c4b92d97986ed8f693c2";
     autoStart = true;
     log-driver = "json-file";
     ports = ["127.0.0.1:${toString port}:8000"];
@@ -66,8 +67,10 @@ in {
       "${clientSecret}:/run/secrets/google-oauth.json:ro"
     ];
     environment = {
+      HOME = "/tmp";
       MCP_ENABLE_OAUTH21 = "true";
-      WORKSPACE_MCP_STATELESS_MODE = "true";
+      WORKSPACE_MCP_STATELESS_MODE = "false";
+      WORKSPACE_MCP_MAX_FILE_BYTES = "16777216";
       WORKSPACE_MCP_OAUTH_PROXY_STORAGE_BACKEND = "disk";
       WORKSPACE_MCP_OAUTH_PROXY_DISK_DIRECTORY = "/data/oauth-proxy";
       WORKSPACE_MCP_PERMISSIONS = permissions;

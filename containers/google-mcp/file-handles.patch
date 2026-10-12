@@ -1,0 +1,737 @@
+diff --git a/auth/oauth_callback_server.py b/auth/oauth_callback_server.py
+--- a/auth/oauth_callback_server.py
++++ b/auth/oauth_callback_server.py
+@@ -130,6 +130,14 @@ class MinimalOAuthServer:
+                     {"error": "Attachment not found or expired"}, status_code=404
+                 )
+ 
++            if metadata.get("owner_email"):
++                from core.file_handles import authenticate_download
++
++                try:
++                    await authenticate_download(request, metadata)
++                except ValueError as exc:
++                    return JSONResponse({"error": str(exc)}, status_code=403)
++
+             file_path = storage.get_attachment_path(file_id)
+             if not file_path:
+                 return JSONResponse(
+diff --git a/core/attachment_storage.py b/core/attachment_storage.py
+--- a/core/attachment_storage.py
++++ b/core/attachment_storage.py
+@@ -6,6 +6,7 @@ Files are automatically cleaned up after expiration (default 1 hour).
+ """
+ 
+ import base64
++import hashlib
+ import logging
+ import os
+ import re
+@@ -108,6 +109,7 @@ class AttachmentStorage:
+         base64_data: str,
+         filename: Optional[str] = None,
+         mime_type: Optional[str] = None,
++        owner_email: Optional[str] = None,
+     ) -> SavedAttachment:
+         """
+         Save an attachment to local disk.
+@@ -127,13 +129,14 @@ class AttachmentStorage:
+             logger.error(f"Failed to decode base64 attachment data: {e}")
+             raise ValueError(f"Invalid base64 data: {e}")
+ 
+-        return self.save_attachment_bytes(file_bytes, filename, mime_type)
++        return self.save_attachment_bytes(file_bytes, filename, mime_type, owner_email)
+ 
+     def save_attachment_bytes(
+         self,
+         file_bytes: bytes,
+         filename: Optional[str] = None,
+         mime_type: Optional[str] = None,
++        owner_email: Optional[str] = None,
+     ) -> SavedAttachment:
+         """Save an already-decoded attachment without a base64 round trip."""
+         _ensure_storage_dir()
+@@ -174,7 +177,13 @@ class AttachmentStorage:
+             raise
+ 
+         return self._record(
+-            file_id, file_path, save_name, filename, mime_type, len(file_bytes)
++            file_id,
++            file_path,
++            save_name,
++            filename,
++            mime_type,
++            len(file_bytes),
++            owner_email,
+         )
+ 
+     def save_attachment_from_path(
+@@ -182,6 +191,7 @@ class AttachmentStorage:
+         src_path: str,
+         filename: Optional[str] = None,
+         mime_type: Optional[str] = None,
++        owner_email: Optional[str] = None,
+     ) -> SavedAttachment:
+         """
+         Adopt an already-downloaded file without loading it into memory.
+@@ -218,7 +228,7 @@ class AttachmentStorage:
+                 f"({size} bytes) to {file_path}"
+             )
+             return self._record(
+-                file_id, file_path, save_name, filename, mime_type, size
++                file_id, file_path, save_name, filename, mime_type, size, owner_email
+             )
+         except Exception as e:
+             # The move can land before a later finalization step fails, leaving a file in
+@@ -245,6 +255,7 @@ class AttachmentStorage:
+         filename: Optional[str],
+         mime_type: Optional[str],
+         size: int,
++        owner_email: Optional[str] = None,
+     ) -> SavedAttachment:
+         """Record a stored file's metadata and return its handle."""
+         self._metadata[file_id] = {
+@@ -253,6 +264,8 @@ class AttachmentStorage:
+             "original_filename": filename,
+             "mime_type": mime_type or "application/octet-stream",
+             "size": size,
++            "owner_email": owner_email.strip().casefold() if owner_email else None,
++            "sha256": file_sha256(file_path),
+             "created_at": datetime.now(),
+             "expires_at": datetime.now() + timedelta(seconds=self.expiration_seconds),
+         }
+@@ -382,6 +395,15 @@ class AttachmentStorage:
+ _attachment_storage: Optional[AttachmentStorage] = None
+ 
+ 
++def file_sha256(path: Path) -> str:
++    """Hash stored bytes without buffering the complete file."""
++    digest = hashlib.sha256()
++    with path.open("rb") as source:
++        for chunk in iter(lambda: source.read(256 * 1024), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
+ def get_attachment_storage() -> AttachmentStorage:
+     """Get the global attachment storage instance."""
+     global _attachment_storage
+diff --git a/core/server.py b/core/server.py
+--- a/core/server.py
++++ b/core/server.py
+@@ -913,7 +913,7 @@ async def readiness_check(request: Request):
+ @server.custom_route("/attachments/{file_id}", methods=["GET"])
+ async def serve_attachment(request: Request):
+     """Serve a stored attachment file."""
+-    from core.attachment_storage import get_attachment_storage
++    from core.attachment_storage import get_attachment_storage, get_attachment_url
+ 
+     file_id = request.path_params["file_id"]
+     storage = get_attachment_storage()
+@@ -924,6 +924,19 @@ async def serve_attachment(request: Request):
+             {"error": "Attachment not found or expired"}, status_code=404
+         )
+ 
++    if metadata.get("owner_email"):
++        from core.file_handles import authenticate_download, resolve_file_handle
++
++        try:
++            email = await authenticate_download(request, metadata)
++            source = await asyncio.to_thread(
++                resolve_file_handle, get_attachment_url(file_id), email
++            )
++            if source is None:
++                raise ValueError("Invalid MCP file handle origin.")
++        except ValueError as exc:
++            return JSONResponse({"error": str(exc)}, status_code=403)
++
+     file_path = storage.get_attachment_path(file_id)
+     if not file_path:
+         return JSONResponse({"error": "Attachment file not found"}, status_code=404)
+diff --git a/gchat/chat_tools.py b/gchat/chat_tools.py
+--- a/gchat/chat_tools.py
++++ b/gchat/chat_tools.py
+@@ -715,7 +715,10 @@ async def download_chat_attachment(
+ 
+     storage = get_attachment_storage()
+     result = storage.save_attachment_bytes(
+-        file_bytes=file_bytes, filename=filename, mime_type=content_type
++        file_bytes=file_bytes,
++        filename=filename,
++        mime_type=content_type,
++        owner_email=user_google_email,
+     )
+ 
+     result_lines = [
+diff --git a/gdrive/drive_helpers.py b/gdrive/drive_helpers.py
+--- a/gdrive/drive_helpers.py
++++ b/gdrive/drive_helpers.py
+@@ -27,7 +27,11 @@ from googleapiclient.errors import HttpError
+ from googleapiclient.http import HttpRequest, MediaIoBaseDownload, MediaIoBaseUpload
+ 
+ from auth.service_decorator import require_google_service
+-from core.file_limits import download_media_bytes
++from core.file_limits import (
++    download_media_bytes,
++    ensure_within_file_size_limit,
++    get_max_file_bytes,
++)
+ from core.http_utils import (
+     redact_url as _redact_url,
+     ssrf_safe_stream as _ssrf_safe_stream,
+@@ -907,9 +911,31 @@ def resumable_upload_result(summary: str, upload_url: str, mime_type: str) -> st
+ 
+ 
+ async def _stream_url_with_validation(
+-    url: str, write_chunk: Optional[Callable[[bytes], Awaitable[None]]] = None
++    url: str,
++    write_chunk: Optional[Callable[[bytes], Awaitable[None]]] = None,
++    *,
++    user_google_email: Optional[str] = None,
+ ) -> Tuple[int, Optional[str]]:
+     """Stream a remote file with shared status and size validation."""
++    from core.file_handles import resolve_file_handle
++
++    local = await asyncio.to_thread(resolve_file_handle, url, user_google_email)
++    if local is not None:
++        path, metadata = local
++        if metadata["size"] > MAX_DOWNLOAD_BYTES:
++            raise ValueError("MCP file handle exceeds the upload byte limit.")
++        total_bytes = 0
++        with path.open("rb") as source:
++            while chunk := await asyncio.to_thread(
++                source.read, DOWNLOAD_CHUNK_SIZE_BYTES
++            ):
++                total_bytes += len(chunk)
++                if total_bytes > MAX_DOWNLOAD_BYTES:
++                    raise ValueError("MCP file handle exceeds the upload byte limit.")
++                if write_chunk is not None:
++                    await write_chunk(chunk)
++        return total_bytes, metadata["mime_type"]
++
+     total_bytes = 0
+     redacted_url = _redact_url(url)
+ 
+@@ -939,15 +965,27 @@ async def _stream_url_with_validation(
+     return total_bytes, content_type
+ 
+ 
+-async def _download_url_to_bytes(url: str) -> Tuple[BinaryIO, Optional[str]]:
++async def _download_url_to_bytes(
++    url: str, *, user_google_email: Optional[str] = None
++) -> Tuple[BinaryIO, Optional[str]]:
+     """Download a remote file into a spooled temporary file with bounded streaming."""
++    from core.file_handles import resolve_file_handle
++
++    local = await asyncio.to_thread(resolve_file_handle, url, user_google_email)
++    if local is not None:
++        path, metadata = local
++        if metadata["size"] > MAX_DOWNLOAD_BYTES:
++            raise ValueError("MCP file handle exceeds the upload byte limit.")
++        return path.open("rb"), metadata["mime_type"]
+     spool = SpooledTemporaryFile(max_size=UPLOAD_CHUNK_SIZE_BYTES)
+     try:
+ 
+         async def _collect(chunk: bytes) -> None:
+             await asyncio.to_thread(spool.write, chunk)
+ 
+-        _total_bytes, content_type = await _stream_url_with_validation(url, _collect)
++        _total_bytes, content_type = await _stream_url_with_validation(
++            url, _collect, user_google_email=user_google_email
++        )
+         await asyncio.to_thread(spool.seek, 0)
+         return spool, content_type
+     except Exception:
+@@ -999,11 +1037,15 @@ async def _download_file_to_temp(
+             downloader = MediaIoBaseDownload(
+                 tmp_file,
+                 _media_request(service, file_id, export_mime_type),
+-                chunksize=STREAMED_DOWNLOAD_CHUNK_SIZE_BYTES,
++                chunksize=min(
++                    STREAMED_DOWNLOAD_CHUNK_SIZE_BYTES,
++                    get_max_file_bytes() or STREAMED_DOWNLOAD_CHUNK_SIZE_BYTES,
++                ),
+             )
+             done = False
+             while not done:
+                 _status, done = await loop.run_in_executor(None, downloader.next_chunk)
++                ensure_within_file_size_limit(tmp_file.tell(), kind="Drive download")
+     except BaseException:
+         tmp_path.unlink(missing_ok=True)
+         raise
+@@ -1116,6 +1158,7 @@ def _detect_source_format(
+ async def _resolve_import_media(
+     *,
+     tool_name: str,
++    user_google_email: Optional[str] = None,
+     file_name: str,
+     content: Optional[str],
+     file_path: Optional[str],
+@@ -1239,7 +1282,9 @@ async def _resolve_import_media(
+         if parsed_url.scheme not in ("http", "https"):
+             raise ValueError(f"file_url must be http:// or https://, got: {file_url}")
+ 
+-        remote_file_data, remote_content_type = await _download_url_to_bytes(file_url)
++        remote_file_data, remote_content_type = await _download_url_to_bytes(
++            file_url, user_google_email=user_google_email
++        )
+ 
+         # Prefer the response Content-Type, falling back to URL-based detection.
+         if not source_format and not passthrough_mime_type:
+@@ -1526,6 +1571,7 @@ async def _import_with_conversion(
+ 
+     media, source_mime_type, remote_file_data = await _resolve_import_media(
+         tool_name=tool_name,
++        user_google_email=user_google_email,
+         file_name=file_name,
+         content=content,
+         file_path=file_path,
+diff --git a/gdrive/drive_tools.py b/gdrive/drive_tools.py
+--- a/gdrive/drive_tools.py
++++ b/gdrive/drive_tools.py
+@@ -635,6 +635,7 @@ async def get_drive_file_download_url(
+             src_path=str(tmp_path),
+             filename=output_filename,
+             mime_type=output_mime_type,
++            owner_email=user_google_email,
+         )
+ 
+         result_lines = [
+@@ -893,6 +894,8 @@ async def create_drive_file(
+     """
+     Creates a new file in Google Drive, supporting creation within shared drives.
+     Accepts direct text content, inline base64 bytes, or a fileUrl to fetch content from.
++    MCP download URLs are account-bound file handles resolved server-side without
++    fetching an internal URL. Use them for binary transfers instead of inline base64.
+     This stores the supplied bytes without converting them to Google Docs, Sheets, or
+     Slides. Use the matching import_to_google_* tool for Google-native conversion.
+ 
+@@ -1047,9 +1050,33 @@ async def create_drive_file(
+     elif fileUrl:
+         logger.info("[create_drive_file] Fetching file from provided URL")
+ 
++        from core.file_handles import resolve_file_handle
++
++        local = await asyncio.to_thread(resolve_file_handle, fileUrl, user_google_email)
+         # Check if this is a file:// URL
+         parsed_url = urlparse(fileUrl)
+-        if parsed_url.scheme == "file":
++        if local is not None:
++            path, metadata = local
++            file_metadata["mimeType"] = metadata["mime_type"]
++            with path.open("rb") as source:
++                media = MediaIoBaseUpload(
++                    source,
++                    mimetype=metadata["mime_type"],
++                    resumable=True,
++                    chunksize=UPLOAD_CHUNK_SIZE_BYTES,
++                )
++                created_file = await asyncio.to_thread(
++                    service.files()
++                    .create(
++                        body=file_metadata,
++                        media_body=media,
++                        fields="id, name, webViewLink",
++                        supportsAllDrives=True,
++                    )
++                    .execute,
++                    num_retries=GOOGLE_API_WRITE_RETRIES,
++                )
++        elif parsed_url.scheme == "file":
+             # Handle file:// URL - read from local filesystem
+             logger.info(
+                 "[create_drive_file] Detected file:// URL, reading from local filesystem"
+@@ -1131,7 +1158,7 @@ async def create_drive_file(
+                         await asyncio.to_thread(spool.write, chunk)
+ 
+                     _total, content_type = await _stream_url_with_validation(
+-                        fileUrl, _write_spool
++                        fileUrl, _write_spool, user_google_email=user_google_email
+                     )
+                     await asyncio.to_thread(spool.seek, 0)
+ 
+@@ -1169,7 +1196,7 @@ async def create_drive_file(
+                         await asyncio.to_thread(temp_file.write, chunk)
+ 
+                     total_bytes, content_type = await _stream_url_with_validation(
+-                        fileUrl, _write_chunk
++                        fileUrl, _write_chunk, user_google_email=user_google_email
+                     )
+ 
+                     logger.info(
+@@ -2101,6 +2128,7 @@ async def update_drive_file(
+ 
+             media, _source_mime_type, remote_file_data = await _resolve_import_media(
+                 tool_name="update_drive_file",
++                user_google_email=user_google_email,
+                 file_name=name or current_file.get("name", ""),
+                 content=content,
+                 file_path=file_path,
+diff --git a/gmail/gmail_tools.py b/gmail/gmail_tools.py
+--- a/gmail/gmail_tools.py
++++ b/gmail/gmail_tools.py
+@@ -33,7 +33,6 @@ from auth.service_decorator import require_google_service
+ from core.attachment_storage import (
+     get_attachment_storage,
+     get_attachment_url,
+-    STORAGE_DIR,
+ )
+ from core.file_limits import (
+     FileTooLargeError,
+@@ -372,6 +371,7 @@ async def _export_full_message(
+     headers: Dict[str, str],
+     body_format: Literal["text", "html", "raw"],
+     declared_size: Optional[int] = None,
++    user_google_email: Optional[str] = None,
+ ) -> str:
+     """
+     Return a message's complete, untruncated content: saved to local storage and
+@@ -523,6 +523,7 @@ async def _export_full_message(
+             file_bytes=content_bytes,
+             filename=f"{subject[:80]}{extension}",
+             mime_type=mime_type,
++            owner_email=user_google_email,
+         )
+ 
+     try:
+@@ -1175,50 +1176,29 @@ def _format_resolved_attachment_error(attachment: Dict[str, Any]) -> str:
+     return f"{label}: {detail}"
+ 
+ 
+-def _try_read_local_attachment(url: str) -> Optional[tuple[bytes, str, Optional[str]]]:
++def _try_read_local_attachment(
++    url: str, user_google_email: Optional[str] = None
++) -> Optional[tuple[bytes, str, Optional[str]]]:
+     """Try to resolve a URL as an MCP attachment stored on local disk.
+ 
+     Returns (data, filename, mime_type) if the URL points to a local
+     ``/attachments/{file_id}`` resource, otherwise ``None``.
+     """
+-    parsed = urlparse(url)
+-    parts = parsed.path.strip("/").split("/")
+-    if len(parts) != 2 or parts[0] != "attachments":
+-        return None
+-    if parsed.netloc:
+-        origin = (parsed.scheme.lower(), parsed.netloc.lower())
+-        if origin not in _get_trusted_attachment_origins():
+-            return None
++    from core.file_handles import resolve_file_handle
+ 
+-    file_id = parts[1]
+-    storage = get_attachment_storage()
+-    metadata = storage.get_attachment_metadata(file_id)
+-    if metadata is None:
+-        logger.debug(
+-            "Attachment metadata missing for %s; refusing local fallback under %s",
+-            file_id,
+-            STORAGE_DIR,
+-        )
+-        return None
+-
+-    file_path = storage.get_attachment_path(file_id)
+-    if file_path is None:
+-        logger.debug(
+-            "Attachment file path missing for %s; refusing local fallback under %s",
+-            file_id,
+-            STORAGE_DIR,
+-        )
++    local = resolve_file_handle(url, user_google_email)
++    if local is None:
+         return None
+-
+-    file_path = Path(file_path)
++    file_path, metadata = local
+     data = _read_attachment_bytes(file_path)
+-    filename = metadata["filename"]
++    filename = metadata.get("original_filename") or metadata["filename"]
+     mime_type = metadata.get("mime_type")
+     return data, filename, mime_type
+ 
+ 
+ async def _resolve_url_attachments(
+     attachments: Optional[List[Dict[str, Any]]],
++    user_google_email: Optional[str] = None,
+ ) -> Optional[List[Dict[str, Any]]]:
+     """Pre-resolve any URL-based attachments to raw bytes.
+ 
+@@ -1247,7 +1227,9 @@ async def _resolve_url_attachments(
+ 
+         # Fast path: MCP-local attachment URL.
+         try:
+-            local = _try_read_local_attachment(url)
++            local = await asyncio.to_thread(
++                _try_read_local_attachment, url, user_google_email
++            )
+         except Exception as exc:
+             logger.exception("Failed to read local attachment URL %s", _redact_url(url))
+             resolved.append(_build_attachment_error_entry(att, exc))
+@@ -1948,6 +1930,7 @@ async def get_gmail_message_content(
+             headers,
+             body_format,
+             declared_size=message_metadata.get("sizeEstimate"),
++            user_google_email=user_google_email,
+         )
+ 
+     # Handle raw format separately - fetch with format="raw" and return decoded MIME
+@@ -2254,6 +2237,9 @@ async def get_gmail_attachment_content(
+ 
+     In stdio mode, returns the local file path for direct access.
+     In HTTP mode, returns a temporary download URL (valid for 1 hour).
++    The URL is an account-bound file handle: pass it directly to Drive upload/import
++    or Gmail attachment tools. Binary bytes stay server-side; do not request base64
++    for these transfers. HTTP downloads require the owner's MCP OAuth token.
+     May re-fetch message metadata to resolve filename and MIME type.
+ 
+     Args:
+@@ -2469,7 +2455,10 @@ async def get_gmail_attachment_content(
+ 
+         # Save attachment to local disk
+         result = storage.save_attachment(
+-            base64_data=base64_data, filename=filename, mime_type=mime_type
++            base64_data=base64_data,
++            filename=filename,
++            mime_type=mime_type,
++            owner_email=user_google_email,
+         )
+         saved_filename = Path(result.path).name
+ 
+@@ -2899,7 +2888,9 @@ async def send_gmail_message(
+     else:
+         send_body_content = _append_signature_to_body(body, body_format, signature_html)
+ 
+-    resolved_attachments = await _resolve_url_attachments(attachments)
++    resolved_attachments = await _resolve_url_attachments(
++        attachments, user_google_email
++    )
+     raw_message, thread_id_final, attached_count, attachment_errors = (
+         _prepare_gmail_message(
+             subject=subject,
+@@ -3343,7 +3334,9 @@ async def draft_gmail_message(
+     else:
+         draft_body = _append_signature_to_body(draft_body, body_format, signature_html)
+ 
+-    resolved_attachments = await _resolve_url_attachments(attachments)
++    resolved_attachments = await _resolve_url_attachments(
++        attachments, user_google_email
++    )
+     raw_message, _thread_id_final, attached_count, attachment_errors = (
+         _prepare_gmail_message(
+             subject=subject,
+diff --git a/core/file_handles.py b/core/file_handles.py
+new file mode 100644
+--- /dev/null
++++ b/core/file_handles.py
+@@ -0,0 +1,92 @@
++"""Account-bound resolution of this server's expiring attachment URLs."""
++
++import os
++import re
++from pathlib import Path
++from urllib.parse import urlsplit
++
++from core import attachment_storage
++from core.file_limits import ensure_within_file_size_limit
++
++
++_FILE_ID = re.compile(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}")
++
++
++def resolve_file_handle(
++    url: str, user_google_email: str | None
++) -> tuple[Path, dict] | None:
++    """Return a validated local source, or None for an unrelated remote URL.
++
++    Never fall back to a network request for an invalid or unauthorized handle.
++    Ordinary URLs still use the existing SSRF-safe fetch path.
++    """
++    from core.config import WORKSPACE_MCP_BASE_URI, WORKSPACE_MCP_PORT
++
++    base = os.getenv("WORKSPACE_EXTERNAL_URL") or (
++        f"{WORKSPACE_MCP_BASE_URI}:{WORKSPACE_MCP_PORT}"
++    )
++    expected = urlsplit(base.rstrip("/"))
++    parsed = urlsplit(url)
++    if (parsed.scheme.casefold(), parsed.netloc.casefold()) != (
++        expected.scheme.casefold(),
++        expected.netloc.casefold(),
++    ):
++        return None
++    prefix = expected.path.rstrip("/") + "/attachments/"
++    if not parsed.path.startswith(prefix):
++        return None
++    file_id = parsed.path[len(prefix) :]
++    if parsed.query or parsed.fragment or not _FILE_ID.fullmatch(file_id):
++        raise ValueError("Invalid MCP file handle; download the source again.")
++    storage = attachment_storage.get_attachment_storage()
++    metadata = storage.get_attachment_metadata(file_id)
++    path = storage.get_attachment_path(file_id)
++    if not metadata or path is None:
++        raise ValueError(
++            "MCP file handle expired or unavailable; download the source again."
++        )
++    owner = metadata.get("owner_email")
++    if (
++        not owner
++        or not user_google_email
++        or owner != user_google_email.strip().casefold()
++    ):
++        raise ValueError("MCP file handle is not authorized for this account.")
++    path = Path(path)
++    if (
++        path.is_symlink()
++        or path.resolve().parent != attachment_storage.STORAGE_DIR.resolve()
++    ):
++        raise ValueError("MCP file handle has an invalid storage path.")
++    ensure_within_file_size_limit(metadata["size"], kind="MCP file handle")
++    if path.stat().st_size != metadata["size"] or (
++        attachment_storage.file_sha256(path) != metadata["sha256"]
++    ):
++        raise ValueError(
++            "MCP file handle integrity check failed; download the source again."
++        )
++    return path, metadata
++
++
++async def authenticate_download(request, metadata: dict) -> str | None:
++    """Verify a download caller with the same OAuth provider as MCP requests."""
++    from core.server import get_auth_provider
++
++    owner = metadata.get("owner_email")
++    if not owner:
++        return None
++    header = request.headers.get("authorization", "")
++    provider = get_auth_provider()
++    if not header.startswith("Bearer ") or provider is None:
++        raise ValueError(
++            "Authenticate with this server's OAuth token to download the file."
++        )
++    try:
++        token = await provider.verify_token(header[7:])
++    except Exception:
++        token = None
++    claims = getattr(token, "claims", None) or {}
++    email = getattr(token, "email", None) or claims.get("email")
++    if not email or email.strip().casefold() != owner:
++        raise ValueError("MCP file handle is not authorized for this account.")
++    return email
+diff --git a/tests/gdrive/test_drive_download_streaming.py b/tests/gdrive/test_drive_download_streaming.py
+--- a/tests/gdrive/test_drive_download_streaming.py
++++ b/tests/gdrive/test_drive_download_streaming.py
+@@ -18,7 +18,7 @@ from unittest.mock import Mock, patch
+ import pytest
+ from fastmcp.tools import ToolResult
+ from starlette.requests import Request
+-from starlette.responses import FileResponse, JSONResponse
++from starlette.responses import JSONResponse
+ 
+ import core.attachment_storage as attachment_storage
+ from core.attachment_storage import AttachmentStorage
+@@ -211,9 +211,9 @@ async def test_worker_save_survives_concurrent_attachment_route_sweep(
+ 
+     saved_path = Path(storage._metadata[attachment_id]["file_path"])
+     assert saved_path.read_bytes() == b"video-bytes"
+-    assert isinstance(
+-        await serve_attachment(_attachment_request(attachment_id)), FileResponse
+-    )
++    response = await serve_attachment(_attachment_request(attachment_id))
++    assert isinstance(response, JSONResponse)
++    assert response.status_code == 403
+ 
+ 
+ @pytest.mark.asyncio
+diff --git a/tests/gmail/test_draft_gmail_message.py b/tests/gmail/test_draft_gmail_message.py
+--- a/tests/gmail/test_draft_gmail_message.py
++++ b/tests/gmail/test_draft_gmail_message.py
+@@ -1415,27 +1415,18 @@ def test_try_read_local_attachment_reads_from_storage(tmp_path, monkeypatch):
+     import core.attachment_storage as storage_mod
+ 
+     monkeypatch.setattr(storage_mod, "STORAGE_DIR", tmp_path)
+-
+-    # Write a fake attachment file matching the naming convention.
+-    file_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+-    (tmp_path / f"report_{file_id[:8]}.pdf").write_bytes(b"%PDF-fake")
+-
++    monkeypatch.setenv("WORKSPACE_EXTERNAL_URL", "https://mcp.example")
+     storage = storage_mod.AttachmentStorage()
+     monkeypatch.setattr(storage_mod, "_attachment_storage", storage)
+-
+-    # Manually register metadata so get_attachment_path works.
+-    from datetime import datetime, timedelta
+-
+-    storage._metadata[file_id] = {
+-        "file_path": str(tmp_path / f"report_{file_id[:8]}.pdf"),
+-        "filename": "report.pdf",
+-        "mime_type": "application/pdf",
+-        "size": 9,
+-        "created_at": datetime.now(),
+-        "expires_at": datetime.now() + timedelta(hours=1),
+-    }
+-
+-    result = _try_read_local_attachment(f"/attachments/{file_id}")
++    saved = storage.save_attachment_bytes(
++        b"%PDF-fake",
++        filename="report.pdf",
++        mime_type="application/pdf",
++        owner_email="user@example.com",
++    )
++    result = _try_read_local_attachment(
++        f"https://mcp.example/attachments/{saved.file_id}", "user@example.com"
++    )
+     assert result is not None
+     data, filename, mime_type = result
+     assert data == b"%PDF-fake"
+@@ -1481,7 +1472,7 @@ def test_try_read_local_attachment_requires_metadata_without_scan_fallback(
+     tmp_path, monkeypatch
+ ):
+     file_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+-    monkeypatch.setattr(gmail_tools, "STORAGE_DIR", tmp_path)
++    monkeypatch.setattr("core.attachment_storage.STORAGE_DIR", tmp_path)
+     (tmp_path / f"report_{file_id[:8]}.pdf").write_bytes(b"%PDF-fake")
+ 
+     storage = gmail_tools.get_attachment_storage()
+@@ -1495,32 +1486,24 @@ def test_try_read_local_attachment_requires_metadata_without_scan_fallback(
+ def test_try_read_local_attachment_checks_file_size_before_reading(
+     tmp_path, monkeypatch
+ ):
+-    file_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+-    file_path = tmp_path / "large.bin"
+-    file_path.write_bytes(b"0123456789")
++    import core.attachment_storage as storage_mod
+ 
+-    storage = gmail_tools.get_attachment_storage()
+-    monkeypatch.setattr(
+-        storage,
+-        "get_attachment_metadata",
+-        lambda requested_file_id: (
+-            {
+-                "filename": "large.bin",
+-                "mime_type": "application/octet-stream",
+-            }
+-            if requested_file_id == file_id
+-            else None
+-        ),
+-    )
+-    monkeypatch.setattr(
+-        storage,
+-        "get_attachment_path",
+-        lambda requested_file_id: file_path if requested_file_id == file_id else None,
++    monkeypatch.setattr(storage_mod, "STORAGE_DIR", tmp_path)
++    monkeypatch.setenv("WORKSPACE_EXTERNAL_URL", "https://mcp.example")
++    storage = storage_mod.AttachmentStorage()
++    monkeypatch.setattr(storage_mod, "_attachment_storage", storage)
++    saved = storage.save_attachment_bytes(
++        b"0123456789",
++        filename="large.bin",
++        mime_type="application/octet-stream",
++        owner_email="user@example.com",
+     )
+     monkeypatch.setattr(gmail_tools, "MAX_EMAIL_ATTACHMENT_BYTES", 5)
+ 
+     with pytest.raises(ValueError, match="Attachment exceeds 5 bytes"):
+-        _try_read_local_attachment(f"/attachments/{file_id}")
++        _try_read_local_attachment(
++            f"https://mcp.example/attachments/{saved.file_id}", "user@example.com"
++        )
+ 
+ 
+ @pytest.mark.asyncio
