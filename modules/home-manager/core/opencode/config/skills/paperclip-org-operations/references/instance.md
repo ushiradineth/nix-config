@@ -1,7 +1,8 @@
 # Shu Paperclip instance
 
-Last reviewed: 2026-10-12. Treat this as a map, not a substitute for live discovery. Google access
-notes below retain their earlier scope context; discover current approved grants before acting.
+Last reviewed: 2026-10-13. Treat this as a map, not a substitute for live discovery. Read current
+Nix configuration and approved agent grants before acting; a configured capability is not task
+authority.
 
 ## Deployment
 
@@ -21,6 +22,12 @@ notes below retain their earlier scope context; discover current approved grants
 The Nix repository is the infrastructure source of truth. Paperclip's database is the organization
 state source of truth. Do not edit database rows or managed files to make routine control-plane
 changes.
+
+Container build assets live under `containers/`, outside the auto-imported host tree. Directories
+under `hosts/shupi` are treated as Nix modules and need `default.nix`. For a derived private image,
+verify registry publication and digest pull access as the deployment identity, not just availability
+in a developer's Docker cache. Root Docker authentication and credential reuse require explicit
+approval; a mode-600 login file is private but is not encrypted storage.
 
 ## Known agents
 
@@ -57,11 +64,16 @@ built-in agent. Do not broaden Summarizer's authority to compensate for another 
   manual routine completed SHU-48 as a no-op: no generated baseline qualified.
 - Native config intentionally excludes legacy `engine` and `command` fields. Do not add them as a
   migration workaround.
+- `codexPermissionMode: "never"` means never ask for command approval; it does not override
+  Paperclip governance or task scope. A null per-agent environment inherits the instance default, so
+  inspect that default before diagnosing an unassigned environment.
 - `enableNativeRunner` being enabled does not make an execution environment eligible for native
   runs.
 - The `shu · ssh` environment has neither runner WebSocket ingress nor an explicit runner public
   URL, so it must not be selected as a native execution environment. Agents run locally and use
-  `ssh shu` only when work requires `~/Code` or Shu-specific tools.
+  `ssh shu` when work requires `~/Code`, the live Obsidian vault, or Shu-specific tools. Vault
+  filesystem operations must run on `shu`, not against the Linux worker's local `/Users` path;
+  follow the vault branch in `service-access.md`.
 - Paperclip receives a dedicated, source-restricted SSH identity through read-only mounts. OpenSSH
   discovers `shu` through `/etc/ssh/ssh_config.d/99-paperclip.conf`; this system-level config is
   required because managed GitHub runs use a run-scoped home instead of `/paperclip`.
@@ -77,6 +89,12 @@ built-in agent. Do not broaden Summarizer's authority to compensate for another 
 
 - Before a future adapter or transport migration, keep a rollback revision and prove one real
   bounded run through the same agent-visible path before widening the change.
+
+Codex's bubblewrap prerequisite is supplied by a static Nix binary mounted read-only at
+`/usr/local/bin/bwrap` in the Paperclip container. Read `hosts/shupi/services/paperclip.nix` for the
+definition. Verify it as the provider's runtime user, not on the Mac host. The basic read-only bind
+and fresh provider startup passed; a stricter PID/proc namespace test was denied. Do not claim full
+namespace readiness or relax container privileges from the prerequisite warning alone.
 
 ## Skills
 
@@ -118,17 +136,24 @@ version. Do not let the installed copy become an undocumented fork.
 
 ## Google services
 
+- Service configuration: `hosts/shupi/services/google-mcp.nix`; maintained image recipe and source
+  patch: `containers/google-mcp/`. Discover the deployed image and limits from those sources.
 - Current self-hosted MCP endpoint: `https://google-mcp.shupi.ushira.com/mcp`
 - Health endpoint: `https://google-mcp.shupi.ushira.com/health`
 - Transport: streamable HTTP
-- Initial data scopes were Gmail, Drive and Calendar read-only, plus OAuth identity scopes. This
-  historical list is not the current permission boundary; use the approved connection's live grants.
+- The server is configured for Gmail, Calendar, Drive, Docs and Sheets. OAuth consent, agent/action
+  grants and the accepted task scope still determine which operations are authorized.
 - Intended identity: the user's personal Google account.
 - Secret source: encrypted Nix secret mounted read-only; never read or copy its contents.
 - The MCP is reachable from Paperclip's container and protected by the tailnet/Docker source policy.
-- On 2026-10-09, native `connections_search("google")` reported Google MCP ready. Google Drive and
-  Gmail organization connectors remained drafts; this did not prove personal Drive, Gmail, or
-  Calendar reads.
+- Approved Drive imports and Gmail archive verification were proven on SHU-30. This does not prove
+  sending, deletion, calendar edits or every other service operation. Use only `Google MCP`, not a
+  built-in connector fallback.
+- Account-bound file handles keep transfer bytes server-side. The current source sets stateful HTTP
+  mode, `HOME=/tmp`, a 16 MiB file cap and 64 MB tmpfs, while retaining a read-only root and
+  disabled arbitrary local-file access. Handles expire after one hour or restart. Follow
+  `service-access.md` for transfer and gateway diagnosis; do not change these controls to repair one
+  attachment.
 
 Paperclip's official Google connector was previously unsuitable because it required Google Workspace
 Developer Preview rather than supporting a consumer Gmail account. Recheck this fact from current

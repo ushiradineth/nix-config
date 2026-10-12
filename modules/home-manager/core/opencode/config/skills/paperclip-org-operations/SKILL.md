@@ -19,8 +19,10 @@ as far as the work requires.
 
 Read `references/instance.md` for every Paperclip task. Then load only the relevant branch:
 
-- Agent creation, configuration, models, maintenance, or Dot: `references/agents-and-dot.md`
-- Connections, credentials, MCP, OAuth, data, or service permissions: `references/service-access.md`
+- Agent configuration, instructions, provider notices, models, or Dot:
+  `references/agents-and-dot.md`
+- Connections, secret delivery, MCP file transfers, vault notes, or Actual Budget:
+  `references/service-access.md`
 - Goals, projects, delegation, routines, capacity, or organization growth:
   `references/org-growth.md`
 - Shared capability export, publication, pins, or rollback: `references/capability-sync.md`
@@ -69,6 +71,10 @@ operation. A skill may describe a semantic tool that the current runtime does no
 - For Google services, select the existing connection named `Google MCP`. Do not request or create
   Paperclip's built-in Google Drive, Gmail, Calendar, Docs, or Sheets connectors. If `Google MCP` is
   not available to the current agent, request that exact existing connection be granted or repaired.
+- For Obsidian vault notes or personalization, load the vault branch in
+  `references/service-access.md` before any filesystem check. The vault lives on `shu`; use
+  `ssh shu`, not a local `/Users` check in the Linux worker. A missing local `/Users` does not mean
+  the vault needs a mount. Preserve existing task and role access boundaries.
 - Report the exact missing tool, denied route, or runtime constraint when an operation is blocked.
   Distinguish runtime capability failures from authentication and permission failures.
 
@@ -128,6 +134,11 @@ For a maintenance request, check only the layers needed to answer it:
 Do not treat an active systemd unit as proof that an application works. Verify the application
 endpoint or an agent-visible operation. For incidents, establish one deterministic red/green signal
 before changing configuration.
+
+Inspect the issue's work disposition as well as the run status: a successful provider turn can leave
+the task blocked or unfinished. Before retrying, check resolved approvals, replacement dependencies,
+existing artifacts, and prior side effects. Use the recovery branches in `agents-and-dot.md` and
+`org-growth.md`; do not reset sessions or repeat completed writes as a general repair.
 
 ## Organization growth loop
 

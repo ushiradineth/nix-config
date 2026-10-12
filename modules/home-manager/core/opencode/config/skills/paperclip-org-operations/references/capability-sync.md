@@ -130,6 +130,15 @@ checks.
 
 ## Refresh, pins and rollback
 
+Compare four distinct surfaces when guidance appears stale: repository source, immutable company
+skill version, the consumer's actual pin, and its managed entry instructions. A skill in the catalog
+is not necessarily installed for every role; semantic-name prose does not prove selection or source
+consumption. GitHub-managed skills may be read-only and still pinned to an older source commit. Use
+the approved source publication/refresh path; do not patch their managed filesystem, fork a broad
+operations package into unrelated roles or move pins without verified version readback. An
+authorized small runtime-locator correction in live instructions can be verified independently while
+source publication remains pending; report those two outcomes separately.
+
 Keep default bindings small. The pinned native runner limits argv to 64 arguments and each argument
 to 4,096 UTF-8 bytes; each selected skill bundle adds a read root to two filesystem-policy
 arguments. Catalog availability is not permission to attach the entire catalog to every run. A

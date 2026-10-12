@@ -25,6 +25,21 @@ user feedback loops are progress.
 Keep one accountable owner per issue. Delegation does not remove the parent owner's responsibility
 to integrate evidence and close the outcome.
 
+## Blocked work and continuation
+
+Read the issue detail, first-class dependency edges, blocker owner/action, latest run result and
+handoff artifacts before changing state. List views and old comments can omit or retain stale
+blocker information. When a cancelled intake has a completed successor, verify the successor's
+usable source brief and the consumer's runtime access before an authorized edge replacement; do not
+remove all blockers or mark downstream work Done from the predecessor's cancellation.
+
+A read-only assessment can legitimately finish with one document and no code or hire. Convert its
+recommendation into a separately authorized implementation task with owner, reviewer, dependencies,
+scope, exclusions and a pass/fail check. Preserve dirty repository work and require approval for a
+non-production integration copy, migrations, billing semantics or production access as applicable.
+Do not treat "what next?" as permission to implement, and do not keep repeating discovery after a
+bounded restart task is ready for the user's decision.
+
 ## Hiring decision
 
 Create an agent only when at least one is true:

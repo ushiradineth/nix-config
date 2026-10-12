@@ -68,6 +68,12 @@ After a proposal card resolves, list agent-visible secret metadata again and ver
 binding exists. An accepted card is not proof of execution; missing metadata or a failed execution
 status remains blocked.
 
+Verify delivery in the consuming runtime separately. A successful adapter secret manifest or binding
+at `env.*` does not prove that a runner-mediated shell tool inherits that environment. Check
+presence without values through the supported runtime, then prove the authorized service operation.
+Do not dump `env`, print secret values, or copy a value into commands/files to work around missing
+delivery. Report binding, delivery and service authentication as separate results.
+
 ## Permission tiers
 
 - **Tier 0, public:** public web pages and documentation.
@@ -81,6 +87,31 @@ Default to the lowest tier that completes the task. Moving to a higher tier requ
 approval, a stated test, and a revocation path. A read-only grant to one agent does not authorize
 sharing it with all agents.
 
+## Live Obsidian vault
+
+The live vault is on the macOS host `shu` at `/Users/shu/Documents/Obsidian Vault`. Paperclip's
+local Linux worker on `shupi` does not have that Mac filesystem. Use the existing `ssh shu` route
+for every vault directory check, listing, search, and note read; this also works when managed runs
+use an isolated home because SSH configuration is provided through `/etc/ssh`.
+
+Verify the remote directory first:
+
+```sh
+ssh -o BatchMode=yes -o ConnectTimeout=10 shu 'test -d "/Users/shu/Documents/Obsidian Vault" && test -r "/Users/shu/Documents/Obsidian Vault" && ls -ld "/Users/shu/Documents/Obsidian Vault"'
+```
+
+- Quote paths with spaces inside the remote command. Read only notes needed for the authorized task;
+  do not copy or export the whole vault or expose note contents in diagnostic reports.
+- Preserve personal, Surge, and Jellybyte boundaries. Knowing the route does not grant access to
+  private health/financial notes or permission to write. Keep report-only roles report-only.
+- A missing local `/Users` means the command ran on the wrong host, not that a vault mount is
+  missing. If access fails, report the remote host, attempted path, and exact SSH/permission/path
+  error after testing `shu`.
+- Do not restore a mount, copy/sync the vault, switch execution environments, relax SSH host-key
+  checking, or change Obsidian settings as a workaround. Those changes require separate approval.
+- Include this host-qualified locator and SSH-first rule in new role instructions when the role
+  needs vault context; never give a bare Mac path without its host and access method.
+
 ## Current Google access
 
 Always use the existing Paperclip connection named `Google MCP` for Google services. Do not request,
@@ -90,12 +121,11 @@ returns multiple Google options, choose `Google MCP`. If it is missing or unavai
 agent, ask the board to grant or repair that exact connection instead of opening a built-in Google
 connector setup flow.
 
-The approved self-hosted connection exposes:
-
-- Gmail read-only
-- Google Drive read-only
-- Google Calendar read-only
-- OAuth identity scopes needed to identify the account
+The server provides Gmail, Drive, Calendar, Docs and Sheets tools. Discover current OAuth consent,
+agent profiles, action policy and task approval before selecting reads or writes. A cataloged write
+tool or broad provider scope does not authorize sending, deletion, sharing, calendar changes or
+financial actions. An approval-required rename failure is not evidence of an invalid filename or
+insufficient file sharing; inspect the action-policy result before changing either.
 
 MCP endpoint: `https://google-mcp.shupi.ushira.com/mcp`
 
@@ -103,9 +133,65 @@ Use Paperclip's managed connection or gateway entry rather than placing this URL
 inside prompts. The Google OAuth client secret remains in encrypted Nix secrets. User authorization
 and refresh state stay in the MCP's persistent encrypted storage.
 
-Before granting Dot access, verify the connection is healthy, authorize the intended personal Google
-identity, bind only the read-only profile, and have Dot perform one read from each approved service.
-Do not infer Gmail success from Calendar success.
+Verify the connection, intended identity and least-privilege grant, then perform the smallest
+authorized operation in the target agent's runtime. Test separately approved writes without
+inventing transactions or messages. Gmail success does not prove Drive, Calendar, Docs or Sheets
+success.
+
+### File transfers and retention
+
+For an approved attachment import, fetch current Gmail attachment metadata and call
+`get_gmail_attachment_content` with `return_base64=false`. Pass its temporary MCP download URL as
+`create_drive_file.fileUrl`, or use the matching supported update/import/attachment parameter. The
+maintained connector resolves its own URL locally as an account-bound handle, with expiry and
+integrity checks; it does not make an HTTP request to the private tailnet address. Drive downloads,
+Gmail message exports and supported Chat downloads use the same store.
+
+- Re-fetch expired or post-restart handles; do not preserve them in durable artifacts or pass them
+  to another account. Direct HTTP downloads require the owner's MCP OAuth authorization.
+- Verify current source/destination metadata before import and confirm the returned Drive ID and
+  size afterward. Keep a source-to-copy receipt log. Preserve earlier successful imports and
+  archives when resuming partial work; exact-name checks alone do not prove content deduplication.
+- The current Nix source caps files at 16 MiB on a 64 MB tmpfs. Report size/capacity errors instead
+  of enlarging limits, returning full base64 or changing storage/security controls without approval.
+- Archive means removing `INBOX`, not trashing or deleting. Verify labels, keep per-message
+  evidence, and obtain separate approval for deletion, sending or sharing changes.
+
+### Gateway failure diagnosis
+
+Check service health, Paperclip connection health, catalog state and the specific method separately.
+An active connection or healthy `/health` response does not prove a cataloged method can execute.
+
+- `tool_not_found` with an active catalog entry: use an authorized harmless method probe to
+  reproduce dispatch, then refresh that connection's catalog only when repair is authorized. Verify
+  the exact method again before waking the task; do not loop on agent retries or create a duplicate
+  connector.
+- A read-only probe using an intentionally invalid ID can prove dispatch without opening a record.
+  An expected provider error proves routing only. Inspect tool-result errors even when HTTP is 200.
+- `mcp_remote_response_too_large`: inspect the response-size limit for the deployed Paperclip
+  version; encoded bytes and framing can exceed it even when the raw file is smaller. Use the shared
+  file-handle path, not a blanket gateway-limit increase.
+- `Stateless mode: File storage disabled`: the server cannot issue a usable stored-file handle.
+  Compare the deployed storage mode and writable home with the Nix definition; production changes
+  require approval. Stateful mode needs writable directories despite a read-only container root.
+- Private/internal URL rejection: unrelated private URLs must remain blocked. An own-server handle
+  rejection can indicate a missing/stale connector patch; verify the deployed image and fresh
+  handle. Do not rewrite the URL, expose the endpoint publicly, use `file://`, enable arbitrary
+  local files or disable SSRF protection.
+
+## Actual Budget access
+
+Use the reachable server URL from the Nix/service configuration and a compatible official
+`@actual-app/api` client. The sync server is not a general REST budget CRUD API. The client uses a
+private local cache and the selected budget's Sync ID; ask the user to select a budget when the
+identity is ambiguous, and obtain any required encryption secret through approved secure delivery.
+
+A healthy server, password-login availability, accepted setup card or `env.ACTUAL_BUDGET_PASSWORD`
+binding proves only that layer. Verify credential delivery, client compatibility, selected budget
+download and a harmless read in each authorized consuming runtime. Do not treat another agent's
+success as finance-role access, claim a reconciled baseline without sources, or create test
+transactions to prove authentication. Keep personal and company finances separate; edits and
+financial actions still need their own approved scope.
 
 ## Connector migrations
 

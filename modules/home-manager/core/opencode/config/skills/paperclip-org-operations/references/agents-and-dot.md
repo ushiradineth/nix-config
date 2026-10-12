@@ -33,10 +33,10 @@ Dot is the personal manager and primary user-facing coordinator. Dot should:
 - track migrations and operational chores until verification is complete;
 - avoid acting as every specialist or silently expanding its own permissions.
 
-Dot may receive read-only Gmail, Drive, and Calendar access through the approved Google connection.
+Dot uses the existing `Google MCP` connection within its current approved grants and task scope.
 Sending mail, modifying files, changing events, or sharing data requires separate explicit scope and
 approval. Dot must use `connections_search` before service calls and follow the returned connection
-instructions.
+instructions; a successful read does not prove write authority.
 
 ## Initiative, questions, and escalation
 
@@ -83,6 +83,47 @@ inventory, instructions path, and rollback revision. A native migration must pro
 environment supports runner transport. Test one agent with a real bounded task before changing the
 rest. A successful connection test alone is insufficient, and legacy `engine` or `command` fields
 must not be added to a `paperclip_runner` profile to bypass migration validation.
+
+## Managed instruction maintenance
+
+Keep stable host/transport locators in small, always-loaded instructions when a role needs them;
+place longer procedures in the relevant shared reference. A source skill may be absent from a role
+or pinned to an old version, so repository edits alone do not change what the agent receives.
+
+For authorized edits, use the deployed managed-file API rather than writing container files:
+
+1. Read the existing entry file through
+   `GET /api/agents/{id}/instructions-bundle/file?path=AGENTS.md`; capture `contentHash` and
+   `revision.id`, and check `editable`/`virtual` before choosing the write surface.
+2. Preserve the role body and unrelated pointers. Use
+   `PUT /api/agents/{id}/instructions-bundle/file` with `path`, `content`, `baseRevisionId` and
+   `baseHash`. Stop on a revision/hash conflict, re-read and compare; do not overwrite concurrent
+   work or clear a legacy prompt to evade an access restriction.
+3. Read back exact content/hash, check for duplicate instruction blocks, and preserve models,
+   permissions, reporting lines, routines and skill pins unless the user requested those changes.
+4. Prove consumption with an approved bounded run. Changed instructions can reset a preserved task
+   session on the next wake; inspect freshness metadata and behavior rather than assuming a running
+   turn hot-reloaded them. A comment can wake/reactivate a completed task, so get approval for that
+   verification and preserve its plan/routine scope.
+
+## Provider notices and run recovery
+
+- Check a missing prerequisite as the actual provider user in its container/environment. Installing
+  a package on `shu` does not put it on the Linux Paperclip worker's PATH. Use declared Nix
+  configuration, not an untracked install inside a live container.
+- Bubblewrap's bundled fallback notice is recoverable, not proof that the task failed. Verify
+  `command -v bwrap`, its version, an appropriate non-mutating sandbox check and fresh provider
+  diagnostics. Historical warning entries remain in old run logs. A stricter namespace failure is a
+  separate result; do not add privileges or remove security controls merely to silence a notice.
+- A successful provider run can report blocked work. Compare the issue's authoritative state,
+  reported disposition, completion claim, remaining work, dependencies and unresolved interactions.
+  HTTP/process success alone is not task completion.
+- For `native_review_assignment_no_longer_available`, first inspect whether the user already
+  resolved the review and the issue/artifact is complete. A stale review wake can be a benign race;
+  do not reopen or retry completed work automatically.
+- Inspect preserved history before retrying repeated unrelated work or skill-selection failures. A
+  clean successor, cancellation, unassignment or dependency repair needs explicit authorization;
+  carry forward the useful handoff and verify consumer readiness, not just a new task identifier.
 
 ## Skill assignment
 
