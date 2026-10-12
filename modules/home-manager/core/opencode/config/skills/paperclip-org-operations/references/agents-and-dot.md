@@ -86,6 +86,18 @@ must not be added to a `paperclip_runner` profile to bypass migration validation
 
 ## Skill assignment
 
+The shared quality rollout adds `engineering-quality` and `verification-before-completion` as small
+default entrypoints for relevant existing roles. Coding details are conditional; these skills must
+not turn Summarizer or domain specialists into coders or administrators. Keep role instructions,
+budgets, reporting lines, models and existing grants unchanged.
+
+Use `capability-sync.md` for complete package/version readback and native launch limits. Additional
+techniques, including writing, planning, diagnosis and review, are selected for the actual task from
+the company catalog with reviewed versions. Do not interpret dependency metadata as an instruction
+to attach every skill to every run. Dot's new `browser-workflow` execution has real SSH/image
+evidence; other roles need their own existing-authority eligibility/test before execution
+enablement.
+
 Assign skills by capability, not by convenience:
 
 - All agents that can operate Paperclip organization state should receive

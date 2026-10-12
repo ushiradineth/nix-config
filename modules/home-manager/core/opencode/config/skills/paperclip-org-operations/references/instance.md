@@ -1,6 +1,7 @@
 # Shu Paperclip instance
 
-Last reviewed: 2026-10-09. Treat this as a map, not a substitute for live discovery.
+Last reviewed: 2026-10-12. Treat this as a map, not a substitute for live discovery. Google access
+notes below retain their earlier scope context; discover current approved grants before acting.
 
 ## Deployment
 
@@ -24,7 +25,7 @@ changes.
 ## Known agents
 
 - Dot: `bcf34395-b047-4777-a166-42e003d9831e`
-- Summarizer: `26a66408-6a20-4396-b2aa-ac753b9c0d54`
+- Summerizer (built-in key `summarizer`): `26a66408-6a20-4396-b2aa-ac753b9c0d54`
 - Other specialists, including the Tax Specialist, must be discovered live rather than identified by
   a cached UUID.
 
@@ -47,8 +48,13 @@ built-in agent. Do not broaden Summarizer's authority to compensate for another 
 
 - On 2026-10-09, all seven current agents were migrated to local `paperclip_runner` execution with
   provider `codex`, `lifecycleMode: "per_turn"`, and `codexPermissionMode: "never"`.
-- Summarizer uses `gpt-6-luna`; the other six agents use `gpt-6-sol`. Existing responsible-user
-  OpenAI bindings, heartbeat policies, managed instructions, and skill selections were preserved.
+- The built-in summary agent uses `gpt-6-luna`; the other six agents use `gpt-6-sol`. On 2026-10-12,
+  its missing managed OpenAI selection was restored as `responsible_user`, provider `openai`, method
+  `subscription`, using the existing default account without a model change.
+- Summary-slot writes are restricted to the registered built-in agent. An ordinary agent copy does
+  not gain that authority from copied instructions. Use a routine owned by a real active company
+  member; built-in routine owner `built-in-bundles` is not a valid responsible user. The user-owned
+  manual routine completed SHU-48 as a no-op: no generated baseline qualified.
 - Native config intentionally excludes legacy `engine` and `command` fields. Do not add them as a
   migration workaround.
 - `enableNativeRunner` being enabled does not make an execution environment eligible for native
@@ -74,6 +80,19 @@ built-in agent. Do not broaden Summarizer's authority to compensate for another 
 
 ## Skills
 
+- Shared capability integration was verified on 2026-10-12: native Dot loaded pinned
+  `engineering-quality`, `browser-workflow`, and `verification-before-completion`, executed the Mac
+  helper through SSH, retrieved/viewed PNG bytes and completed the paired disposable UI trial. This
+  is bounded evaluation evidence, not a guarantee for every future coding task.
+- Other specialists observed the assigned skill names but reported unreadable advertised source
+  aliases. Their source-only summaries do not prove full procedure consumption. Treat unreadable
+  sources as a delivery limitation, not permission to scan private paths or weaken filesystem rules.
+- The remaining reviewed techniques are company-catalog packages selected by relevant task. Keep
+  default bindings small: selected bundle roots can exceed the runner's 4,096-byte per-argument
+  launch bound. See `capability-sync.md`; never bypass the guard or change an adapter to force fit.
+- The pre-existing operational skill/version is intentionally preserved during this integration;
+  repository maintainer references do not imply that its old Paperclip pin was silently upgraded.
+
 - `summarize-status` is the bundled operating skill for Summarizer.
 - `paperclip-org-operations` is the repository-managed skill for instance, agent, access, Dot, and
   organization operations.
@@ -82,13 +101,28 @@ built-in agent. Do not broaden Summarizer's authority to compensate for another 
 Edit the repository source first, review the diff, validate it, then publish a new Paperclip skill
 version. Do not let the installed copy become an undocumented fork.
 
+## Browser on shu
+
+- Installed entrypoint: `/run/current-system/sw/bin/agent-browser-task` on `shu`; native provider
+  execution stays on `shupi`. Use the existing source-restricted SSH identity, no CDP/MCP exposure.
+- Fresh headless, task-owned namespaces use a clean private HOME and short private socket directory;
+  the supported CLI version is `0.38.1`. Health does not prove navigation/rendering by itself.
+- Initial authority is public-read or explicitly approved disposable-local UI work. Personal
+  profiles, saved authentication, external submissions and broader connections need separate
+  approval.
+- Screenshot bytes must reach the native workspace and be verified/viewed. For deliverables, use the
+  actual advertised schema and root-level basenames; nested-path registration was rejected in the UI
+  trial while the same verified bytes registered with the proven seven-field contract.
+- SHU-37 and SHU-38 contain browser/coding evidence and task attachments. Registration means task
+  preparation, not delivery into an external chat. Existing same-user SSH is not an OS sandbox.
+
 ## Google services
 
 - Current self-hosted MCP endpoint: `https://google-mcp.shupi.ushira.com/mcp`
 - Health endpoint: `https://google-mcp.shupi.ushira.com/health`
 - Transport: streamable HTTP
-- Current data scopes: Gmail read-only, Drive read-only, Calendar read-only, plus the identity
-  scopes required by OAuth.
+- Initial data scopes were Gmail, Drive and Calendar read-only, plus OAuth identity scopes. This
+  historical list is not the current permission boundary; use the approved connection's live grants.
 - Intended identity: the user's personal Google account.
 - Secret source: encrypted Nix secret mounted read-only; never read or copy its contents.
 - The MCP is reachable from Paperclip's container and protected by the tailnet/Docker source policy.

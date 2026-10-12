@@ -17,6 +17,12 @@ Use this skill when:
 
 ## Directory selection priority
 
+For Paperclip work on `shu`, use task-owned worktrees/copies under
+`/Users/shu/.paperclip/workspaces` as approved by the task contract. Never automatically sync/mount
+or edit the user's active `~/Code` working tree. This workspace separation is not an OS sandbox.
+
+For OpenCode:
+
 1. use `.worktrees/` if it exists
 2. else use `worktrees/` if it exists
 3. else ask user for preferred location
@@ -38,6 +44,8 @@ worktrees.
 - do not mutate unrelated files in the primary tree while preparing the worktree
 - keep `.agents/MEMORIES.md` and `.agents/PROGRESS.md` updates in the main repo when working from a
   worktree
+- In Paperclip, record workspace/branch/commit and baseline evidence in the issue or checkpoint; do
+  not require OpenCode state files or silently expand repository access.
 
 ## Output contract
 

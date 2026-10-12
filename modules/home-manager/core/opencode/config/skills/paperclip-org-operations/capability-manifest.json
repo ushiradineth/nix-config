@@ -1,0 +1,343 @@
+{
+  "schema_version": 1,
+  "source_policy": "Repository skill directories only; external-root inventory was denied. No external skills are imported. Browser workflow is classified only after its source exists.",
+  "role_policy": "Capability labels select guidance for existing eligible roles, never new agents, tools, connections or permissions. Preserve report-only roles and unrelated installed skills.",
+  "skills": [
+    {
+      "source": "adversarial-self-play",
+      "disposition": "import",
+      "inclusion": "complete-tree",
+      "roles": ["coding", "planning", "operations"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Inline attacker review only; no additional agent or service authority."
+      ],
+      "reason": "Reusable break-first review before important readiness claims."
+    },
+    {
+      "source": "architecture-deepening",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding", "planning"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Use approved task artifacts and inline analysis instead of OpenCode lane or helper syntax; source access must already be authorized."
+      ],
+      "reason": "Reuse interface and coupling analysis for coding plans and implementation."
+    },
+    {
+      "source": "artifact-coherence",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding", "planning", "operations", "writing"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Paperclip issues and approved project artifacts replace OpenCode state paths; do not create new synchronization services."
+      ],
+      "reason": "Keep canonical procedures, exports, versions and observed consumer evidence coherent."
+    },
+    {
+      "source": "beam-search-execution",
+      "disposition": "import",
+      "inclusion": "complete-tree",
+      "roles": ["coding", "planning", "writing"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Bound alternatives within the accepted task; evaluate inline without spawning agents."
+      ],
+      "reason": "Preserve bounded option generation and evidence-based selection."
+    },
+    {
+      "source": "brainstorming",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["planning", "coding"],
+      "dependencies": ["handoff"],
+      "runtime_constraints": [
+        "Approved issue/design replaces planner lane and fresh session; use inline options, no automatic ideate or writer dispatch."
+      ],
+      "reason": "Design acceptance and tradeoffs apply to feature-heavy work in either runtime."
+    },
+    {
+      "source": "browser-workflow",
+      "disposition": "import",
+      "inclusion": "complete-tree",
+      "roles": ["coding-if-browser-eligible", "operations-if-browser-eligible"],
+      "dependencies": ["verification-before-completion"],
+      "runtime_constraints": [
+        "Requires installed agent-browser-task on shu and existing verified local or SSH tool eligibility. Public-read or authorized disposable loopback only; no personal profiles, external submissions or authority expansion. Native screenshot byte delivery and advertised viewer inspection require real-run validation."
+      ],
+      "reason": "Shared bounded headless browser workflow and exact-byte artifact transport, with native Paperclip SSH mapping."
+    },
+    {
+      "source": "caveman",
+      "disposition": "import",
+      "inclusion": "complete-tree",
+      "roles": ["all-relevant"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Activate only for requested terse communication; preserve evidence and required formats."
+      ],
+      "reason": "Reusable user-selected communication mode."
+    },
+    {
+      "source": "cshu-minecraft-operations",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["minecraft-operations-if-authorized"],
+      "dependencies": ["diagnose"],
+      "runtime_constraints": [
+        "Domain context is conditional guidance only. OpenCode sudo intent is not Paperclip authority; require existing explicit diagnostic access and immediate exact-action approval for each mutation. Stop if either is unavailable."
+      ],
+      "reason": "Reuse built Minecraft incident procedures only for the named domain and eligible existing operators."
+    },
+    {
+      "source": "diagnose",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding", "operations-if-authorized"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Use authorized workspace and task checkpoints; execute only existing granted tools, never infer host or production access from diagnostic guidance."
+      ],
+      "reason": "Transfer deterministic reproduction, hypotheses and original-signal reruns."
+    },
+    {
+      "source": "dispatching-parallel-agents",
+      "disposition": "exclude",
+      "inclusion": "none",
+      "roles": [],
+      "dependencies": [],
+      "runtime_constraints": ["No SKILL.md or supporting files; no nested delegation authority."],
+      "reason": "Empty repository placeholder, not an implemented capability."
+    },
+    {
+      "source": "engineering-quality",
+      "disposition": "import",
+      "inclusion": "complete-tree",
+      "roles": ["all-relevant"],
+      "dependencies": [
+        "zoom-out",
+        "grill-me",
+        "beam-search-execution",
+        "architecture-deepening",
+        "test-driven-development",
+        "diagnose",
+        "using-git-worktrees",
+        "shift-left-security",
+        "fallow",
+        "security-audit",
+        "requesting-code-review",
+        "receiving-code-review",
+        "git-guardrails",
+        "adversarial-self-play",
+        "artifact-coherence",
+        "verification-before-completion",
+        "handoff",
+        "humanizer"
+      ],
+      "runtime_constraints": [
+        "Load coding detail only for coding tasks. Paperclip reference maps approved issues, runtime skill suffixes and inline reviews; no nested tool-agent dispatch or role replacement."
+      ],
+      "reason": "Shared outcome, scope, test, review, security and fresh-evidence entrypoint; detailed procedures stay canonical."
+    },
+    {
+      "source": "fallow",
+      "disposition": "import",
+      "inclusion": "complete-tree",
+      "roles": ["coding-js-ts-if-tool-available"],
+      "dependencies": ["security-audit"],
+      "runtime_constraints": [
+        "Requires locally available Fallow and an authorized JS/TS workspace. Disable telemetry and update checks; no remote extends, watch, hooks or installs. Security output is advisory."
+      ],
+      "reason": "Include repository-adapted codebase intelligence and its upstream attribution/license."
+    },
+    {
+      "source": "git-guardrails",
+      "disposition": "import",
+      "inclusion": "complete-tree",
+      "roles": ["coding", "operations-if-authorized"],
+      "dependencies": ["resolving-merge-conflicts"],
+      "runtime_constraints": [
+        "Git access and every consequential action require existing authority and exact intent; no unrequested commit or push."
+      ],
+      "reason": "Preserve read-first git mutation and remote-side-effect gates."
+    },
+    {
+      "source": "grill-me",
+      "disposition": "import",
+      "inclusion": "complete-tree",
+      "roles": ["coding", "planning", "operations"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Resolve material decisions within the task; clarification is not permission expansion."
+      ],
+      "reason": "Shared ambiguity and acceptance-criteria checks before risky decisions."
+    },
+    {
+      "source": "handoff",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding", "planning", "operations", "writing"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Use the included Paperclip branch: approved issue/checkpoint with evidence and named owner, not primary-agent task invocation or a fresh OpenCode builder session."
+      ],
+      "reason": "Preserve scoped continuation and durable evidence across runtime boundaries."
+    },
+    {
+      "source": "humanizer",
+      "disposition": "import",
+      "inclusion": "complete-tree",
+      "roles": ["all-relevant", "writing", "reporting"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Preserve facts, exact code and required formats; prose skill supplies no shell, publication or service access."
+      ],
+      "reason": "Reuse canonical fact-preserving prose cleanup, including MIT license and upstream attribution."
+    },
+    {
+      "source": "impeccable-style",
+      "disposition": "exclude",
+      "inclusion": "none",
+      "roles": [],
+      "dependencies": [],
+      "runtime_constraints": [
+        "No SKILL.md or supporting files; no reviewed UI procedure is available."
+      ],
+      "reason": "Empty repository placeholder. External UI/image packages were not approved for source/license review."
+    },
+    {
+      "source": "paperclip-org-operations",
+      "disposition": "import",
+      "inclusion": "complete-tree",
+      "roles": ["planning", "paperclip-operations-if-authorized"],
+      "dependencies": ["artifact-coherence", "verification-before-completion"],
+      "runtime_constraints": [
+        "Python 3 stdlib exporter is offline only. Live facts need separately authorized company-scoped tools and verified deployed API contracts; existing references are historical context, not credential or permission grants."
+      ],
+      "reason": "Canonical organization operations, access gates and secure capability publication procedure for Dot and eligible operators."
+    },
+    {
+      "source": "personal-writing-identity",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["writing", "reporting"],
+      "dependencies": ["humanizer"],
+      "runtime_constraints": [
+        "Load both included voice/channel references; write inline under the existing role rather than launching writer or ideate agents. No automatic external publication."
+      ],
+      "reason": "Preserve Shu's personal writing procedures and required supporting references."
+    },
+    {
+      "source": "receiving-code-review",
+      "disposition": "import",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Verify feedback against authorized source and accepted scope before edits."
+      ],
+      "reason": "Reuse technical feedback evaluation and safely sequenced fixes."
+    },
+    {
+      "source": "requesting-code-review",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding", "planning"],
+      "dependencies": ["verification-before-completion"],
+      "runtime_constraints": [
+        "Review fixed evidence inline on separate Standards/Spec axes; missing Git refs need a documented task diff. No audit/task dispatch unless separately authorized to a first-level leaf."
+      ],
+      "reason": "Preserve substantial-change review without importing OpenCode helper permissions."
+    },
+    {
+      "source": "resolving-merge-conflicts",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding-if-conflicted-operation-authorized"],
+      "dependencies": ["git-guardrails"],
+      "runtime_constraints": [
+        "Only an explicitly authorized in-progress conflicted merge/rebase; OpenCode sudo wording does not grant Paperclip authority. Staging, continue, abort and commit are separate authorized mutations."
+      ],
+      "reason": "Keep primary-source conflict resolution conditional on actual conflicted git state."
+    },
+    {
+      "source": "security-audit",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding", "security-guidance-if-authorized"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Guidance/source-only by default; no target-controlled execution without every upstream OS sandbox control. Node.js is needed only for included validators. Full audit and independent leaf roles require separate approved scope; no recursive dispatch, live probes or permission expansion."
+      ],
+      "reason": "Reuse defensive review and all unchanged upstream companions, validators, attribution and license; adapt runtime authority through binding notes, never by editing upstream files."
+    },
+    {
+      "source": "shift-left-security",
+      "disposition": "import",
+      "inclusion": "complete-tree",
+      "roles": ["coding", "security-guidance-if-authorized"],
+      "dependencies": ["security-audit", "fallow"],
+      "runtime_constraints": [
+        "Use checked-in local SAST rules and existing tools only. Dynamic scans require explicit intent and a disposable local target; no remote configs, telemetry, cloud upload or automatic installs."
+      ],
+      "reason": "Transfer local static security, SQL safety and conditional local DAST gates with all references."
+    },
+    {
+      "source": "test-driven-development",
+      "disposition": "import",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Use the repository's available tools and existing public behavior seams in an authorized workspace; no private-function mocks or tests that merely repeat implementation."
+      ],
+      "reason": "Same observed red/green/minimal-fix discipline for both runtimes."
+    },
+    {
+      "source": "using-git-worktrees",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding-if-git-authorized"],
+      "dependencies": ["git-guardrails"],
+      "runtime_constraints": [
+        "Use the included Paperclip branch and task-owned workspace; no edits to the user's active worktree, automatic mounts or synchronization. Existing SSH is not a sandbox."
+      ],
+      "reason": "Reuse baseline/isolation checks with runtime-appropriate workspace ownership."
+    },
+    {
+      "source": "verification-before-completion",
+      "disposition": "import",
+      "inclusion": "complete-tree",
+      "roles": ["all-relevant"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Require fresh consumer-visible evidence; distinguish source validation from deployed behavior and report blocked checks."
+      ],
+      "reason": "Canonical fresh-evidence gate for claims, commits and publication."
+    },
+    {
+      "source": "write-a-skill",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["planning", "instruction-maintenance-if-authorized"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Maintain only approved canonical skill/instruction sources; Paperclip managed edits need authorized API publication and revision/hash comparison. No global OpenCode permission/config copying."
+      ],
+      "reason": "Reuse progressive disclosure, source-of-truth and trigger/near-miss evaluation techniques."
+    },
+    {
+      "source": "zoom-out",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding", "planning"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Map authorized source/callers inline; task checkpoints replace OpenCode state and lane syntax, with no automatic exploration-agent dispatch."
+      ],
+      "reason": "Transfer context-first module/caller mapping before unfamiliar implementation."
+    }
+  ]
+}

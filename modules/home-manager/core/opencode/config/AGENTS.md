@@ -140,6 +140,11 @@ Core operating loop:
 
 Apply these directly when writing, reviewing, or refactoring code.
 
+- Use `engineering-quality` to route the shared coding procedures; detailed techniques remain in
+  their named skills, not duplicated role prompts.
+- Use `browser-workflow` for task-scoped browser work on `shu`; browser access does not authorize
+  personal profiles, external submissions, or broader service permissions.
+
 - Think before coding: state assumptions, name material ambiguity, and push back when a simpler path
   better fits the request.
 - Simplicity first: avoid speculative features, one-off abstractions, and configurability that was

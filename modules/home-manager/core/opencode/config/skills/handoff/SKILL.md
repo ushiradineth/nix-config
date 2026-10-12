@@ -13,7 +13,8 @@ Write only what the next session needs. Reference existing artifacts instead of 
 
 ## Workflow
 
-1. Identify the next lane: `builder`, `direct`, `sudo`, or `init`.
+1. Identify the next owner: an OpenCode lane (`builder`, `direct`, `sudo`, or `init`), or an
+   authorized Paperclip issue assignee. Do not invoke OpenCode primary agents from Paperclip.
 2. Reference source artifacts: plan path, branch, commit, issue, PR, logs, or validation output.
 3. Capture current status, blockers, assumptions, and exact next action.
 4. Suggest relevant skills for the next session.
@@ -29,4 +30,7 @@ Handoff target: builder | direct | sudo | init Source artifact: <path or URL> Cu
 
 - Do not duplicate full plans, diffs, or logs when a path is enough.
 - Prefer `.agents/plans/*` for durable implementation handoffs.
+- In Paperclip, use the approved issue/plan artifact and a bounded child issue or durable checkpoint
+  instead of requiring `.agents` files or a fresh OpenCode session. Include workspace, branch,
+  commit, validation evidence, and the named next owner; preserve existing delegation authority.
 - Use temp files only for throwaway handoffs that should not become state.

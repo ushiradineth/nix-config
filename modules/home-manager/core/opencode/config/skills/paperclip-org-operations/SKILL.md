@@ -23,6 +23,7 @@ Read `references/instance.md` for every Paperclip task. Then load only the relev
 - Connections, credentials, MCP, OAuth, data, or service permissions: `references/service-access.md`
 - Goals, projects, delegation, routines, capacity, or organization growth:
   `references/org-growth.md`
+- Shared capability export, publication, pins, or rollback: `references/capability-sync.md`
 
 The references contain current known facts and durable policy. Verify mutable state through
 Paperclip before acting; IDs, versions, installed skills, models, connections, and agent status can

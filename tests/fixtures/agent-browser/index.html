@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Browser fixture</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 24px;
+        font: 18px system-ui;
+        background: #edf2f4;
+        color: #16212a;
+      }
+      main {
+        max-width: 640px;
+        margin: auto;
+        padding: 24px;
+        background: white;
+        border: 2px solid #234c60;
+      }
+      form {
+        display: grid;
+        gap: 12px;
+      }
+      input,
+      button {
+        padding: 12px;
+        font: inherit;
+      }
+      button {
+        background: #234c60;
+        color: white;
+        border: 0;
+        cursor: pointer;
+      }
+      #status {
+        min-height: 24px;
+      }
+      @media (max-width: 480px) {
+        body {
+          padding: 8px;
+        }
+        main {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Browser fixture</h1>
+      <h2 id="route">Form page</h2>
+      <form id="form" novalidate>
+        <label for="name">Disposable name</label>
+        <input id="name" name="name" autocomplete="off" />
+        <button id="submit" type="submit">Save name</button>
+      </form>
+      <p id="status" role="status">Ready</p>
+      <p>Stored marker: <output id="marker">unset</output></p>
+      <a id="next" href="/next">Next page</a>
+    </main>
+    <script>
+      const marker = document.querySelector("#marker")
+      marker.textContent = localStorage.getItem("marker") || "unset"
+      if (location.pathname === "/next") document.querySelector("#route").textContent = "Next page"
+      document.querySelector("#form").addEventListener("submit", (event) => {
+        event.preventDefault()
+        const name = document.querySelector("#name").value.trim()
+        const status = document.querySelector("#status")
+        if (!name) {
+          status.textContent = "Name required"
+          return
+        }
+        localStorage.setItem("marker", name)
+        marker.textContent = name
+        status.textContent = `Saved: ${name}`
+      })
+    </script>
+  </body>
+</html>
