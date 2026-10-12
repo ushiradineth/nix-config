@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "types": ["node"]
+  },
+  "files": [
+    "./opencode-terminal.test.mts",
+    "./tmux-terminal.test.mts",
+    "../modules/home-manager/core/opencode/config/plugins/terminal-context.ts"
+  ]
+}

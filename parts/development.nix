@@ -9,6 +9,10 @@
     system,
     ...
   }: let
+    terminalTypes = import ../lib/opencode-terminal-types.nix {inherit pkgs;};
+    terminalTestProcess = pkgs.writeShellScript "opencode-terminal-test-process" ''
+      printf 'test-process-%s\n' "$2"
+    '';
     preCommitCheck = inputs.pre-commit-hooks.lib.${system}.run {
       src = ../.;
       hooks = {
@@ -34,6 +38,21 @@
     };
   in {
     checks.pre-commit-check = preCommitCheck;
+    checks.opencode-terminal =
+      pkgs.runCommand "opencode-terminal-tests" {
+        src = ../.;
+        nativeBuildInputs = [pkgs.nodejs pkgs.tmux pkgs.typescript] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [pkgs.procps];
+        OPENCODE_TERMINAL_PS =
+          if pkgs.stdenv.isDarwin
+          then "${terminalTestProcess}"
+          else "${pkgs.procps}/bin/ps";
+      } ''
+        export HOME="$TMPDIR/home"
+        mkdir -p "$HOME"
+        tsc --project "$src/tests/opencode-terminal.tsconfig.json" --typeRoots ${terminalTypes}
+        node --test "$src/tests/opencode-terminal.test.mts" "$src/tests/tmux-terminal.test.mts"
+        touch "$out"
+      '';
 
     treefmt = {
       projectRootFile = "flake.nix";
@@ -44,6 +63,10 @@
           package = pkgs.prettier;
           includes = [
             "*.json"
+            "*.js"
+            "*.mjs"
+            "*.ts"
+            "*.mts"
             "*.md"
             "*.yaml"
             "*.yml"
