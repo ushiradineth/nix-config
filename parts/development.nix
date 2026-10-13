@@ -43,6 +43,35 @@
     };
   in {
     checks.pre-commit-check = preCommitCheck;
+    checks.python-tests =
+      pkgs.runCommand "python-tests" {
+        src = ../.;
+        nativeBuildInputs = [pkgs.python3];
+      } ''
+        export HOME="$TMPDIR/home"
+        export PYTHONDONTWRITEBYTECODE=1
+        mkdir -p "$HOME"
+        cp -R "$src" source
+        chmod -R u+w source
+        cd source
+        # Git snapshots omit the manifest's two excluded empty placeholders.
+        mkdir -p modules/home-manager/core/opencode/config/skills/{dispatching-parallel-agents,impeccable-style}
+        python3 tests/status-digest-test.py
+        python3 tests/agent-browser-task-test.py
+        python3 tests/agent-capabilities-test.py
+        python3 tests/i-have-adhd-test.py
+        touch "$out"
+      '';
+    checks.security-audit-validators =
+      pkgs.runCommand "security-audit-validator-tests" {
+        src = ../modules/home-manager/core/opencode/config/skills/security-audit;
+        nativeBuildInputs = [pkgs.nodejs];
+      } ''
+        export HOME="$TMPDIR/home"
+        mkdir -p "$HOME"
+        node --test "$src/validate-findings.test.cjs" "$src/validate-coverage-ledger.test.cjs"
+        touch "$out"
+      '';
     checks.codex-quota =
       pkgs.runCommand "codex-quota-tests" {
         src = ../.;
