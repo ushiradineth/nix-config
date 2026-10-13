@@ -10,6 +10,11 @@
     ...
   }: let
     terminalTypes = import ../lib/opencode-terminal-types.nix {inherit pkgs;};
+    quotaModule = import ../modules/home-manager/core/tmux {
+      inherit pkgs;
+      config.xdg.cacheHome = "/unused-quota-test-cache";
+    };
+    quotaHelper = builtins.head quotaModule.home.packages;
     terminalTestProcess = pkgs.writeShellScript "opencode-terminal-test-process" ''
       printf 'test-process-%s\n' "$2"
     '';
@@ -38,6 +43,19 @@
     };
   in {
     checks.pre-commit-check = preCommitCheck;
+    checks.codex-quota =
+      pkgs.runCommand "codex-quota-tests" {
+        src = ../.;
+        nativeBuildInputs = [pkgs.nodejs pkgs.tmux pkgs.typescript];
+        CODEX_QUOTA_TEST_HELPER = "${quotaHelper}/bin/codex-quota";
+        CODEX_QUOTA_TEST_CONFIG = pkgs.writeText "quota-tmux.conf" quotaModule.programs.tmux.extraConfig;
+      } ''
+        export HOME="$TMPDIR/home"
+        mkdir -p "$HOME"
+        tsc --project "$src/tests/codex-quota.tsconfig.json" --typeRoots ${terminalTypes}
+        node --test "$src/tests/codex-quota.test.mts"
+        touch "$out"
+      '';
     checks.opencode-terminal =
       pkgs.runCommand "opencode-terminal-tests" {
         src = ../.;
