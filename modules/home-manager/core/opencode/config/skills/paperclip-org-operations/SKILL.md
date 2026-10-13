@@ -62,6 +62,8 @@ operation. A skill may describe a semantic tool that the current runtime does no
 
 - Use a semantic Paperclip tool when it is advertised. It carries the active run, task, and user
   context without reconstructing a REST call.
+- For operator maintenance through the authenticated Paperclip CLI, use the `CLI maintenance`
+  section in `references/instance.md`. An operator login does not grant agents board authority.
 - For task titles, call `set_task_title` early. Use a REST title route only when the semantic tool
   is absent and the live OpenAPI plus the current bridge allow that route. Do not retry a route
   after the bridge returns `Route not allowed`.

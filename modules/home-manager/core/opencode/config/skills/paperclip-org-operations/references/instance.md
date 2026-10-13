@@ -29,6 +29,45 @@ verify registry publication and digest pull access as the deployment identity, n
 in a developer's Docker cache. Root Docker authentication and credential reuse require explicit
 approval; a mode-600 login file is private but is not encrypted storage.
 
+## CLI maintenance
+
+Paperclip's deployed CLI supports authenticated operator maintenance through the existing
+`ssh shupi` route. On 2026-10-13, the container CLI's stored board login successfully read the SHU
+identity, agents, managed instructions and company skills. This is operator access, not an agent
+connection or proof that every mutation is authorized.
+
+Use the deployed CLI and its existing context; do not install another copy or copy credentials into
+arguments, logs, tasks or skill files. Inspect current command help and the live OpenAPI before
+choosing a command or payload. The verified non-interactive entrypoint is:
+
+```sh
+ssh -o BatchMode=yes -o ConnectTimeout=8 shupi \
+  'docker exec --user node paperclip node cli/node_modules/tsx/dist/cli.mjs cli/src/index.ts --help'
+```
+
+Verify the current identity with `whoami --api-base http://127.0.0.1:3100 --json`; select the
+authorized company explicitly with `--company-id` for company-scoped commands. Relevant maintenance
+reads are `agent list`, `agent skills`, `agent instructions-file:get`, `skills list`, `skills file`,
+`skill get` and `openapi`. Limit retained identity/configuration output to the evidence needed for
+the task.
+
+- Run unattended commands without a TTY, with bounded timeouts and structured `--json` output. A
+  `401` is an authentication blocker, not permission to mint a token. A human can use the CLI's
+  interactive `connect --persona board` flow in their own terminal after approving operator access;
+  then repeat the non-mutating identity check. Never run that login flow automatically.
+- For content-bearing arguments, use the direct Node/tsx entrypoint above, an installed standalone
+  `paperclipai` binary, or the CLI's documented stdin/file input. Do not use `pnpm paperclipai` for
+  issue text, Markdown or JSON payloads: its package-script shell can reinterpret the content. Do
+  not interpolate untrusted content into the SSH command; keep remote argv fixed and transfer data
+  on stdin when supported.
+- Preview mutations and use only the operations explicitly approved by the user. Re-fetch affected
+  state afterward. For additive skill assignment use `mode: "add"`; explicit version pins require
+  the documented sync API payload when CLI flags cannot express them. Never use replace-all as a
+  shortcut or claim configuration readback proves runtime consumption.
+- Native agents retain their advertised semantic tools and run-scoped identity. Do not reuse an
+  operator's stored board credentials to bypass an agent's denied route or role boundary. CLI
+  availability does not authorize agent runs, deployment, hiring, secret access or broader grants.
+
 ## Known agents
 
 - Dot: `bcf34395-b047-4777-a166-42e003d9831e`
