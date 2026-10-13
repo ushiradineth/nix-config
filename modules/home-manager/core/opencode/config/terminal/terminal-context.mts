@@ -17,6 +17,47 @@ import {
 import { homedir } from "node:os"
 import { basename, isAbsolute, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
+import type { Readable, Writable } from "node:stream"
+
+type InboxInput = Readable & {
+  isTTY?: boolean
+  isRaw?: boolean
+  setRawMode?: (mode: boolean) => unknown
+}
+
+export async function inboxMessage(
+  message: string,
+  input: InboxInput = process.stdin,
+  output: Writable = process.stdout
+): Promise<void> {
+  output.write(`${message}\n`)
+  if (!input.isTTY || !input.setRawMode) return
+  output.write("\nPress Enter or Esc to close.\n")
+  const wasRaw = input.isRaw ?? false
+  const setRawMode = input.setRawMode.bind(input)
+  setRawMode(true)
+  input.resume()
+  try {
+    await new Promise<void>((resolve) => {
+      const finish = () => {
+        input.off("data", onData)
+        input.off("end", finish)
+        input.off("close", finish)
+        resolve()
+      }
+      const onData = (data: Buffer | string) => {
+        const bytes = Buffer.isBuffer(data) ? data : Buffer.from(data)
+        if ([3, 10, 13, 27].some((key) => bytes.includes(key))) finish()
+      }
+      input.on("data", onData)
+      input.once("end", finish)
+      input.once("close", finish)
+    })
+  } finally {
+    setRawMode(wasRaw)
+    input.pause()
+  }
+}
 
 export type RootStatus = "idle" | "working" | "needs_input" | "done" | "error"
 export type AttentionEvent = "permission" | "question" | "complete" | "error" | "plan_exit"
@@ -1052,7 +1093,8 @@ async function main(argv: string[]): Promise<void> {
     context.refresh()
     const items = context.listAttention()
     if (!items.length) {
-      console.log("No OpenCode attention")
+      if (argv[0] === "inbox") await inboxMessage("No OpenCode attention")
+      else console.log("No OpenCode attention")
       return
     }
     let token = items[0].token
@@ -1070,6 +1112,8 @@ async function main(argv: string[]): Promise<void> {
           "--delimiter=\t",
           "--with-nth=2..",
           "--no-multi",
+          "--preview=",
+          "--preview-window=hidden",
           "--layout=reverse",
           "--expect=ctrl-d",
           "--header=Enter: visit, Ctrl+d: dismiss, Esc: cancel",
@@ -1093,8 +1137,10 @@ async function main(argv: string[]): Promise<void> {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  main(process.argv.slice(2)).catch((error) => {
-    console.error(`opencode-terminal: ${error instanceof Error ? error.message : String(error)}`)
+  main(process.argv.slice(2)).catch(async (error) => {
     process.exitCode = 1
+    const message = `opencode-terminal: ${error instanceof Error ? error.message : String(error)}`
+    if (process.argv[2] === "inbox") await inboxMessage(message, process.stdin, process.stderr)
+    else console.error(message)
   })
 }

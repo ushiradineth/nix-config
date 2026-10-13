@@ -4,3 +4,4 @@
 [default.extend-identifiers]
 
 [default.extend-words]
+wrapp = "wrapp"

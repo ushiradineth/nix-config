@@ -13,6 +13,7 @@
     quotaModule = import ../modules/home-manager/core/tmux {
       inherit pkgs;
       config.xdg.cacheHome = "/unused-quota-test-cache";
+      config.home.homeDirectory = "/unused-navigation-test-home";
     };
     quotaHelper = builtins.head quotaModule.home.packages;
     terminalTestProcess = pkgs.writeShellScript "opencode-terminal-test-process" ''
@@ -43,6 +44,18 @@
     };
   in {
     checks.pre-commit-check = preCommitCheck;
+    checks.tmux-navigation =
+      pkgs.runCommand "tmux-navigation-tests" {
+        src = ../.;
+        nativeBuildInputs = [pkgs.nodejs pkgs.tmux pkgs.typescript];
+        TMUX_NAVIGATION_TEST_SHELL = pkgs.runtimeShell;
+      } ''
+        export HOME="$TMPDIR/home"
+        mkdir -p "$HOME"
+        tsc --project "$src/tests/tmux-navigation.tsconfig.json" --typeRoots ${terminalTypes}
+        node --test "$src/tests/tmux-navigation.test.mts"
+        touch "$out"
+      '';
     checks.python-tests =
       pkgs.runCommand "python-tests" {
         src = ../.;

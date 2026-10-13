@@ -46,6 +46,42 @@ function fixture() {
   }
 }
 
+test("popup bindings expand caller formats before launching direct helper argv", () => {
+  const config = readFileSync(
+    new URL("../modules/home-manager/core/tmux/.tmux.conf", import.meta.url),
+    "utf8"
+  )
+  for (const key of ["s", "f", "i"]) {
+    const binding = config.split("\n").find((line) => line.startsWith(`bind ${key} `))!
+    assert.match(binding, /run-shell -C 'display-popup -c #\{q:client_name\}/)
+    assert.match(binding, /--client #\{q:client_name\}/)
+    assert.doesNotMatch(binding, /--client "#\{client_name\}"/)
+    if (key !== "i") assert.match(binding, /--socket #\{q:socket_path\}/)
+  }
+})
+
+test("native tree shortcut format expands to one-based keys", () => {
+  const f = fixture()
+  try {
+    const config = readFileSync(
+      new URL("../modules/home-manager/core/tmux/.tmux.conf", import.meta.url),
+      "utf8"
+    )
+    const binding = config.split("\n").find((line) => line.startsWith("bind S "))!
+    const format = binding.match(/-K '([^']+)'/)![1]
+    for (const [line, key] of [
+      [0, "1"],
+      [8, "9"],
+      [9, "0"],
+      [10, "M-a"],
+    ] as const) {
+      assert.equal(f.tmux("display-message", "-p", format.replaceAll("#{line}", String(line))), key)
+    }
+  } finally {
+    f.close()
+  }
+})
+
 test("notification capture keeps the source pane without selecting it", async () => {
   const f = fixture()
   try {

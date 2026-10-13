@@ -3,10 +3,12 @@ import { existsSync, mkdtempSync, rmSync, symlinkSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import test from "node:test"
+import { PassThrough } from "node:stream"
 import {
   cleanText,
   createTerminalContext,
   rootTransition,
+  inboxMessage,
 } from "../modules/home-manager/core/opencode/config/terminal/terminal-context.mts"
 import type { RootState } from "../modules/home-manager/core/opencode/config/terminal/terminal-context.mts"
 
@@ -119,4 +121,40 @@ test("doctor does not create private state, focus windows, or request native acc
   } finally {
     rmSync(root, { recursive: true, force: true })
   }
+})
+
+test("empty inbox remains readable until dismissal and restores raw input mode", async () => {
+  const modes: boolean[] = []
+  const input = Object.assign(new PassThrough(), {
+    isTTY: true,
+    isRaw: false,
+    setRawMode(mode: boolean) {
+      modes.push(mode)
+    },
+  })
+  const output = new PassThrough()
+  let text = "",
+    closed = false
+  output.on("data", (data) => {
+    text += data
+  })
+  const waiting = inboxMessage("No OpenCode attention", input, output).then(() => {
+    closed = true
+  })
+  await Promise.resolve()
+  assert.equal(closed, false)
+  assert.match(text, /No OpenCode attention/)
+  input.write(Buffer.from([27]))
+  await waiting
+  assert.deepEqual(modes, [true, false])
+})
+
+test("noninteractive inbox messages never wait for input", async () => {
+  const output = new PassThrough()
+  let text = ""
+  output.on("data", (data) => {
+    text += data
+  })
+  await inboxMessage("No OpenCode attention", new PassThrough(), output)
+  assert.equal(text, "No OpenCode attention\n")
 })
