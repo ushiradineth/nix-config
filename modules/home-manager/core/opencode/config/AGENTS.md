@@ -282,6 +282,14 @@ This default applies to every agent and command-triggered response that produces
   that choice. Never apply its presentation limits to internal reasoning, tool payloads,
   agent-to-agent messages, handoff artifacts or machine-readable content; keep that context
   complete.
+- While ADHD mode is enabled, lead human-facing replies with the answer. Unless the user asks for
+  detail, prefer one short paragraph and up to three bullets covering the decision, material caveat,
+  and necessary evidence. Avoid tables and repeated recap sections unless comparison requires them.
+  End with one question or next action only when needed. These are presentation defaults, not hard
+  limits: never remove safety warnings, uncertainty, required fields, or task-critical facts.
+- Before sending a human-facing reply, check: did I answer first, did I repeat anything, and does
+  the user need every section? Trim redundant sections while preserving required evidence and
+  complete internal context. Skill loading alone is not proof that the reply follows these rules.
 - Preserve meaning and every supplied fact. Do not invent names, numbers, dates, quotes, citations,
   outcomes, or context.
 - Use the user's baseline voice: direct, practical, concrete, and written like a technical operator
