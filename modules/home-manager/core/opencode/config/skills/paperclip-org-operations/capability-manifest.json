@@ -4,6 +4,17 @@
   "role_policy": "Capability labels select guidance for existing eligible roles, never new agents, tools, connections or permissions. Preserve report-only roles and unrelated installed skills.",
   "skills": [
     {
+      "source": "i-have-adhd",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["all-relevant"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Default human-facing presentation only, with conversation-local opt-out/re-enable. Keep complete internal, tool, inter-agent, handoff and summary-source context; unknown audiences retain full detail. A default binding grants no authority and does not prove readable source or per-turn history."
+      ],
+      "reason": "Share the audience-aware output skill across existing roles without compressing operational context or changing permissions."
+    },
+    {
       "source": "adversarial-self-play",
       "disposition": "import",
       "inclusion": "complete-tree",

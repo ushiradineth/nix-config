@@ -277,6 +277,11 @@ Use the configured fast helper model to generate one commit line.
 
 This default applies to every agent and command-triggered response that produces user-facing prose.
 
+- Load and apply `i-have-adhd` by default for human-facing replies. Honor conversation-local
+  `normal mode` / `stop adhd mode` opt-out and explicit re-enable; default reminders must not reset
+  that choice. Never apply its presentation limits to internal reasoning, tool payloads,
+  agent-to-agent messages, handoff artifacts or machine-readable content; keep that context
+  complete.
 - Preserve meaning and every supplied fact. Do not invent names, numbers, dates, quotes, citations,
   outcomes, or context.
 - Use the user's baseline voice: direct, practical, concrete, and written like a technical operator
