@@ -219,6 +219,17 @@
       "reason": "Empty repository placeholder. External UI/image packages were not approved for source/license review."
     },
     {
+      "source": "kumo-design",
+      "disposition": "exclude",
+      "inclusion": "none",
+      "roles": [],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode-only installation; no Paperclip publication or bindings are authorized."
+      ],
+      "reason": "Preserve the requested managed OpenCode scope without exporting the new skill to other agents."
+    },
+    {
       "source": "paperclip-org-operations",
       "disposition": "import",
       "inclusion": "complete-tree",
