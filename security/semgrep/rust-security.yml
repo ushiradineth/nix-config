@@ -1,0 +1,34 @@
+rules:
+  - id: rust-reqwest-disabled-tls
+    languages: [rust]
+    message: A Reqwest client builder explicitly disables certificate or hostname verification.
+    severity: ERROR
+    mode: taint
+    pattern-sources:
+      - pattern: reqwest::Client::builder()
+      - pattern: reqwest::blocking::Client::builder()
+      - pattern: reqwest::ClientBuilder::new()
+      - pattern: reqwest::blocking::ClientBuilder::new()
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $BUILDER.danger_accept_invalid_certs(true)
+              - pattern: $BUILDER.danger_accept_invalid_hostnames(true)
+          - focus-metavariable: $BUILDER
+
+  - id: rust-sqlx-formatted-query
+    languages: [rust]
+    message:
+      Formatted SQL reaches a SQLx raw query API. Heuristic candidate only; verify whether untrusted
+      input can change SQL structure. Prefer bind parameters.
+    severity: WARNING
+    mode: taint
+    pattern-sources:
+      - pattern: format!(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: sqlx::query($SQL)
+              - pattern: sqlx::query_as::<$DB, $TYPE>($SQL)
+              - pattern: sqlx::query_scalar::<$DB, $TYPE>($SQL)
+          - focus-metavariable: $SQL

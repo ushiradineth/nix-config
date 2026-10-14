@@ -1,0 +1,31 @@
+rules:
+  - id: go-disabled-tls-verification
+    languages: [go]
+    message: crypto/tls.Config explicitly skips TLS certificate and hostname verification.
+    severity: ERROR
+    pattern: "tls.Config{..., InsecureSkipVerify: true, ...}"
+
+  - id: go-http-to-shell
+    languages: [go]
+    message:
+      HTTP request data reaches a shell command. Prefer a fixed executable and separate arguments.
+    severity: ERROR
+    mode: taint
+    pattern-sources:
+      - patterns:
+          - pattern-inside: |
+              func $F(..., $REQ *http.Request, ...) { ... }
+          - pattern-either:
+              - pattern: $REQ.URL.Query().Get(...)
+              - pattern: $REQ.FormValue(...)
+              - pattern: $REQ.PostFormValue(...)
+              - pattern: $REQ.Header.Get(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: exec.Command($SHELL, "-c", $CMD, ...)
+              - pattern: exec.CommandContext($CTX, $SHELL, "-c", $CMD, ...)
+          - metavariable-regex:
+              metavariable: $SHELL
+              regex: ^"(/bin/)?(ba|da|z)?sh"$
+          - focus-metavariable: $CMD

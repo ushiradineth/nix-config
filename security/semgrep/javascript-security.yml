@@ -1,0 +1,79 @@
+rules:
+  - id: node-request-to-shell
+    languages: [javascript, typescript]
+    message:
+      Request data reaches a Node shell execution API. Review the command and prefer fixed programs
+      with argument arrays.
+    severity: ERROR
+    mode: taint
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: $REQ.query
+              - pattern: $REQ.body
+              - pattern: $REQ.params
+          - metavariable-regex:
+              metavariable: $REQ
+              regex: ^(req|request)$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $CP.exec($CMD, ...)
+              - pattern: $CP.execSync($CMD, ...)
+              - pattern: "$CP.spawn($CMD, ..., { ..., shell: true, ... }, ...)"
+              - pattern: "$CP.spawnSync($CMD, ..., { ..., shell: true, ... }, ...)"
+              - pattern: "$CP.execFile($CMD, ..., { ..., shell: true, ... }, ...)"
+          - pattern-inside: |
+              import * as $CP from $MODULE;
+              ...
+          - metavariable-regex:
+              metavariable: $MODULE
+              regex: ^["']?(node:)?child_process["']?$
+          - focus-metavariable: $CMD
+      - patterns:
+          - pattern: $EXEC($CMD, ...)
+          - pattern-inside: |
+              import { exec as $EXEC } from "node:child_process";
+              ...
+          - focus-metavariable: $CMD
+      - patterns:
+          - pattern-either:
+              - pattern: child_process.exec($CMD, ...)
+              - pattern: child_process.execSync($CMD, ...)
+          - focus-metavariable: $CMD
+      - patterns:
+          - pattern-either:
+              - pattern: child_process.spawn($SHELL, ["-c", $CMD, ...], ...)
+              - pattern: child_process.spawnSync($SHELL, ["-c", $CMD, ...], ...)
+          - metavariable-regex:
+              metavariable: $SHELL
+              regex: ^["'](/bin/)?(ba|da|z)?sh["']$
+          - focus-metavariable: $CMD
+
+  - id: node-disabled-tls-verification
+    languages: [javascript, typescript]
+    message: A known Node HTTPS/TLS API explicitly disables certificate verification.
+    severity: ERROR
+    mode: taint
+    pattern-sources:
+      - pattern: "{ ..., rejectUnauthorized: false, ... }"
+    pattern-sinks:
+      - pattern-either:
+          - pattern: https.request(...)
+          - pattern: https.get(...)
+          - pattern: new https.Agent(...)
+          - pattern: tls.connect(...)
+          - pattern: tls.createSecureContext(...)
+      - patterns:
+          - pattern-either:
+              - pattern: $HTTPS.request(...)
+              - pattern: $HTTPS.get(...)
+              - pattern: new $HTTPS.Agent(...)
+          - pattern-inside: |
+              import * as $HTTPS from "node:https";
+              ...
+      - patterns:
+          - pattern: $CONNECT(...)
+          - pattern-inside: |
+              import { connect as $CONNECT } from "node:tls";
+              ...

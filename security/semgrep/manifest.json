@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "baseline_id": "local-application-v1",
+  "rules": [
+    {
+      "id": "browser-url-to-html",
+      "file": "browser-injection.yml",
+      "languages": ["javascript", "typescript"],
+      "family": "browser HTML injection",
+      "confidence": "HIGH",
+      "blind_spots": [
+        "Intraprocedural location href/search/hash sources only; not framework-wide XSS coverage.",
+        "Only imported default sanitize-html calls without options are sanitizers. Local bindings and function/arrow parameters are excluded; complex rebinding or wrapper semantics require review.",
+        "Other sanitizers are intentionally not trusted and may produce false positives."
+      ]
+    },
+    {
+      "id": "browser-url-to-code",
+      "file": "browser-injection.yml",
+      "languages": ["javascript", "typescript"],
+      "family": "browser code injection",
+      "confidence": "HIGH",
+      "blind_spots": [
+        "Intraprocedural URL sources and named eval/Function/string timer sinks only; not arbitrary dynamic-code coverage."
+      ]
+    },
+    {
+      "id": "node-request-to-shell",
+      "file": "javascript-security.yml",
+      "languages": ["javascript", "typescript"],
+      "family": "HTTP request to Node shell execution",
+      "confidence": "MEDIUM",
+      "blind_spots": [
+        "Sources are query/body/params on identifiers named req or request; framework wrappers and differently named request objects are not covered.",
+        "Intraprocedural child_process exec/execSync, selected shell:true APIs and sh/bash/dash/zsh -c forms only; import/require wrappers and alternative shell switches may be missed.",
+        "Argument arrays without shell execution are intentionally not sinks; candidates still require verification of input control and quoting."
+      ]
+    },
+    {
+      "id": "node-disabled-tls-verification",
+      "file": "javascript-security.yml",
+      "languages": ["javascript", "typescript"],
+      "family": "Node HTTPS/TLS certificate verification disabled",
+      "confidence": "HIGH",
+      "blind_spots": [
+        "Literal rejectUnauthorized:false option objects flowing into known HTTPS/TLS APIs only; environment overrides, property mutations and third-party clients are not covered.",
+        "node: import forms are explicitly tested for namespace HTTPS and named TLS connect; other import/require wrappers may be missed.",
+        "TLS usage context and compensating custom verification still require source review."
+      ]
+    },
+    {
+      "id": "python-external-to-shell",
+      "file": "python-security.yml",
+      "languages": ["python"],
+      "family": "External input to Python subprocess shell",
+      "confidence": "MEDIUM",
+      "blind_spots": [
+        "Intraprocedural Flask args/form/json, sys.argv and input sources with explicit shell=True on subprocess APIs only.",
+        "Other web frameworks, indirect option dictionaries and shell wrappers are not covered; quoting and actual attacker control require review."
+      ]
+    },
+    {
+      "id": "python-requests-disabled-tls",
+      "file": "python-security.yml",
+      "languages": ["python"],
+      "family": "Python Requests TLS verification disabled",
+      "confidence": "HIGH",
+      "blind_spots": [
+        "Requests module calls and locally constructed Session calls with explicit verify=False, including constant aliases; session property changes and wrapper functions are not covered."
+      ]
+    },
+    {
+      "id": "python-unsafe-yaml-load",
+      "file": "python-security.yml",
+      "languages": ["python"],
+      "family": "Unsafe PyYAML object loaders",
+      "confidence": "HIGH",
+      "blind_spots": [
+        "unsafe_load/unsafe_load_all and explicit Loader/UnsafeLoader/CLoader/CUnsafeLoader forms; local loader assignment support is bounded to UnsafeLoader with yaml.load.",
+        "Loader omission, FullLoader version-specific issues, customized SafeLoader constructors and wrapper APIs are not covered.",
+        "A dangerous loader is a candidate configuration; untrusted YAML reachability is not proven."
+      ]
+    },
+    {
+      "id": "go-disabled-tls-verification",
+      "file": "go-security.yml",
+      "languages": ["go"],
+      "family": "Go TLS verification disabled",
+      "confidence": "HIGH",
+      "blind_spots": [
+        "crypto/tls.Config composite literals with InsecureSkipVerify:true only; field assignments and nonliteral booleans are not covered.",
+        "Custom VerifyConnection/VerifyPeerCertificate callbacks can provide verification and require source review."
+      ]
+    },
+    {
+      "id": "go-http-to-shell",
+      "file": "go-security.yml",
+      "languages": ["go"],
+      "family": "Go HTTP request to shell execution",
+      "confidence": "MEDIUM",
+      "blind_spots": [
+        "Intraprocedural named functions with *http.Request parameters and Query().Get/FormValue/PostFormValue/Header.Get sources only.",
+        "exec.Command/CommandContext with sh/bash/dash/zsh -c only; handlers wrapped in closures, alternative shells and interprocedural flows are not covered."
+      ]
+    },
+    {
+      "id": "rust-reqwest-disabled-tls",
+      "file": "rust-security.yml",
+      "languages": ["rust"],
+      "family": "Rust Reqwest TLS verification disabled",
+      "confidence": "HIGH",
+      "blind_spots": [
+        "Intraprocedural Reqwest Client::builder/ClientBuilder::new flows to literal true danger_accept_invalid_certs/hostnames calls, including blocking clients.",
+        "Builder parameters, factory wrappers, type aliases and nonliteral flags may be missed; arbitrary similarly named methods are not assumed to be Reqwest."
+      ]
+    },
+    {
+      "id": "rust-sqlx-formatted-query",
+      "file": "rust-security.yml",
+      "languages": ["rust"],
+      "family": "Formatted SQLx raw query heuristic",
+      "confidence": "MEDIUM",
+      "blind_spots": [
+        "Heuristic candidate only, not an exploit claim: format! output may contain trusted values or safely constrained identifiers.",
+        "Intraprocedural format! flows to sqlx::query and two-type-parameter query_as/query_scalar calls only; SQLx compile-time query macros, concatenation, other formatting APIs and interprocedural flows are not covered.",
+        "Static parameterized queries with bind are negative controls; bind does not repair SQL structure already interpolated by format!."
+      ]
+    }
+  ]
+}

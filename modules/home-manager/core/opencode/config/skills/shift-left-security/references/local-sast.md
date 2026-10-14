@@ -2,20 +2,37 @@
 
 ## Static analysis
 
-1. Prefer repository-owned, reviewed rules. Do not use registry aliases, URLs, `--config auto`, or
-   any configuration that downloads rules.
-2. For Semgrep, disable metrics and version checks in the command itself:
+1. Prefer `semgrep-local` with the managed central baseline and an explicitly selected private
+   profile when applicable. Repository-owned reviewed rules can supplement native checks, but never
+   add personal rules/configuration/hooks to work repositories. Do not use registry aliases, URLs,
+   `--config auto`, or any configuration that downloads rules.
+2. Run the smallest explicit source scope:
 
    ```sh
-   SEMGREP_SEND_METRICS=off SEMGREP_ENABLE_VERSION_CHECK=0 \
-     semgrep scan --config <local-rule-path> --strict --error --metrics=off \
-     --disable-version-check --disable-nosem <targets>
+   semgrep-local --root /absolute/path/to/project --files src/api.ts src/store.ts
+   semgrep-local --root /absolute/path/to/project --profile project-a --files src/api.ts
    ```
 
-3. Run rule tests before allowing a rule to block work. Fixtures must prove unsafe matches and safe
-   non-matches. Refine false positives rather than adding unexplained suppressions.
-4. Run applicable local SAST after relevant edits and before readiness. Record exact findings and
-   scanned scope.
+3. The helper uses pinned local rules, OSS analysis, disabled telemetry/version checks and enforced
+   network/source-write denial. It never executes source, installs hooks or writes into the project.
+   Profiles under `$XDG_CONFIG_HOME/semgrep/profiles/` (default `~/.config/semgrep/profiles/`) are
+   private, additive and bound to a canonical project root. Their custom fixtures must pass before
+   analysis. Do not create real private profiles without user approval.
+4. Read JSON status, exact scanned paths, exclusions, rule confidence and blind spots. Exit `0` is a
+   completed scan without candidates; `1` is completed candidate analysis, not tool failure or proof
+   of a vulnerability; `2` is validation/engine failure or incomplete scope. Empty/skipped requested
+   scopes, parser errors, failed fixtures and missing confinement cannot count as a clean pass. If
+   the command is absent or refuses confinement, report the blocker and request tooling activation;
+   never substitute a bare scanner or silently install into the target repository.
+5. Keep output on stdout or request a new private `--output` file outside the project and config
+   roots; the helper never overwrites reports. Do not put work data into public rules, examples or
+   Nix inputs. Re-run applicable local SAST after relevant edits and before readiness. Record the
+   command, engine version, scan scope and findings; verify candidates against source before action.
+6. Native rule tests must prove unsafe matches and safe non-matches before readiness. Do not execute
+   fixtures, fetch `--validate` rule lints, or add unexplained suppressions. A clean baseline is
+   bounded JS/TS/Python/Go/Rust evidence, not a whole-service assessment or a replacement for native
+   tests/type checks. macOS confinement is runtime-tested separately; Linux namespace availability
+   must be verified locally rather than inferred from Nix evaluation.
 
 ## Staged-file policy
 

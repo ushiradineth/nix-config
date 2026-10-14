@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Private additive local Semgrep profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "root", "rule_files", "exclude"],
+  "properties": {
+    "version": { "const": 1, "type": "integer" },
+    "root": {
+      "type": "string",
+      "pattern": "^/",
+      "description": "Canonical absolute project binding, kept private."
+    },
+    "rule_files": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "pattern": "\\.yml$" }
+    },
+    "exclude": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Relative exclusion globs; visible in reports."
+      }
+    }
+  }
+}

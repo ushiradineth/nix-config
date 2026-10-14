@@ -1,0 +1,96 @@
+# Narrow, intraprocedural checks; these do not verify authentication or authorization.
+# Findings require source review before remediation. Fixtures are never executed.
+rules:
+  - id: browser-url-to-html
+    languages: [javascript, typescript]
+    message:
+      Browser-controlled URL data reaches an HTML sink. Use textContent or sanitize the HTML with
+      safe defaults.
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: "CWE-79: Improper Neutralization of Input During Web Page Generation"
+    mode: taint
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: window.location.$PART
+              - pattern: document.location.$PART
+              - pattern: location.$PART
+          - metavariable-regex:
+              metavariable: $PART
+              regex: ^(href|search|hash)$
+    pattern-sanitizers:
+      # Options can disable sanitization, so only the default call is trusted.
+      - patterns:
+          - pattern: $SAN($HTML)
+          - pattern-inside: |
+              import $SAN from "sanitize-html";
+              ...
+          - pattern-not-inside: |
+              function $F(..., $SAN, ...) { ... }
+          - pattern-not-inside: |
+              (..., $SAN, ...) => { ... }
+          - pattern-not-inside: |
+              {
+                ...
+                const $SAN = $VALUE;
+                ...
+              }
+          - pattern-not-inside: |
+              {
+                ...
+                let $SAN = $VALUE;
+                ...
+              }
+          - pattern-not-inside: |
+              {
+                ...
+                var $SAN = $VALUE;
+                ...
+              }
+          - pattern-not-inside: |
+              {
+                ...
+                function $SAN(...) { ... }
+                ...
+              }
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $ELEMENT.innerHTML = $HTML
+              - pattern: $ELEMENT.outerHTML = $HTML
+              - pattern: $ELEMENT.insertAdjacentHTML($POSITION, $HTML)
+              - pattern: document.write($HTML)
+              - pattern: "<$TAG ... dangerouslySetInnerHTML={{ __html: $HTML }} ... />"
+          - focus-metavariable: $HTML
+
+  - id: browser-url-to-code
+    languages: [javascript, typescript]
+    message:
+      Browser-controlled URL data reaches a code-execution sink. Do not evaluate URL input; parse
+      data or use a fixed callback instead.
+    severity: ERROR
+    metadata:
+      category: security
+      cwe: "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code"
+    mode: taint
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: window.location.$PART
+              - pattern: document.location.$PART
+              - pattern: location.$PART
+          - metavariable-regex:
+              metavariable: $PART
+              regex: ^(href|search|hash)$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: eval($CODE)
+              - pattern: window.eval($CODE)
+              - pattern: new Function(..., $CODE)
+              - pattern: Function(..., $CODE)
+              - pattern: setTimeout($CODE, ...)
+              - pattern: setInterval($CODE, ...)
+          - focus-metavariable: $CODE

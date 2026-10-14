@@ -1,0 +1,61 @@
+rules:
+  - id: python-external-to-shell
+    languages: [python]
+    message:
+      External input reaches subprocess with shell=True. Review the command and prefer a fixed
+      argument list.
+    severity: ERROR
+    mode: taint
+    pattern-sources:
+      - pattern: flask.request.args.get(...)
+      - pattern: flask.request.form.get(...)
+      - pattern: flask.request.json
+      - pattern: sys.argv[$INDEX]
+      - pattern: input(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: subprocess.run($CMD, ..., shell=True, ...)
+              - pattern: subprocess.call($CMD, ..., shell=True, ...)
+              - pattern: subprocess.check_call($CMD, ..., shell=True, ...)
+              - pattern: subprocess.check_output($CMD, ..., shell=True, ...)
+              - pattern: subprocess.Popen($CMD, ..., shell=True, ...)
+          - focus-metavariable: $CMD
+
+  - id: python-requests-disabled-tls
+    languages: [python]
+    message: Requests explicitly disables TLS certificate verification.
+    severity: ERROR
+    pattern-either:
+      - pattern: requests.$METHOD(..., verify=False, ...)
+      - patterns:
+          - pattern: $SESSION.$METHOD(..., verify=False, ...)
+          - pattern-inside: |
+              $SESSION = requests.Session(...)
+              ...
+
+  - id: python-unsafe-yaml-load
+    languages: [python]
+    message:
+      PyYAML uses an object-constructing loader. Prefer safe_load or SafeLoader for external YAML.
+    severity: ERROR
+    pattern-either:
+      - pattern: yaml.unsafe_load(...)
+      - pattern: yaml.unsafe_load_all(...)
+      - patterns:
+          - pattern: yaml.load($DATA, ..., Loader=$LOADER, ...)
+          - pattern-inside: |
+              $LOADER = yaml.UnsafeLoader
+              ...
+      - patterns:
+          - pattern-either:
+              - pattern: yaml.load($DATA, ..., Loader=$LOADER, ...)
+              - pattern: yaml.load_all($DATA, ..., Loader=$LOADER, ...)
+              - pattern: yaml.load($DATA, $LOADER)
+          - metavariable-pattern:
+              metavariable: $LOADER
+              pattern-either:
+                - pattern: yaml.Loader
+                - pattern: yaml.UnsafeLoader
+                - pattern: yaml.CLoader
+                - pattern: yaml.CUnsafeLoader
