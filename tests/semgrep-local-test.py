@@ -223,6 +223,30 @@ class RunnerTests(unittest.TestCase):
         with self.assertRaises(runner.ScanError):
             runner.source_files(self.root, None)
 
+    def test_generated_astro_vercel_caches_are_excluded_by_default(self):
+        runner = runner_module()
+        source = self.root / "app.ts"
+        source.write_text("const safe = 1;")
+        for directory, name in ((".astro", "content.d.ts"), (".vercel", "output.js")):
+            cache = self.root / directory
+            cache.mkdir()
+            (cache / name).write_text("const = = !!;")
+        self.assertEqual(runner.source_files(self.root, None), [source])
+        self.assertEqual(runner.source_files(self.root, [".astro/content.d.ts"]),
+                         [self.root / ".astro/content.d.ts"])
+
+    @unittest.skipUnless(RUNTIME, "requires actual OS confinement; use --runtime")
+    def test_project_scan_ignores_generated_astro_vercel_syntax_errors(self):
+        (self.root / "app.ts").write_text("const safe = 1;")
+        for directory, name in ((".astro", "content.d.ts"), (".vercel", "output.js")):
+            cache = self.root / directory
+            cache.mkdir()
+            (cache / name).write_text("const = = !!;")
+        code, report = self.scan()
+        self.assertEqual(code, 0, report)
+        self.assertEqual(report["scanned_paths"], [str(self.root / "app.ts")])
+        self.assertTrue({".astro", ".vercel"} <= set(report["exclusions"]["directories"]))
+
     def test_reports_reject_configuration_source_and_symlink_destinations(self):
         runner = runner_module()
         target = self.root / "app.js"

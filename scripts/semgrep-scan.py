@@ -18,7 +18,7 @@ import yaml
 BASELINE = Path(os.environ.get("SEMGREP_LOCAL_BASELINE", Path(__file__).resolve().parents[1] / "security/semgrep")).resolve()
 SANDBOX_EXEC = "/usr/bin/sandbox-exec"
 EXTENSIONS = {".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx", ".mts", ".cts", ".py", ".go", ".rs"}
-IGNORE_DIRS = {".git", ".direnv", ".next", ".nuxt", ".cache", "node_modules", ".venv", "venv",
+IGNORE_DIRS = {".git", ".direnv", ".next", ".nuxt", ".astro", ".vercel", ".cache", "node_modules", ".venv", "venv",
                "build", "dist", "target", "coverage", "__pycache__"}
 FLAGS = ["--strict", "--error", "--metrics=off", "--disable-version-check", "--disable-nosem",
          "--no-rewrite-rule-ids", "--oss-only", "--no-trace", "--no-secrets-validation"]
