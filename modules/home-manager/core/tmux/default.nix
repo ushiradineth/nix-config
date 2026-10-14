@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  myvars,
   ...
 }: let
   commandAliases = {
@@ -71,6 +72,7 @@
     name = "codex-quota";
     runtimeInputs = [pkgs.nodejs];
     text = ''
+      export CODEX_QUOTA_TIMEZONE=${pkgs.lib.escapeShellArg myvars.timezone}
       if [ -z "''${CODEX_QUOTA_CACHE_DIR:-}" ]; then
         export CODEX_QUOTA_CACHE_DIR=${pkgs.lib.escapeShellArg "${config.xdg.cacheHome}/codex-quota"}
       fi

@@ -201,18 +201,24 @@ export function activeSessions(run: Runner, home: string): NavigationSession[] {
     )
 }
 
-function clientSnapshot(run: Runner, requested?: string): { name: string; pid: string } {
-  const rows = run(["list-clients", "-F", "#{client_name}|#{client_pid}|#{pane_id}"])
+function clientSnapshot(
+  run: Runner,
+  requested?: string
+): { name: string; pid: string; session: string } {
+  const rows = run(["list-clients", "-F", "#{client_name}|#{client_pid}|#{pane_id}|#{session_id}"])
     .split("\n")
     .map((line) => line.split("|"))
-    .filter(([name, pid]) => CLIENT_NAME.test(name) && /^\d+$/.test(pid))
+    .filter(
+      ([name, pid, , session]) =>
+        CLIENT_NAME.test(name) && /^\d+$/.test(pid) && SESSION_ID.test(session)
+    )
   const candidates = requested
     ? rows.filter((row) => row[0] === requested)
     : rows.filter((row) => row[2] === process.env.TMUX_PANE)
   const selected =
     candidates.length === 1 ? candidates[0] : !requested && rows.length === 1 ? rows[0] : undefined
   if (!selected) throw new Error("Calling tmux client is unavailable or ambiguous")
-  return { name: selected[0], pid: selected[1] }
+  return { name: selected[0], pid: selected[1], session: selected[3] }
 }
 
 function selectSession(run: Runner, id: string, client: { name: string; pid: string }): void {
@@ -227,14 +233,16 @@ export function numberBindings(): string[] {
   return Array.from({ length: 10 }, (_, index) => {
     const key = index === 9 ? "0" : String(index + 1)
     // FZF_QUERY is environment data, never inserted into shell source.
-    return `${key}:transform:if [ -z "$FZF_QUERY" ]; then if [ "\${FZF_MATCH_COUNT:-0}" -ge ${index + 1} ]; then printf 'pos(${index + 1})+accept'; else printf 'ignore'; fi; else printf 'put(${key})'; fi`
+    // Delimit each script so fzf does not consume the following key/event bindings.
+    return `${key}:transform~if [ -z "$FZF_QUERY" ]; then if [ "\${FZF_MATCH_COUNT:-0}" -ge ${index + 1} ]; then printf 'pos(${index + 1})+accept'; else printf 'ignore'; fi; else printf 'put(${key})'; fi~`
   })
 }
 
 function pick(
   rows: { key: string; label: string }[],
   sessions = false,
-  preview = false
+  preview = false,
+  initialKey?: string
 ): string | undefined {
   if (!rows.length) throw new Error(sessions ? "No active tmux sessions" : "No eligible projects")
   const args = [
@@ -249,7 +257,16 @@ function pick(
       ? "--header=1–9/0: visit before search | Type to search | Enter: visit | Esc: cancel"
       : "--header=Type to search | Enter: open project | Esc: cancel",
   ]
-  if (sessions) args.push("--bind", numberBindings().join(","))
+  if (sessions) {
+    const bindings = numberBindings()
+    const position = rows.findIndex((row) => row.key === initialKey)
+    if (position >= 0) {
+      // Wait for the finite input list before positioning the initial cursor.
+      args.push("--sync")
+      bindings.push(`start:pos(${position + 1})`)
+    }
+    args.push("--bind", bindings.join(","))
+  }
   if (preview) {
     const helper = process.env.TMUX_NAVIGATION_HELPER
     if (!helper || !isAbsolute(helper) || !/^[a-zA-Z0-9_./-]+$/.test(helper))
@@ -356,7 +373,9 @@ async function main(argv: string[]): Promise<void> {
         key: item.id,
         label: `${index + 1}  ${item.group} › ${item.name}`,
       })),
-      true
+      true,
+      false,
+      client?.session
     )
     if (key && client) selectSession(run, key, client)
     else if (key) {

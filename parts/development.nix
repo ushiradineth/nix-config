@@ -12,6 +12,7 @@
     terminalTypes = import ../lib/opencode-terminal-types.nix {inherit pkgs;};
     quotaModule = import ../modules/home-manager/core/tmux {
       inherit pkgs;
+      myvars = import ../vars {};
       config.xdg.cacheHome = "/unused-quota-test-cache";
       config.home.homeDirectory = "/unused-navigation-test-home";
     };
@@ -47,7 +48,7 @@
     checks.tmux-navigation =
       pkgs.runCommand "tmux-navigation-tests" {
         src = ../.;
-        nativeBuildInputs = [pkgs.nodejs pkgs.tmux pkgs.typescript];
+        nativeBuildInputs = [pkgs.nodejs pkgs.tmux pkgs.fzf pkgs.typescript];
         TMUX_NAVIGATION_TEST_SHELL = pkgs.runtimeShell;
       } ''
         export HOME="$TMPDIR/home"

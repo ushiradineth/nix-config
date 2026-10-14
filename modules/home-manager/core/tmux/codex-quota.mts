@@ -20,13 +20,17 @@ import { fileURLToPath, pathToFileURL } from "node:url"
 
 export type QuotaWindow = { usedPercent: number; windowDurationMins: number; resetsAt: number }
 type ReadResult =
-  | { kind: "ok"; windows: QuotaWindow[] }
+  | { kind: "ok"; windows: QuotaWindow[]; resetCount?: number }
   | { kind: "auth" | "error" | "unavailable" }
 
 function object(value: unknown): Record<string, unknown> | undefined {
   return value !== null && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : undefined
+}
+
+function resetCount(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : undefined
 }
 
 export function decodeQuota(value: unknown): QuotaWindow[] {
@@ -74,6 +78,55 @@ export function formatQuota(windows: QuotaWindow[]): string {
       return `${Math.round(100 - window.usedPercent)}% Codex Quota Remaining (${label})`
     })
     .join(" | ")
+}
+
+export function formatCompactQuota(windows: QuotaWindow[]): string {
+  if (!windows.length) return "󰘥"
+  const icons = ["󰫃", "󰫄", "󰫅", "󰫆", "󰫇", "󰫈"]
+  return [...windows]
+    .sort((a, b) => a.windowDurationMins - b.windowDurationMins)
+    .map((window) => {
+      const remaining = Math.round(100 - window.usedPercent)
+      const level = Math.max(1, Math.min(6, Math.ceil((remaining * 6) / 100)))
+      return `${icons[level - 1]} ${remaining}%`
+    })
+    .join(" | ")
+}
+
+function formatTimestamp(timestamp: number, timeZone: string): string {
+  const formatted = new Intl.DateTimeFormat("en-GB", {
+    timeZone,
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+    timeZoneName: "shortOffset",
+  }).format(timestamp)
+  return `${formatted} (${timeZone})`
+}
+
+export function formatFullQuota(
+  windows: QuotaWindow[],
+  now = Date.now(),
+  timeZone = process.env.CODEX_QUOTA_TIMEZONE || "UTC",
+  availableResets?: number
+): string {
+  const details = windows.map((window) => {
+    const minutes = Math.max(0, Math.ceil((window.resetsAt * 1000 - now) / 60000))
+    const days = Math.floor(minutes / 1440)
+    const hours = Math.floor((minutes % 1440) / 60)
+    const remainingMinutes = minutes % 60
+    const countdown =
+      window.resetsAt * 1000 <= now
+        ? "due now; awaiting updated quota data"
+        : `${days} ${days === 1 ? "day" : "days"}, ${hours} ${hours === 1 ? "hour" : "hours"}, ${remainingMinutes} ${remainingMinutes === 1 ? "minute" : "minutes"}`
+    return `${formatQuota([window])}\n  Used: ${window.usedPercent}%\n  Next reset: ${formatTimestamp(window.resetsAt * 1000, timeZone)}\n  Reset in: ${countdown}`
+  })
+  const count = resetCount(availableResets)
+  return `${details.join("\n\n")}\n\nManual resets remaining: ${count === undefined ? "unknown (not returned by Codex)" : count}`
 }
 
 export function readQuota(
@@ -139,7 +192,16 @@ export function readQuota(
             initialized = true
             send({ method: "initialized", params: {} })
             send({ id: 2, method: "account/rateLimits/read" })
-          } else return finish({ kind: "ok", windows: decodeQuota(message.result) })
+          } else {
+            const count = resetCount(
+              object(object(message.result)?.rateLimitResetCredits)?.availableCount
+            )
+            return finish({
+              kind: "ok",
+              windows: decodeQuota(message.result),
+              ...(count !== undefined ? { resetCount: count } : {}),
+            })
+          }
         } catch {
           return finish({ kind: "error" })
         }
@@ -154,7 +216,13 @@ export function readQuota(
   })
 }
 
-type State = { attemptedAt: number; fetchedAt: number; windows: QuotaWindow[]; failure: string }
+type State = {
+  attemptedAt: number
+  fetchedAt: number
+  windows: QuotaWindow[]
+  failure: string
+  resetCount?: number
+}
 const refreshInterval = 300000,
   retryInterval = 60000,
   maxAge = 900000,
@@ -227,6 +295,7 @@ export function createQuotaCache(
         fetchedAt: Number(data.fetchedAt),
         windows,
         failure: String(data.failure),
+        resetCount: resetCount(data.resetCount),
       }
     } catch {
       return undefined
@@ -311,6 +380,11 @@ export function createQuotaCache(
         fetchedAt: success ? now() : previous?.fetchedAt || 0,
         windows: success ? result.windows : result.kind === "error" ? previous?.windows || [] : [],
         failure: success ? "none" : result.kind === "ok" ? "unavailable" : result.kind,
+        resetCount: success
+          ? result.resetCount
+          : result.kind === "error"
+            ? previous?.resetCount
+            : undefined,
       })
     } finally {
       release(owned)
@@ -331,7 +405,8 @@ export function createQuotaCache(
     })
     child.unref()
   }
-  function status(): string {
+  function status(detailed = false): string {
+    const unavailable = detailed ? "Codex quota unavailable." : "󰘥"
     try {
       prepare()
       const current = state(),
@@ -354,31 +429,55 @@ export function createQuotaCache(
           } catch {
             publish({ attemptedAt: now(), fetchedAt: 0, windows: [], failure: "error" })
             release(token)
-            return "CX:n/a"
+            return unavailable
           }
         }
       }
-      if (!current) return "CX:…"
-      if (!current.windows.length || age > maxAge) return "CX:n/a"
+      if (!current)
+        return detailed ? "Codex quota loading; run codex-quota full again shortly." : "󰝲"
+      if (!current.windows.length || age > maxAge) return unavailable
+      if (detailed) {
+        return (
+          formatFullQuota(
+            current.windows,
+            now(),
+            process.env.CODEX_QUOTA_TIMEZONE || "UTC",
+            current.resetCount
+          ) +
+          `\nCached snapshot: ${formatTimestamp(current.fetchedAt, process.env.CODEX_QUOTA_TIMEZONE || "UTC")}` +
+          (age >= refreshInterval || reset || current.failure !== "none" ? "\nSnapshot: stale" : "")
+        )
+      }
       return (
-        formatQuota(current.windows) +
-        (age >= refreshInterval || reset || current.failure !== "none" ? " stale" : "")
+        formatCompactQuota(current.windows) +
+        (age >= refreshInterval || reset || current.failure !== "none" ? " 󰅐" : "")
       )
     } catch {
-      return "CX:n/a"
+      return unavailable
     }
   }
-  return { directory, status, refresh }
+  return { directory, status: () => status(), full: () => status(true), refresh }
 }
 
 if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
-  const cache = createQuotaCache()
-  if (process.argv[2] === "status") console.log(cache.status())
-  else if (process.argv[2] === "refresh") {
-    try {
-      await cache.refresh(process.argv[3])
-    } catch {
+  const args = process.argv.slice(2)
+  const usage =
+    "Usage:\n  codex-quota status  Show the compact tmux quota status\n  codex-quota full    Show quota windows and time until reset\n  codex-quota help    Show available commands"
+  if (!args.length || (args.length === 1 && ["help", "--help", "-h"].includes(args[0]))) {
+    console.log(usage)
+  } else {
+    const cache = createQuotaCache()
+    if (args[0] === "status" && args.length === 1) console.log(cache.status())
+    else if (args[0] === "full" && args.length === 1) console.log(cache.full())
+    else if (args[0] === "refresh" && args.length <= 2) {
+      try {
+        await cache.refresh(args[1])
+      } catch {
+        process.exitCode = 1
+      }
+    } else {
+      console.error(usage)
       process.exitCode = 1
     }
-  } else process.exitCode = 1
+  }
 }
