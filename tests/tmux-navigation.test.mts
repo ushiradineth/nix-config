@@ -23,6 +23,54 @@ import {
   sessionsForProject,
 } from "../modules/home-manager/core/tmux/navigation.mts"
 
+const testShell = process.env.TMUX_NAVIGATION_TEST_SHELL || "/bin/sh"
+const shellQuote = (value: string) => `'${value.replaceAll("'", "'\\''")}'`
+
+function writeMockTmux(path: string, socket: string, home: string, selection = ""): void {
+  // tmux is a native executable; a fresh Node runtime per RPC distorts startup timing.
+  writeFileSync(
+    path,
+    `#!${testShell}
+set -eu
+[ "$1" = '-S' ] && [ "$2" = ${shellQuote(socket)} ] || exit 42
+shift 2
+case "$1" in
+  list-clients) printf '%s\\n' '/dev/ttys999|4321|%9|$3' ;;
+  list-sessions) printf '%s\\n' '$1' '$2' '$3' ;;
+  display-message)
+    case "$5" in
+      '#{session_name}')
+        case "$4" in
+          '$1:') printf '%s\\n' alpha ;;
+          '$2:') printf '%s\\n' beta ;;
+          '$3:') printf '%s\\n' gamma ;;
+          *) exit 42 ;;
+        esac ;;
+      '#{session_path}') printf '%s\\n' ${shellQuote(home)} ;;
+      '#{session_id}') printf '%s\\n' "\${4%:}" ;;
+      *) exit 42 ;;
+    esac ;;
+  switch-client)
+    [ -n ${shellQuote(selection)} ] || exit 42
+    printf '%s' "$5" > ${shellQuote(selection)} ;;
+  *) exit 42 ;;
+esac
+`,
+    { mode: 0o700 }
+  )
+}
+
+async function waitFor<T>(read: () => T, ready: (value: T) => boolean, timeout = 2500): Promise<T> {
+  const deadline = Date.now() + timeout
+  let value = read()
+  while (!ready(value) && Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    value = read()
+  }
+  assert.ok(ready(value), `Timed out waiting for picker state: ${String(value)}`)
+  return value
+}
+
 test("grouping follows shared relative parent folders, not project names", () => {
   assert.equal(
     groupLabel("/home/user/Code/surge/atticus/atticus-editor", "/home/user"),
@@ -97,19 +145,7 @@ test("session CLI initially highlights the caller's third session without reorde
       tmux = join(root, "tmux"),
       fzf = join(root, "fzf")
     writeFileSync(settings, JSON.stringify({ home: root, manualPaths: [], roots: [] }))
-    writeFileSync(
-      tmux,
-      `#!${process.execPath}
-      const args = process.argv.slice(2);
-      if (args.includes('list-clients')) console.log('/dev/ttys999|4321|%9|$3');
-      else if (args.includes('list-sessions')) console.log('$1\\n$2\\n$3');
-      else if (args.includes('display-message')) {
-        const id = args[args.indexOf('-t') + 1];
-        console.log(args.at(-1) === '#{session_name}' ? {'$1:':'alpha','$2:':'beta','$3:':'gamma'}[id] : ${JSON.stringify(root)});
-      } else process.exit(42);
-    `,
-      { mode: 0o700 }
-    )
+    writeMockTmux(tmux, join(root, "socket"), root)
     writeFileSync(
       fzf,
       `#!${process.execPath}
@@ -159,103 +195,91 @@ test("session CLI initially highlights the caller's third session without reorde
   }
 })
 
-test("real fzf keeps initial focus and numeric shortcuts after the results settle", async () => {
-  const root = mkdtempSync(join(tmpdir(), "nf-"))
-  const socket = join(root, "tmux"),
-    settings = join(root, "settings.json")
-  const selection = join(root, "selection")
-  const mockTmux = join(root, "mock-tmux"),
-    picker = join(root, "picker")
-  const env = {
-    ...process.env,
-    TMUX_NAVIGATION_SETTINGS: settings,
-    TMUX_NAVIGATION_TMUX: mockTmux,
-    TMUX_NAVIGATION_FZF: picker,
-  }
-  const tmux = (...args: string[]) =>
-    execFileSync("tmux", ["-S", socket, ...args], {
-      env,
-      encoding: "utf8",
-      timeout: 3000,
-      stdio: ["ignore", "pipe", "pipe"],
-    })
-  try {
-    writeFileSync(settings, JSON.stringify({ home: root, manualPaths: [], roots: [] }))
-    writeFileSync(
-      mockTmux,
-      `#!${process.execPath}
-      const {writeFileSync} = await import('node:fs');
-      const args = process.argv.slice(2);
-      if (args.includes('list-clients')) console.log('/dev/ttys999|4321|%9|$3');
-      else if (args.includes('list-sessions')) console.log('$1\\n$2\\n$3');
-      else if (args.includes('display-message')) console.log(args.at(-1) === '#{session_name}' ? {'$1:':'alpha','$2:':'beta','$3:':'gamma'}[args[args.indexOf('-t') + 1]] : ${JSON.stringify(root)});
-      else if (args.includes('switch-client')) writeFileSync(${JSON.stringify(selection)}, args[args.indexOf('-t') + 1]);
-      else process.exit(42);
-    `,
-      { mode: 0o700 }
-    )
-    writeFileSync(
-      picker,
-      `#!${process.execPath}
-      const {spawn} = await import('node:child_process');
-      const child = spawn(${JSON.stringify(process.env.TMUX_NAVIGATION_TEST_FZF || "fzf")}, [...process.argv.slice(2), '--pointer=>', '--color=bw'], {stdio:'inherit'});
-      child.on('error', () => process.exit(2));
-      child.on('exit', code => process.exit(code ?? 2));
-    `,
-      { mode: 0o700 }
-    )
-    tmux(
-      "-f",
-      "/dev/null",
-      "new-session",
-      "-d",
-      "-s",
-      "focus",
-      "-x",
-      "100",
-      "-y",
-      "30",
-      process.execPath,
-      fileURLToPath(new URL("../modules/home-manager/core/tmux/navigation.mts", import.meta.url)),
-      "sessions",
-      "--client",
-      "/dev/ttys999",
-      "--socket",
-      socket
-    )
-    let screen = ""
-    for (let tries = 0; tries < 40; tries++) {
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      screen = tmux("capture-pane", "-p", "-t", "focus:0.0")
-      if (screen.includes("gamma")) break
+for (const startupDelay of [0, 3000]) {
+  test(`real fzf keeps initial focus and numeric shortcuts after the results settle (startup ${startupDelay}ms)`, async () => {
+    const root = mkdtempSync(join(tmpdir(), "nf-"))
+    const socket = join(root, "tmux"),
+      settings = join(root, "settings.json")
+    const selection = join(root, "selection")
+    const mockTmux = join(root, "mock-tmux"),
+      picker = join(root, "picker")
+    const env = {
+      ...process.env,
+      TMUX_NAVIGATION_SETTINGS: settings,
+      TMUX_NAVIGATION_TMUX: mockTmux,
+      TMUX_NAVIGATION_FZF: picker,
     }
-    await new Promise((resolve) => setTimeout(resolve, 300))
-    screen = tmux("capture-pane", "-p", "-t", "focus:0.0")
-    assert.match(screen, /^>\s*3\s+Local.*gamma/m, screen)
-    tmux("send-keys", "-t", "focus:0.0", "9", "0")
-    await new Promise((resolve) => setTimeout(resolve, 150))
-    assert.equal(existsSync(selection), false, "Absent numeric positions must not select a session")
-    assert.match(tmux("capture-pane", "-p", "-t", "focus:0.0"), /^>\s*3\s+Local.*gamma/m)
-    tmux("send-keys", "-t", "focus:0.0", "b", "2")
-    await new Promise((resolve) => setTimeout(resolve, 300))
-    assert.equal(
-      existsSync(selection),
-      false,
-      "Digits in a nonempty query must not select a session"
-    )
-    assert.match(tmux("capture-pane", "-p", "-t", "focus:0.0"), /^> b2/m)
-    tmux("send-keys", "-t", "focus:0.0", "C-u")
-    await new Promise((resolve) => setTimeout(resolve, 150))
-    tmux("send-keys", "-t", "focus:0.0", "2")
-    for (let tries = 0; !existsSync(selection) && tries < 40; tries++) {
-      await new Promise((resolve) => setTimeout(resolve, 50))
-    }
-    assert.ok(existsSync(selection), "Numeric key 2 must select, not merely enter a search query")
-    assert.equal(readFileSync(selection, "utf8"), "$2")
-  } finally {
+    const tmux = (...args: string[]) =>
+      execFileSync("tmux", ["-S", socket, ...args], {
+        env,
+        encoding: "utf8",
+        timeout: 3000,
+        stdio: ["ignore", "pipe", "pipe"],
+      })
     try {
-      tmux("kill-server")
-    } catch {}
-    rmSync(root, { recursive: true, force: true })
-  }
-})
+      writeFileSync(settings, JSON.stringify({ home: root, manualPaths: [], roots: [] }))
+      writeMockTmux(mockTmux, socket, root, selection)
+      writeFileSync(
+        picker,
+        `#!${testShell}
+set -eu
+${startupDelay ? `sleep ${startupDelay / 1000}` : ""}
+exec ${shellQuote(process.env.TMUX_NAVIGATION_TEST_FZF || "fzf")} "$@" '--pointer=>' '--color=bw'
+`,
+        { mode: 0o700 }
+      )
+      tmux(
+        "-f",
+        "/dev/null",
+        "new-session",
+        "-d",
+        "-s",
+        "focus",
+        "-x",
+        "100",
+        "-y",
+        "30",
+        process.execPath,
+        fileURLToPath(new URL("../modules/home-manager/core/tmux/navigation.mts", import.meta.url)),
+        "sessions",
+        "--client",
+        "/dev/ttys999",
+        "--socket",
+        socket
+      )
+      const capture = () => tmux("capture-pane", "-p", "-t", "focus:0.0")
+      // Eight setup RPCs each have a 2.5s production deadline; allow 5s for picker startup.
+      await waitFor(capture, (screen) => screen.includes("gamma"), 8 * 2500 + 5000)
+      await new Promise((resolve) => setTimeout(resolve, 300))
+      const screen = capture()
+      assert.match(screen, /^>\s*3\s+Local.*gamma/m, screen)
+      tmux("send-keys", "-t", "focus:0.0", "9", "0")
+      await new Promise((resolve) => setTimeout(resolve, 150))
+      assert.equal(
+        existsSync(selection),
+        false,
+        "Absent numeric positions must not select a session"
+      )
+      assert.match(capture(), /^>\s*3\s+Local.*gamma/m)
+      tmux("send-keys", "-t", "focus:0.0", "b", "2")
+      const queryScreen = await waitFor(capture, (screen) => /^> b2/m.test(screen))
+      assert.equal(
+        existsSync(selection),
+        false,
+        "Digits in a nonempty query must not select a session"
+      )
+      assert.match(queryScreen, /^> b2/m)
+      tmux("send-keys", "-t", "focus:0.0", "C-u")
+      await waitFor(capture, (screen) => /^>\s*$/m.test(screen) && screen.includes("gamma"))
+      tmux("send-keys", "-t", "focus:0.0", "2")
+      await waitFor(() => existsSync(selection), Boolean)
+      assert.ok(existsSync(selection), "Numeric key 2 must select, not merely enter a search query")
+      assert.equal(readFileSync(selection, "utf8"), "$2")
+    } finally {
+      try {
+        tmux("kill-server")
+      } catch {}
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+}
