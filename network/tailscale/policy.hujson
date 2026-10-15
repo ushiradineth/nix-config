@@ -1,0 +1,114 @@
+{
+  // Source candidate based on supplied console policy. API validation/publication still required.
+  "acls": [
+    // Human-owned devices belonging to the same user, not merely each device itself.
+    { "action": "accept", "src": ["*"], "dst": ["autogroup:self:*"] },
+    {
+      "action": "accept",
+      "src": ["tag:admin", "tag:personal", "tag:shupi", "tag:shulab"],
+      "dst": ["autogroup:internet:*"]
+    },
+    {
+      "action": "accept",
+      "src": ["tag:admin", "tag:personal"],
+      "dst": ["tag:shupi:53", "tag:shupi:80", "tag:shupi:443", "tag:shulab:443"]
+    },
+    {
+      "action": "accept",
+      "src": ["tag:admin"],
+      "dst": ["tag:shupi:22", "tag:shulab:22", "tag:shuwin:22"]
+    },
+    { "action": "accept", "src": ["tag:admin", "tag:personal"], "dst": ["tag:shu:443"] },
+    { "action": "accept", "src": ["group:dns-users"], "dst": ["tag:shupi:53"] },
+    { "action": "accept", "src": ["tag:shupi"], "dst": ["tag:shu:22"] }
+  ],
+  "ssh": [
+    {
+      "action": "accept",
+      "src": ["tag:admin"],
+      "dst": ["tag:shupi"],
+      // Retain root for current deployment/build automation, not every service account.
+      "users": ["shu", "root"]
+    },
+    {
+      "action": "accept",
+      "src": ["tag:admin"],
+      "dst": ["tag:shulab"],
+      "users": ["shu", "root", "autogroup:nonroot"]
+    }
+  ],
+  "tagOwners": {
+    "tag:admin": ["autogroup:admin"],
+    "tag:personal": ["autogroup:admin"],
+    "tag:shupi": ["autogroup:admin"],
+    "tag:shulab": ["autogroup:admin"],
+    "tag:shu": ["autogroup:admin"],
+    "tag:shuwin": ["autogroup:admin"]
+  },
+  "tests": [
+    {
+      "src": "tag:shulab",
+      "deny": [
+        "tag:shupi:22",
+        "tag:shupi:53",
+        "tag:shupi:80",
+        "tag:shupi:443",
+        "tag:admin:22",
+        "tag:admin:80",
+        "tag:admin:443",
+        "tag:personal:22",
+        "tag:personal:80",
+        "tag:personal:443",
+        "tag:shuwin:22"
+      ]
+    },
+    {
+      "src": "tag:admin",
+      "accept": ["tag:shupi:53", "tag:shupi:80", "tag:shupi:443", "tag:shulab:443", "tag:shuwin:22"]
+    },
+    {
+      "src": "tag:personal",
+      "accept": ["tag:shupi:53", "tag:shupi:80", "tag:shupi:443", "tag:shulab:443"]
+    },
+    { "src": "tag:admin", "accept": ["1.1.1.1:443"] },
+    { "src": "tag:personal", "accept": ["1.1.1.1:443"] },
+    { "src": "tag:shulab", "accept": ["1.1.1.1:443"] },
+    { "src": "tag:shupi", "accept": ["1.1.1.1:443"] },
+    {
+      "src": "group:dns-users",
+      "accept": ["tag:shupi:53"],
+      "deny": [
+        "tag:shupi:22",
+        "tag:shupi:80",
+        "tag:shupi:443",
+        "tag:shulab:443",
+        "tag:shu:443",
+        "1.1.1.1:443"
+      ]
+    },
+    { "src": "tag:shupi", "accept": ["tag:shu:22"] },
+    {
+      "src": "tag:admin",
+      "accept": ["tag:shupi:22", "tag:shulab:22"],
+      "deny": ["tag:shupi:48005", "tag:shupi:48025"]
+    },
+    {
+      "src": "tag:personal",
+      "deny": ["tag:shupi:22", "tag:shulab:22", "tag:shu:22", "tag:shuwin:22"]
+    },
+    { "src": "tag:shupi", "deny": ["tag:shulab:22", "tag:shuwin:22"] }
+  ],
+  "sshTests": [
+    {
+      "src": "tag:admin",
+      "dst": ["tag:shupi"],
+      "accept": ["shu", "root"],
+      "deny": ["adguardhome", "nobody"]
+    },
+    { "src": "tag:admin", "dst": ["tag:shulab"], "accept": ["shu", "root"] },
+    { "src": "tag:personal", "dst": ["tag:shupi", "tag:shulab"], "deny": ["shu", "root"] },
+    { "src": "tag:shupi", "dst": ["tag:shulab"], "deny": ["shu", "root"] }
+  ],
+  "nodeAttrs": [{ "target": ["tag:admin"], "attr": ["funnel"] }],
+  "groups": { "group:dns-users": [] }
+}

@@ -19,11 +19,13 @@ in {
   services.adguardhome = {
     enable = true;
     mutableSettings = true;
-    openFirewall = true;
-    host = "0.0.0.0";
+    # Management stays behind the existing HTTPS proxy; DNS has separate listeners below.
+    openFirewall = false;
+    host = "127.0.0.1";
     inherit port;
 
     settings = {
+      http.address = "127.0.0.1:${toString port}";
       users = [
         {
           name = myvars.usernameFull;
@@ -51,11 +53,11 @@ in {
       querylog = {
         enabled = true;
         file_enabled = true;
-        interval = "24h";
+        interval = "1d";
       };
 
       statistics = {
-        interval = "24h";
+        interval = "1d";
         enabled = true;
       };
 
@@ -117,6 +119,7 @@ in {
           {
             domain = "*.shupi.ushira.com";
             answer = "100.74.32.50";
+            enabled = false; # Preserve the current mutable rewrite state during management hardening.
           }
         ];
       };
@@ -124,13 +127,21 @@ in {
   };
 
   networking.firewall = {
-    allowedTCPPorts = [53];
-    allowedUDPPorts = [53];
+    # Keep existing LAN and container consumers; tailnet ingress uses its existing trusted interface.
+    extraInputRules = ''
+      iifname "end0" ip saddr 192.168.1.0/24 tcp dport 53 accept
+      iifname "end0" ip saddr 192.168.1.0/24 udp dport 53 accept
+      iifname "docker0" tcp dport 53 accept
+      iifname "docker0" udp dport 53 accept
+      iifname "br-*" tcp dport 53 accept
+      iifname "br-*" udp dport 53 accept
+    '';
   };
 
   services.traefik.dynamicConfigOptions.http = mylib.traefikHelpers.mkTraefikRoute {
     name = "adguard";
     domain = config.environment.variables.ADGUARD_DOMAIN;
+    host = "127.0.0.1";
     inherit port;
   };
 }

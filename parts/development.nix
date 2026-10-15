@@ -68,6 +68,95 @@
         python3 tests/semgrep-local-test.py
         touch "$out"
       '';
+    checks.tailnet-policy =
+      pkgs.runCommand "tailnet-policy-tests" {
+        src = ../.;
+        nativeBuildInputs = [pkgs.nodejs pkgs.bash pkgs.jq pkgs.coreutils pkgs.diffutils pkgs.shellcheck];
+      } ''
+        cd "$src"
+        bash -n scripts/tailnet-policy.sh
+        shellcheck scripts/tailnet-policy.sh
+        node --test tests/tailnet-policy.test.mts
+        touch "$out"
+      '';
+    checks.shupi-dns-routing = let
+      host = inputs.self.nixosConfigurations.shupi.config;
+      dns = host.services.adguardhome.settings.dns;
+    in
+      assert !host.services.unbound.enable;
+      assert host.services.adguardhome.enable && dns.port == 53;
+      assert dns.upstream_dns == ["10.64.0.1"] && dns.bootstrap_dns == ["10.64.0.1"];
+      assert (dns.fallback_dns or []) == [];
+      assert host.networking.nameservers == ["127.0.0.1"];
+      assert host.virtualisation.docker.daemon.settings.dns == ["172.17.0.1"];
+      assert !(builtins.elem 5335 host.networking.firewall.allowedTCPPorts);
+      assert !(builtins.elem 5335 host.networking.firewall.allowedUDPPorts);
+        pkgs.runCommand "shupi-dns-routing" {} ''
+          touch "$out"
+        '';
+    checks.shupi-adguard-admin = let
+      host = inputs.self.nixosConfigurations.shupi.config;
+      adguard = host.services.adguardhome;
+      backend = host.services.traefik.dynamicConfigOptions.http.services.adguard.loadBalancer.servers;
+    in
+      assert adguard.host == "127.0.0.1" && !adguard.openFirewall;
+      assert adguard.settings.http.address == "127.0.0.1:48005";
+      assert adguard.settings.querylog.interval == "1d" && adguard.settings.statistics.interval == "1d";
+      assert adguard.settings.filtering.rewrites
+      == [
+        {
+          domain = "*.shupi.ushira.com";
+          answer = "100.74.32.50";
+          enabled = false;
+        }
+      ];
+      assert adguard.settings.dns.bind_hosts == ["0.0.0.0"] && adguard.settings.dns.port == 53;
+      assert backend == [{url = "http://127.0.0.1:48005";}];
+      assert !(builtins.elem 48005 host.networking.firewall.allowedTCPPorts);
+      assert !(builtins.elem 53 host.networking.firewall.allowedTCPPorts);
+      assert !(builtins.elem 53 host.networking.firewall.allowedUDPPorts);
+      assert host.networking.firewall.extraInputRules
+      == ''
+        iifname "end0" ip saddr 192.168.1.0/24 tcp dport 53 accept
+        iifname "end0" ip saddr 192.168.1.0/24 udp dport 53 accept
+        iifname "docker0" tcp dport 53 accept
+        iifname "docker0" udp dport 53 accept
+        iifname "br-*" tcp dport 53 accept
+        iifname "br-*" udp dport 53 accept
+      '';
+      assert builtins.elem "tailscale0" host.networking.firewall.trustedInterfaces;
+        pkgs.runCommand "shupi-adguard-admin" {} ''
+          touch "$out"
+        '';
+    checks.shupi-shu-ssh-route = let
+      generatedConfig = inputs.self.nixosConfigurations.shupi.config.programs.ssh.extraConfig;
+    in
+      pkgs.runCommand "shupi-shu-ssh-route" {
+        nativeBuildInputs = [pkgs.openssh pkgs.gawk];
+        configFile = pkgs.writeText "shupi-ssh-route.conf" generatedConfig;
+      } ''
+        ssh -G -F "$configFile" shu > effective.conf
+        awk 'tolower($1) == "hostname" { host = $2 } END { exit !(host == "100.120.236.115") }' effective.conf
+        touch "$out"
+      '';
+    checks.shu-ssh-authentication = let
+      generatedConfig = inputs.self.darwinConfigurations.shu.config.environment.etc."ssh/sshd_config.d/100-nix-darwin.conf".source.drvAttrs.text;
+    in
+      pkgs.runCommand "shu-ssh-authentication" {
+        nativeBuildInputs = [pkgs.openssh pkgs.gawk];
+        configFile = pkgs.writeText "shu-ssh-candidate.conf" generatedConfig;
+      } ''
+        sshd -G -f "$configFile" > effective.conf
+        awk '
+          tolower($1) == "passwordauthentication" { password = $2 }
+          tolower($1) == "kbdinteractiveauthentication" { keyboard = $2 }
+          tolower($1) == "pubkeyauthentication" { key = $2 }
+          tolower($1) == "allowtcpforwarding" { tcp = $2 }
+          tolower($1) == "allowagentforwarding" { agent = $2 }
+          END { exit !(password == "no" && keyboard == "no" && key == "yes" && tcp == "yes" && agent == "yes") }
+        ' effective.conf
+        touch "$out"
+      '';
     checks.tmux-navigation =
       pkgs.runCommand "tmux-navigation-tests" {
         src = ../.;

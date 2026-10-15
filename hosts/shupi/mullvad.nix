@@ -128,6 +128,9 @@ in {
           sleep 1
         done
 
+        # Enforce fail-closed behavior through the supported API, not only the settings file.
+        ${mullvad}/bin/mullvad lockdown-mode set on
+
         if ${mullvad}/bin/mullvad account get 2>&1 | grep -qi "Not logged in"; then
           echo "Logging in to Mullvad..."
           ACCOUNT_ID=$(cat ${config.age.secrets.mullvad-account-id.path} | tr -d '[:space:]')
