@@ -16,6 +16,7 @@
       taps = [
         "tw93/tap"
         "nikitabobko/tap"
+        "HaseebKhalid1507/tap"
       ];
       # commands = ["user/repo/command"];
       # formulae = ["user/repo/formula"];
@@ -33,11 +34,13 @@
       "handbrake"
       "nvm"
       "czkawka"
+      "myx"
     ];
     taps = [
       "homebrew/services"
       "nikitabobko/tap"
       "tw93/tap"
+      "HaseebKhalid1507/tap"
     ];
     casks = [
       "obs"
@@ -59,7 +62,6 @@
       "whatsapp"
       "google-drive"
       "discord"
-      "krita"
       "medibangpaintpro"
       "notion-calendar"
       "tailscale-app"
