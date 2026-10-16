@@ -11,8 +11,8 @@ description:
 
 Use this skill when:
 
-- a multi-file or high-risk change is complete
-- a plan milestone is finished and needs review before continuing
+- a substantive or risky change is complete; file count alone is not the trigger
+- a substantive plan milestone needs review before continuing
 - you are preparing to merge or open a PR
 
 ## Core rule
@@ -28,9 +28,15 @@ One axis must not hide or rerank the other.
 ## Workflow
 
 1. Pin the fixed point.
-   - Resolve the supplied commit, branch, tag, or merge-base before reviewing.
-   - Record the exact three-dot diff command, commit range, and changed files.
-   - Stop on a missing ref or empty diff.
+   - For a supplied commit/branch/tag/range, resolve it and record the exact commits and appropriate
+     diff command (three-dot against a merge-base when reviewing branch changes).
+   - For working-tree review, record HEAD, the scoped paths, staged and unstaged diffs, and relevant
+     untracked file contents/hashes. Use `git diff --cached -- <paths>`, `git diff -- <paths>` and
+     direct reads; do not stage or commit just to manufacture a fixed point.
+   - Exclude unrelated dirty work. Recheck the scoped content before the verdict; re-pin/review any
+     concurrent change instead of issuing a verdict on an obsolete snapshot.
+   - Stop on a missing requested ref. If the requested scope has no changes, report that without
+     treating an empty commit range as proof the working tree is empty.
 2. Identify sources.
    - Spec source: accepted plan, user request, issue, or other originating artifact.
    - Standards sources: nearest `AGENTS.md`, contributing or coding guidance, and established local
@@ -39,7 +45,8 @@ One axis must not hide or rerank the other.
    - `Standards` findings cite the documented rule. Label uncodified smells as judgement calls.
    - `Spec` findings cite the originating requirement and identify missing, partial, incorrect, or
      unrequested behavior such as scope creep.
-   - Do not invoke `task`, slash commands, or subagents from this skill.
+   - Include applicable adversarial/coherence questions in this pass rather than repeating an
+     equivalent review ceremony. Do not invoke `task`, slash commands, or subagents from this skill.
    - Primary agents may route analysis through `audit` only when the user or accepted plan
      explicitly requests one first-level leaf review.
    - A subagent returns a scoped review handoff because it is a leaf executor.
@@ -54,7 +61,8 @@ One axis must not hide or rerank the other.
 
 Return:
 
-1. `Review scope`: fixed point, head, diff command, commits, and changed files.
+1. `Review scope`: fixed point, HEAD and scoped paths; commit range or dirty-content identities and
+   exact inspection commands as appropriate.
 2. `Standards`: severity, location, cited rule or `judgement call`, and impact.
 3. `Spec`: severity, location, cited requirement, and fidelity issue.
 4. `Actions`: fixes applied or explicit deferrals.
@@ -62,7 +70,7 @@ Return:
 
 ## Anti-patterns
 
-- requesting review without clear requirements or diff range
+- requesting review without clear requirements and an identifiable diff/snapshot
 - merging Standards and Spec into one score or priority list
 - treating a judgement call as a documented violation
 - ignoring critical or important findings without technical rationale

@@ -295,6 +295,17 @@
         node --test "$src/tests/opencode-terminal.test.mts" "$src/tests/tmux-terminal.test.mts"
         touch "$out"
       '';
+    checks.opencode-workflow =
+      pkgs.runCommand "opencode-workflow-tests" {
+        src = ../.;
+        nativeBuildInputs = [pkgs.nodejs pkgs.git pkgs.ripgrep];
+        OPENCODE_TEST_BINARY = "${inputs.llm-agents.packages.${system}.opencode}/bin/opencode";
+      } ''
+        export HOME="$TMPDIR/home"
+        mkdir -p "$HOME"
+        node --test "$src/tests/opencode-workflow.test.mts"
+        touch "$out"
+      '';
 
     treefmt = {
       projectRootFile = "flake.nix";
