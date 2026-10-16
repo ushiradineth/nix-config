@@ -23,28 +23,28 @@
 
     # Exposed through Tailscale tailnet
     UPTIMEKUMA_DOMAIN = "up.shupi.ushira.com";
-    LIFEOS_DOMAIN = "lifeos.shupi.ushira.com";
+    LIFEOS_DOMAIN = "os.shupi.ushira.com";
     ACTUALBUDGET_DOMAIN = "ab.shupi.ushira.com";
     PORTAINER_DOMAIN = "pt.shupi.ushira.com";
     ADGUARD_DOMAIN = "ad.shupi.ushira.com";
     TRAEFIK_DOMAIN = "tr.shupi.ushira.com";
     VICTORIAMETRICS_DOMAIN = "vm.shupi.ushira.com";
     VICTORIALOGS_DOMAIN = "vl.shupi.ushira.com";
-    HOMEPAGE_DOMAIN = "home.shupi.ushira.com";
+    HOMEPAGE_DOMAIN = "shupi.ushira.com";
     IMMICH_DOMAIN = "im.shupi.ushira.com";
     SEAFILE_DOMAIN = "sf.shupi.ushira.com";
     COUCHDB_DOMAIN = "couchdb.shupi.ushira.com";
-    BACKREST_DOMAIN = "backrest.shupi.ushira.com";
+    BACKREST_DOMAIN = "br.shupi.ushira.com";
     NTFY_DOMAIN = "ntfy.shupi.ushira.com";
     ALERTMANAGER_DOMAIN = "am.shupi.ushira.com";
     FORGEJO_DOMAIN = "git.shupi.ushira.com";
-    KARAKEEP_DOMAIN = "karakeep.shupi.ushira.com";
-    CHANGEDETECTION_DOMAIN = "changes.shupi.ushira.com";
+    KARAKEEP_DOMAIN = "keep.shupi.ushira.com";
+    CHANGEDETECTION_DOMAIN = "cd.shupi.ushira.com";
     HOMEASSISTANT_DOMAIN = "ha.shupi.ushira.com";
-    ATUIN_DOMAIN = "atuin.shupi.ushira.com";
-    PAPERCLIP_DOMAIN = "paperclip.shupi.ushira.com";
-    SNAPOTTER_DOMAIN = "snapotter.shupi.ushira.com";
-    GOOGLE_MCP_DOMAIN = "google-mcp.shupi.ushira.com";
+    ATUIN_DOMAIN = "at.shupi.ushira.com";
+    PAPERCLIP_DOMAIN = "pc.shupi.ushira.com";
+    SNAPOTTER_DOMAIN = "so.shupi.ushira.com";
+    GOOGLE_MCP_DOMAIN = "gmcp.shupi.ushira.com";
 
     # Exposed through Cloudflared
     UMAMI_DOMAIN = "umami.ushira.com";

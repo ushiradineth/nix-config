@@ -147,14 +147,14 @@ in {
           {
             "Paperclip" = {
               icon = "https://cdn.jsdelivr.net/gh/selfhst/icons/png/paperclip-ai-light.png";
-              href = "https://paperclip.shupi.ushira.com";
+              href = "https://${config.environment.variables.PAPERCLIP_DOMAIN}";
               description = "Agent Management Platform";
             };
           }
           {
             "SnapOtter" = {
               icon = "https://cdn.jsdelivr.net/gh/selfhst/icons/png/snapotter.png";
-              href = "https://snapotter.shupi.ushira.com";
+              href = "https://${config.environment.variables.SNAPOTTER_DOMAIN}";
               description = "Local File Processing";
             };
           }

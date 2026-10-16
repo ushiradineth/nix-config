@@ -1,9 +1,34 @@
 {
   config,
   hostname,
+  lib,
   mysecrets,
   ...
-}: {
+}: let
+  domains = lib.filterAttrs (name: domain:
+    name
+    != "EMAIL_DOMAIN"
+    && lib.hasSuffix "_DOMAIN" name
+    && (domain == "shupi.ushira.com" || lib.hasSuffix ".shupi.ushira.com" domain))
+  config.environment.variables;
+  shortUrls = lib.mapAttrs' (_: domain:
+    lib.nameValuePair
+    (
+      if domain == "shupi.ushira.com"
+      then "home"
+      else lib.removeSuffix ".shupi.ushira.com" domain
+    )
+    domain)
+  domains;
+in {
+  services.adguardhome.settings.filtering.rewrites =
+    lib.mapAttrsToList (alias: _: {
+      domain = "${alias}.shu";
+      answer = "100.74.32.50";
+      enabled = true;
+    })
+    shortUrls;
+
   services.traefik = {
     enable = true;
 
@@ -15,6 +40,8 @@
             to = "websecure";
             scheme = "https";
             permanent = true;
+            # Let the HTTP-only shortcuts redirect before the HTTPS catch-all.
+            priority = 1;
           };
         };
         websecure = {
@@ -50,12 +77,33 @@
     };
 
     dynamicConfigOptions = {
-      http.routers.api = {
-        rule = "Host(`${config.environment.variables.TRAEFIK_DOMAIN}`)";
-        tls.certResolver = "letsencrypt";
-        service = "api@internal";
-        entrypoints = "websecure";
-      };
+      http.routers =
+        (lib.mapAttrs' (alias: _:
+          lib.nameValuePair "short-url-${alias}" {
+            rule = "Host(`${alias}.shu`)";
+            entryPoints = ["web"];
+            priority = 100;
+            middlewares = ["short-url-${alias}"];
+            service = "noop@internal";
+          })
+        shortUrls)
+        // {
+          api = {
+            rule = "Host(`${config.environment.variables.TRAEFIK_DOMAIN}`)";
+            tls.certResolver = "letsencrypt";
+            service = "api@internal";
+            entrypoints = "websecure";
+          };
+        };
+      http.middlewares = lib.mapAttrs' (alias: domain:
+        lib.nameValuePair "short-url-${alias}" {
+          redirectRegex = {
+            regex = "^http://[^/]+/(.*)";
+            replacement = "https://${domain}/\${1}";
+            permanent = false;
+          };
+        })
+      shortUrls;
     };
   };
 

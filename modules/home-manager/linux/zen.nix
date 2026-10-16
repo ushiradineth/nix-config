@@ -153,7 +153,7 @@
         };
         "Shupi" = {
           id = "d78b97c7-3719-4d8f-881d-1d2d62eaf082";
-          url = "https://home.shupi.ushira.com";
+          url = "https://shupi.ushira.com";
           position = 105;
           workspace = spaces."Personal".id;
           isEssential = false;

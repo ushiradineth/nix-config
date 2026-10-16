@@ -127,7 +127,7 @@ tool or broad provider scope does not authorize sending, deletion, sharing, cale
 financial actions. An approval-required rename failure is not evidence of an invalid filename or
 insufficient file sharing; inspect the action-policy result before changing either.
 
-MCP endpoint: `https://google-mcp.shupi.ushira.com/mcp`
+MCP endpoint: `https://gmcp.shupi.ushira.com/mcp`
 
 Use Paperclip's managed connection or gateway entry rather than placing this URL and OAuth material
 inside prompts. The Google OAuth client secret remains in encrypted Nix secrets. User authorization

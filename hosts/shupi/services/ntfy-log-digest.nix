@@ -35,7 +35,7 @@ in {
       yesterday_iso=$(date -d 'yesterday' +%F)
       today_iso=$(date +%F)
 
-      # Backups, syncs, and checks should reflect today's overnight jobs.
+      # Backups and syncs should reflect today's overnight jobs.
       job_since="$today_iso 00:00:00"
       job_until="now"
 
@@ -52,7 +52,6 @@ in {
       error="×"
       warning="△"
       info="※"
-      partial="〜"
       unknown="？"
 
       trap 'rm -f "$report" "$send_report" "$issues" "$website_issues"' EXIT
@@ -163,9 +162,6 @@ in {
       sync_ok=0
       sync_total=0
 
-      check_ok=0
-      check_total=0
-
       issue_count=0
 
       observations=$(mktemp)
@@ -186,7 +182,6 @@ in {
           case "$category" in
             backup) backup_total=$((backup_total + 1)) ;;
             sync) sync_total=$((sync_total + 1)) ;;
-            check) check_total=$((check_total + 1)) ;;
           esac
 
           return
@@ -216,12 +211,6 @@ in {
             sync_total=$((sync_total + 1))
             if [ "$failed" -eq 0 ]; then
               sync_ok=$((sync_ok + 1))
-            fi
-            ;;
-          check)
-            check_total=$((check_total + 1))
-            if [ "$failed" -eq 0 ]; then
-              check_ok=$((check_ok + 1))
             fi
             ;;
         esac
@@ -367,12 +356,6 @@ in {
         echo "$info Summary"
         summary_line "Backups" "$backup_ok" "$backup_total"
         summary_line "Syncs" "$sync_ok" "$sync_total"
-
-        if [ "$check_total" -gt 0 ]; then
-          summary_line "Availability checks" "$check_ok" "$check_total"
-        else
-          echo "$partial Availability checks: skipped"
-        fi
 
         if [ "$website_total" = "unknown" ]; then
           echo "$unknown Websites: unable to read Uptime Kuma"

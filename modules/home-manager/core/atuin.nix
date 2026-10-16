@@ -4,7 +4,7 @@
     enableZshIntegration = true;
     flags = ["--disable-up-arrow"];
     settings = {
-      sync_address = "https://atuin.shupi.ushira.com";
+      sync_address = "https://at.shupi.ushira.com";
       auto_sync = true;
       sync_frequency = "5m";
       search_mode = "prefix";

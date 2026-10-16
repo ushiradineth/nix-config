@@ -6,7 +6,7 @@ authority.
 
 ## Deployment
 
-- Public URL: `https://paperclip.shupi.ushira.com`
+- Public URL: `https://pc.shupi.ushira.com`
 - Host: `shupi`
 - Company URL key: `SHU`
 - Company ID: `f530959e-fd96-4eb2-be2e-7cd728281c21`
@@ -177,8 +177,8 @@ version. Do not let the installed copy become an undocumented fork.
 
 - Service configuration: `hosts/shupi/services/google-mcp.nix`; maintained image recipe and source
   patch: `containers/google-mcp/`. Discover the deployed image and limits from those sources.
-- Current self-hosted MCP endpoint: `https://google-mcp.shupi.ushira.com/mcp`
-- Health endpoint: `https://google-mcp.shupi.ushira.com/health`
+- Current self-hosted MCP endpoint: `https://gmcp.shupi.ushira.com/mcp`
+- Health endpoint: `https://gmcp.shupi.ushira.com/health`
 - Transport: streamable HTTP
 - The server is configured for Gmail, Calendar, Drive, Docs and Sheets. OAuth consent, agent/action
   grants and the accepted task scope still determine which operations are authorized.

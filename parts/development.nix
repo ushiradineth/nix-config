@@ -5,6 +5,7 @@
 
   perSystem = {
     config,
+    lib,
     pkgs,
     system,
     ...
@@ -102,7 +103,7 @@
       assert adguard.host == "127.0.0.1" && !adguard.openFirewall;
       assert adguard.settings.http.address == "127.0.0.1:48005";
       assert adguard.settings.querylog.interval == "1d" && adguard.settings.statistics.interval == "1d";
-      assert adguard.settings.filtering.rewrites
+      assert builtins.filter (rewrite: !lib.hasSuffix ".shu" rewrite.domain) adguard.settings.filtering.rewrites
       == [
         {
           domain = "*.shupi.ushira.com";
@@ -126,6 +127,74 @@
       '';
       assert builtins.elem "tailscale0" host.networking.firewall.trustedInterfaces;
         pkgs.runCommand "shupi-adguard-admin" {} ''
+          touch "$out"
+        '';
+    checks.shupi-short-urls = let
+      host = inputs.self.nixosConfigurations.shupi.config;
+      http = host.services.traefik.dynamicConfigOptions.http;
+      rewrites = host.services.adguardhome.settings.filtering.rewrites;
+      domains = lib.filterAttrs (name: domain: name != "EMAIL_DOMAIN" && lib.hasSuffix "_DOMAIN" name && (domain == "shupi.ushira.com" || lib.hasSuffix ".shupi.ushira.com" domain)) host.environment.variables;
+      aliases = lib.mapAttrs' (_: domain:
+        lib.nameValuePair (
+          if domain == "shupi.ushira.com"
+          then "home"
+          else lib.removeSuffix ".shupi.ushira.com" domain
+        )
+        domain)
+      domains;
+      routers = lib.filterAttrs (name: _: lib.hasPrefix "short-url-" name) http.routers;
+      middlewares = lib.filterAttrs (name: _: lib.hasPrefix "short-url-" name) http.middlewares;
+      configuration = pkgs.writeText "traefik-short-urls-test.yaml" (builtins.toJSON {
+        entryPoints = {
+          web = host.services.traefik.staticConfigOptions.entryPoints.web // {address = "127.0.0.1:18080";};
+          websecure.address = "127.0.0.1:18443";
+        };
+        providers.file.filename = pkgs.writeText "traefik-short-urls-dynamic.yaml" (builtins.toJSON {http = {inherit routers middlewares;};});
+        providers.file.watch = false;
+      });
+    in
+      assert builtins.length (builtins.attrNames aliases) == 23;
+      assert builtins.length (builtins.attrNames routers) == builtins.length (builtins.attrNames aliases);
+      assert lib.all (alias:
+        builtins.elem {
+          domain = "${alias}.shu";
+          answer = "100.74.32.50";
+          enabled = true;
+        }
+        rewrites) (builtins.attrNames aliases);
+      assert lib.all (router: router.entryPoints == ["web"] && !(router ? tls) && router.priority > host.services.traefik.staticConfigOptions.entryPoints.web.http.redirections.entryPoint.priority) (builtins.attrValues routers);
+        pkgs.runCommand "shupi-short-urls" {
+          nativeBuildInputs = [pkgs.traefik pkgs.curl];
+        } ''
+          traefik --configFile=${configuration} > traefik.log 2>&1 &
+          pid=$!
+          trap 'kill "$pid"; wait "$pid" || true' EXIT
+          ready=0
+          for attempt in $(seq 1 100); do
+            if [ "$(curl --silent --noproxy '*' --max-time 1 -H 'Host: home.shu' \
+              -o /dev/null -w '%{redirect_url}' http://127.0.0.1:18080/)" = 'https://shupi.ushira.com/' ]; then
+              ready=1
+              break
+            fi
+            sleep 0.1
+          done
+          if [ "$ready" != 1 ]; then
+            cat traefik.log
+            exit 1
+          fi
+          ${lib.concatStringsSep "\n" (lib.mapAttrsToList (alias: domain: ''
+              curl --silent --show-error --noproxy '*' --max-time 5 \
+                -H 'Host: ${alias}.shu:18080' -D headers -o /dev/null \
+                'http://127.0.0.1:18080/folder/file?download=1&next=%2F'
+              tr -d '\r' < headers > normalized
+              grep -Fx 'HTTP/1.1 302 Found' normalized || { cat normalized traefik.log; exit 1; }
+              grep -Fx 'Location: https://${domain}/folder/file?download=1&next=%2F' normalized || { cat normalized traefik.log; exit 1; }
+            '')
+            aliases)}
+          curl --silent --show-error --noproxy '*' --max-time 5 \
+            -H 'Host: sf.shupi.ushira.com' -D headers -o /dev/null http://127.0.0.1:18080/
+          tr -d '\r' < headers > normalized
+          grep -Fx 'Location: https://sf.shupi.ushira.com:18443/' normalized
           touch "$out"
         '';
     checks.shupi-shu-ssh-route = let
