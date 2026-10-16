@@ -5,7 +5,12 @@
   "default_agent": "planner",
   "autoupdate": false,
   "lsp": {},
-  "plugin": ["cc-safety-net", "opencode-wakatime", "@mohak34/opencode-notifier@0.8.1"],
+  "plugin": [
+    "cc-safety-net",
+    "opencode-wakatime",
+    "@mohak34/opencode-notifier@0.8.1",
+    "context-mode"
+  ],
   "instructions": ["~/.config/opencode/instructions/shell.md"],
   "provider": {
     "openai": {
