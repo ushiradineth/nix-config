@@ -194,9 +194,9 @@ in {
             };
           }
           {
-            Linkding = {
-              icon = "https://linkding.link/favicon.svg";
-              href = "https://${config.environment.variables.LINKDING_DOMAIN}";
+            Karakeep = {
+              icon = "karakeep.png";
+              href = "https://${config.environment.variables.KARAKEEP_DOMAIN}";
               description = "Bookmark Manager";
             };
           }

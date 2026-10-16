@@ -219,7 +219,7 @@ in {
         "/srv/forgejo/data"
         "/srv/forgejo/repos"
         "/srv/forgejo/git"
-        "/srv/linkding"
+        "/srv/karakeep"
         "/srv/backrest/config"
         "/srv/backrest/data"
         "/srv/paperclip"

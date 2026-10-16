@@ -27,7 +27,7 @@
       cadvisor = 48018;
       nodeExporter = 48019;
       vmagent = 48020;
-      linkding = 48021;
+      karakeep = 48021;
       homeassistant = 48022;
       lifeos = 48023;
       atuin = 48024;
