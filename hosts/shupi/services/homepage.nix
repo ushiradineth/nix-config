@@ -68,7 +68,7 @@ in {
           }
           {
             Portainer = {
-              icon = "portainer.png";
+              icon = "portainer-dark.png";
               href = "https://${config.environment.variables.PORTAINER_DOMAIN}";
               description = "Docker Management";
             };
@@ -82,35 +82,35 @@ in {
           }
           {
             "Victoria Metrics" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}";
               description = "Metrics & Monitoring";
             };
           }
           {
             "Victoria Logs" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victorialogs.png";
               href = "https://${config.environment.variables.VICTORIALOGS_DOMAIN}";
               description = "Log Management";
             };
           }
           {
             Backrest = {
-              icon = "https://raw.githubusercontent.com/garethgeorge/backrest/4053b88e7522684a75f4ff69870b156d0255d08f/webui/assets/favicon.svg";
+              icon = "backrest.svg";
               href = "https://${config.environment.variables.BACKREST_DOMAIN}";
               description = "Backup Management";
             };
           }
           {
             Ntfy = {
-              icon = "https://raw.githubusercontent.com/binwiederhier/ntfy/refs/heads/main/web/public/static/images/ntfy.png";
+              icon = "ntfy.png";
               href = "https://${config.environment.variables.NTFY_DOMAIN}";
               description = "Notifications";
             };
           }
           {
             Alertmanager = {
-              icon = "https://avatars.githubusercontent.com/u/3380462?s=120&v=4";
+              icon = "alertmanager-dark.png";
               href = "https://${config.environment.variables.ALERTMANAGER_DOMAIN}";
               description = "Alert Routing";
             };
@@ -128,14 +128,14 @@ in {
           }
           {
             Tailscale = {
-              icon = "tailscale.png";
+              icon = "tailscale-light.png";
               href = "https://login.tailscale.com/";
               description = "Tailscale Dashboard";
             };
           }
           {
             Cloudflared = {
-              icon = "cloudflare.png";
+              icon = "cloudflared.png";
               href = "https://dash.cloudflare.com/";
               description = "Cloudflare Dashboard";
             };
@@ -146,49 +146,49 @@ in {
         "Applications" = [
           {
             "Paperclip" = {
-              icon = "https://raw.githubusercontent.com/paperclipai/paperclip/d6024b3ca5343d6a1aeb1abc776846f0dcee8ba4/ui/public/favicon.svg";
+              icon = "https://cdn.jsdelivr.net/gh/selfhst/icons/png/paperclip-ai-light.png";
               href = "https://paperclip.shupi.ushira.com";
               description = "Agent Management Platform";
             };
           }
           {
             "SnapOtter" = {
-              icon = "https://raw.githubusercontent.com/snapotter-hq/SnapOtter/8aa5d9a5f20b7c1b9791dce329f23718f97d3dd4/branding/logo-128.png";
+              icon = "https://cdn.jsdelivr.net/gh/selfhst/icons/png/snapotter.png";
               href = "https://snapotter.shupi.ushira.com";
               description = "Local File Processing";
             };
           }
           {
             "Actual Budget" = {
-              icon = "https://avatars.githubusercontent.com/u/37879538?v=4";
+              icon = "actual-budget.png";
               href = "https://${config.environment.variables.ACTUALBUDGET_DOMAIN}";
               description = "Budget Management";
             };
           }
           {
             Seafile = {
-              icon = "https://manual.seafile.com/latest/media/seafile-transparent-1024.png";
+              icon = "seafile.png";
               href = "https://${config.environment.variables.SEAFILE_DOMAIN}";
               description = "Cloud Storage";
             };
           }
           {
             Immich = {
-              icon = "https://avatars.githubusercontent.com/u/109746326?v=4";
+              icon = "immich.png";
               href = "https://${config.environment.variables.IMMICH_DOMAIN}";
               description = "Photo Management";
             };
           }
           {
             Umami = {
-              icon = "https://avatars.githubusercontent.com/u/105618662?s=200&v=4";
+              icon = "umami-light.png";
               href = "https://${config.environment.variables.UMAMI_DOMAIN}";
               description = "Privacy-focused Analytics";
             };
           }
           {
             Wakapi = {
-              icon = "https://wakapi.dev/assets/images/icon.svg";
+              icon = "wakapi.png";
               href = "https://${config.environment.variables.WAKAPI_DOMAIN}";
               description = "Coding Time Tracking";
             };
@@ -202,14 +202,14 @@ in {
           }
           {
             Forgejo = {
-              icon = "https://forgejo.org/images/forgejo-wordmark.svg";
+              icon = "forgejo.png";
               href = "https://${config.environment.variables.FORGEJO_DOMAIN}";
               description = "Git Hosting & Mirrors";
             };
           }
           {
             "Home Assistant" = {
-              icon = "https://avatars.githubusercontent.com/u/13844975?s=200&v=4";
+              icon = "home-assistant.png";
               href = "https://${config.environment.variables.HOMEASSISTANT_DOMAIN}";
               description = "Smart Home Control";
             };
@@ -221,21 +221,21 @@ in {
           # Row 1
           {
             "CPU Usage" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               description = "Host CPU (%)";
               href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}/vmui/#/?g0.expr=100%20-%20(avg%20by%20(instance)%20(rate(node_cpu_seconds_total%7Bmode%3D%22idle%22%7D%5B5m%5D))%20*%20100)&g0.range_input=1h&g0.tab=0";
             };
           }
           {
             "Container CPU" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               description = "Container CPU (%)";
               href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}/vmui/#/?g0.expr=sum%20by%20(name)%20(rate(container_cpu_usage_seconds_total%7Bname!%3D%22%22%7D%5B5m%5D))%20*%20100&g0.range_input=1h&g0.tab=0";
             };
           }
           {
             "All Logs" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               description = "All logs (5m)";
               href = "https://${config.environment.variables.VICTORIALOGS_DOMAIN}/select/vmui/?#/?query=*&g0.range_input=5m&g0.relative_time=last_5_minutes";
             };
@@ -243,21 +243,21 @@ in {
           # Row 2
           {
             "Memory Usage" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               description = "Host memory (%)";
               href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}/vmui/#/?g0.expr=(1%20-%20(node_memory_MemAvailable_bytes%20%2F%20node_memory_MemTotal_bytes))%20*%20100&g0.range_input=1h&g0.tab=0";
             };
           }
           {
             "Container Memory" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               description = "Container memory (MB)";
               href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}/vmui/#/?g0.expr=sum%20by%20(name)%20(container_memory_usage_bytes%7Bname!%3D%22%22%7D)%20%2F%201024%20%2F%201024&g0.range_input=1h&g0.tab=0";
             };
           }
           {
             "Error Logs" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               description = "Errors and failures (1h)";
               href = "https://${config.environment.variables.VICTORIALOGS_DOMAIN}/select/vmui/?#/?query=error%20OR%20ERROR%20OR%20failed%20OR%20FAILED&g0.range_input=1h&g0.relative_time=last_1_hour";
             };
@@ -265,21 +265,21 @@ in {
           # Row 3
           {
             "Disk Usage" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               description = "Root filesystem (%)";
               href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}/vmui/#/?g0.expr=100%20-%20((node_filesystem_avail_bytes%7Bmountpoint%3D%22%2F%22%7D%20%2F%20node_filesystem_size_bytes%7Bmountpoint%3D%22%2F%22%7D)%20*%20100)&g0.range_input=1h&g0.tab=0";
             };
           }
           {
             "Container Net RX" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               description = "Container network RX (KB/s)";
               href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}/vmui/#/?g0.expr=sum%20by%20(name)%20(rate(container_network_receive_bytes_total%7Bname!%3D%22%22%7D%5B5m%5D))%20%2F%201024&g0.range_input=1h&g0.tab=0";
             };
           }
           {
             "Warning Logs" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               description = "Warnings (1h)";
               href = "https://${config.environment.variables.VICTORIALOGS_DOMAIN}/select/vmui/?#/?query=WARN%20OR%20WARNING%20OR%20warn%20OR%20warning&g0.range_input=1h&g0.relative_time=last_1_hour";
             };
@@ -287,21 +287,21 @@ in {
           # Row 4
           {
             "Network Traffic" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               description = "Host network RX (B/s)";
               href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}/vmui/#/?g0.expr=rate(node_network_receive_bytes_total%5B5m%5D)&g0.range_input=1h&g0.tab=0";
             };
           }
           {
             "Container Net TX" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               description = "Container network TX (KB/s)";
               href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}/vmui/#/?g0.expr=sum%20by%20(name)%20(rate(container_network_transmit_bytes_total%7Bname!%3D%22%22%7D%5B5m%5D))%20%2F%201024&g0.range_input=1h&g0.tab=0";
             };
           }
           {
             "Docker Logs" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               description = "Container logs (30m)";
               href = "https://${config.environment.variables.VICTORIALOGS_DOMAIN}/select/vmui/?#/?query=%7Bcontainer_name%21%3D%22%22%7D&g0.range_input=30m&g0.relative_time=last_30_minutes";
             };
@@ -309,21 +309,21 @@ in {
           # Row 5
           {
             "Load Average" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               description = "1-minute load average";
               href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}/vmui/#/?g0.expr=node_load1&g0.range_input=1h&g0.tab=0";
             };
           }
           {
             "Active Alerts" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               description = "Firing alerts";
               href = "https://${config.environment.variables.VICTORIAMETRICS_DOMAIN}/vmui/#/?g0.expr=ALERTS%7Balertstate%3D%22firing%22%7D&g0.range_input=1h&g0.tab=0";
             };
           }
           {
             "System Services" = {
-              icon = "https://avatars.githubusercontent.com/u/43720803?s=200&v=4";
+              icon = "victoriametrics-light.png";
               description = "Systemd logs (30m)";
               href = "https://${config.environment.variables.VICTORIALOGS_DOMAIN}/select/vmui/?#/?query=%7B_SYSTEMD_UNIT%3D~%22.%2B%22%7D&g0.range_input=30m&g0.relative_time=last_30_minutes";
             };
