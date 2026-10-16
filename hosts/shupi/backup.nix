@@ -220,6 +220,7 @@ in {
         "/srv/forgejo/repos"
         "/srv/forgejo/git"
         "/srv/karakeep"
+        "/srv/changedetection"
         "/srv/backrest/config"
         "/srv/backrest/data"
         "/srv/paperclip"

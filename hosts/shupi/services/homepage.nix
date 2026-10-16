@@ -201,6 +201,13 @@ in {
             };
           }
           {
+            "Change Detection" = {
+              icon = "changedetection.png";
+              href = config.services.changedetection-io.baseURL;
+              description = "Website Change Monitoring";
+            };
+          }
+          {
             Forgejo = {
               icon = "forgejo.png";
               href = "https://${config.environment.variables.FORGEJO_DOMAIN}";

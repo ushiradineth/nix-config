@@ -39,6 +39,7 @@
     ALERTMANAGER_DOMAIN = "am.shupi.ushira.com";
     FORGEJO_DOMAIN = "git.shupi.ushira.com";
     KARAKEEP_DOMAIN = "karakeep.shupi.ushira.com";
+    CHANGEDETECTION_DOMAIN = "changes.shupi.ushira.com";
     HOMEASSISTANT_DOMAIN = "ha.shupi.ushira.com";
     ATUIN_DOMAIN = "atuin.shupi.ushira.com";
     PAPERCLIP_DOMAIN = "paperclip.shupi.ushira.com";
