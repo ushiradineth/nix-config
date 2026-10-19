@@ -18,11 +18,19 @@ in {
     settings = {
       title = "shupi";
       theme = "dark";
-      color = "slate";
+      color = "neutral";
       headerStyle = "boxed";
       hideErrors = false;
       showStats = true;
       statusStyle = "dot";
+      disableUpdateCheck = true;
+      hideVersion = false;
+      disableIndexing = true;
+      cardStyle = "hairline";
+      blockStyle = "refined";
+      useEqualHeights = false;
+      language = "en-GB";
+
       layout = {
         "Applications" = {
           style = "row";
@@ -44,6 +52,8 @@ in {
       quicklaunch = {
         searchDescriptions = true;
         hideInternetSearch = false;
+        showSearchSuggestions = true;
+        provider = "google";
       };
       favicon = "https://ushira.com/favicon.svg";
       cardBlur = "lg";
