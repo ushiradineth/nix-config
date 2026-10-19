@@ -370,6 +370,19 @@ in {
           cputemp = true;
         };
       }
+      {
+        openmeteo = {
+          label = "Seeduwa";
+          latitude = 7.133384;
+          longitude = 79.876383;
+          timezone = "Asia/Colombo";
+          units = "metric";
+          cache = 5;
+          format = {
+            maximumFractionDigits = 1;
+          };
+        };
+      }
     ];
   };
 
