@@ -41,7 +41,7 @@
         "webfetch": "allow",
         "websearch": "allow",
         "bash": {
-          "*": "allow",
+          "*": "ask",
           "rm *": "ask",
           "git *": "ask",
           "git status*": "allow",
@@ -286,10 +286,14 @@
     }
   },
   "permission": {
+    "ctx_*": "allow",
     "read": "allow",
     "edit": "allow",
     "glob": "allow",
-    "bash": "allow",
+    "bash": {
+      "*": "allow",
+      "nix *": "allow"
+    },
     "list": "allow",
     "grep": "allow",
     "webfetch": "allow",
@@ -305,7 +309,6 @@
     "lsp": "allow",
     "external_directory": {
       "*": "deny",
-      "~/security-audit-skill/**": "allow",
       "~/nix-config/**": "allow",
       "~/.config/**": "allow",
       "~/Code/**": "allow",
