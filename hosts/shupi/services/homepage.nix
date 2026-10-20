@@ -9,6 +9,136 @@ in {
     enable = true;
     listenPort = port;
 
+    customCSS = ''
+      #revalidate {
+        display: none;
+      }
+
+      dialog.alias-search > ul {
+        display: none;
+      }
+
+      .alias-search-result {
+        padding: 0.5rem;
+      }
+
+      .alias-search-result button {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.375rem;
+        text-align: left;
+      }
+
+      .alias-search-result button[data-active="true"],
+      .alias-search-result button:hover {
+        background: rgb(128 128 128 / 20%);
+      }
+    '';
+
+    customJS = ''
+      const searchInput = '[role="dialog"][aria-modal="true"] input';
+      const destinations = {
+        n: { name: "Nix Packages", url: "https://search.nixos.org/packages?channel=25.11" },
+        no: { name: "NixOS Options", url: "https://search.nixos.org/options?channel=25.11" },
+        hm: { name: "Home Manager Options", url: "https://home-manager-options.extranix.com/?release=release-25.11" },
+      };
+      let selectedAlias = 0;
+
+      function getAliases(value) {
+        const match = value.trimStart().match(/^([!@])(\w*)(?:\s+(.*))?$/is);
+        if (!match) return null;
+        const prefix = match[2].toLowerCase();
+        const query = (match[3] || "").trim();
+        const keys = Object.keys(destinations).filter((key) =>
+          match[3] !== undefined ? key === prefix : key.startsWith(prefix)
+        );
+        if (!keys.length) return null;
+        return keys.map((key) => {
+          const destination = destinations[key];
+          const url = new URL(destination.url);
+          url.searchParams.set("query", query);
+          return { name: destination.name, shortcut: match[1] + key, query, url: url.href };
+        });
+      }
+
+      function openAlias(input, alias) {
+        if (!alias) return;
+        if (!alias.query) {
+          // Use the native setter so React notices the completion as an input change.
+          const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
+          setter.call(input, alias.shortcut + " ");
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          input.focus();
+          return;
+        }
+        window.open(alias.url, "_blank", "noreferrer");
+        input.focus();
+        input.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+      }
+
+      function showAlias(input) {
+        const dialog = input.closest("dialog");
+        if (!dialog) return;
+        const aliases = getAliases(input.value);
+        dialog.classList.toggle("alias-search", Boolean(aliases));
+        let result = dialog.querySelector(".alias-search-result");
+        if (!aliases) {
+          result?.remove();
+          return;
+        }
+        if (!result) {
+          result = document.createElement("div");
+          result.className = "alias-search-result";
+          result.setAttribute("aria-live", "polite");
+          input.after(result);
+        }
+        selectedAlias = Math.min(selectedAlias, aliases.length - 1);
+        result.replaceChildren();
+        aliases.forEach((alias, index) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.dataset.active = String(index === selectedAlias);
+          button.textContent = alias.shortcut + " — " + alias.name + " (25.11)" +
+            (alias.query ? ": " + alias.query : " — Type a query");
+          button.addEventListener("click", () => openAlias(input, alias));
+          button.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+              input.focus();
+              input.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+            }
+          });
+          result.append(button);
+        });
+      }
+
+      for (const type of ["input", "focusin"]) {
+        document.addEventListener(type, (event) => {
+          if (event.target.matches(searchInput)) {
+            selectedAlias = 0;
+            // Wait for React's controlled input update before updating our result.
+            queueMicrotask(() => showAlias(event.target));
+          }
+        }, true);
+      }
+
+      document.addEventListener("keydown", (event) => {
+        if (event.isComposing || event.repeat || !event.target.matches(searchInput)) return;
+        const aliases = getAliases(event.target.value);
+        if (!aliases) return;
+        if (!["Enter", "ArrowDown", "ArrowUp"].includes(event.key)) return;
+
+        // Keep hidden Google results from receiving navigation or activation.
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        if (event.key === "Enter") {
+          openAlias(event.target, aliases[selectedAlias]);
+        } else {
+          selectedAlias = (selectedAlias + (event.key === "ArrowDown" ? 1 : aliases.length - 1)) % aliases.length;
+          showAlias(event.target);
+        }
+      }, true);
+    '';
+
     environmentFiles = [
       (builtins.toFile "homepage-env" ''
         HOMEPAGE_ALLOWED_HOSTS=${config.environment.variables.HOMEPAGE_DOMAIN}
@@ -24,31 +154,40 @@ in {
       showStats = true;
       statusStyle = "dot";
       disableUpdateCheck = true;
-      hideVersion = false;
+      hideVersion = true;
       disableIndexing = true;
       cardStyle = "hairline";
       blockStyle = "refined";
       useEqualHeights = false;
       language = "en-GB";
 
-      layout = {
-        "Applications" = {
-          style = "row";
-          columns = 2;
-        };
-        "Infrastructure" = {
-          style = "row";
-          columns = 4;
-        };
-        "Network & Security" = {
-          style = "row";
-          columns = 3;
-        };
-        "Observability" = {
-          style = "row";
-          columns = 3;
-        };
-      };
+      # A list preserves display order; Nix attribute sets sort keys alphabetically.
+      layout = [
+        {
+          "Applications" = {
+            style = "row";
+            columns = 5;
+          };
+        }
+        {
+          "Monitoring & Alerts" = {
+            style = "row";
+            columns = 5;
+          };
+        }
+        {
+          "Infrastructure & Network" = {
+            style = "row";
+            columns = 3;
+          };
+        }
+        {
+          "Diagnostics" = {
+            style = "row";
+            columns = 3;
+          };
+        }
+      ];
       quicklaunch = {
         searchDescriptions = true;
         hideInternetSearch = false;
@@ -68,21 +207,7 @@ in {
 
     services = [
       {
-        "Infrastructure" = [
-          {
-            Traefik = {
-              icon = "traefik.png";
-              href = "https://${config.environment.variables.TRAEFIK_DOMAIN}";
-              description = "Reverse Proxy Dashboard";
-            };
-          }
-          {
-            Portainer = {
-              icon = "portainer-dark.png";
-              href = "https://${config.environment.variables.PORTAINER_DOMAIN}";
-              description = "Docker Management";
-            };
-          }
+        "Monitoring & Alerts" = [
           {
             "Uptime Kuma" = {
               icon = "uptime-kuma.png";
@@ -105,13 +230,6 @@ in {
             };
           }
           {
-            Backrest = {
-              icon = "backrest.svg";
-              href = "https://${config.environment.variables.BACKREST_DOMAIN}";
-              description = "Backup Management";
-            };
-          }
-          {
             Ntfy = {
               icon = "ntfy.png";
               href = "https://${config.environment.variables.NTFY_DOMAIN}";
@@ -128,7 +246,28 @@ in {
         ];
       }
       {
-        "Network & Security" = [
+        "Infrastructure & Network" = [
+          {
+            Portainer = {
+              icon = "portainer-dark.png";
+              href = "https://${config.environment.variables.PORTAINER_DOMAIN}";
+              description = "Docker Management";
+            };
+          }
+          {
+            Backrest = {
+              icon = "backrest.svg";
+              href = "https://${config.environment.variables.BACKREST_DOMAIN}";
+              description = "Backup Management";
+            };
+          }
+          {
+            Traefik = {
+              icon = "traefik.png";
+              href = "https://${config.environment.variables.TRAEFIK_DOMAIN}";
+              description = "Reverse Proxy Dashboard";
+            };
+          }
           {
             AdGuard = {
               icon = "adguard-home.png";
@@ -154,27 +293,6 @@ in {
       }
       {
         "Applications" = [
-          {
-            "Paperclip" = {
-              icon = "https://cdn.jsdelivr.net/gh/selfhst/icons/png/paperclip-ai-light.png";
-              href = "https://${config.environment.variables.PAPERCLIP_DOMAIN}";
-              description = "Agent Management Platform";
-            };
-          }
-          {
-            "SnapOtter" = {
-              icon = "https://cdn.jsdelivr.net/gh/selfhst/icons/png/snapotter.png";
-              href = "https://${config.environment.variables.SNAPOTTER_DOMAIN}";
-              description = "Local File Processing";
-            };
-          }
-          {
-            "Actual Budget" = {
-              icon = "actual-budget.png";
-              href = "https://${config.environment.variables.ACTUALBUDGET_DOMAIN}";
-              description = "Budget Management";
-            };
-          }
           {
             Seafile = {
               icon = "seafile.png";
@@ -204,17 +322,17 @@ in {
             };
           }
           {
+            "Actual Budget" = {
+              icon = "actual-budget.png";
+              href = "https://${config.environment.variables.ACTUALBUDGET_DOMAIN}";
+              description = "Budget Management";
+            };
+          }
+          {
             Karakeep = {
               icon = "karakeep.png";
               href = "https://${config.environment.variables.KARAKEEP_DOMAIN}";
               description = "Bookmark Manager";
-            };
-          }
-          {
-            "Change Detection" = {
-              icon = "changedetection.png";
-              href = config.services.changedetection-io.baseURL;
-              description = "Website Change Monitoring";
             };
           }
           {
@@ -231,10 +349,24 @@ in {
               description = "Smart Home Control";
             };
           }
+          {
+            "Change Detection" = {
+              icon = "changedetection.png";
+              href = config.services.changedetection-io.baseURL;
+              description = "Website Change Monitoring";
+            };
+          }
+          {
+            "SnapOtter" = {
+              icon = "https://cdn.jsdelivr.net/gh/selfhst/icons/png/snapotter.png";
+              href = "https://${config.environment.variables.SNAPOTTER_DOMAIN}";
+              description = "Local File Processing";
+            };
+          }
         ];
       }
       {
-        "Observability" = [
+        "Diagnostics" = [
           # Row 1
           {
             "CPU Usage" = {
@@ -351,16 +483,6 @@ in {
 
     widgets = [
       {
-        datetime = {
-          text_size = "xl";
-          format = {
-            timeStyle = "short";
-            dateStyle = "short";
-            hour12 = false;
-          };
-        };
-      }
-      {
         resources = {
           cpu = true;
           memory = true;
@@ -371,15 +493,17 @@ in {
         };
       }
       {
-        openmeteo = {
-          label = "Seeduwa";
-          latitude = 7.133384;
-          longitude = 79.876383;
-          timezone = "Asia/Colombo";
-          units = "metric";
-          cache = 5;
+        datetime = {
+          text_size = "xl";
+          locale = "en-GB";
           format = {
-            maximumFractionDigits = 1;
+            hour = "2-digit";
+            minute = "2-digit";
+            second = "2-digit";
+            weekday = "short";
+            day = "2-digit";
+            month = "short";
+            hour12 = false;
           };
         };
       }
