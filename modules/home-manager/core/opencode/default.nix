@@ -6,6 +6,10 @@
   ...
 }: let
   pnpm = import ../../../../lib/pnpm.nix {inherit config pkgs;};
+  loopHelper = import ../../../../lib/oc-loop.nix {
+    inherit pkgs;
+    opencode = llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode;
+  };
   psPath =
     if pkgs.stdenv.isDarwin
     then "/bin/ps"
@@ -36,6 +40,7 @@ in {
     llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode
     pkgs.nodejs
     terminalHelper
+    loopHelper
   ];
 
   home.sessionVariables = {

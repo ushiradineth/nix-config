@@ -186,6 +186,34 @@ test("models, budgets and upstream plugin declarations are preserved", () => {
   }
 })
 
+test("Nix rules are global and planner shell commands require approval by default", () => {
+  assert.equal(config.permission.bash["nix develop"], "allow")
+  assert.equal(config.permission.bash["nix develop *"], "allow")
+  for (const [name, agent] of Object.entries(config.agent) as [
+    string,
+    { permission?: { bash?: Record<string, string> } },
+  ][]) {
+    assert.equal(agent.permission?.bash?.["nix develop"], undefined, name)
+    assert.equal(agent.permission?.bash?.["nix develop *"], undefined, name)
+  }
+  const f = fixture()
+  try {
+    const planner = resolved(f, "planner")
+    assert.equal(action(planner, "bash"), "ask")
+    assert.equal(action(planner, "bash", "nix develop"), "ask")
+    assert.ok(
+      planner.permission.some(
+        (rule) =>
+          rule.permission === "bash" && rule.pattern === "git status*" && rule.action === "allow"
+      )
+    )
+    assert.equal(action(planner, "edit", "product.txt"), "deny")
+    assert.equal(action(resolved(f, "direct"), "bash"), "allow")
+  } finally {
+    f.close()
+  }
+})
+
 test("handoff template has one task list and explicit gates, checks and closure", () => {
   const text = readFileSync(join(configRoot, "templates/plan.md"), "utf8")
   const headings = [...text.matchAll(/^## (.+)$/gm)].map((match) => match[1])

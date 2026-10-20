@@ -47,6 +47,19 @@
       };
     };
   in {
+    packages.oc-loop = import ../lib/oc-loop.nix {
+      inherit pkgs;
+      opencode = inputs.llm-agents.packages.${system}.opencode;
+    };
+    checks.oc-loop =
+      pkgs.runCommand "oc-loop-tests" {
+        src = ../.;
+        nativeBuildInputs = [pkgs.nodejs];
+        OC_LOOP_TEST_BINARY = "${config.packages.oc-loop}/bin/oc-loop";
+      } ''
+        node --test "$src/tests/oc-loop.test.mjs"
+        touch "$out"
+      '';
     checks.pre-commit-check = preCommitCheck;
     checks.semgrep-local =
       pkgs.runCommand "semgrep-local-tests" {
