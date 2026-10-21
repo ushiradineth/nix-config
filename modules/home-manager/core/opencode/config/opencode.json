@@ -5,12 +5,7 @@
   "default_agent": "direct",
   "autoupdate": false,
   "lsp": {},
-  "plugin": [
-    "cc-safety-net",
-    "opencode-wakatime",
-    "@mohak34/opencode-notifier@0.8.1",
-    "context-mode"
-  ],
+  "plugin": ["opencode-wakatime", "@mohak34/opencode-notifier@0.8.1", "context-mode"],
   "instructions": ["~/.config/opencode/instructions/shell.md"],
   "provider": {
     "openai": {
@@ -156,7 +151,7 @@
     "edit": "allow",
     "glob": "allow",
     "bash": {
-      "*": "allow",
+      "*": "ask",
       "rm *": "ask",
       "git *": "ask",
       "git status*": "allow",

@@ -171,7 +171,6 @@ test("models, budgets and upstream plugin declarations are preserved", () => {
   assert.equal(config.small_model, "openai/gpt-6-luna")
   assert.deepEqual(config.provider, { openai: { options: { reasoningEffort: "medium" } } })
   assert.deepEqual(config.plugin, [
-    "cc-safety-net",
     "opencode-wakatime",
     "@mohak34/opencode-notifier@0.8.1",
     "context-mode",
