@@ -20,7 +20,7 @@ PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4
 FAKE = r'''
 import base64, json, os, pathlib, sys, time
 if sys.argv[1:] == ["--version"]:
-    print("agent-browser 0.38.1")
+    print("agent-browser 0.39.1")
     sys.exit(0)
 options = {}
 args = sys.argv[1:]
@@ -163,7 +163,7 @@ class BrowserTaskTest(unittest.TestCase):
     def test_local_exact_origin_before_read_and_mutation(self):
         self.ok()
         self.denied("url_out_of_scope", args=["http://127.0.0.1:9999/"])
-        for command, args in (("snapshot", []), ("fill", ["#name", "x"]),
+        for command, args in (("snapshot", []), ("fill", ["#name", "x"]), ("drag", ["#card", "#column"]),
                               ("artifact-read", ["page.png"])):
             self.request["session_id"] = command
             opened = self.ok()
@@ -185,7 +185,8 @@ class BrowserTaskTest(unittest.TestCase):
                   "domains": ["example.com"], "args": ["https://example.com/"]}
         self.ok(**public)
         for command, args in (("click", ["@e1"]), ("fill", ["#name", "x"]),
-                              ("press", ["Enter"]), ("select", ["#choice", "a"])):
+                              ("press", ["Enter"]), ("select", ["#choice", "a"]),
+                              ("drag", ["#card", "#column"])):
             self.denied("command_denied", **{**public, "command": command, "args": args})
         self.ok(**{**public, "command": "snapshot", "args": []})
         self.denied("invalid_scope", mode="public-read", session_id="loopback")
@@ -199,6 +200,16 @@ class BrowserTaskTest(unittest.TestCase):
         for field in ("caller", "run_id", "session_id"):
             for value in ("../escape", "", "x" * 65, None):
                 self.denied(**{field: value})
+
+    def test_drag_is_two_literal_selectors_on_the_existing_local_origin(self):
+        self.ok()
+        self.ok(command="drag", args=['[data-task-id="fixture"] .handle', '[data-status="in_progress"]'])
+        self.assertEqual(next(call["args"] for call in self.logs() if call["args"][0] == "drag"),
+                         ["drag", '[data-task-id="fixture"] .handle', '[data-status="in_progress"]'])
+        for args in (["#card"], ["#card", "#column", "--force"], ["", "#column"], ["#card", "   "], ["#card", "--cdp"]):
+            self.denied("invalid_args", command="drag", args=args)
+        self.denied("scope_changed", command="drag", args=["#card", "#column"],
+                    initial_url="http://127.0.0.1:9999/", domains=["127.0.0.1"])
 
     def test_extra_flags_and_arbitrary_commands_rejected(self):
         for command in ("eval", "auth", "upload", "webmcp", "connect", "mcp", "batch", "storage", "plugin"):
@@ -325,13 +336,16 @@ class BrowserTaskTest(unittest.TestCase):
         result = self.cli(extra=("--health",))
         self.assertEqual(result.returncode, 0, result.stdout)
         health = json.loads(result.stdout)
-        self.assertEqual(health["version"], "0.38.1")
+        self.assertEqual(health["version"], "0.39.1")
         self.assertTrue(health["compatible"])
         self.assertFalse(self.tasks.exists())
-        self.browser.write_text("#!" + sys.executable + '\nprint("agent-browser 9.0.0")\n')
-        result = self.cli(extra=("--health",))
-        self.assertNotEqual(result.returncode, 0)
-        self.assertFalse(json.loads(result.stdout)["compatible"])
+        for version in ("0.38.1", "0.39.0", "0.39.2", "0.40.0", "9.0.0", "0.39.1-beta"):
+            with self.subTest(version=version):
+                self.browser.write_text("#!" + sys.executable + f'\nprint("agent-browser {version}")\n')
+                result = self.cli(extra=("--health",))
+                self.assertNotEqual(result.returncode, 0)
+                self.assertFalse(json.loads(result.stdout)["compatible"])
+                self.assertFalse(self.tasks.exists())
 
     def test_public_numeric_loopback_spellings_are_not_public_domains(self):
         for host in ("127.1", "0177.0.0.1", "127.000.000.001", "0x7f.0.0.1"):

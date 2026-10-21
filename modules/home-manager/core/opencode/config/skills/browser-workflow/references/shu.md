@@ -1,7 +1,7 @@
 # Browser requests on shu
 
 The Nix host module installs `agent-browser-task` with isolated Nix Python. It uses the existing
-`/opt/homebrew/bin/agent-browser` 0.38.1 and the installed Google Chrome application executable,
+`/opt/homebrew/bin/agent-browser` 0.39.1 and the installed Google Chrome application executable,
 with a fresh task HOME and explicit empty plugin/extension config. It does not install a browser.
 Run `agent-browser-task --health`; compatibility and runtime presence do not prove launch/render.
 Approved system activation and real-browser smoke remain separate gates.
@@ -43,6 +43,7 @@ credentials in the URL. DNS/network controls are not OS-enforced isolation.
 | `close`                     | `[]`                                            | Both       |
 | `click`, `check`, `uncheck` | `[selector]`                                    | Local-test |
 | `fill`, `select`            | `[selector, value]`                             | Local-test |
+| `drag`                      | `[source_selector, target_selector]`            | Local-test |
 
 Use snapshots and `@eN` refs or fixture selectors; arbitrary JS/eval, auth, cookies/storage,
 uploads/downloads, shell/batch, extra flags, providers, restore/state, headers/proxy, profile/CDP,
@@ -69,7 +70,8 @@ are rejected. Retrieve before closing with `artifact-read`: `artifact` contains 
 and SHA-256. No image-inspection claim follows from that metadata.
 
 Source tests: `python3 tests/agent-browser-task-test.py`. After approved installation:
-`python3 tests/agent-browser-smoke.py --local`. The smoke owns a random-port server, exercises
+`python3 tests/agent-browser-smoke.py --local`. To validate a built candidate before activation, add
+`--helper /absolute/path/to/bin/agent-browser-task`. The smoke owns a random-port server, exercises
 whitespace rejection, valid form submission/navigation, desktop/mobile captures and concurrent
 storage markers, then closes its sessions/server. Visual semantics and native SSH execution are
 separate acceptance evidence. Seed a later regression defect only in disposable fixture copies.

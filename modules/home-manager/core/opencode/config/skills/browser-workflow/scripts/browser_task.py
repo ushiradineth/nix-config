@@ -143,10 +143,12 @@ def validate(request):
     counts = {"open": 1, "snapshot": 0, "get": None, "viewport": 2,
               "screenshot": 1, "artifact-read": 1, "console": 0, "errors": 0, "close": 0}
     if request["mode"] == "local-test":
-        counts.update({"click": 1, "fill": 2, "check": 1, "uncheck": 1, "select": 2})
+        counts.update({"click": 1, "fill": 2, "check": 1, "uncheck": 1, "select": 2, "drag": 2})
     if command not in counts:
         reject("command_denied")
     if counts[command] is not None and len(args) != counts[command]:
+        reject("invalid_args")
+    if command == "drag" and any(not arg.strip() for arg in args):
         reject("invalid_args")
     if command == "get" and not (args in [["url"], ["title"]] or
                                  len(args) == 2 and args[0] == "text" and args[1]):
@@ -402,7 +404,7 @@ def runtime_status(options, deadline):
                            min(deadline, time.monotonic() + 3))
     match = re.fullmatch(rb"agent-browser (\d+\.\d+\.\d+)\s*", output)
     version = match[1].decode() if match else None
-    compatible = code == 0 and version == "0.38.1"
+    compatible = code == 0 and version == "0.39.1"
     runtime = options.browser != BROWSER or os.access(CHROME, os.X_OK)
     return {"ok": compatible and runtime, "version": version, "compatible": compatible,
             "browser_runtime_available": runtime, "browser_launched": False}

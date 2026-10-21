@@ -26,7 +26,8 @@ def invoke(helper, request=None):
                             capture_output=True, text=True, timeout=30)
     response = json.loads(result.stdout)
     if result.returncode or not response.get("ok") or response.get("truncated"):
-        raise RuntimeError(f"helper failed: {response.get('error', 'runtime/truncated')}")
+        operation = f"{request['command']} ({request['session_id']})" if request else "health"
+        raise RuntimeError(f"helper {operation} failed: {response.get('error', 'runtime/truncated')}")
     return response
 
 
@@ -60,8 +61,11 @@ def retrieve(response, workspace, expected_dimensions):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--local", action="store_true", required=True)
+    parser.add_argument("--helper", type=Path, help="Absolute candidate helper path; defaults to the installed helper")
     options = parser.parse_args()
-    helper = shutil.which("agent-browser-task") if options.local else None
+    if options.helper and (not options.helper.is_absolute() or not options.helper.is_file()):
+        parser.error("--helper must be an absolute executable file path")
+    helper = str(options.helper) if options.helper else shutil.which("agent-browser-task")
     if not helper:
         print(json.dumps({"status": "needs_validation", "reason": "agent-browser-task is not installed"}))
         return 2
