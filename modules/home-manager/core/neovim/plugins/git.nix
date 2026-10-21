@@ -28,11 +28,11 @@ _: {
       {
         key = "<leader>gd";
         mode = ["n"];
-        action = ":!git diff<CR>";
+        action = ":Gitsigns preview_hunk_inline<CR>";
         options = {
           noremap = true;
           silent = true;
-          desc = "Git Diff";
+          desc = "Preview Hunk Inline";
         };
       }
       {
