@@ -33,25 +33,20 @@
       "steps": 120,
       "prompt": "{file:./prompts/plan.md}",
       "permission": {
-        "question": "allow",
-        "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "list": "allow",
-        "webfetch": "allow",
-        "websearch": "allow",
         "bash": {
           "*": "ask",
-          "rm *": "ask",
-          "git *": "ask",
           "git status*": "allow",
           "git diff*": "allow",
           "git log*": "allow",
           "git show*": "allow",
           "git rev-parse*": "allow",
           "git ls-files*": "allow",
-          "gh *": "ask",
-          "sudo *": "ask"
+          "gh pr view*": "allow",
+          "gh pr diff*": "allow",
+          "gh pr checks*": "allow",
+          "gh pr list*": "allow",
+          "gh issue view*": "allow",
+          "gh issue list*": "allow"
         },
         "edit": {
           "*": "deny",
@@ -64,64 +59,14 @@
       "description": "Visible lane for executing approved planner handoffs",
       "temperature": 0.1,
       "steps": 80,
-      "prompt": "{file:./prompts/build.md}",
-      "permission": {
-        "question": "allow",
-        "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "list": "allow",
-        "webfetch": "allow",
-        "websearch": "allow",
-        "bash": {
-          "*": "allow",
-          "rm *": "ask",
-          "git *": "ask",
-          "git status*": "allow",
-          "git diff*": "allow",
-          "git log*": "allow",
-          "git show*": "allow",
-          "git rev-parse*": "allow",
-          "git ls-files*": "allow",
-          "gh *": "ask",
-          "sudo *": "ask"
-        },
-        "edit": "allow",
-        "write": "allow",
-        "apply_patch": "allow"
-      }
+      "prompt": "{file:./prompts/build.md}"
     },
     "direct": {
       "mode": "primary",
       "description": "Default lane for routine coding, debugging, and bounded multi-file features",
       "temperature": 0.1,
       "steps": 120,
-      "prompt": "{file:./prompts/direct.md}",
-      "permission": {
-        "question": "allow",
-        "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "list": "allow",
-        "webfetch": "allow",
-        "websearch": "allow",
-        "bash": {
-          "*": "allow",
-          "rm *": "ask",
-          "git *": "ask",
-          "git status*": "allow",
-          "git diff*": "allow",
-          "git log*": "allow",
-          "git show*": "allow",
-          "git rev-parse*": "allow",
-          "git ls-files*": "allow",
-          "gh *": "ask",
-          "sudo *": "ask"
-        },
-        "edit": "allow",
-        "write": "allow",
-        "apply_patch": "allow"
-      }
+      "prompt": "{file:./prompts/direct.md}"
     },
     "sudo": {
       "mode": "primary",
@@ -158,28 +103,7 @@
       "steps": 400,
       "prompt": "{file:./prompts/grind.md}",
       "permission": {
-        "question": "allow",
-        "task": "deny",
-        "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "list": "allow",
-        "webfetch": "allow",
-        "websearch": "allow",
-        "bash": {
-          "*": "allow",
-          "rm *": "ask",
-          "git *": "ask",
-          "git status*": "allow",
-          "git diff*": "allow",
-          "git log*": "allow",
-          "git show*": "allow",
-          "git rev-parse*": "allow",
-          "git ls-files*": "allow",
-          "gh *": "ask",
-          "sudo *": "ask"
-        },
-        "edit": "allow"
+        "task": "deny"
       }
     },
     "audit": {
@@ -189,27 +113,7 @@
       "steps": 160,
       "prompt": "{file:./prompts/audit.md}",
       "permission": {
-        "question": "allow",
         "task": "deny",
-        "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "list": "allow",
-        "webfetch": "allow",
-        "websearch": "allow",
-        "bash": {
-          "*": "allow",
-          "rm *": "ask",
-          "git *": "ask",
-          "git status*": "allow",
-          "git diff*": "allow",
-          "git log*": "allow",
-          "git show*": "allow",
-          "git rev-parse*": "allow",
-          "git ls-files*": "allow",
-          "gh *": "ask",
-          "sudo *": "ask"
-        },
         "edit": {
           "*": "deny",
           ".agents/**": "allow"
@@ -223,27 +127,7 @@
       "steps": 160,
       "prompt": "{file:./prompts/ideate.md}",
       "permission": {
-        "question": "allow",
         "task": "deny",
-        "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "list": "allow",
-        "webfetch": "allow",
-        "websearch": "allow",
-        "bash": {
-          "*": "allow",
-          "rm *": "ask",
-          "git *": "ask",
-          "git status*": "allow",
-          "git diff*": "allow",
-          "git log*": "allow",
-          "git show*": "allow",
-          "git rev-parse*": "allow",
-          "git ls-files*": "allow",
-          "gh *": "ask",
-          "sudo *": "ask"
-        },
         "edit": {
           "*": "deny",
           ".agents/**": "allow"
@@ -257,27 +141,7 @@
       "steps": 160,
       "prompt": "{file:./prompts/writer.md}",
       "permission": {
-        "question": "allow",
         "task": "deny",
-        "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "list": "allow",
-        "webfetch": "allow",
-        "websearch": "allow",
-        "bash": {
-          "*": "allow",
-          "rm *": "ask",
-          "git *": "ask",
-          "git status*": "allow",
-          "git diff*": "allow",
-          "git log*": "allow",
-          "git show*": "allow",
-          "git rev-parse*": "allow",
-          "git ls-files*": "allow",
-          "gh *": "ask",
-          "sudo *": "ask"
-        },
         "edit": {
           "*": "deny",
           ".agents/**": "allow"
@@ -287,12 +151,28 @@
   },
   "permission": {
     "ctx_*": "allow",
+    "question": "allow",
     "read": "allow",
     "edit": "allow",
     "glob": "allow",
     "bash": {
       "*": "allow",
-      "nix *": "allow"
+      "rm *": "ask",
+      "git *": "ask",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "git show*": "allow",
+      "git rev-parse*": "allow",
+      "git ls-files*": "allow",
+      "gh *": "ask",
+      "gh pr view*": "allow",
+      "gh pr diff*": "allow",
+      "gh pr checks*": "allow",
+      "gh pr list*": "allow",
+      "gh issue view*": "allow",
+      "gh issue list*": "allow",
+      "sudo *": "ask"
     },
     "list": "allow",
     "grep": "allow",
@@ -308,7 +188,7 @@
     "skill": "allow",
     "lsp": "allow",
     "external_directory": {
-      "*": "deny",
+      "*": "ask",
       "~/nix-config/**": "allow",
       "~/.config/**": "allow",
       "~/Code/**": "allow",

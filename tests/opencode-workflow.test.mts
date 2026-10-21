@@ -104,14 +104,21 @@ function resolved(f: ReturnType<typeof fixture>, name: string): ResolvedAgent {
   return JSON.parse(result.stdout)
 }
 
-// Observe the ordered rules emitted by the actual resolver. These resources
-// deliberately use only exact names and '*'; edit enforcement is also tested below.
+// Evaluate the ordered native resolver output using OpenCode's simple wildcards.
+// Native edit enforcement is also exercised below in disposable workspaces.
 function action(agent: ResolvedAgent, permission: string, resource = "*") {
+  const matches = (pattern: string) =>
+    new RegExp(
+      `^${pattern
+        .split("")
+        .map((char) =>
+          char === "*" ? ".*" : char === "?" ? "." : char.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+        )
+        .join("")}$`
+    ).test(resource)
   return agent.permission
     .filter(
-      (rule) =>
-        (rule.permission === permission || rule.permission === "*") &&
-        (rule.pattern === resource || rule.pattern === "*")
+      (rule) => (rule.permission === permission || rule.permission === "*") && matches(rule.pattern)
     )
     .at(-1)?.action
 }
@@ -186,29 +193,59 @@ test("models, budgets and upstream plugin declarations are preserved", () => {
   }
 })
 
-test("Nix rules are global and planner shell commands require approval by default", () => {
-  assert.equal(config.permission.bash["nix develop"], "allow")
-  assert.equal(config.permission.bash["nix develop *"], "allow")
-  for (const [name, agent] of Object.entries(config.agent) as [
-    string,
-    { permission?: { bash?: Record<string, string> } },
-  ][]) {
-    assert.equal(agent.permission?.bash?.["nix develop"], undefined, name)
-    assert.equal(agent.permission?.bash?.["nix develop *"], undefined, name)
-  }
+test("shared permissions are inherited with only role-specific overrides", () => {
+  for (const name of ["direct", "builder"]) assert.equal(config.agent[name].permission, undefined)
+  for (const name of ["general", "grind"])
+    assert.deepEqual(config.agent[name].permission, { task: "deny" })
+  assert.equal(config.permission.bash["nix *"], undefined)
   const f = fixture()
   try {
     const planner = resolved(f, "planner")
     assert.equal(action(planner, "bash"), "ask")
     assert.equal(action(planner, "bash", "nix develop"), "ask")
-    assert.ok(
-      planner.permission.some(
-        (rule) =>
-          rule.permission === "bash" && rule.pattern === "git status*" && rule.action === "allow"
-      )
-    )
+    assert.equal(action(planner, "bash", "git status --short"), "allow")
+    assert.equal(action(planner, "bash", "gh pr view 123"), "allow")
+    assert.equal(action(planner, "bash", "gh issue list"), "allow")
+    assert.equal(action(planner, "bash", "gh pr create"), "ask")
     assert.equal(action(planner, "edit", "product.txt"), "deny")
-    assert.equal(action(resolved(f, "direct"), "bash"), "allow")
+    for (const name of ["direct", "builder", "general", "grind", "audit", "ideate", "writer"]) {
+      const agent = resolved(f, name)
+      for (const command of [
+        "nix develop",
+        "git status --short",
+        "git diff --cached",
+        "gh pr view 123",
+        "gh pr diff 123",
+        "gh pr checks 123",
+        "gh pr list",
+        "gh issue view 123",
+        "gh issue list",
+      ]) {
+        assert.equal(action(agent, "bash", command), "allow", `${name}: ${command}`)
+      }
+      for (const command of [
+        "git commit -m test",
+        "git push",
+        "gh pr create",
+        "gh issue close 123",
+        "gh api repos/owner/repo",
+        "rm file",
+        "sudo command",
+      ]) {
+        assert.equal(action(agent, "bash", command), "ask", `${name}: ${command}`)
+      }
+      assert.equal(action(agent, "external_directory", "/unfamiliar/path/file"), "ask", name)
+      assert.equal(action(agent, "external_directory", join(f.workspace, "file")), "allow", name)
+      assert.equal(
+        action(agent, "external_directory", "/Users/shu/Documents/Obsidian Vault/note.md"),
+        "allow",
+        name
+      )
+    }
+    for (const name of ["audit", "ideate", "writer"]) {
+      assert.equal(action(resolved(f, name), "edit", "product.txt"), "deny", name)
+      assert.equal(action(resolved(f, name), "edit", ".agents/receipt.md"), "allow", name)
+    }
   } finally {
     f.close()
   }
