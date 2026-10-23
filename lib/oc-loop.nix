@@ -4,7 +4,7 @@
 }: let
   source = pkgs.lib.fileset.toSource {
     root = ../scripts;
-    fileset = pkgs.lib.fileset.unions [../scripts/oc-loop.mjs ../scripts/oc-loop-autonomy.mjs];
+    fileset = pkgs.lib.fileset.unions [../scripts/oc-loop.mjs ../scripts/oc-loop-autonomy.mjs ../scripts/oc-loop-runtime.mjs ../scripts/oc-loop-tui.mjs];
   };
 in
   pkgs.writeShellApplication {
