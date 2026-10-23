@@ -23,9 +23,13 @@ choice is materially ambiguous.
 3. Write one failing test for one behavior.
 4. Run it and confirm it fails for the expected reason.
 5. Write the smallest implementation that passes.
-6. Run the test and relevant nearby checks.
-7. Refactor only after green, then run checks again.
+6. Run the targeted test. Defer broader nearby checks until the related batch is ready.
+7. Refactor only after green, then rerun affected targeted tests if the implementation changed.
 8. Repeat for the next vertical slice.
+
+Keep red/green feedback focused on the behavior under development. It does not require full lint,
+type checks, builds or suites on each cycle. Batch those at the shared contract's integration
+boundary; do not repeat a passing check when none of its relevant inputs changed.
 
 ## Test quality
 

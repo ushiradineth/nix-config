@@ -25,11 +25,14 @@ inventory; do not invent a tool invocation when a skill or tool is unavailable.
 - Check that the current objective still solves the accepted problem before coding and after a
   failed validation loop. Do not optimize a different problem to produce visible activity.
 - Every changed line traces to the accepted request or a validation fix caused by that change.
-- Keep one ordered objective active. Implement, verify, then mark it complete.
+- Keep one coherent objective active. Batch related edits across files/checklist items, verify the
+  batch, then mark covered items complete. Follow the shared contract's validation cadence.
 - Use existing public behavior seams for tests. Do not invent abstractions solely for testing or
   accept source-string assertions as behavioral regressions.
-- Run the smallest relevant checks first, then all available required repository gates. Browser
-  screenshots, scanner results, or a build alone do not replace tests, type checks, or review.
+- Select checks that prove the changed behavior; do not mechanically run every available technique
+  or stack a targeted command with an aggregate gate covering the same inputs unless an early result
+  is useful. Run required repository gates once at the applicable integration/completion boundary.
+  Screenshots, scanner results or a build alone do not prove unrelated test/type-check claims.
 - Review inline by default. A skill is not permission to launch another agent. An explicitly
   authorized first-level reviewer is a leaf executor and returns findings rather than delegating.
 - No Critical or Important Standards/Spec finding is silently deferred. Fix it and rerun relevant

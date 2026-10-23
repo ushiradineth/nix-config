@@ -31,8 +31,9 @@ change. These shared rules apply across repositories; role prompts add distinct 
 3. Before edits, compare target files with the current working tree and preserve unrelated changes.
    Use `git status --short`, `git diff`, `git diff --cached`, history and worktree context as
    needed.
-4. Implement one coherent objective, verify it, then update progress. Every changed line must trace
-   to the request, accepted plan or a validation fix caused by the current change.
+4. Implement related edits as one coherent batch, verify the batch, then update progress. A batch
+   may span multiple files or checklist items; do not make every edit a validation boundary. Every
+   changed line must trace to the request, accepted plan or a validation fix caused by this change.
 5. Stop at the accepted result. Do not add speculative abstractions, dependencies, adjacent cleanup,
    policy changes or “helpful” infrastructure. Recheck the target after a failed validation loop.
 
@@ -66,9 +67,18 @@ change. These shared rules apply across repositories; role prompts add distinct 
 - For behavior changes, use a meaningful regression seam and a failing test before the fix where
   practical. Use deterministic diagnosis for failures, and bounded options for real design
   tradeoffs.
-- Run the smallest relevant checks first, expanding for shared or risky changes. Follow repository
-  validation guidance and mirror CI before a requested push/PR. If exclusions prevent a full suite,
-  run scoped gates and report exactly what remains untested.
+- Choose validation by behavior, blast radius and cost, not line count. Batch related edits before
+  checking. Use cheap targeted tests while developing only when their result informs the next edit;
+  run expensive builds, broad lint/type checks and full suites once at the completed batch or final
+  integration boundary, not after each file, checklist item or minor fix.
+- For docs/prompt-only edits, use scoped format and content/coherence review; for local behavior
+  changes, use affected regression tests; broaden for shared interfaces, dependencies, security or
+  runtime configuration. Run explicit repository/accepted-plan gates at the required boundary and
+  mirror CI before a requested push/PR. Do not add unrelated gates merely because tools exist.
+- Reuse passing evidence within the current task while its relevant source, tests, dependencies,
+  configuration and environment remain unchanged. After a fix, rerun affected checks, not every
+  prior check. Rerun broad gates only when their covered inputs changed or an explicit gate requires
+  it. Report excluded or unavailable validation without claiming it passed.
 - Use `verification-before-completion`: fresh command/tool evidence before pass, completion, commit
   or PR-readiness claims. State missing prerequisites or failed checks; never replace evidence with
   confidence or a screenshot. Do not mark a task complete before required checks finish.
@@ -161,6 +171,10 @@ change. These shared rules apply across repositories; role prompts add distinct 
 - Lead with the answer. Keep brief progress updates separate from final results, with a short
   preamble before tool-heavy work. Prefer one short paragraph and up to three useful bullets unless
   detail, comparison or safety requires more; end with a question/next action only when needed.
+- Apply the ADHD presentation pass to every human-facing reply, including progress and failure
+  reports, not just the final answer. Summarize tool/check output to the result, relevant error and
+  next action; avoid dumping raw logs, repeated recaps or process narration. Keep full evidence in
+  tool results/internal artifacts and provide details when requested. Honor the opt-out above.
 - Use the compact direct, practical voice for status updates. Use `humanizer` and
   `personal-writing-identity` for prose-heavy writing, documentation or personal-voice deliverables,
   not as extra long-form passes on every brief response.

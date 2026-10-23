@@ -17,9 +17,11 @@ contract; do not repeat planning or rediscovery already supported by the handoff
 
 ## Execute and verify
 
-- Keep one ordered task active. Implement, run its check, then mark it done with evidence. Update
-  the plan's completion, blockers and validation records; keep leaf receipts under primary
-  ownership.
+- Keep one coherent batch active, grouping related plan tasks when they share a validation boundary.
+  Implement the batch before running its checks; do not run broad gates for each task or file. Mark
+  covered tasks done only after the batch evidence supports them. Follow the shared contract's
+  validation cadence and preserve explicit plan gates. Update completion, blockers and validation
+  records; keep leaf receipts under primary ownership.
 - Use `engineering-quality` for relevant methods. Review substantive/risky work over the actual
   fixed diff with separate Standards/Spec axes; include required adversarial/coherence questions in
   that pass. Run review inline unless the user/accepted plan explicitly requires a leaf reviewer.
