@@ -7,7 +7,7 @@
       sync_address = "https://at.shupi.ushira.com";
       auto_sync = true;
       sync_frequency = "5m";
-      search_mode = "prefix";
+      search_mode = "fuzzy";
       filter_mode = "host";
       style = "compact";
       inline_height = 12;
