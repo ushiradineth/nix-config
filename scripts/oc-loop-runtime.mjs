@@ -11,7 +11,7 @@ import {
   writeFileSync,
   linkSync,
 } from "node:fs"
-import { join } from "node:path"
+import { isAbsolute, join } from "node:path"
 import { createInterface } from "node:readline"
 import { fileURLToPath } from "node:url"
 import { setTimeout as sleep } from "node:timers/promises"
@@ -95,7 +95,9 @@ function connection(config, status) {
   if (
     credentials.runId !== status.runId ||
     !/^http:\/\/127\.0\.0\.1:\d+$/.test(credentials.url) ||
-    typeof credentials.password !== "string"
+    typeof credentials.password !== "string" ||
+    (credentials.directory !== undefined &&
+      (typeof credentials.directory !== "string" || !isAbsolute(credentials.directory)))
   )
     throw new Error("Invalid local server state")
   return credentials
@@ -108,7 +110,7 @@ export async function request(config, credentials, route, method = "GET", timeou
       method,
       headers: {
         Authorization: `Basic ${Buffer.from(`opencode:${credentials.password}`).toString("base64")}`,
-        "x-opencode-directory": config.dir,
+        "x-opencode-directory": credentials.directory || config.dir,
       },
       signal: AbortSignal.timeout(timeout),
     })
@@ -169,6 +171,9 @@ export function summary(status) {
   return [
     `${status.status} · ${status.session}`,
     `Project: ${status.directory}`,
+    status.nativeDirectory &&
+      status.nativeDirectory !== status.directory &&
+      `Native session directory: ${status.nativeDirectory}`,
     `Turn: ${status.turn ?? 0} · retries: ${status.retries ?? 0} · started: ${status.startedAt}`,
     `Last activity: ${age(status.lastActivityAt)} · heartbeat: ${age(status.updatedAt)}`,
     status.activity && `Activity: ${status.activity}`,
@@ -200,7 +205,14 @@ export async function attach(config) {
   // Native TUI exits only this client; the worker and server have separate lifetimes.
   const child = spawn(
     executable(),
-    ["attach", credentials.url, "--dir", config.dir, "--session", config.session],
+    [
+      "attach",
+      credentials.url,
+      "--dir",
+      credentials.directory || config.dir,
+      "--session",
+      config.session,
+    ],
     {
       cwd: config.dir,
       env: {
@@ -352,6 +364,9 @@ export async function startServer(config, state, signal) {
     get url() {
       return url
     },
+    get directory() {
+      return credentials.directory
+    },
     get env() {
       return { OPENCODE_SERVER_PASSWORD: password, OPENCODE_SERVER_USERNAME: "opencode" }
     },
@@ -419,9 +434,15 @@ export async function startServer(config, state, signal) {
     credentials.url = url
     // Initializes this directory's plugin instance and verifies the existing session.
     const session = await request(config, credentials, `/session/${config.session}`, "GET", 30000)
-    // --dir is an intentional execution-directory override, as in native run/attach.
-    // A retained session can have been created in another workspace; do not rewrite its origin.
+    // Session messages are globally readable, but status/events/permissions belong
+    // to the origin instance. Keep project-local state separate from that routing.
     if (session.id !== config.session) throw new Error("OpenCode returned a different session")
+    if (typeof session.directory !== "string" || !isAbsolute(session.directory))
+      throw new Error("OpenCode returned an invalid native session directory")
+    credentials.directory = session.directory
+    if (session.directory !== config.dir)
+      await request(config, credentials, `/session/${config.session}`, "GET", 30000)
+    state.update?.({ nativeDirectory: session.directory })
     const helperDeadline = Date.now() + 5000
     while (!state.helperReady) {
       if (error) throw error

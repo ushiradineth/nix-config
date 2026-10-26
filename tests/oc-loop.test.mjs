@@ -49,7 +49,8 @@ if (injected && !process.env.FAKE_AUTONOMY_DISABLED) {
   const plugin = await import(injected[0])
   hooks = await plugin.default({
     directory: process.cwd(),
-    client: { _client: { post: async (request) => {
+    client: { _client: { get: async request => ({ data: request.url === "/permission" && process.env.FAKE_REPLY_FAILURE ? [{ id: "per_fixture", sessionID: ${JSON.stringify(session)} }] : request.url.startsWith("/session/") ? { id: request.path.sessionID } : [] }), post: async (request) => {
+      if (process.env.FAKE_REPLY_RACE || process.env.FAKE_REPLY_FAILURE) return { error: { name: "ReplyConflict" } }
       appendFileSync(root + "/answers.jsonl", JSON.stringify(request) + "\\n")
       return { data: true }
     } } },
@@ -59,11 +60,13 @@ if (process.argv[2] === "serve") {
   const server = createServer((req, res) => {
     const expected = "Basic " + Buffer.from("opencode:" + process.env.OPENCODE_SERVER_PASSWORD).toString("base64")
     if (req.headers.authorization !== expected) { res.writeHead(401); res.end("{}"); return }
+    appendFileSync(root + "/requests.jsonl", JSON.stringify({ path: req.url, directory: req.headers["x-opencode-directory"] }) + "\\n")
     res.setHeader("Content-Type", "application/json")
     if (req.url === "/session/status") {
       let busy = false
       try { busy = readFileSync(root + "/manual-busy", "utf8") === "yes" } catch {}
-      res.end(JSON.stringify(busy ? { ${JSON.stringify(session)}: { type: "busy" } } : {}))
+      const wrongInstance = process.env.FAKE_REQUIRE_ORIGIN && req.headers["x-opencode-directory"] !== process.env.FAKE_SESSION_ORIGIN
+      res.end(JSON.stringify(busy && !wrongInstance ? { ${JSON.stringify(session)}: { type: "busy" } } : {}))
     } else if (req.url.includes("/message")) {
       try { res.end(readFileSync(root + "/messages.json", "utf8")) } catch { res.end("[]") }
     }
@@ -82,12 +85,15 @@ appendFileSync(root + "/calls.jsonl", JSON.stringify({ args: process.argv.slice(
 const turns = JSON.parse(readFileSync(root + "/turns.json", "utf8"))
 const next = turns[calls.length]
 if (!next) { console.error("Unexpected extra turn"); process.exit(99) }
+// Native sessions execute in their origin instance. Listening in another instance
+// misses permission/terminal events even though session metadata is globally readable.
+if (process.env.FAKE_REQUIRE_ORIGIN && process.argv[process.argv.indexOf("--dir") + 1] !== process.env.FAKE_SESSION_ORIGIN) process.exit(0)
 if (next.persisted) writeFileSync(root + "/messages.json", JSON.stringify([{
   info: { id: "msg_persisted", role: "assistant", time: { created: Date.now(), completed: Date.now() }, ...next.persisted.info },
   parts: [{ type: "text", text: next.persisted.text }],
 }]))
 for (const event of next.events ?? []) {
-  if (event.type === "question.asked" || event.type === "session.created") {
+  if (event.type === "question.asked" || event.type === "permission.asked" || event.type === "session.created") {
     await hooks?.event({ event })
   } else console.log(typeof event === "string" ? event : JSON.stringify(event))
 }
@@ -202,12 +208,50 @@ test("resumes the exact session after ordinary stops and completes only on the f
 test("an explicit project directory supports a session originally created in another workspace", (t) => {
   const f = fixture(t, [{ events: turn(token) }])
   f.env.FAKE_SESSION_ORIGIN = "/original/session/workspace"
+  f.env.FAKE_REQUIRE_ORIGIN = "1"
   const result = f.run()
   assert.equal(result.status, 0, result.stderr)
   assert.equal(state(f).directory, f.root)
   assert.equal(state(f).status, "DONE")
-  assert.equal(f.calls()[0].args[f.calls()[0].args.indexOf("--dir") + 1], f.root)
+  assert.equal(f.calls()[0].args[f.calls()[0].args.indexOf("--dir") + 1], f.env.FAKE_SESSION_ORIGIN)
+  assert.equal(state(f).nativeDirectory, f.env.FAKE_SESSION_ORIGIN)
+  const requests = readFileSync(join(f.root, "requests.jsonl"), "utf8")
+    .trim()
+    .split("\n")
+    .map(JSON.parse)
+  assert.ok(
+    requests
+      .filter((r) => r.path === "/session/status")
+      .every((r) => r.directory === f.env.FAKE_SESSION_ORIGIN)
+  )
 })
+
+test(
+  "cross-workspace attach and handback use the native origin while keeping runner state in the requested project",
+  { timeout: 15000 },
+  async (t) => {
+    const f = fixture(t, [
+      { events: turn("WAITING_ON_OWNER\nFixture owner gate.") },
+      { events: turn(token) },
+    ])
+    f.env.FAKE_SESSION_ORIGIN = "/original/session/workspace"
+    f.env.FAKE_REQUIRE_ORIGIN = "1"
+    const runner = launch(t, f)
+    await waitFor(
+      () => existsSync(join(f.state, "status.json")) && state(f).status === "WAITING_ON_OWNER"
+    )
+    assert.equal(f.command("attach").status, 0)
+    const attached = JSON.parse(readFileSync(join(f.root, "attachments.jsonl"), "utf8").trim())
+    assert.equal(attached.args[attached.args.indexOf("--dir") + 1], f.env.FAKE_SESSION_ORIGIN)
+    writeFileSync(join(f.root, "manual-busy"), "yes")
+    assert.equal(f.resume("Must not interrupt manual work").status, 2)
+    assert.equal(f.calls().length, 1)
+    rmSync(join(f.root, "manual-busy"))
+    assert.equal(f.resume("Continue the same agreed project.").status, 0)
+    assert.equal((await runner.exited).code, 0)
+    assert.equal(state(f).directory, f.root)
+  }
+)
 
 test("tokens in tools, other sessions, summaries, earlier steps or unfinished responses never complete", (t) => {
   const falseSignals = [
@@ -730,6 +774,210 @@ test(
   }
 )
 
+async function autonomyFixture(t, { parents = {}, permissions = [], questions = [] } = {}) {
+  const f = fixture(t, [])
+  const controlFile = join(f.root, "autonomy-control.json")
+  writeFileSync(controlFile, JSON.stringify({ runId: "autonomy-fixture", mode: "automatic" }), {
+    mode: 0o600,
+  })
+  const replies = []
+  const transport = {
+    get: async (request) => {
+      assert.equal(request.query.directory, f.root)
+      if (request.url === "/permission") return { data: [...permissions] }
+      if (request.url === "/question") return { data: [...questions] }
+      const id = request.path.sessionID
+      if (id !== session && !Object.hasOwn(parents, id)) throw new Error("Unknown session")
+      return { data: { id, parentID: parents[id] } }
+    },
+    post: async (request) => {
+      assert.equal(request.query.directory, f.root)
+      replies.push(request)
+      const queue = request.url.startsWith("/permission/") ? permissions : questions
+      const index = queue.findIndex((item) => item.id === request.path.requestID)
+      if (index !== -1) queue.splice(index, 1)
+      return { data: true }
+    },
+  }
+  const { default: autonomy } = await import("../scripts/oc-loop-autonomy.mjs")
+  const hooks = await autonomy(
+    { directory: f.root, client: { _client: transport } },
+    { sessionID: session, controlFile, runId: "autonomy-fixture" }
+  )
+  return {
+    ...f,
+    hooks,
+    controlFile,
+    replies,
+    transport,
+    async continue() {
+      const text = "Continue the approved fixture scope."
+      const control = JSON.parse(readFileSync(controlFile, "utf8"))
+      writeFileSync(
+        controlFile,
+        JSON.stringify({
+          ...control,
+          expectedPrompt: createHash("sha256").update(text).digest("hex"),
+        })
+      )
+      await hooks["chat.message"]({ sessionID: session }, { parts: [{ type: "text", text }] })
+    },
+  }
+}
+
+test("a new automatic turn reconciles pending requests from existing descendants but never other roots", async (t) => {
+  const permissions = [
+    { id: "per_child", sessionID: "ses_child", permission: "bash", patterns: ["cargo check"] },
+    { id: "per_foreign", sessionID: "ses_foreign", permission: "bash", patterns: ["other work"] },
+  ]
+  const questions = [
+    {
+      id: "que_grandchild",
+      sessionID: "ses_grandchild",
+      questions: [{ options: [{ label: "First" }, { label: "Second" }] }],
+    },
+  ]
+  const f = await autonomyFixture(t, {
+    parents: {
+      ses_child: session,
+      ses_grandchild: "ses_child",
+      ses_foreign: "ses_other",
+      ses_other: null,
+    },
+    permissions,
+    questions,
+  })
+  await f.continue()
+  assert.deepEqual(f.replies.map((request) => request.path.requestID).sort(), [
+    "per_child",
+    "que_grandchild",
+  ])
+  assert.deepEqual(f.replies.find((request) => request.path.requestID === "per_child").body, {
+    reply: "once",
+  })
+  assert.deepEqual(f.replies.find((request) => request.path.requestID === "que_grandchild").body, {
+    answers: [["First"]],
+  })
+  assert.deepEqual(
+    permissions.map((request) => request.id),
+    ["per_foreign"]
+  )
+})
+
+test("automatic permissions include a resumed owned subagent without a new-session event", async (t) => {
+  const f = fixture(t, [])
+  const { default: autonomy } = await import("../scripts/oc-loop-autonomy.mjs")
+  const replies = []
+  const hooks = await autonomy(
+    {
+      directory: f.root,
+      client: {
+        _client: {
+          get: async (request) => {
+            assert.equal(request.query.directory, f.root)
+            return { data: { id: request.path.sessionID, parentID: session } }
+          },
+          post: async (request) => {
+            replies.push(request)
+            return { data: true }
+          },
+        },
+      },
+    },
+    { sessionID: session }
+  )
+  await hooks.event({
+    event: {
+      type: "permission.asked",
+      properties: {
+        id: "per_resumed",
+        sessionID: "ses_existingchild",
+        permission: "bash",
+        patterns: ["cargo check"],
+      },
+    },
+  })
+  assert.equal(replies.length, 1)
+  assert.equal(replies[0].url, "/permission/{requestID}/reply")
+  assert.deepEqual(replies[0].path, { requestID: "per_resumed" })
+  assert.deepEqual(replies[0].body, { reply: "once" })
+  assert.equal(replies[0].query.directory, f.root)
+})
+
+test("manual takeover during descendant lookup prevents approval and pending-request replay", async (t) => {
+  const request = { id: "per_waiting", sessionID: "ses_child", permission: "bash" }
+  const f = await autonomyFixture(t, { parents: { ses_child: session }, permissions: [request] })
+  const original = f.transport.get
+  let release
+  f.transport.get = async (query) => {
+    if (query.path?.sessionID === "ses_child")
+      await new Promise((resolve) => {
+        release = resolve
+      })
+    return original(query)
+  }
+  const pending = f.hooks.event({ event: { type: "permission.asked", properties: request } })
+  await waitFor(() => typeof release === "function")
+  writeFileSync(`${f.controlFile}.manual`, JSON.stringify({ runId: "autonomy-fixture" }), {
+    mode: 0o600,
+  })
+  release()
+  await pending
+  await f.continue()
+  assert.equal(f.replies.length, 0)
+})
+
+test("event and pending-list reconciliation approve each owned request only once", async (t) => {
+  const request = { id: "per_concurrent", sessionID: "ses_child", permission: "bash" }
+  const f = await autonomyFixture(t, { parents: { ses_child: session }, permissions: [request] })
+  await Promise.all([
+    f.continue(),
+    f.hooks.event({ event: { type: "permission.asked", properties: request } }),
+    f.hooks.event({ event: { type: "permission.asked", properties: request } }),
+  ])
+  assert.equal(f.replies.length, 1)
+})
+
+test("unknown roots and cyclic ancestry cannot acquire automatic approval", async (t) => {
+  const requests = [
+    { id: "per_foreign", sessionID: "ses_foreign", permission: "bash" },
+    { id: "per_cycle", sessionID: "ses_cycle", permission: "bash" },
+    { id: "per_root", sessionID: session, permission: "bash" },
+  ]
+  const f = await autonomyFixture(t, {
+    parents: { ses_foreign: null, ses_cycle: "ses_cycle" },
+    permissions: requests,
+  })
+  await f.continue()
+  assert.deepEqual(
+    f.replies.map((reply) => reply.path.requestID),
+    ["per_root"]
+  )
+})
+
+test("a native auto-reply race is harmless but an unresolved reply failure blocks completion", (t) => {
+  for (const [flag, status] of [
+    ["FAKE_REPLY_RACE", 0],
+    ["FAKE_REPLY_FAILURE", 2],
+  ]) {
+    const f = fixture(t, [
+      {
+        events: [
+          {
+            type: "permission.asked",
+            properties: { id: "per_fixture", sessionID: session, permission: "bash" },
+          },
+          ...turn(token),
+        ],
+      },
+    ])
+    f.env[flag] = "1"
+    const result = f.run()
+    assert.equal(result.status, status, result.stderr)
+    assert.equal(state(f).status, status === 0 ? "DONE" : "BLOCKED")
+  }
+})
+
 test("the server helper latches native abort fallbacks and stops automatic question replies in manual mode", async (t) => {
   const f = fixture(t, [])
   const controlFile = join(f.root, "control.json")
@@ -742,6 +990,7 @@ test("the server helper latches native abort fallbacks and stops automatic quest
     {
       directory: f.root,
       client: {
+        _client: { get: async () => ({ data: [] }) },
         question: {
           reply: async () => {
             replies++
@@ -918,15 +1167,26 @@ test(
   { timeout: 15000 },
   async (t) => {
     const f = fixture(t, [{ wait: true }, { events: turn(token) }])
+    f.env.FAKE_SESSION_ORIGIN = "/original/session/workspace"
+    f.env.FAKE_REQUIRE_ORIGIN = "1"
     const runner = launch(t, f)
     await waitFor(() => existsSync(join(f.root, "child.pid")))
     const runId = state(f).runId
+    writeFileSync(join(f.root, "manual-busy"), "yes")
     const paused = f.command("pause")
     assert.equal(paused.status, 0, paused.stderr)
     await waitFor(() => state(f).status === "MANUAL_CONTROL")
     assert.equal(state(f).runId, runId)
     assert.equal(existsSync(join(f.state, "lock")), true)
     assert.equal(f.calls().length, 1)
+    const requests = readFileSync(join(f.root, "requests.jsonl"), "utf8")
+      .trim()
+      .split("\n")
+      .map(JSON.parse)
+    assert.ok(
+      requests.some((r) => r.path.endsWith("/abort") && r.directory === f.env.FAKE_SESSION_ORIGIN)
+    )
+    rmSync(join(f.root, "manual-busy"))
     assert.equal(f.resume("Continue after explicit pause.").status, 0)
     assert.equal((await runner.exited).code, 0)
   }
@@ -1094,11 +1354,22 @@ if (process.env.OC_LOOP_NATIVE_BINARY) {
       child.kill("SIGTERM")
       await closed
       const { prepare, startServer, request } = await import("../scripts/oc-loop-runtime.mjs")
-      const config = { dir: workspace, session: nativeSession.id }
+      const runnerProject = join(root, "loop-project")
+      mkdirSync(runnerProject)
+      const config = { dir: runnerProject, session: nativeSession.id }
       const { directory } = prepare(config)
       const id = randomUUID()
       const controlFile = join(directory, `control-${id}.json`)
-      writeFileSync(controlFile, JSON.stringify({ runId: id, mode: "automatic" }), { mode: 0o600 })
+      const probeText = "Provider-free automatic-turn reconciliation fixture."
+      writeFileSync(
+        controlFile,
+        JSON.stringify({
+          runId: id,
+          mode: "automatic",
+          expectedPrompt: createHash("sha256").update(probeText).digest("hex"),
+        }),
+        { mode: 0o600 }
+      )
       config.configContent = JSON.stringify({
         ...baseConfig,
         plugin: [
@@ -1124,6 +1395,7 @@ if (process.env.OC_LOOP_NATIVE_BINARY) {
         }
         transport = await startServer(config, state, new AbortController().signal)
         assert.equal(state.helperReady, true)
+        assert.equal(transport.directory, workspace)
         assert.equal(
           (await fetch(`${transport.url}/session`, { signal: AbortSignal.timeout(5000) })).status,
           401
@@ -1133,10 +1405,35 @@ if (process.env.OC_LOOP_NATIVE_BINARY) {
           (await request(config, credentials, `/session/${config.session}`)).id,
           config.session
         )
+        // The pinned prompt route returns before its model loop when noReply is true.
+        // Exercise chat.message and both pending-list SDK calls with zero submissions.
+        const recorded = await fetch(`${transport.url}/session/${config.session}/message`, {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${Buffer.from(`opencode:${credentials.password}`).toString("base64")}`,
+            "x-opencode-directory": workspace,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            noReply: true,
+            model: { providerID: "openai", modelID: "gpt-4o" },
+            parts: [{ type: "text", text: probeText }],
+          }),
+          signal: AbortSignal.timeout(10000),
+        })
+        assert.equal(recorded.status, 200)
+        assert.equal((await recorded.json()).info.role, "user")
+        assert.equal(JSON.parse(readFileSync(controlFile)).expectedPrompt, undefined)
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        assert.equal(transport.error, undefined)
         assert.equal(await transport.busy(), false)
         assert.equal(await transport.aborted(), false)
         assert.equal(await transport.ownerGate(Date.now()), undefined)
         assert.equal(statSync(join(directory, `server-${id}.json`)).mode & 0o777, 0o600)
+        assert.equal(
+          JSON.parse(readFileSync(join(directory, `server-${id}.json`))).directory,
+          workspace
+        )
         assert.equal(
           JSON.parse(readFileSync(join(directory, `tui-${id}.json`))).plugin[0][1].runId,
           id
@@ -1169,7 +1466,7 @@ if (process.env.OC_LOOP_NATIVE_BINARY) {
 import autonomy from ${JSON.stringify(new URL("../scripts/oc-loop-autonomy.mjs", import.meta.url).href)}
 export default async function (ctx) {
   return { event: async (input) => {
-    if (input.event.type !== "question.asked") return
+    if (!["question.asked", "permission.asked"].includes(input.event.type)) return
     const hooks = await autonomy(ctx, { sessionID: input.event.properties.sessionID })
     await hooks.event(input)
   } }
@@ -1200,6 +1497,11 @@ export default async function (ctx) {
             mode: "primary",
             model: "openai/gpt-4o",
             permission: { "*": "deny", question: "allow" },
+          },
+          askFixture: {
+            mode: "primary",
+            model: "openai/gpt-4o",
+            permission: { "*": "deny", bash: { "*": "ask", "touch *": "deny" } },
           },
         },
       }),
@@ -1248,7 +1550,52 @@ export default async function (ctx) {
         .join("\n")
     )
     assert.deepEqual(tool.result.metadata.answers, [["First"], ["Unit tests"]])
+    const allowed = spawnSync(
+      process.env.OC_LOOP_NATIVE_BINARY,
+      [
+        "debug",
+        "agent",
+        "askFixture",
+        "--tool",
+        "bash",
+        "--params",
+        JSON.stringify({
+          command: "true",
+          description: "Provider-free pending permission fixture",
+        }),
+      ],
+      { cwd: workspace, env, encoding: "utf8", timeout: 45000 }
+    )
+    assert.ifError(allowed.error)
+    assert.equal(allowed.status, 0, allowed.stderr)
+    const allowedTool = JSON.parse(
+      allowed.stdout
+        .split("\n")
+        .filter((line) => !line.startsWith('{"type":"oc_loop_autonomy"'))
+        .join("\n")
+    )
+    assert.equal(allowedTool.result.metadata.exit, 0)
     const deniedPath = join(workspace, "must-not-be-created")
+    const deniedRule = spawnSync(
+      process.env.OC_LOOP_NATIVE_BINARY,
+      [
+        "debug",
+        "agent",
+        "askFixture",
+        "--tool",
+        "bash",
+        "--params",
+        JSON.stringify({
+          command: `touch '${deniedPath}'`,
+          description: "Explicit-deny rule fixture",
+        }),
+      ],
+      { cwd: workspace, env, encoding: "utf8", timeout: 45000 }
+    )
+    assert.ifError(deniedRule.error)
+    assert.equal(deniedRule.status, 1, deniedRule.stderr)
+    assert.match(deniedRule.stderr, /denied|rejected|permission/i)
+    assert.equal(existsSync(deniedPath), false)
     const denied = spawnSync(
       process.env.OC_LOOP_NATIVE_BINARY,
       [

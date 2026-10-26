@@ -7,6 +7,8 @@ export default async function autonomy({ client, directory }, options = {}) {
   if (!sessionID) return {}
   const sessions = new Set([sessionID])
   const answered = new Set()
+  const resolving = new Map()
+  const replying = new Map()
   const emit = (status, data = {}) => {
     process.stdout.write(
       JSON.stringify({ type: "oc_loop_autonomy", sessionID, status, ...data }) + "\n"
@@ -35,6 +37,127 @@ export default async function autonomy({ client, directory }, options = {}) {
     }
     emit("manual")
   }
+  const automatic = () => {
+    const state = control()
+    return state.mode === "automatic" && !state.aborting
+  }
+  const get = async (url, path = {}) => {
+    if (typeof client._client?.get !== "function")
+      throw new Error("Owned-session lookup is unavailable")
+    const response = await client._client.get({
+      url,
+      path,
+      query: { directory },
+      throwOnError: true,
+    })
+    if (response.error) throw new Error("Owned-session lookup failed")
+    return response.data
+  }
+  const owns = async (id) => {
+    if (sessions.has(id)) return true
+    if (typeof id !== "string" || !/^ses_[A-Za-z0-9]+$/.test(id)) return false
+    if (resolving.has(id)) return resolving.get(id)
+    const pending = (async () => {
+      const visited = new Set()
+      let current = id
+      while (current && !visited.has(current) && visited.size < 64) {
+        if (sessions.has(current)) {
+          for (const owned of visited) sessions.add(owned)
+          return true
+        }
+        visited.add(current)
+        const info = await get("/session/{sessionID}", { sessionID: current })
+        if (info?.id !== current) return false
+        current = info.parentID
+      }
+      return false
+    })()
+    resolving.set(id, pending)
+    try {
+      return await pending
+    } finally {
+      resolving.delete(id)
+    }
+  }
+  const answer = async (kind, request) => {
+    const key = `${kind}:${request.id}`
+    if (!automatic() || answered.has(key)) return
+    if (replying.has(key)) return replying.get(key)
+    const pending = (async () => {
+      if (!(await owns(request.sessionID)) || !automatic()) return
+      try {
+        const answers =
+          kind === "question"
+            ? request.questions.map((question) => [
+                question.options?.[0]?.label ||
+                  "Use your best judgment within the agreed scope and continue.",
+              ])
+            : undefined
+        if (!automatic()) return
+        if (kind === "question" && typeof client.question?.reply === "function") {
+          await client.question.reply(
+            { requestID: request.id, directory, answers },
+            { throwOnError: true }
+          )
+        } else {
+          // The pinned legacy SDK lacks question methods. Its bound transport
+          // preserves in-process fetch/auth and the native instance directory.
+          const response = await client._client.post({
+            url: `/${kind}/{requestID}/reply`,
+            path: { requestID: request.id },
+            query: { directory },
+            body: kind === "permission" ? { reply: "once" } : { answers },
+            bodySerializer: JSON.stringify,
+            headers: { "Content-Type": "application/json" },
+            throwOnError: true,
+          })
+          if (response.error) throw new Error("Automatic reply failed")
+        }
+        answered.add(key)
+        emit(kind === "question" ? "answered" : "permission-approved", {
+          requestID: request.id,
+          ownedSessionID: request.sessionID,
+          ...(answers ? { answers } : {}),
+        })
+      } catch {
+        // Native --auto may have answered the same request first. A request that
+        // disappeared is resolved, not a helper failure or a reason to reapprove.
+        try {
+          const pending = await get(`/${kind}`)
+          if (Array.isArray(pending) && !pending.some((item) => item.id === request.id)) {
+            answered.add(key)
+            return
+          }
+        } catch {
+          /* Keep the actual unresolved reply failure visible. */
+        }
+        if (automatic())
+          emit("error", {
+            requestID: request.id,
+            message: `Could not automatically answer the ${kind}`,
+          })
+      }
+    })()
+    replying.set(key, pending)
+    try {
+      await pending
+    } finally {
+      replying.delete(key)
+    }
+  }
+  const reconcile = async () => {
+    if (!automatic()) return
+    try {
+      const [permissions, questions] = await Promise.all([get("/permission"), get("/question")])
+      if (!Array.isArray(permissions) || !Array.isArray(questions))
+        throw new Error("Invalid pending request list")
+      for (const request of permissions) await answer("permission", request)
+      for (const request of questions) await answer("question", request)
+    } catch {
+      if (automatic())
+        emit("error", { message: "Could not reconcile pending owned-session requests" })
+    }
+  }
   if (typeof client.question?.reply !== "function" && typeof client._client?.post !== "function") {
     emit("error", { message: "The OpenCode question transport is unavailable" })
     return {}
@@ -52,6 +175,9 @@ export default async function autonomy({ client, directory }, options = {}) {
       const digest = createHash("sha256").update(text).digest("hex")
       if (state.mode === "automatic" && state.expectedPrompt === digest) {
         atomicJSON(options.controlFile, { ...state, expectedPrompt: undefined })
+        // Do this after instance initialization, not while loading the plugin:
+        // startup and resumed turns can inherit requests with no new asked event.
+        await reconcile()
       } else handover()
     },
     event: async ({ event }) => {
@@ -69,54 +195,22 @@ export default async function autonomy({ client, directory }, options = {}) {
       )
         handover()
       if (
-        request?.part?.sessionID === sessionID &&
+        request?.part?.sessionID &&
         event.type === "message.part.updated" &&
-        request.part.type === "tool"
+        request.part.type === "tool" &&
+        (sessions.has(request.part.sessionID) ||
+          (automatic() && (await owns(request.part.sessionID).catch(() => false))))
       ) {
         const part = request.part
         emit("activity", {
-          activity: `${part.tool}: ${part.state?.status} ${part.state?.title || ""}`,
+          activity: `${part.sessionID === sessionID ? "" : "Subagent · "}${part.tool}: ${part.state?.status} ${part.state?.title || ""}`,
         })
       }
-      if (
-        event.type !== "question.asked" ||
-        !sessions.has(request?.sessionID) ||
-        answered.has(request.id)
-      )
-        return
-      if (control().mode !== "automatic") return
-      answered.add(request.id)
       try {
-        const answers = request.questions.map((question) => [
-          question.options?.[0]?.label ||
-            "Use your best judgment within the agreed scope and continue.",
-        ])
-        if (typeof client.question?.reply === "function") {
-          await client.question.reply(
-            { requestID: request.id, directory, answers },
-            { throwOnError: true }
-          )
-        } else {
-          // 1.18.35 injects the legacy SDK, which has no question method. Its bound
-          // transport preserves the in-process fetch and auth; never guess a server URL.
-          const response = await client._client.post({
-            url: "/question/{requestID}/reply",
-            path: { requestID: request.id },
-            query: { directory },
-            body: { answers },
-            bodySerializer: JSON.stringify,
-            headers: { "Content-Type": "application/json" },
-            throwOnError: true,
-          })
-          if (response.error) throw new Error("Question reply failed")
-        }
-        emit("answered", { requestID: request.id, answers })
+        if (event.type === "question.asked") await answer("question", request)
+        if (event.type === "permission.asked") await answer("permission", request)
       } catch {
-        answered.delete(request.id)
-        emit("error", {
-          requestID: request.id,
-          message: "Could not automatically answer the question",
-        })
+        if (automatic()) emit("error", { message: "Could not verify automatic request ownership" })
       }
     },
   }

@@ -43,6 +43,7 @@ const help = `Usage: oc-loop --session ses_ID --prompt "Continue ..." [options]
   --json              Machine-readable output for status
 
 No overall turn limit. Permissions auto-approve; questions select their first option.
+Owned resumed subagents and already-pending requests are included; unrelated sessions are not.
 Starts a background worker and opens the native OpenCode UI when run in a terminal.
 Exit the attached UI to detach; the run continues. Double-Esc interrupts the agent
 and hands control to you. Automatic continuation stays paused until explicit resume.
@@ -320,7 +321,7 @@ async function runTurn(config, state, turn, cancellation) {
     "--attach",
     config.transport.url,
     "--dir",
-    config.dir,
+    config.transport.directory,
     "--session",
     config.session,
     "--format",
