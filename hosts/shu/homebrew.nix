@@ -79,6 +79,8 @@
       "spotify"
       "modrinth" # Minecraft Launcher
       "osu"
+      "handy" # Speech to text application
+      "blankie" # Background noise
     ];
     masApps = {
       "Xcode" = 497799835;
