@@ -265,8 +265,6 @@
         cp -R "$src" source
         chmod -R u+w source
         cd source
-        # Git snapshots omit the manifest's two excluded empty placeholders.
-        mkdir -p modules/home-manager/core/opencode/config/skills/{dispatching-parallel-agents,impeccable-style}
         python3 tests/status-digest-test.py
         python3 tests/agent-browser-task-test.py
         python3 tests/agent-capabilities-test.py

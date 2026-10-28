@@ -1,12 +1,13 @@
 import assert from "node:assert/strict"
 import { spawnSync } from "node:child_process"
 import {
-  copyFileSync,
+  closeSync,
+  cpSync,
   existsSync,
   mkdirSync,
+  openSync,
   mkdtempSync,
   readFileSync,
-  readdirSync,
   realpathSync,
   rmSync,
   writeFileSync,
@@ -19,23 +20,19 @@ import test from "node:test"
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const configRoot = join(root, "modules/home-manager/core/opencode/config")
 const config = JSON.parse(readFileSync(join(configRoot, "opencode.json"), "utf8"))
-const primaries = ["planner", "builder", "direct", "sudo"]
-const leaves = ["explore", "general", "audit", "grind", "ideate", "writer"]
 const binary = process.env.OPENCODE_TEST_BINARY ?? "opencode"
+const leaves = ["general", "explore", "reviewer"]
 
 interface Rule {
   permission: string
   pattern: string
   action: string
 }
-interface ResolvedAgent {
+interface Agent {
   name: string
   mode: string
   permission: Rule[]
-  steps?: number
-  temperature?: number
   model?: unknown
-  tools: Record<string, boolean>
 }
 
 function fixture(candidate = config) {
@@ -44,12 +41,10 @@ function fixture(candidate = config) {
   const workspace = join(home, "Code/workspace")
   const installed = join(home, ".config/opencode")
   mkdirSync(workspace, { recursive: true })
-  mkdirSync(join(installed, "prompts"), { recursive: true })
-  mkdirSync(join(installed, "instructions"))
-  for (const file of readdirSync(join(configRoot, "prompts")))
-    copyFileSync(join(configRoot, "prompts", file), join(installed, "prompts", file))
-  copyFileSync(join(configRoot, "instructions/shell.md"), join(installed, "instructions/shell.md"))
-  writeFileSync(join(installed, "opencode.json"), JSON.stringify(candidate))
+  mkdirSync(installed, { recursive: true })
+  for (const entry of ["prompts", "instructions", "skills", "commands"])
+    cpSync(join(configRoot, entry), join(installed, entry), { recursive: true })
+  writeFileSync(join(installed, "opencode.json"), JSON.stringify({ ...candidate, plugin: [] }))
   const env = {
     PATH: process.env.PATH,
     HOME: home,
@@ -68,8 +63,6 @@ function fixture(candidate = config) {
     GIT_TERMINAL_PROMPT: "0",
     GIT_CONFIG_NOSYSTEM: "1",
   }
-  // Native edit patterns are relative to the detected worktree. A non-Git
-  // directory uses a different root and cannot test repository state permissions.
   const init = spawnSync("git", ["init", "--quiet", workspace], {
     env,
     encoding: "utf8",
@@ -81,16 +74,28 @@ function fixture(candidate = config) {
     workspace,
     configFile: join(installed, "opencode.json"),
     run(args: string[]) {
-      const result = spawnSync(binary, ["--pure", ...args], {
-        cwd: workspace,
-        env,
-        encoding: "utf8",
-        timeout: 20000,
-        maxBuffer: 2 * 1024 * 1024,
-      })
-      assert.ifError(result.error)
-      assert.notEqual(result.status, null, "native diagnostic must exit normally, not time out")
-      return result
+      const stdoutPath = join(dir, "stdout")
+      const stderrPath = join(dir, "stderr")
+      const stdout = openSync(stdoutPath, "w")
+      const stderr = openSync(stderrPath, "w")
+      try {
+        const result = spawnSync(binary, ["--pure", ...args], {
+          cwd: workspace,
+          env,
+          timeout: 20000,
+          stdio: ["ignore", stdout, stderr],
+        })
+        assert.ifError(result.error)
+        assert.notEqual(result.status, null, "native diagnostic must exit normally")
+        return {
+          ...result,
+          stdout: readFileSync(stdoutPath, "utf8"),
+          stderr: readFileSync(stderrPath, "utf8"),
+        }
+      } finally {
+        closeSync(stdout)
+        closeSync(stderr)
+      }
     },
     close() {
       rmSync(dir, { recursive: true, force: true })
@@ -98,15 +103,13 @@ function fixture(candidate = config) {
   }
 }
 
-function resolved(f: ReturnType<typeof fixture>, name: string): ResolvedAgent {
+function resolved(f: ReturnType<typeof fixture>, name: string): Agent {
   const result = f.run(["debug", "agent", name])
-  assert.equal(result.status, 0, `${name}: ${result.error ?? ""}\n${result.stderr}`)
+  assert.equal(result.status, 0, `${name}: ${result.stderr}`)
   return JSON.parse(result.stdout)
 }
 
-// Evaluate the ordered native resolver output using OpenCode's simple wildcards.
-// Native edit enforcement is also exercised below in disposable workspaces.
-function action(agent: ResolvedAgent, permission: string, resource = "*") {
+function action(agent: Agent, permission: string, resource = "*") {
   const matches = (pattern: string) =>
     new RegExp(
       `^${pattern
@@ -123,285 +126,180 @@ function action(agent: ResolvedAgent, permission: string, resource = "*") {
     .at(-1)?.action
 }
 
-function assertPrimary(agent: ResolvedAgent) {
+function assertCoordinator(agent: Agent) {
   assert.equal(agent.mode, "primary")
-  for (const name of primaries)
-    assert.equal(action(agent, "task", name), "deny", `${agent.name} must not task-invoke ${name}`)
-  assert.equal(action(agent, "task", "explore"), "allow")
+  assert.equal(action(agent, "task", "jiyu"), "deny")
+  for (const leaf of leaves) assert.equal(action(agent, "task", leaf), "allow", leaf)
 }
 
-function assertLeaf(agent: ResolvedAgent) {
+function assertLeaf(agent: Agent) {
   assert.equal(agent.mode, "subagent")
-  assert.equal(action(agent, "task"), "deny", `${agent.name} must remain a leaf`)
-  if (agent.name === "explore")
-    assert.equal(action(agent, "edit"), "deny", "explore must be read-only")
+  assert.equal(action(agent, "task", "general"), "deny", "workers cannot delegate")
+  if (agent.name !== "general") assert.equal(action(agent, "edit"), "deny", "review is read-only")
 }
 
-test("default and registration references match the selected native workflow", () => {
-  assert.equal(config.default_agent, "direct")
-  assert.equal(config.agent.plan.disable, true)
-  assert.equal(config.agent.build.disable, true)
-  assert.equal(config.agent.init, undefined, "/init is a command, not an agent")
-  assert.deepEqual(
-    Object.keys(config.agent)
-      .filter((name) => !config.agent[name].disable)
-      .sort(),
-    [...primaries, ...leaves].sort()
-  )
-  for (const [name, agent] of Object.entries(config.agent) as [string, { prompt?: string }][]) {
-    if (!agent.prompt) continue
-    const match = agent.prompt.match(/^\{file:\.\/(prompts\/[a-z-]+\.md)\}$/)
-    assert.ok(match, `${name} prompt must be a managed file reference`)
-    assert.ok(existsSync(join(configRoot, match[1]!)), `${name} prompt exists`)
-  }
-  for (const file of readdirSync(join(configRoot, "commands")).filter((file) =>
-    file.endsWith(".md")
-  )) {
-    const text = readFileSync(join(configRoot, "commands", file), "utf8")
-    const agent = text.match(/^agent: ([a-z-]+)$/m)?.[1]
-    assert.ok(
-      agent && config.agent[agent] && !config.agent[agent].disable,
-      `${file} references an active agent`
-    )
-  }
-})
-
-test("models, budgets and upstream plugin declarations are preserved", () => {
-  assert.equal(config.model, "openai/gpt-6.1-sol")
-  assert.equal(config.small_model, "openai/gpt-6-luna")
-  assert.deepEqual(config.provider, { openai: { options: { reasoningEffort: "medium" } } })
-  assert.deepEqual(config.plugin, [
-    "opencode-wakatime",
-    "@mohak34/opencode-notifier@0.8.1",
-    "context-mode",
-  ])
-  assert.equal(config.mcp?.["context-mode"], undefined)
-  for (const [name, steps, temperature] of [
-    ["planner", 120, 0.1],
-    ["builder", 80, 0.1],
-    ["direct", 120, 0.1],
-    ["sudo", 160, 0.1],
-    ["grind", 400, 0.1],
-    ["audit", 160, 0.1],
-    ["ideate", 160, 0.75],
-    ["writer", 160, 0.75],
-  ] as const) {
-    assert.equal(config.agent[name].steps, steps, name)
-    assert.equal(config.agent[name].temperature, temperature, name)
-    assert.equal(config.agent[name].model, undefined, `${name} retains inherited model`)
-  }
-})
-
-test("shared permissions are inherited with only role-specific overrides", () => {
-  for (const name of ["direct", "builder"]) assert.equal(config.agent[name].permission, undefined)
-  for (const name of ["general", "grind"])
-    assert.deepEqual(config.agent[name].permission, { task: "deny" })
-  assert.equal(config.permission.bash["nix *"], undefined)
-  const f = fixture()
-  try {
-    const planner = resolved(f, "planner")
-    assert.equal(action(planner, "bash"), "ask")
-    assert.equal(action(planner, "bash", "nix develop"), "ask")
-    assert.equal(action(planner, "bash", "git status --short"), "allow")
-    assert.equal(action(planner, "bash", "gh pr view 123"), "allow")
-    assert.equal(action(planner, "bash", "gh issue list"), "allow")
-    assert.equal(action(planner, "bash", "gh pr create"), "ask")
-    assert.equal(action(planner, "edit", "product.txt"), "deny")
-    for (const name of ["direct", "builder", "general", "grind", "audit", "ideate", "writer"]) {
-      const agent = resolved(f, name)
-      for (const command of [
-        "git status --short",
-        "git diff --cached",
-        "gh pr view 123",
-        "gh pr diff 123",
-        "gh pr checks 123",
-        "gh pr list",
-        "gh issue view 123",
-        "gh issue list",
-      ]) {
-        assert.equal(action(agent, "bash", command), "allow", `${name}: ${command}`)
-      }
-      // Nix shells can execute arbitrary code and inherit the shared ask default.
-      for (const command of [
-        "nix develop",
-        "nix develop -c just check",
-        "nix shell nixpkgs#jq -c jq --version",
-        "git commit -m test",
-        "git push",
-        "gh pr create",
-        "gh issue close 123",
-        "gh api repos/owner/repo",
-        "rm file",
-        "sudo command",
-      ]) {
-        assert.equal(action(agent, "bash", command), "ask", `${name}: ${command}`)
-      }
-      assert.equal(action(agent, "external_directory", "/unfamiliar/path/file"), "ask", name)
-      assert.equal(action(agent, "external_directory", join(f.workspace, "file")), "allow", name)
-      assert.equal(
-        action(agent, "external_directory", "/Users/shu/Documents/Obsidian Vault/note.md"),
-        "allow",
-        name
-      )
-    }
-    for (const name of ["audit", "ideate", "writer"]) {
-      assert.equal(action(resolved(f, name), "edit", "product.txt"), "deny", name)
-      assert.equal(action(resolved(f, name), "edit", ".agents/receipt.md"), "allow", name)
-    }
-  } finally {
-    f.close()
-  }
-})
-
-test("handoff template has one task list and explicit gates, checks and closure", () => {
-  const text = readFileSync(join(configRoot, "templates/plan.md"), "utf8")
-  const headings = [...text.matchAll(/^## (.+)$/gm)].map((match) => match[1])
-  assert.equal(headings.filter((heading) => heading === "Build handoff").length, 1)
-  const tasks = [...text.matchAll(/^\s*- \[ \] (T\d+) /gm)].map((match) => match[1])
-  assert.ok(tasks.length > 0)
-  assert.equal(new Set(tasks).size, tasks.length, "task placeholders must not be duplicated")
-  for (const field of [
-    "Target files:",
-    "Execution gates:",
-    "redteam:",
-    "sync-artifacts:",
-    "Validation commands",
-    "Stop conditions",
-    "Escalation conditions",
-    "Closure",
-    "Builder prompt: Implement",
-  ])
-    assert.ok(text.includes(field), `handoff structure: ${field}`)
-  // This is an artifact-shape check, not evidence that a model follows its prose.
-})
-
-test("actual native resolver enforces primary/leaf boundaries and reads candidate defaults", () => {
+test("OpenCode resolves the default coordinator and bounded inherited workers", () => {
   const f = fixture()
   try {
     const result = f.run(["debug", "config"])
     assert.equal(result.status, 0, result.stderr)
-    const agents = Object.fromEntries(
-      [...primaries, ...leaves].map((name) => [name, resolved(f, name)])
-    )
-    if (process.env.OPENCODE_WORKFLOW_BASELINE === "1") {
-      console.log(
-        JSON.stringify({
-          default: JSON.parse(result.stdout).default_agent,
-          agents: Object.values(agents).map((agent) => ({
-            name: agent.name,
-            mode: agent.mode,
-            steps: agent.steps,
-            temperature: agent.temperature,
-            model: agent.model ?? "inherited",
-            taskPlanner: action(agent, "task", "planner"),
-            taskGeneral: action(agent, "task", "general"),
-            editAny: action(agent, "edit"),
-          })),
-        })
-      )
+    const loaded = JSON.parse(result.stdout)
+    assert.equal(loaded.default_agent, "jiyu")
+    assertCoordinator(resolved(f, loaded.default_agent))
+    for (const name of leaves) {
+      const agent = resolved(f, name)
+      assertLeaf(agent)
+      assert.equal(agent.model, undefined, "role models inherit rather than using Cursor slugs")
     }
-    assert.equal(JSON.parse(result.stdout).default_agent, "direct")
-    for (const name of primaries) {
-      const agent = agents[name]!
-      assertPrimary(agent)
-      assert.equal(agent.steps, config.agent[name].steps)
-      assert.equal(agent.temperature, config.agent[name].temperature)
-    }
-    for (const name of leaves) assertLeaf(agents[name]!)
   } finally {
     f.close()
   }
 })
 
-test("native edit tools reject planner/explore product edits in disposable workspaces", () => {
+test("ordinary checks run while destructive and operational commands retain approval", () => {
   const f = fixture()
   try {
-    const control = join(f.workspace, "builder-control.txt")
-    const controlResult = f.run([
-      "debug",
-      "agent",
-      "builder",
-      "--tool",
-      "apply_patch",
-      "--params",
-      JSON.stringify({
-        patchText: `*** Begin Patch\n*** Add File: ${control}\n+harmless fixture\n*** End Patch`,
-      }),
+    const agent = resolved(f, "jiyu")
+    for (const command of [
+      "rg retry src",
+      "git diff --cached",
+      "just check",
+      "just build-dry",
+      "pnpm test",
     ])
-    assert.equal(controlResult.status, 0, `fixture edit control failed: ${controlResult.stderr}`)
-    assert.equal(readFileSync(control, "utf8"), "harmless fixture\n")
-    const receipt = join(f.workspace, ".agents/plans/receipt.md")
-    const receiptResult = f.run([
-      "debug",
-      "agent",
-      "planner",
-      "--tool",
-      "apply_patch",
-      "--params",
-      JSON.stringify({
-        patchText: `*** Begin Patch\n*** Add File: ${receipt}\n+internal fixture\n*** End Patch`,
-      }),
+      assert.equal(action(agent, "bash", command), "allow", command)
+    for (const command of [
+      "git push",
+      "git reset --hard",
+      "git clean -fd",
+      "rm file",
+      "sudo command",
+      "gh pr merge 123",
+      "just build",
+      "just deploy shu",
+      "darwin-rebuild switch",
     ])
-    assert.equal(
-      receiptResult.status,
-      0,
-      `planner internal-state control failed: ${receiptResult.stderr}`
-    )
-    assert.equal(readFileSync(receipt, "utf8"), "internal fixture\n")
-    for (const name of ["planner", "explore"]) {
-      const file = join(f.workspace, `${name}-product.txt`)
-      const params = JSON.stringify({
-        patchText: `*** Begin Patch\n*** Add File: ${file}\n+harmless fixture\n*** End Patch`,
-      })
-      const result = f.run(["debug", "agent", name, "--tool", "apply_patch", "--params", params])
-      assert.notEqual(result.status, 0, `${name} must reject product edits`)
-      assert.match(`${result.stdout}\n${result.stderr}`, /denied|disabled|rule which prevents/i)
-      assert.equal(existsSync(file), false, `${name} did not write its fixture`)
-    }
+      assert.equal(action(agent, "bash", command), "ask", command)
+    assert.equal(action(agent, "external_directory", "/unfamiliar/path/file"), "ask")
+    assert.equal(action(agent, "external_directory", join(f.workspace, "file")), "allow")
   } finally {
     f.close()
   }
 })
 
-test("native resolution detects a removed primary deny, leaf deny and explore edit override", () => {
+test("native discovery loads requested skills and their command entrypoints", () => {
+  const f = fixture()
+  try {
+    const result = f.run(["debug", "skill"])
+    assert.equal(result.status, 0, result.stderr)
+    const skills: { name: string; location: string }[] = JSON.parse(result.stdout)
+    const names = new Set(skills.map((skill) => skill.name))
+    const requested = [
+      "jiyu-mode",
+      "jiyu-help",
+      "benchmark-checklist",
+      "blast-radius",
+      "in-your-own-words",
+      "how",
+      "figure-it-out",
+      "ketchup",
+      "interrogate",
+      "swarm",
+      "unslop",
+      "typescript-best-practices",
+      "no-comments",
+      "loop-on-ci",
+      "fix-merge-conflicts",
+      "thermo-nuclear-code-quality-review",
+    ]
+    const loadedResult = f.run(["debug", "config"])
+    assert.equal(loadedResult.status, 0, loadedResult.stderr)
+    const loaded = JSON.parse(loadedResult.stdout)
+    for (const name of requested) {
+      assert.ok(names.has(name), `${name} is discoverable`)
+      assert.equal(loaded.command[name].agent, "jiyu", `/${name} uses the primary session`)
+    }
+    for (const name of ["engineering-quality", "brainstorming", "handoff", "humanizer"])
+      assert.equal(names.has(name), false, `${name} is retired`)
+  } finally {
+    f.close()
+  }
+})
+
+test("native tools allow implementation and reject reviewer and explorer writes", () => {
+  const f = fixture()
+  try {
+    for (const name of ["jiyu", "general", "reviewer", "explore"]) {
+      const file = join(f.workspace, `${name}-product.txt`)
+      const result = f.run([
+        "debug",
+        "agent",
+        name,
+        "--tool",
+        "apply_patch",
+        "--params",
+        JSON.stringify({
+          patchText: `*** Begin Patch\n*** Add File: ${file}\n+fixture\n*** End Patch`,
+        }),
+      ])
+      if (name === "jiyu" || name === "general") {
+        assert.equal(result.status, 0, result.stderr)
+        assert.equal(readFileSync(file, "utf8"), "fixture\n")
+      } else {
+        assert.notEqual(result.status, 0)
+        assert.match(`${result.stdout}\n${result.stderr}`, /denied|disabled|rule which prevents/i)
+        assert.equal(existsSync(file), false)
+      }
+    }
+    const receipt = join(f.workspace, ".agents/reviewer-note.md")
+    const result = f.run([
+      "debug",
+      "agent",
+      "reviewer",
+      "--tool",
+      "apply_patch",
+      "--params",
+      JSON.stringify({
+        patchText: `*** Begin Patch\n*** Add File: ${receipt}\n+fixture\n*** End Patch`,
+      }),
+    ])
+    assert.notEqual(result.status, 0, "shared state has no reviewer write exception")
+    assert.equal(existsSync(receipt), false)
+  } finally {
+    f.close()
+  }
+})
+
+test("native resolution exposes permission regressions in candidate configurations", () => {
   const primary = structuredClone(config)
-  delete primary.permission.task.planner
+  primary.permission.task["*"] = "allow"
   const f = fixture(primary)
   try {
-    assert.throws(() => assertPrimary(resolved(f, "planner")), /must not task-invoke planner/)
+    assert.throws(() => assertCoordinator(resolved(f, "jiyu")))
   } finally {
     f.close()
   }
 
-  const leaf = structuredClone(config)
-  delete leaf.agent.general.permission.task
-  const g = fixture(leaf)
+  const reviewer = structuredClone(config)
+  reviewer.agent.reviewer.permission.edit = "allow"
+  const g = fixture(reviewer)
   try {
-    assert.throws(() => assertLeaf(resolved(g, "general")), /must remain a leaf/)
+    assert.throws(() => assertLeaf(resolved(g, "reviewer")))
   } finally {
     g.close()
   }
 
-  const explorer = structuredClone(config)
-  delete explorer.agent.explore.permission.edit
-  const h = fixture(explorer)
+  const worker = structuredClone(config)
+  worker.agent.general.permission.task = "allow"
+  const h = fixture(worker)
   try {
-    assert.throws(() => assertLeaf(resolved(h, "explore")), /must be read-only/)
+    assert.throws(() => assertLeaf(resolved(h, "general")))
   } finally {
     h.close()
   }
-
-  const sudo = structuredClone(config)
-  delete sudo.agent.sudo.permission.task
-  const s = fixture(sudo)
-  try {
-    assert.throws(() => assertPrimary(resolved(s, "sudo")), /must not task-invoke/)
-  } finally {
-    s.close()
-  }
 })
 
-test("native config loading rejects malformed JSON and missing prompt references", () => {
+test("native loading rejects malformed configuration and missing prompt files", () => {
   const f = fixture()
   try {
     writeFileSync(f.configFile, "{broken")
@@ -409,14 +307,11 @@ test("native config loading rejects malformed JSON and missing prompt references
     assert.notEqual(syntax.status, 0)
     assert.match(`${syntax.stdout}\n${syntax.stderr}`, /json|parse|syntax/i)
     const invalid = structuredClone(config)
-    invalid.agent.direct.prompt = "{file:./prompts/missing-workflow-fixture.md}"
-    writeFileSync(f.configFile, JSON.stringify(invalid))
-    const missing = f.run(["debug", "agent", "direct"])
+    invalid.agent.jiyu.prompt = "{file:./prompts/missing-fixture.md}"
+    writeFileSync(f.configFile, JSON.stringify({ ...invalid, plugin: [] }))
+    const missing = f.run(["debug", "agent", "jiyu"])
     assert.notEqual(missing.status, 0)
-    assert.match(
-      `${missing.stdout}\n${missing.stderr}`,
-      /missing-workflow-fixture|not found|ENOENT/i
-    )
+    assert.match(`${missing.stdout}\n${missing.stderr}`, /missing-fixture|not found|ENOENT/i)
   } finally {
     f.close()
   }

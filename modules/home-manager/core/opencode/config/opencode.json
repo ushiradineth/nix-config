@@ -2,7 +2,7 @@
   "$schema": "https://opencode.ai/config.json",
   "model": "openai/gpt-6.1-sol",
   "small_model": "openai/gpt-6-luna",
-  "default_agent": "direct",
+  "default_agent": "jiyu",
   "autoupdate": false,
   "lsp": {},
   "plugin": ["opencode-wakatime", "@mohak34/opencode-notifier@0.8.1", "context-mode"],
@@ -21,66 +21,15 @@
     "build": {
       "disable": true
     },
-    "planner": {
+    "jiyu": {
       "mode": "primary",
-      "description": "Visible lane for big tasks: grills ambiguity, writes plans, and hands off to builder",
-      "temperature": 0.1,
-      "steps": 120,
-      "prompt": "{file:./prompts/plan.md}",
-      "permission": {
-        "bash": {
-          "*": "ask",
-          "git status*": "allow",
-          "git diff*": "allow",
-          "git log*": "allow",
-          "git show*": "allow",
-          "git rev-parse*": "allow",
-          "git ls-files*": "allow",
-          "gh pr view*": "allow",
-          "gh pr diff*": "allow",
-          "gh pr checks*": "allow",
-          "gh pr list*": "allow",
-          "gh issue view*": "allow",
-          "gh issue list*": "allow"
-        },
-        "edit": {
-          "*": "deny",
-          ".agents/**": "allow"
-        }
-      }
-    },
-    "builder": {
-      "mode": "primary",
-      "description": "Visible lane for executing approved planner handoffs",
-      "temperature": 0.1,
-      "steps": 80,
-      "prompt": "{file:./prompts/build.md}"
-    },
-    "direct": {
-      "mode": "primary",
-      "description": "Default lane for routine coding, debugging, and bounded multi-file features",
-      "temperature": 0.1,
-      "steps": 120,
-      "prompt": "{file:./prompts/direct.md}"
-    },
-    "sudo": {
-      "mode": "primary",
-      "description": "Visible lane for explicit operational chores, PRs, pipelines, and high-authority actions",
-      "temperature": 0.1,
-      "steps": 160,
-      "prompt": "{file:./prompts/sudo.md}",
-      "permission": {
-        "*": "allow",
-        "task": {
-          "*": "allow",
-          "planner": "deny",
-          "builder": "deny",
-          "direct": "deny",
-          "sudo": "deny"
-        }
-      }
+      "description": "Own a goal through jiyu-mode routing, implementation and verification",
+      "prompt": "{file:./prompts/jiyu.md}"
     },
     "general": {
+      "mode": "subagent",
+      "description": "Complete a bounded implementation or investigation assignment",
+      "prompt": "{file:./prompts/worker.md}",
       "permission": {
         "task": "deny"
       }
@@ -91,97 +40,52 @@
         "edit": "deny"
       }
     },
-    "grind": {
+    "reviewer": {
       "mode": "subagent",
-      "description": "Internal leaf capability for long-running checkpointed execution",
-      "temperature": 0.1,
-      "steps": 400,
-      "prompt": "{file:./prompts/grind.md}",
-      "permission": {
-        "task": "deny"
-      }
-    },
-    "audit": {
-      "mode": "subagent",
-      "description": "Internal leaf capability for code health and architecture risk review",
-      "temperature": 0.1,
-      "steps": 160,
-      "prompt": "{file:./prompts/audit.md}",
+      "description": "Read-only correctness, comment and maintainability review",
+      "prompt": "{file:./prompts/reviewer.md}",
       "permission": {
         "task": "deny",
-        "edit": {
-          "*": "deny",
-          ".agents/**": "allow"
-        }
-      }
-    },
-    "ideate": {
-      "mode": "subagent",
-      "description": "Internal leaf capability for bounded optioning and direction setting",
-      "temperature": 0.75,
-      "steps": 160,
-      "prompt": "{file:./prompts/ideate.md}",
-      "permission": {
-        "task": "deny",
-        "edit": {
-          "*": "deny",
-          ".agents/**": "allow"
-        }
-      }
-    },
-    "writer": {
-      "mode": "subagent",
-      "description": "Internal leaf capability for personal-voice writing and documentation",
-      "temperature": 0.75,
-      "steps": 160,
-      "prompt": "{file:./prompts/writer.md}",
-      "permission": {
-        "task": "deny",
-        "edit": {
-          "*": "deny",
-          ".agents/**": "allow"
-        }
+        "edit": "deny"
       }
     }
   },
   "permission": {
-    "ctx_*": "allow",
     "question": "allow",
     "read": "allow",
     "edit": "allow",
     "glob": "allow",
-    "bash": {
-      "*": "ask",
-      "rm *": "ask",
-      "git *": "ask",
-      "git status*": "allow",
-      "git diff*": "allow",
-      "git log*": "allow",
-      "git show*": "allow",
-      "git rev-parse*": "allow",
-      "git ls-files*": "allow",
-      "gh *": "ask",
-      "gh pr view*": "allow",
-      "gh pr diff*": "allow",
-      "gh pr checks*": "allow",
-      "gh pr list*": "allow",
-      "gh issue view*": "allow",
-      "gh issue list*": "allow",
-      "sudo *": "ask"
-    },
     "list": "allow",
     "grep": "allow",
     "webfetch": "allow",
     "websearch": "allow",
-    "task": {
-      "*": "allow",
-      "planner": "deny",
-      "builder": "deny",
-      "direct": "deny",
-      "sudo": "deny"
-    },
     "skill": "allow",
     "lsp": "allow",
+    "bash": {
+      "*": "allow",
+      "rm *": "ask",
+      "sudo *": "ask",
+      "git push*": "ask",
+      "git reset*": "ask",
+      "git clean*": "ask",
+      "git restore*": "ask",
+      "git checkout --*": "ask",
+      "git branch -D*": "ask",
+      "gh pr merge*": "ask",
+      "gh repo delete*": "ask",
+      "just build*": "ask",
+      "just build-dry*": "allow",
+      "just init*": "ask",
+      "just deploy*": "ask",
+      "nixos-rebuild*": "ask",
+      "darwin-rebuild*": "ask"
+    },
+    "task": {
+      "*": "deny",
+      "general": "allow",
+      "explore": "allow",
+      "reviewer": "allow"
+    },
     "external_directory": {
       "*": "ask",
       "~/nix-config/**": "allow",

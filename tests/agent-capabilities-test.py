@@ -333,7 +333,7 @@ class RepositoryExportTest(unittest.TestCase):
                     self.assertEqual(patch["executable"], executable)
             for name in set(entries) - selected:
                 self.assertFalse((output / "skills" / name).exists())
-            for name in ("security-audit", "fallow", "humanizer"):
+            for name in ("security-audit", "fallow", "unslop"):
                 self.assertTrue((output / "skills" / name / "LICENSE").is_file())
 
 

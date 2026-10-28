@@ -30,8 +30,8 @@ attribution file and executable bit. `exclude` uses `none` and explains why no p
 
 - `import` keeps reusable guidance and all original bytes.
 - `adapt` also keeps original bytes; the binding proposal supplies runtime constraints. Apply those
-  constraints with the shared `engineering-quality` Paperclip mapping before assigning the package.
-  OpenCode lane/helper wording cannot grant Paperclip authority. Review remains inline and leaf
+  constraints for the current Paperclip role, tools and approved scope before assigning the package.
+  OpenCode agent/helper wording cannot grant Paperclip authority. Review remains inline and leaf
   executors never dispatch nested agents.
 - Role labels describe capabilities of existing eligible workers. Match them against current task,
   role, tools and approvals. Preserve report-only workers, unrelated skills and existing permission

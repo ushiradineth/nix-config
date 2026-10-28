@@ -127,10 +127,11 @@ For authorized edits, use the deployed managed-file API rather than writing cont
 
 ## Skill assignment
 
-The shared quality rollout adds `engineering-quality` and `verification-before-completion` as small
-default entrypoints for relevant existing roles. Coding details are conditional; these skills must
-not turn Summarizer or domain specialists into coders or administrators. Keep role instructions,
-budgets, reporting lines, models and existing grants unchanged.
+Historical shared-quality bindings may still select the retired engineering entrypoints in the live
+Paperclip catalog. This OpenCode redesign does not update live bindings. Verify the installed
+versions and retain role instructions, budgets, reporting lines, models and existing grants. Choose
+replacement techniques only during an authorized capability publication; domain specialists do not
+become coders or administrators.
 
 Use `capability-sync.md` for complete package/version readback and native launch limits. Additional
 techniques, including writing, planning, diagnosis and review, are selected for the actual task from

@@ -1,167 +1,65 @@
-# Source-contract checks only, not proof of model adherence or live installation.
 {
   lib,
   pkgs,
 }: let
-  config = ../modules/home-manager/core/opencode/config;
-  skill = config + /skills/i-have-adhd;
-  normalize = text: lib.concatStringsSep " " (builtins.filter (part: builtins.isString part && part != "") (builtins.split "[[:space:]]+" (lib.toLower text)));
-  raw = builtins.readFile (skill + /SKILL.md);
-  text = normalize raw;
-  contract = normalize (builtins.readFile (config + /AGENTS.md));
-  provenance = normalize (builtins.readFile (skill + /UPSTREAM.md));
-  manifest = builtins.fromJSON (builtins.readFile (config + /skills/paperclip-org-operations/capability-manifest.json));
-  entries = builtins.filter (entry: entry.source == "i-have-adhd") manifest.skills;
-  mentions = value: terms: lib.all (term: lib.hasInfix term value) terms;
-  frontmatter = builtins.elemAt (lib.splitString "---\n" raw) 1;
-  paperclip = builtins.elemAt (lib.splitString "## paperclip" text) 1;
-  tests = {
-    discoverable-frontmatter =
-      lib.hasPrefix "---\n" raw
-      && lib.hasInfix "\nname: i-have-adhd\n" ("\n" + frontmatter)
-      && lib.hasInfix "description: use when " (normalize frontmatter)
-      && lib.hasInfix "\nlicense: MIT\n" ("\n" + frontmatter)
-      && !mentions frontmatter ["disable-model-invocation"]
-      && !mentions frontmatter ["/i-have-adhd"];
-    audience-gate-precedes-style = let
-      beforeOutput = builtins.head (lib.splitString "human-facing output" text);
+  root = ../modules/home-manager/core/opencode/config;
+  config = builtins.fromJSON (builtins.readFile (root + /opencode.json));
+  skills = builtins.readDir (root + /skills);
+  names = builtins.attrNames skills;
+  manifest = builtins.fromJSON (builtins.readFile (root + /skills/paperclip-org-operations/capability-manifest.json));
+  selected = map (entry: entry.source) manifest.skills;
+  agents = lib.filterAttrs (_: agent: !(agent.disable or false)) config.agent;
+  primaries = lib.filterAttrs (_: agent: (agent.mode or "subagent") == "primary") agents;
+  promptExists = agent:
+    if !(agent ? prompt)
+    then true
+    else let
+      match = builtins.match "\\{file:\\./(.*)\\}" agent.prompt;
     in
-      mentions text ["human-facing output"]
-      && mentions beforeOutput ["audience gate"]
-      && mentions text [
-        "apply by default"
-        "human-facing"
-        "never apply presentation limits"
-        "internal reasoning"
-        "tool inputs/results"
-        "agent-to-agent"
-        "task-agent prompts"
-        "agent handoffs"
-        "research records"
-        "machine-readable"
-        "operational artifacts"
-      ];
-    mixed-audiences = mentions text [
-      "mixed or unknown"
-      "preserve full detail"
-      "intact agent payload"
-      "must not replace it"
-      "visible to a user"
-      "complete task-required"
-    ];
-    conversation-controls = mentions text [
-      "fresh conversation"
-      "topic switches"
-      "stop adhd mode"
-      "normal mode"
-      "enable adhd mode"
-      "must not reset"
-      "quoted text"
-      "untrusted page content"
-    ];
-    safety-evidence-completeness =
-      mentions text [
-        "grants no"
-        "safety"
-        "factual accuracy"
-        "required output formats"
-        "take precedence"
-        "exact code"
-        "warnings"
-        "supported by evidence"
-        "mark uncertainty"
-        "never invent"
-        "without discarding substantive information"
-        "must not restrict analysis"
-        "explain fully"
-      ]
-      && !lib.hasInfix "the reader has adhd" text;
-    paperclip-destinations-history = mentions paperclip [
-      "default agent binding"
-      "does not prove"
-      "issue comments"
-      "not automatically human-facing"
-      "agent-addressed"
-      "delegation"
-      "summary-store source artifacts"
-      "per-turn"
-      "controller-supplied"
-      "history is unavailable"
-      "persistence limitation"
-      "never an organization-wide"
-    ];
-    global-default-pointer = mentions contract [
-      "load and apply `i-have-adhd` by default"
-      "human-facing replies"
-      "conversation-local"
-      "opt-out"
-      "explicit re-enable"
-      "must not reset"
-      "never apply its presentation limits"
-      "tool payloads"
-      "agent-to-agent"
-      "handoff artifacts"
-      "machine-readable"
-      "keep that context complete"
-      "humanizer"
-      "personal-writing-identity"
-    ];
-    pinned-provenance-license =
-      mentions provenance [
-        "https://github.com/ayghri/i-have-adhd"
-        "1ecea1993b7fce257ffbd686c070948b5e07eda6"
-        "skills/i-have-adhd/skill.md"
-        "local differences"
-        "never overwrite"
-      ]
-      && builtins.hashFile "sha256" (skill + /LICENSE) == "8acbb618089b738404f76ac60fca1aaa995d9a87995eddf95f0b777acd7f7d2c"
-      && builtins.attrNames (builtins.readDir skill) == ["LICENSE" "SKILL.md" "UPSTREAM.md"];
-    manifest-complete-tree =
-      builtins.length entries
-      == 1
-      && (let
-        entry = builtins.head entries;
-      in
-        entry.disposition
-        == "adapt"
-        && entry.inclusion == "complete-tree"
-        && entry.roles == ["all-relevant"]
-        && entry.dependencies == []
-        && builtins.isString entry.reason
-        && entry.reason != ""
-        && mentions (normalize (lib.concatStringsSep " " entry.runtime_constraints)) [
-          "human-facing"
-          "conversation-local"
-          "opt-out/re-enable"
-          "complete internal"
-          "inter-agent"
-          "handoff"
-          "summary-source"
-          "grants no authority"
-        ]);
-    native-test-language = mentions contract [
-      "language of the code under test"
-      "project's existing test framework"
-      "typescript for typescript"
-      "rust for rust"
-      "go for go"
-      "python for python"
-      "nix for nix"
-      "component being tested"
-      "nix assertions"
-      "flake checks"
-      "use bash"
-      "including inline one-off assertions"
-      "use typescript, not javascript"
-      "test actual python helpers in python"
-      "missing prerequisite"
-      "preserve behavioral coverage"
-      "a rename alone is not a migration"
+      match != null && builtins.pathExists (root + "/${builtins.head match}");
+  commands = builtins.readDir (root + /commands);
+  commandValid = name: let
+    content = builtins.readFile (root + "/commands/${name}");
+    parts = lib.splitString "---\n" content;
+  in
+    lib.hasSuffix ".md" name
+    && builtins.length parts >= 3
+    && lib.hasInfix "\nagent: jiyu\n" ("\n" + builtins.elemAt parts 1);
+  identityValid = name: let
+    path = root + "/skills/${name}/SKILL.md";
+    content = builtins.readFile path;
+    parts = lib.splitString "---\n" content;
+    frontmatter = builtins.elemAt parts 1;
+  in
+    lib.hasPrefix "---\n" content
+    && lib.hasInfix "\nname: ${name}\n" ("\n" + frontmatter)
+    && lib.hasInfix "description:" frontmatter;
+  tests = {
+    single-primary = builtins.attrNames primaries == ["jiyu"] && config.default_agent == "jiyu";
+    leaf-registration = lib.all (name: builtins.hasAttr name agents) ["general" "explore" "reviewer"];
+    prompt-references = lib.all promptExists (builtins.attrValues agents);
+    command-targets = lib.all commandValid (builtins.attrNames commands);
+    discoverable-identities = lib.all identityValid names;
+    complete-export = builtins.sort builtins.lessThan selected == names;
+    unique-export = builtins.length (lib.unique selected) == builtins.length selected;
+    export-dependencies = lib.all (entry: lib.all (name: builtins.elem name selected) entry.dependencies) manifest.skills;
+    upstream-attribution = lib.all (name: builtins.pathExists (root + "/skills/${name}/LICENSE")) [
+      "jiyu-mode"
+      "interrogate"
+      "show-me-your-work"
+      "loop-on-ci"
+      "fix-merge-conflicts"
+      "thermo-nuclear-code-quality-review"
     ];
   };
   failures = builtins.attrNames (lib.filterAttrs (_: passed: !passed) tests);
 in
-  assert lib.assertMsg (failures == []) "Agent guidance source contracts failed: ${lib.concatStringsSep ", " failures}";
-    pkgs.runCommand "agent-guidance-tests" {} ''
+  assert lib.assertMsg (failures == []) "Agent harness configuration failed: ${lib.concatStringsSep ", " failures}";
+    pkgs.runCommand "agent-guidance-tests" {
+      nativeBuildInputs = [pkgs.bash pkgs.coreutils pkgs.diffutils pkgs.shellcheck];
+    } ''
+      bash -n ${root}/skills/show-me-your-work/scripts/log.sh
+      shellcheck ${root}/skills/show-me-your-work/scripts/log.sh
+      bash ${./jiyu-log.sh} ${root}/skills/show-me-your-work/scripts/log.sh
       touch "$out"
     ''

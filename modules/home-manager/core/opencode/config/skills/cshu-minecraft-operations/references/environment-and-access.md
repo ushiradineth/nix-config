@@ -5,7 +5,7 @@
 Use facts in this order:
 
 1. Current repository configuration, especially `hosts/shupi/backup.nix`.
-2. Read-only observations gathered during the current `sudo` incident session.
+2. Read-only observations gathered during the current incident session.
 3. Historical observations below, labeled with their date.
 
 If sources disagree, current repository configuration and current observations win. Do not silently
@@ -43,7 +43,7 @@ server state.
 
 ## Read-only access discovery
 
-Run these checks only after the user has explicitly requested diagnosis in `sudo`:
+Run these checks only after the user has explicitly requested diagnosis for the target:
 
 1. Resolve the intended target before connecting. If OpenSSH is the current route, `ssh -G shuwin`
    may confirm alias expansion without opening a connection; it does not prove authentication or

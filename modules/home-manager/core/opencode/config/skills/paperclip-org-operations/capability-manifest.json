@@ -1,156 +1,106 @@
 {
   "schema_version": 1,
-  "source_policy": "Repository skill directories only; external-root inventory was denied. No external skills are imported. Browser workflow is classified only after its source exists.",
+  "source_policy": "Reviewed repository skill trees only. Pstack and cursor-team-kit adaptations are pinned in HARNESS.md. Exports are offline proposals and do not update a live runtime.",
   "role_policy": "Capability labels select guidance for existing eligible roles, never new agents, tools, connections or permissions. Preserve report-only roles and unrelated installed skills.",
   "skills": [
     {
-      "source": "i-have-adhd",
+      "source": "architect",
       "disposition": "adapt",
       "inclusion": "complete-tree",
-      "roles": ["all-relevant"],
+      "roles": ["coding"],
       "dependencies": [],
       "runtime_constraints": [
-        "Default human-facing presentation only, with conversation-local opt-out/re-enable. Keep complete internal, tool, inter-agent, handoff and summary-source context; unknown audiences retain full detail. A default binding grants no authority and does not prove readable source or per-turn history."
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
       ],
-      "reason": "Share the audience-aware output skill across existing roles without compressing operational context or changing permissions."
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
     },
     {
-      "source": "adversarial-self-play",
-      "disposition": "import",
-      "inclusion": "complete-tree",
-      "roles": ["coding", "planning", "operations"],
-      "dependencies": [],
-      "runtime_constraints": [
-        "Inline attacker review only; no additional agent or service authority."
-      ],
-      "reason": "Reusable break-first review before important readiness claims."
-    },
-    {
-      "source": "architecture-deepening",
+      "source": "arena",
       "disposition": "adapt",
       "inclusion": "complete-tree",
-      "roles": ["coding", "planning"],
+      "roles": ["coding"],
       "dependencies": [],
       "runtime_constraints": [
-        "Use approved task artifacts and inline analysis instead of OpenCode lane or helper syntax; source access must already be authorized."
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
       ],
-      "reason": "Reuse interface and coupling analysis for coding plans and implementation."
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
     },
     {
-      "source": "artifact-coherence",
+      "source": "benchmark-checklist",
       "disposition": "adapt",
       "inclusion": "complete-tree",
-      "roles": ["coding", "planning", "operations", "writing"],
+      "roles": ["coding"],
       "dependencies": [],
       "runtime_constraints": [
-        "Paperclip issues and approved project artifacts replace OpenCode state paths; do not create new synchronization services."
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
       ],
-      "reason": "Keep canonical procedures, exports, versions and observed consumer evidence coherent."
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
     },
     {
-      "source": "beam-search-execution",
-      "disposition": "import",
-      "inclusion": "complete-tree",
-      "roles": ["coding", "planning", "writing"],
-      "dependencies": [],
-      "runtime_constraints": [
-        "Bound alternatives within the accepted task; evaluate inline without spawning agents."
-      ],
-      "reason": "Preserve bounded option generation and evidence-based selection."
-    },
-    {
-      "source": "brainstorming",
+      "source": "blast-radius",
       "disposition": "adapt",
       "inclusion": "complete-tree",
-      "roles": ["planning", "coding"],
-      "dependencies": ["handoff"],
+      "roles": ["coding"],
+      "dependencies": [],
       "runtime_constraints": [
-        "Approved issue/design replaces planner lane and fresh session; use inline options, no automatic ideate or writer dispatch."
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
       ],
-      "reason": "Design acceptance and tradeoffs apply to feature-heavy work in either runtime."
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
     },
     {
       "source": "browser-workflow",
       "disposition": "import",
       "inclusion": "complete-tree",
       "roles": ["coding-if-browser-eligible", "operations-if-browser-eligible"],
-      "dependencies": ["verification-before-completion"],
+      "dependencies": [],
       "runtime_constraints": [
         "Requires installed agent-browser-task on shu and existing verified local or SSH tool eligibility. Public-read or authorized disposable loopback only; no personal profiles, external submissions or authority expansion. Native screenshot byte delivery and advertised viewer inspection require real-run validation."
       ],
       "reason": "Shared bounded headless browser workflow and exact-byte artifact transport, with native Paperclip SSH mapping."
     },
     {
-      "source": "caveman",
-      "disposition": "import",
+      "source": "correct",
+      "disposition": "adapt",
       "inclusion": "complete-tree",
-      "roles": ["all-relevant"],
+      "roles": ["coding"],
       "dependencies": [],
       "runtime_constraints": [
-        "Activate only for requested terse communication; preserve evidence and required formats."
+        "OpenCode task guidance. Use the caller's role, advertised tools and existing authority; no automatic publication or nested delegation."
       ],
-      "reason": "Reusable user-selected communication mode."
+      "reason": "Reviewed pstack technique adapted to the single-primary OpenCode workflow."
+    },
+    {
+      "source": "create-verification-skill",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode task guidance. Use the caller's role, advertised tools and existing authority; no automatic publication or nested delegation."
+      ],
+      "reason": "Reviewed pstack technique adapted to the single-primary OpenCode workflow."
     },
     {
       "source": "cshu-minecraft-operations",
       "disposition": "adapt",
       "inclusion": "complete-tree",
       "roles": ["minecraft-operations-if-authorized"],
-      "dependencies": ["diagnose"],
+      "dependencies": [],
       "runtime_constraints": [
-        "Domain context is conditional guidance only. OpenCode sudo intent is not Paperclip authority; require existing explicit diagnostic access and immediate exact-action approval for each mutation. Stop if either is unavailable."
+        "Domain context only. Live commands require explicit diagnostic or operational scope; mutations stay within the caller's existing authority. No credential reuse or access grants."
       ],
       "reason": "Reuse built Minecraft incident procedures only for the named domain and eligible existing operators."
     },
     {
-      "source": "diagnose",
+      "source": "deslop",
       "disposition": "adapt",
       "inclusion": "complete-tree",
-      "roles": ["coding", "operations-if-authorized"],
+      "roles": ["coding"],
       "dependencies": [],
       "runtime_constraints": [
-        "Use authorized workspace and task checkpoints; execute only existing granted tools, never infer host or production access from diagnostic guidance."
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
       ],
-      "reason": "Transfer deterministic reproduction, hypotheses and original-signal reruns."
-    },
-    {
-      "source": "dispatching-parallel-agents",
-      "disposition": "exclude",
-      "inclusion": "none",
-      "roles": [],
-      "dependencies": [],
-      "runtime_constraints": ["No SKILL.md or supporting files; no nested delegation authority."],
-      "reason": "Empty repository placeholder, not an implemented capability."
-    },
-    {
-      "source": "engineering-quality",
-      "disposition": "import",
-      "inclusion": "complete-tree",
-      "roles": ["all-relevant"],
-      "dependencies": [
-        "zoom-out",
-        "grill-me",
-        "beam-search-execution",
-        "architecture-deepening",
-        "test-driven-development",
-        "diagnose",
-        "using-git-worktrees",
-        "shift-left-security",
-        "fallow",
-        "security-audit",
-        "requesting-code-review",
-        "receiving-code-review",
-        "git-guardrails",
-        "adversarial-self-play",
-        "artifact-coherence",
-        "verification-before-completion",
-        "handoff",
-        "humanizer"
-      ],
-      "runtime_constraints": [
-        "Load coding detail only for coding tasks. Paperclip reference maps approved issues, runtime skill suffixes and inline reviews; no nested tool-agent dispatch or role replacement."
-      ],
-      "reason": "Shared outcome, scope, test, review, security and fresh-evidence entrypoint; detailed procedures stay canonical."
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
     },
     {
       "source": "fallow",
@@ -164,59 +114,103 @@
       "reason": "Include repository-adapted codebase intelligence and its upstream attribution/license."
     },
     {
-      "source": "git-guardrails",
-      "disposition": "import",
-      "inclusion": "complete-tree",
-      "roles": ["coding", "operations-if-authorized"],
-      "dependencies": ["resolving-merge-conflicts"],
-      "runtime_constraints": [
-        "Git access and every consequential action require existing authority and exact intent; no unrequested commit or push."
-      ],
-      "reason": "Preserve read-first git mutation and remote-side-effect gates."
-    },
-    {
-      "source": "grill-me",
-      "disposition": "import",
-      "inclusion": "complete-tree",
-      "roles": ["coding", "planning", "operations"],
-      "dependencies": [],
-      "runtime_constraints": [
-        "Resolve material decisions within the task; clarification is not permission expansion."
-      ],
-      "reason": "Shared ambiguity and acceptance-criteria checks before risky decisions."
-    },
-    {
-      "source": "handoff",
+      "source": "figure-it-out",
       "disposition": "adapt",
       "inclusion": "complete-tree",
-      "roles": ["coding", "planning", "operations", "writing"],
+      "roles": ["coding"],
       "dependencies": [],
       "runtime_constraints": [
-        "Use the included Paperclip branch: approved issue/checkpoint with evidence and named owner, not primary-agent task invocation or a fresh OpenCode builder session."
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
       ],
-      "reason": "Preserve scoped continuation and durable evidence across runtime boundaries."
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
     },
     {
-      "source": "humanizer",
-      "disposition": "import",
+      "source": "fix-merge-conflicts",
+      "disposition": "adapt",
       "inclusion": "complete-tree",
-      "roles": ["all-relevant", "writing", "reporting"],
+      "roles": ["coding"],
       "dependencies": [],
       "runtime_constraints": [
-        "Preserve facts, exact code and required formats; prose skill supplies no shell, publication or service access."
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
       ],
-      "reason": "Reuse canonical fact-preserving prose cleanup, including MIT license and upstream attribution."
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
     },
     {
-      "source": "impeccable-style",
-      "disposition": "exclude",
-      "inclusion": "none",
-      "roles": [],
+      "source": "how",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
       "dependencies": [],
       "runtime_constraints": [
-        "No SKILL.md or supporting files; no reviewed UI procedure is available."
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
       ],
-      "reason": "Empty repository placeholder. External UI/image packages were not approved for source/license review."
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
+    },
+    {
+      "source": "i-have-adhd",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["all-relevant"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "Opt-in human-facing presentation with conversation-local controls. Internal, tool, agent and machine context remains complete; no authority is granted."
+      ],
+      "reason": "Share the audience-aware output skill across existing roles without compressing operational context or changing permissions."
+    },
+    {
+      "source": "in-your-own-words",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
+      ],
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
+    },
+    {
+      "source": "interrogate",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
+      ],
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
+    },
+    {
+      "source": "jiyu-help",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode task guidance. Use the caller's role, advertised tools and existing authority; no automatic publication or nested delegation."
+      ],
+      "reason": "Reviewed pstack technique adapted to the single-primary OpenCode workflow."
+    },
+    {
+      "source": "jiyu-mode",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
+      ],
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
+    },
+    {
+      "source": "ketchup",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
+      ],
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
     },
     {
       "source": "kumo-design",
@@ -230,11 +224,44 @@
       "reason": "Preserve the requested managed OpenCode scope without exporting the new skill to other agents."
     },
     {
+      "source": "loop-on-ci",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
+      ],
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
+    },
+    {
+      "source": "maintain-verification-skill",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode task guidance. Use the caller's role, advertised tools and existing authority; no automatic publication or nested delegation."
+      ],
+      "reason": "Reviewed pstack technique adapted to the single-primary OpenCode workflow."
+    },
+    {
+      "source": "no-comments",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
+      ],
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
+    },
+    {
       "source": "paperclip-org-operations",
       "disposition": "import",
       "inclusion": "complete-tree",
       "roles": ["planning", "paperclip-operations-if-authorized"],
-      "dependencies": ["artifact-coherence", "verification-before-completion"],
+      "dependencies": [],
       "runtime_constraints": [
         "Python 3 stdlib exporter is offline only. Live facts need separately authorized company-scoped tools and verified deployed API contracts; existing references are historical context, not credential or permission grants."
       ],
@@ -245,44 +272,11 @@
       "disposition": "adapt",
       "inclusion": "complete-tree",
       "roles": ["writing", "reporting"],
-      "dependencies": ["humanizer"],
+      "dependencies": ["unslop"],
       "runtime_constraints": [
-        "Load both included voice/channel references; write inline under the existing role rather than launching writer or ideate agents. No automatic external publication."
+        "Use the included voice and channel references in the current session. No external publication is implied."
       ],
-      "reason": "Preserve Shu's personal writing procedures and required supporting references."
-    },
-    {
-      "source": "receiving-code-review",
-      "disposition": "import",
-      "inclusion": "complete-tree",
-      "roles": ["coding"],
-      "dependencies": [],
-      "runtime_constraints": [
-        "Verify feedback against authorized source and accepted scope before edits."
-      ],
-      "reason": "Reuse technical feedback evaluation and safely sequenced fixes."
-    },
-    {
-      "source": "requesting-code-review",
-      "disposition": "adapt",
-      "inclusion": "complete-tree",
-      "roles": ["coding", "planning"],
-      "dependencies": ["verification-before-completion"],
-      "runtime_constraints": [
-        "Review fixed evidence inline on separate Standards/Spec axes; missing Git refs need a documented task diff. No audit/task dispatch unless separately authorized to a first-level leaf."
-      ],
-      "reason": "Preserve substantial-change review without importing OpenCode helper permissions."
-    },
-    {
-      "source": "resolving-merge-conflicts",
-      "disposition": "adapt",
-      "inclusion": "complete-tree",
-      "roles": ["coding-if-conflicted-operation-authorized"],
-      "dependencies": ["git-guardrails"],
-      "runtime_constraints": [
-        "Only an explicitly authorized in-progress conflicted merge/rebase; OpenCode sudo wording does not grant Paperclip authority. Staging, continue, abort and commit are separate authorized mutations."
-      ],
-      "reason": "Keep primary-source conflict resolution conditional on actual conflicted git state."
+      "reason": "Retain personal voice while replacing the duplicate humanizer and writer-agent workflow."
     },
     {
       "source": "security-audit",
@@ -307,59 +301,103 @@
       "reason": "Transfer local static security, SQL safety and conditional local DAST gates with all references."
     },
     {
-      "source": "test-driven-development",
-      "disposition": "import",
+      "source": "show-me-your-work",
+      "disposition": "adapt",
       "inclusion": "complete-tree",
       "roles": ["coding"],
       "dependencies": [],
       "runtime_constraints": [
-        "Use the repository's available tools and existing public behavior seams in an authorized workspace; no private-function mocks or tests that merely repeat implementation."
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
       ],
-      "reason": "Same observed red/green/minimal-fix discipline for both runtimes."
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
     },
     {
-      "source": "using-git-worktrees",
+      "source": "swarm",
       "disposition": "adapt",
       "inclusion": "complete-tree",
-      "roles": ["coding-if-git-authorized"],
-      "dependencies": ["git-guardrails"],
-      "runtime_constraints": [
-        "Use the included Paperclip branch and task-owned workspace; no edits to the user's active worktree, automatic mounts or synchronization. Existing SSH is not a sandbox."
-      ],
-      "reason": "Reuse baseline/isolation checks with runtime-appropriate workspace ownership."
-    },
-    {
-      "source": "verification-before-completion",
-      "disposition": "import",
-      "inclusion": "complete-tree",
-      "roles": ["all-relevant"],
+      "roles": ["coding"],
       "dependencies": [],
       "runtime_constraints": [
-        "Require fresh consumer-visible evidence; distinguish source validation from deployed behavior and report blocked checks."
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
       ],
-      "reason": "Canonical fresh-evidence gate for claims, commits and publication."
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
     },
     {
-      "source": "write-a-skill",
+      "source": "tdd",
       "disposition": "adapt",
       "inclusion": "complete-tree",
-      "roles": ["planning", "instruction-maintenance-if-authorized"],
+      "roles": ["coding"],
       "dependencies": [],
       "runtime_constraints": [
-        "Maintain only approved canonical skill/instruction sources; Paperclip managed edits need authorized API publication and revision/hash comparison. No global OpenCode permission/config copying."
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
       ],
-      "reason": "Reuse progressive disclosure, source-of-truth and trigger/near-miss evaluation techniques."
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
     },
     {
-      "source": "zoom-out",
+      "source": "teach",
       "disposition": "adapt",
       "inclusion": "complete-tree",
-      "roles": ["coding", "planning"],
+      "roles": ["coding"],
       "dependencies": [],
       "runtime_constraints": [
-        "Map authorized source/callers inline; task checkpoints replace OpenCode state and lane syntax, with no automatic exploration-agent dispatch."
+        "OpenCode task guidance. Use the caller's role, advertised tools and existing authority; no automatic publication or nested delegation."
       ],
-      "reason": "Transfer context-first module/caller mapping before unfamiliar implementation."
+      "reason": "Reviewed pstack technique adapted to the single-primary OpenCode workflow."
+    },
+    {
+      "source": "technical-writing",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode task guidance. Use the caller's role, advertised tools and existing authority; no automatic publication or nested delegation."
+      ],
+      "reason": "Reviewed pstack technique adapted to the single-primary OpenCode workflow."
+    },
+    {
+      "source": "thermo-nuclear-code-quality-review",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
+      ],
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
+    },
+    {
+      "source": "typescript-best-practices",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
+      ],
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
+    },
+    {
+      "source": "unslop",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode task guidance. Use only advertised tools and the caller's authority; no automatic publication, model changes or nested delegation."
+      ],
+      "reason": "Reviewed pstack or cursor-team-kit technique adapted to the single-primary OpenCode workflow."
+    },
+    {
+      "source": "why",
+      "disposition": "adapt",
+      "inclusion": "complete-tree",
+      "roles": ["coding"],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode task guidance. Use the caller's role, advertised tools and existing authority; no automatic publication or nested delegation."
+      ],
+      "reason": "Reviewed pstack technique adapted to the single-primary OpenCode workflow."
     }
   ]
 }

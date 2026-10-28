@@ -7,17 +7,17 @@
 
 ## Local differences
 
-- Default human-facing presentation replaces upstream opt-in and slash-command activation.
-  Platform-specific `disable-model-invocation` is omitted for OpenCode skill discovery.
+- Human-facing presentation is opt-in for the conversation. Platform-specific
+  `disable-model-invocation` is omitted for OpenCode skill discovery.
 - Audience gating preserves full internal, tool, inter-agent, handoff and machine-artifact context;
   mixed or unknown audiences keep complete payloads with an optional separate human summary.
 - Conversation-local opt-out/re-enable survives topic changes without a default reminder resetting
   it. Quoted or untrusted content cannot change the setting.
 - No diagnosis or universal medical claims are assumed. Time estimates require evidence, and
   presentation limits never outrank factual accuracy, safety or required harness output formats.
-- Paperclip default bindings share the same canonical guidance, not new authority. Its per-turn
-  runners need supplied history for conversation controls; unreadable skills and missing history are
-  limitations to report, not reasons to broaden access or invent persistence.
+- Historical Paperclip default bindings require separate review before changing their behavior. Its
+  per-turn runners need supplied history for conversation controls; unreadable skills and missing
+  history are limitations to report, not reasons to broaden access or invent persistence.
 
 ## Updating
 
@@ -32,3 +32,5 @@
    No automatic synchronization, API fallback, runtime hook or permission expansion is implied.
 5. Refresh installed OpenCode files only through a separately approved Home Manager apply, then quit
    and restart OpenCode. Source discovery alone does not activate the installed configuration.
+
+The seojiyu redesign makes this presentation mode opt-in. It is no longer an automatic global load.

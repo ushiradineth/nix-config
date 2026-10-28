@@ -11,19 +11,19 @@ Before collecting broadly, establish:
 - recent server, client, mod, config, Java, launcher, or network changes
 - whether the request is informational, read-only diagnosis, or a requested fix
 
-Do not run live commands outside user-invoked `sudo`. Within `sudo`, keep diagnosis read-only until
-a specific mutation is separately confirmed.
+Run live commands only within the requested incident scope. Keep diagnosis read-only until a
+mutation is authorized; preserve authorization already given for the action and target.
 
 ## Build the feedback loop
 
-Apply `diagnose` before proposing causes:
+Establish a reproducible signal before proposing causes:
 
 1. Choose one bounded signal that can reproduce or directly detect the reported symptom. Examples
    are a timestamped log slice, crash signature, connection failure, startup outcome, or measured
    tick/load symptom.
 2. Record why that signal distinguishes this incident from nearby failures, its runtime, and whether
    it is deterministic.
-3. Gather the smallest evidence set needed to rank 3 to 5 falsifiable hypotheses.
+3. Gather the smallest evidence set needed to distinguish falsifiable hypotheses.
 4. Test one variable at a time. Do not mutate the environment during hypothesis testing without the
    action-specific confirmation required by the skill contract.
 
@@ -73,21 +73,21 @@ clients are background until a falsifiable test connects them to impact.
 
 ## Mutation and rollback gate
 
-Before requesting confirmation for a fix:
+Before an authorized fix:
 
 1. State the confirmed cause or the hypothesis being tested.
 2. Name one exact mutation, target, and arguments.
 3. State expected effect, verification signal, and rollback action.
 4. Report the age/source of the backup or original file needed for rollback.
-5. Ask for confirmation immediately before that mutation only.
+5. Confirm that existing authorization covers the action and target. Ask only when it does not.
 
-Do not bundle an edit with an upload or restart. A retry, changed target, changed arguments,
-follow-up restart, restore, or cleanup needs new confirmation. If the live lifecycle-control
-interface is unknown, stop rather than assuming SFTP can control the service.
+Do not treat permission for a file edit as permission for a restart or restore. Reuse authorization
+that covers the operation; a new target, destructive effect or access scope needs approval. If the
+live lifecycle-control interface is unknown, stop rather than assuming SFTP can control the service.
 
 ## Post-change verification
 
-After each confirmed mutation:
+After each authorized mutation:
 
 - rerun the targeted signal
 - rerun the original unminimized symptom check
@@ -104,4 +104,4 @@ Return:
 3. `Fault domain`: server, client, network, compatibility, configuration, or unknown.
 4. `Hypotheses`: ranked prediction and falsification result.
 5. `Conclusion`: confirmed cause or bounded uncertainty.
-6. `Next action`: one read-only check or one mutation awaiting exact confirmation.
+6. `Next action`: the next authorized check, or the precise authority still missing.

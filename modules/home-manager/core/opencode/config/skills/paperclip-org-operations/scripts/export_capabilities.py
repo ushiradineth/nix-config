@@ -31,7 +31,7 @@ STATE = ".export-state.json"
 RUNTIME_CONTRACT = [
     "Guidance and role proposals grant no execution, service or delegation authority.",
     "Resolve skills by semantic identity in the current inventory; generated names may be suffixed.",
-    "Use engineering-quality Paperclip mapping: approved issues/checkpoints, inline review, no nested agents.",
+    "Use task-relevant techniques within the current role and tools; no OpenCode agent assumptions or nested agents.",
     "Retain existing role instructions, tools, approval boundaries and pinned unrelated skills.",
 ]
 

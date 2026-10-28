@@ -11,16 +11,13 @@ description:
 ## Authority contract
 
 - Skill activation supplies context. It does not grant permission to run commands or change state.
-- Informational questions may be answered in the current lane without contacting either endpoint.
-- Live server or client commands require explicit diagnostic intent in a user-invoked `sudo`
-  session. From any other lane, stop and ask the user to start or switch to `sudo`; never invoke
-  `sudo` through `task`.
-- In `sudo`, read-only diagnosis is preauthorized after that explicit intent. Keep commands bounded,
+- Informational questions may be answered in the current session without contacting either endpoint.
+- Live server or client commands require an explicit diagnostic or operational request for the
+  target. Scoped read-only diagnosis then proceeds in the current session. Keep commands bounded,
   non-interactive, and secret-safe.
-- Immediately before every local or remote mutation, obtain confirmation for the exact action,
-  target, and arguments. A file edit, upload, mod/config change, restart, stop/start, restore,
-  deletion, retry, changed argument, or changed target is a separate mutation and needs new
-  confirmation.
+- A live mutation needs authorization covering its action and target. Preserve existing approval;
+  ask before a new restart, restore, deletion or access change outside that scope. Repository
+  deployment and secret-wiring boundaries still apply.
 - Never read, decrypt, print, copy, or embed credential contents. Redact secrets from evidence.
 
 ## Workflow
@@ -34,7 +31,8 @@ description:
    and configuration causes.
 5. Report observations separately from hypotheses. Do not turn noisy warnings into a root cause
    without symptom-linked evidence.
-6. If a fix is requested, stop at the mutation boundary and ask for the exact next action only.
+6. If a fix is requested, perform the authorized change and verify the consumer-visible result. Ask
+   only at a mutation boundary whose authority is still missing.
 
 ## Near misses
 
@@ -44,8 +42,8 @@ use, or non-Minecraft work on `shuwin` unless the user also identifies the cshu 
 ## Completion criteria
 
 - Dynamic facts used in the response were revalidated or clearly labeled historical/unknown.
-- Every live command ran inside user-invoked `sudo`. Read-only commands followed explicit diagnostic
-  intent, and each mutation has its own recorded immediately preceding confirmation.
+- Live commands stayed within the requested target and authority. Mutations have explicit scope;
+  successful command output is followed by service or client verification.
 - The final report identifies evidence source, likely fault domain, remaining uncertainty, and the
   next bounded action.
 
@@ -53,4 +51,4 @@ use, or non-Minecraft work on `shuwin` unless the user also identifies the cshu 
 
 Stop and ask one focused question when the access route, target, requested authority, or rollback
 path is unknown. Do not infer access from host names, use automated backup credentials as operator
-access, or continue from old chat consent.
+access, or expand the scope of an earlier authorization.

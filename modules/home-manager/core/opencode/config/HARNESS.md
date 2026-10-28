@@ -1,0 +1,182 @@
+# OpenCode with Seojiyu
+
+Use OpenCode normally. The `jiyu` primary agent applies `jiyu-mode` to substantive work. Describe
+the goal and a checkable result. Design, implementation and verification stay in the same session.
+An obvious edit or simple question needs no workflow setup.
+
+```text
+Fix duplicate notifications after a retry. Repro first, then fix and verify.
+Rewrite this cache from first principles, migrate every caller, and keep going until verified.
+/attack-the-diff the current branch
+/ketchup
+```
+
+## How work flows
+
+```mermaid
+flowchart LR
+  A[Goal and done check] --> B[Understand and design]
+  B --> C[Implement and verify]
+  C --> D[Clean the diff]
+  D --> E[Attack correctness]
+  E --> F[Challenge structure]
+  F --> G[Verify and deliver]
+```
+
+The default router reads one relevant playbook. It uses `how` and `why` to ground unfamiliar code,
+`architect` for consequential shape decisions, and prototypes for questions an experiment can
+answer. `arena` compares competing approaches. `swarm` covers independent slices.
+
+Large or unfamiliar work uses `figure-it-out` to design a verifiable run. Long or unattended work
+uses `show-me-your-work` to record decisions, discarded hypotheses, evidence and resume points. Its
+append-only TSV helper preserves rows and escapes spreadsheet formulas.
+
+Before delivering a substantive code change, the attack-the-diff playbook runs:
+
+1. `deslop` removes code padding and dead weight.
+2. `no-comments` checks comments with fresh eyes, preserving real rationale and constraints.
+3. `interrogate` attacks correctness and verifies failure cases.
+4. `thermo-nuclear-code-quality-review` challenges ownership, state, abstractions and reader load.
+5. The primary fixes accepted findings and reruns affected checks.
+
+These are distinct purposes at one completed review boundary. They do not run after every file.
+Trivial edits get an inline check. Repeated passes need a material change or an unresolved finding.
+
+The full detail behind all 24 upstream principles lives under
+`skills/jiyu-mode/references/principles/`, indexed by `references/principles.md`. The agent reads
+the applicable rule, rather than loading 24 more skill entries or reciting principle names in every
+reply. Steering by a principle's name still works.
+
+## Agents and tools
+
+| Agent      | Responsibility                                                            |
+| ---------- | ------------------------------------------------------------------------- |
+| `jiyu`     | Primary owner of the goal, design, implementation, integration and proof. |
+| `general`  | Bounded implementation or investigation worker.                           |
+| `explore`  | Read-only source mapping.                                                 |
+| `reviewer` | Read-only correctness, comment or structural review.                      |
+
+Workers cannot launch other agents. Competing writes get separate workspaces; shared review can use
+the same source. The primary inspects their artifacts and verifies integration.
+
+Existing model and provider settings are preserved. Workers inherit the active model unless an
+operator configures a role model in managed `opencode.json`. This setup does not pretend that two
+same-model reviewers are a multi-model panel. Native OpenCode skill, task, todo and file tools
+replace Cursor-specific calls.
+
+Wakatime, notifications and terminal integration remain. The upstream context-mode plugin provides
+indexed retrieval, large-output handling and compaction recovery; `jiyu-mode` owns the coding
+workflow. Context-mode supplies its native tools and hooks without a duplicate MCP registration or
+replacing project `AGENTS.md`. Use `ctx stats` in OpenCode to inspect it after activation.
+
+Routine shell commands and checks retain ordinary execution permission. Destructive commands,
+pushes, merges, deployment and system-switch commands retain approval patterns. These command
+patterns do not replace the user's scope or repository boundaries.
+
+## Project guidance and continuity
+
+Keep project `AGENTS.md` factual: verified commands, architecture, conventions and operational
+boundaries. Do not copy the global coding workflow into every project. Update project guidance when
+the project changes or a repeated mistake reveals a missing rule.
+
+`.agents/CONTEXT.md` is a short map of durable facts and useful task notes. Work spanning sessions
+can keep its goal, current state, consequential decisions, verification, blockers and next action in
+one note under `.agents/plans/`, linked to a decision log or other evidence when needed. Existing
+useful project conventions can serve the same purpose. Routine edits do not need a plan or a round
+of updates to `DECISIONS.md`, `PROGRESS.md` and `MEMORY.md` or `MEMORIES.md`.
+
+Read relevant old notes for useful facts and completed work. Their former planner/builder rules are
+historical. Preserve ongoing task records; do not delete or archive them merely because the harness
+changed. Context-mode's session memory complements these artifacts and does not make old workflow
+instructions authoritative.
+
+## Skills and coverage
+
+Every installed technique has native discovery. Coding techniques also have slash commands that run
+in the current primary session. Commands select a technique; normal prompts let the router pick.
+
+The complete upstream inventory was reviewed: 58 skills, including 24 principles, 23 playbooks, both
+agents, the ten-chapter guide, the Claude adapter, helper inventory and generated harness layout.
+The following choices keep the engineering methods while removing duplicate orchestration.
+
+| Upstream capability                                                                         | OpenCode treatment                                                                                                                                                 |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| poteto-mode, poteto-help                                                                    | Local `jiyu-mode` default router and `jiyu-help` setup/use help.                                                                                                   |
+| in-your-own-words, how, why, teach                                                          | Focused intent, mechanics, rationale and explanation skills.                                                                                                       |
+| architect, arena, swarm                                                                     | Caller-first design, competing attempts and parallel coverage.                                                                                                     |
+| interrogate, blast-radius, benchmark-checklist                                              | Correctness attack, cross-boundary safety and measured claims.                                                                                                     |
+| figure-it-out, show-me-your-work                                                            | Designed long runs and auditable evidence trails.                                                                                                                  |
+| no-comments, unslop, technical-writing                                                      | Comment review and prose standards.                                                                                                                                |
+| tdd, typescript-best-practices                                                              | Native behavioral regressions and domain-oriented typing.                                                                                                          |
+| create-verification-skill, maintain-verification-skill                                      | Proven project-local recipes under `.opencode/skills/`.                                                                                                            |
+| correct                                                                                     | Enforce demonstrated repeated mistakes structurally.                                                                                                               |
+| All 24 principle-\* skills                                                                  | Full rules retained as selectively loaded references.                                                                                                              |
+| recall                                                                                      | Session pickup and task-local evidence in the continuity playbook; no default transcript mining.                                                                   |
+| reflect, automate-me                                                                        | Requested harness/skill maintenance uses the authoring playbook; no automatic global edits or history mining.                                                      |
+| setup-pstack                                                                                | Managed OpenCode model configuration is the single source; no separate Cursor rule file.                                                                           |
+| bro, sharpen                                                                                | Plain-language replies and explicit prompt help stay inline; no extra workflow entrypoints.                                                                        |
+| ketchup, ketchup-video                                                                      | Text catch-up retained; no automatic video-rendering pipeline.                                                                                                     |
+| create-formal-verification-skill, maintain-formal-verification-skill, statechart            | Reviewed but not installed as generic defaults. A project needing formal proof should add its real toolchain, property and bounds, then prove that check can fail. |
+| make-bot-ui, Benny automations                                                              | Cursor-specific webhook and automation setup is not installed.                                                                                                     |
+| cursor-team-kit deslop, loop-on-ci, fix-merge-conflicts, thermo-nuclear-code-quality-review | Adapted native skills; the existing local deslop guidance is retained.                                                                                             |
+
+The 23 upstream playbooks are covered without retaining 23 separate orchestration systems:
+
+| Upstream playbooks                                           | Local route                                                                                                                      |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| Investigation, Runtime forensics, Trace forensics            | Investigation with the relevant live or captured evidence.                                                                       |
+| Bug fix, Feature, Refactoring                                | Dedicated implementation playbooks.                                                                                              |
+| Perf issue, Hillclimb                                        | Performance playbook with controlled measurement and hypothesis logging.                                                         |
+| Prototype, Visual parity, Multi-phase plan                   | Design and feature routes with the actual prototype, frozen baseline or requested plan.                                          |
+| Authoring a skill, Eval                                      | Skill-authoring playbook and isolated behavioral evaluation.                                                                     |
+| Opening a PR, Babysit, Shipping                              | PR work, conflict resolution and attached-CI checks; status-only stays read-only.                                                |
+| Autonomous run, Orchestrate, Autopilot-full, Autopilot-stack | Figure-it-out phases, bounded leaf work and the existing oc-loop when explicitly requested. A merge still needs merge authority. |
+| Session pickup, Pause safely                                 | Continuity playbook.                                                                                                             |
+| Worktree cleanup                                             | Scoped operational work from actual git state; no automatic deletion.                                                            |
+
+Browser automation, Paperclip operations, Minecraft context, security auditing, local SAST, Fallow,
+Kumo design and personal voice remain for their actual domains. ADHD presentation is opt-in.
+Personal voice uses unslop instead of the duplicate humanizer workflow. Paperclip's exporter and
+manifest reflect the new local catalog, but no live Paperclip skill, binding or agent is changed.
+
+Retired coding machinery includes the planner/builder/direct/sudo lanes, role-specific handoff
+templates, beam/redteam/sync commands and overlapping quality routers. Historical plans remain
+evidence. They do not reactivate the retired lanes.
+
+## Provenance and local changes
+
+Seojiyu is the local name for this pstack adaptation. `jiyu-mode` and `jiyu-help` adapt upstream
+`poteto-mode` and `poteto-help`; upstream package names, links and license notices remain intact.
+
+Pstack and cursor-team-kit source:
+[cursor/plugins at c742dd61706fbacc1b95f1a20b7b988cf096ce6c](https://github.com/cursor/plugins/tree/c742dd61706fbacc1b95f1a20b7b988cf096ce6c/pstack),
+pstack version 0.15.36, reviewed 2026-10-28. Read the
+[upstream guide](https://github.com/cursor/plugins/tree/c742dd61706fbacc1b95f1a20b7b988cf096ce6c/pstack/docs/guide)
+for the original methods. Each adapted skill carries the applicable upstream MIT license.
+
+The [reference site](https://erictechpro.github.io/super-board/pstack/) was inspected through its
+[published map data](https://github.com/erictechpro/super-board/tree/a2809b6a771113d07b5bfaeb7d38033a35245b8b/diagrams/pstack)
+because direct page retrieval was unavailable. Its map describes pstack 0.15.17 and includes
+Claude-port extras. The pinned upstream source governs this adaptation.
+
+Local changes replace Cursor tool/model fields, fixed fan-out and forced PR creation with native
+OpenCode roles and task-sized execution. Explicit approval checkpoints remain explicit; a request to
+implement includes ordinary design decisions. Cleanup preserves real constraints. Source-backed
+review concerns that cannot be reproduced remain visibly unverified. Broad gates run at coherent
+integration boundaries, and existing evidence is reused while its inputs remain unchanged.
+
+To update upstream, compare the candidate revision with this pin, review the affected full skill and
+references, preserve notices, and test the resulting decision behavior and native discovery. Do not
+overwrite the adaptation with a moving main-branch download.
+
+## Validate and activate
+
+Run `just fmt`, `just check`, and `just build-dry` from the repository root. The flake checks
+evaluate configuration and package coherence, exercise native OpenCode discovery, roles, commands
+and edit enforcement in isolated homes, test the TSV helper, and validate specialist exporters.
+Prompt packaging and routing scenarios do not prove that future code quality has improved.
+
+Activation uses the repository's `just build` system switch and needs explicit authorization under
+the root AGENTS.md. Restart OpenCode afterwards and start a new `jiyu` session. Old sessions may
+retain their old prompt or agent name; there are no compatibility lanes. Source checks and a dry
+build alone do not prove activation.
