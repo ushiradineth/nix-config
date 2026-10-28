@@ -64,6 +64,17 @@ change. These shared rules apply across repositories; role prompts add distinct 
 
 - Use `engineering-quality` as the coding-method router; keep detailed procedures in their named
   skills. Apply only the branches relevant to the task, not a mandatory skill-loading ceremony.
+- Write tests in the language of the code under test and use the project's existing test framework:
+  TypeScript for TypeScript, Rust for Rust, Go for Go, Python for Python, and Nix for Nix. In mixed
+  repositories, follow the component being tested, not merely the repository's dominant language.
+  Use Nix assertions, evaluation/module tests and flake checks for Nix configuration; use Bash for
+  small CLI/build orchestration checks where evaluation alone cannot exercise the behavior.
+- Do not introduce Python or JavaScript test harnesses, including inline one-off assertions, merely
+  for convenience. Use TypeScript, not JavaScript (`.js`, `.mjs`, `.cjs`), for Node-based tests.
+  Necessary runtime/plugin JavaScript is not a testing exception. Keep Python helpers only where
+  genuinely necessary and test actual Python helpers in Python; prefer Bash for simple glue. If
+  native testing is blocked, report the missing prerequisite rather than silently switching
+  languages. Preserve behavioral coverage when migrating tests; a rename alone is not a migration.
 - For behavior changes, use a meaningful regression seam and a failing test before the fix where
   practical. Use deterministic diagnosis for failures, and bounded options for real design
   tradeoffs.

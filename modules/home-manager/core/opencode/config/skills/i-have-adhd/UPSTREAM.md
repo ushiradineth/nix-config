@@ -25,8 +25,8 @@
 2. Review the upstream diff against this pin. Merge useful changes into the adaptation manually;
    never overwrite the audience gate or conversation/safety contracts with an upstream copy.
 3. Preserve the new upstream license exactly and update this revision and the regression license
-   digest after independently verifying it. Run `python3 tests/i-have-adhd-test.py`, exporter
-   checks, discovery, formatting and repository checks.
+   digest after independently verifying it. Run the `agent-guidance` flake check, exporter checks,
+   discovery, formatting and repository checks.
 4. Review the complete package ledger before authorized Paperclip UI publication. Read back the
    final version and additive bindings, pilot audience isolation, then refresh approved recipients.
    No automatic synchronization, API fallback, runtime hook or permission expansion is implied.

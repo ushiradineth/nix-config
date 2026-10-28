@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "types": ["node"]
+  },
+  "files": [
+    "./oc-loop.test.mts",
+    "./oc-loop-fake.mts",
+    "./oc-loop-native-question.mts",
+    "./oc-loop-modules.d.ts"
+  ]
+}

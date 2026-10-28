@@ -17,13 +17,83 @@ import { tmpdir } from "node:os"
 import { dirname, join, resolve } from "node:path"
 import { fileURLToPath, pathToFileURL } from "node:url"
 import { test } from "node:test"
+import type { TestContext } from "node:test"
+import type {
+  AutonomyEvent,
+  GetRequest,
+  PostRequest,
+  PendingRequest,
+  Question,
+} from "../scripts/oc-loop-autonomy.mjs"
+import type { KeymapLayer, Alert } from "../scripts/oc-loop-tui.mjs"
+import type { RuntimeConfig, RuntimeState, Transport } from "../scripts/oc-loop-runtime.mjs"
+
+type FixtureEvent =
+  | string
+  | AutonomyEvent
+  | {
+      type: string
+      sessionID: string
+      part?: {
+        messageID: string
+        text?: string
+        reason?: string
+        tool?: string
+        state?: { output?: string; status?: string; error?: string }
+      }
+      error?: { name: string; data: { message: string } }
+    }
+export interface Turn {
+  events?: FixtureEvent[]
+  stderr?: string
+  wait?: boolean
+  code?: number
+  persisted?: { text: string; info?: { time?: { created?: number; completed: number } } }
+}
+interface Call {
+  args: string[]
+  stdin: string
+  config: {
+    model?: string
+    permission?: Record<string, string>
+    plugin: (string | [string, unknown])[]
+  }
+}
+interface RequestLog {
+  path: string
+  directory: string
+}
+interface Attachment {
+  args: string[]
+  tui: string
+}
+interface LoopState {
+  status: string
+  directory: string
+  nativeDirectory: string
+  message: string
+  runId: string
+  waitId: string
+  pid: number
+  turn: number
+}
+interface Control {
+  runId: string
+  mode: string
+  expectedPrompt?: string
+}
+type Fixture = ReturnType<typeof fixture>
+
+function parseJSON<T>(text: string): T {
+  return JSON.parse(text) as T
+}
 
 const script = resolve(dirname(fileURLToPath(import.meta.url)), "../scripts/oc-loop.mjs")
 const executable = process.env.OC_LOOP_TEST_BINARY || process.execPath
 const session = "ses_test123"
 const token = "PROJECT_ENTIRELY_COMPLETE"
 
-function turn(text, messageID = "msg_final", reason = "stop") {
+function turn(text: string, messageID = "msg_final", reason = "stop") {
   return [
     { type: "step_start", sessionID: session, part: { messageID } },
     { type: "text", sessionID: session, part: { messageID, text } },
@@ -31,79 +101,14 @@ function turn(text, messageID = "msg_final", reason = "stop") {
   ]
 }
 
-function fixture(t, turns) {
+function fixture(t: TestContext, turns: Turn[]) {
   const root = realpathSync(mkdtempSync(join(tmpdir(), "oc-loop test-")))
   t.after(() => rmSync(root, { recursive: true, force: true }))
   const fake = join(root, "opencode")
   writeFileSync(join(root, "turns.json"), JSON.stringify(turns))
   writeFileSync(
     fake,
-    `#!${process.execPath}
-import { appendFileSync, readFileSync, writeFileSync } from "node:fs"
-import { createServer } from "node:http"
-const root = process.env.FAKE_ROOT
-const config = JSON.parse(process.env.OPENCODE_CONFIG_CONTENT || "{}")
-const injected = (config.plugin || []).find((spec) => Array.isArray(spec) && spec[0].includes("oc-loop-autonomy.mjs"))
-let hooks
-if (injected && !process.env.FAKE_AUTONOMY_DISABLED) {
-  const plugin = await import(injected[0])
-  hooks = await plugin.default({
-    directory: process.cwd(),
-    client: { _client: { get: async request => ({ data: request.url === "/permission" && process.env.FAKE_REPLY_FAILURE ? [{ id: "per_fixture", sessionID: ${JSON.stringify(session)} }] : request.url.startsWith("/session/") ? { id: request.path.sessionID } : [] }), post: async (request) => {
-      if (process.env.FAKE_REPLY_RACE || process.env.FAKE_REPLY_FAILURE) return { error: { name: "ReplyConflict" } }
-      appendFileSync(root + "/answers.jsonl", JSON.stringify(request) + "\\n")
-      return { data: true }
-    } } },
-  }, injected[1])
-}
-if (process.argv[2] === "serve") {
-  const server = createServer((req, res) => {
-    const expected = "Basic " + Buffer.from("opencode:" + process.env.OPENCODE_SERVER_PASSWORD).toString("base64")
-    if (req.headers.authorization !== expected) { res.writeHead(401); res.end("{}"); return }
-    appendFileSync(root + "/requests.jsonl", JSON.stringify({ path: req.url, directory: req.headers["x-opencode-directory"] }) + "\\n")
-    res.setHeader("Content-Type", "application/json")
-    if (req.url === "/session/status") {
-      let busy = false
-      try { busy = readFileSync(root + "/manual-busy", "utf8") === "yes" } catch {}
-      const wrongInstance = process.env.FAKE_REQUIRE_ORIGIN && req.headers["x-opencode-directory"] !== process.env.FAKE_SESSION_ORIGIN
-      res.end(JSON.stringify(busy && !wrongInstance ? { ${JSON.stringify(session)}: { type: "busy" } } : {}))
-    } else if (req.url.includes("/message")) {
-      try { res.end(readFileSync(root + "/messages.json", "utf8")) } catch { res.end("[]") }
-    }
-    else res.end(JSON.stringify({ id: ${JSON.stringify(session)}, directory: process.env.FAKE_SESSION_ORIGIN || root }))
-  })
-  server.listen(0, "127.0.0.1", () => console.log("opencode server listening on http://127.0.0.1:" + server.address().port))
-  await new Promise(() => {})
-}
-if (process.argv[2] === "attach") {
-  appendFileSync(root + "/attachments.jsonl", JSON.stringify({ args: process.argv.slice(2), tui: process.env.OPENCODE_TUI_CONFIG }) + "\\n")
-  process.exit(0)
-}
-let calls = []
-try { calls = readFileSync(root + "/calls.jsonl", "utf8").trim().split("\\n") } catch {}
-appendFileSync(root + "/calls.jsonl", JSON.stringify({ args: process.argv.slice(2), stdin: readFileSync(0, "utf8"), config }) + "\\n")
-const turns = JSON.parse(readFileSync(root + "/turns.json", "utf8"))
-const next = turns[calls.length]
-if (!next) { console.error("Unexpected extra turn"); process.exit(99) }
-// Native sessions execute in their origin instance. Listening in another instance
-// misses permission/terminal events even though session metadata is globally readable.
-if (process.env.FAKE_REQUIRE_ORIGIN && process.argv[process.argv.indexOf("--dir") + 1] !== process.env.FAKE_SESSION_ORIGIN) process.exit(0)
-if (next.persisted) writeFileSync(root + "/messages.json", JSON.stringify([{
-  info: { id: "msg_persisted", role: "assistant", time: { created: Date.now(), completed: Date.now() }, ...next.persisted.info },
-  parts: [{ type: "text", text: next.persisted.text }],
-}]))
-for (const event of next.events ?? []) {
-  if (event.type === "question.asked" || event.type === "permission.asked" || event.type === "session.created") {
-    await hooks?.event({ event })
-  } else console.log(typeof event === "string" ? event : JSON.stringify(event))
-}
-if (next.stderr) console.error(next.stderr)
-if (next.wait) {
-  writeFileSync(root + "/child.pid", String(process.pid))
-  await new Promise(() => setInterval(() => {}, 1000))
-}
-process.exit(next.code ?? 0)
-`
+    `#!/bin/sh\nexec '${process.execPath.replaceAll("'", "'\\''")}' '${fileURLToPath(new URL("./oc-loop-fake.mts", import.meta.url)).replaceAll("'", "'\\''")}' "$@"\n`
   )
   chmodSync(fake, 0o700)
   const args = [
@@ -120,7 +125,7 @@ process.exit(next.code ?? 0)
     "--retry-delay",
     "0",
   ]
-  const env = {
+  const env: NodeJS.ProcessEnv = {
     ...process.env,
     XDG_STATE_HOME: join(root, "state"),
     OC_LOOP_OPENCODE: fake,
@@ -131,14 +136,14 @@ process.exit(next.code ?? 0)
     args,
     env,
     state: join(root, ".agents", "oc-loop", session),
-    run(extra = []) {
+    run(extra: string[] = []) {
       return spawnSync(executable, [...args, "--max-retries", "0", ...extra], {
         env,
         encoding: "utf8",
         timeout: 15000,
       })
     },
-    resume(prompt) {
+    resume(prompt: string) {
       return spawnSync(
         executable,
         [
@@ -154,7 +159,7 @@ process.exit(next.code ?? 0)
         { env, encoding: "utf8", timeout: 15000 }
       )
     },
-    command(command, extra = []) {
+    command(command: string, extra: string[] = []) {
       return spawnSync(
         executable,
         [
@@ -170,7 +175,10 @@ process.exit(next.code ?? 0)
       )
     },
     calls() {
-      return readFileSync(join(root, "calls.jsonl"), "utf8").trim().split("\n").map(JSON.parse)
+      return readFileSync(join(root, "calls.jsonl"), "utf8")
+        .trim()
+        .split("\n")
+        .map((line) => parseJSON<Call>(line))
     },
   }
 }
@@ -218,7 +226,7 @@ test("an explicit project directory supports a session originally created in ano
   const requests = readFileSync(join(f.root, "requests.jsonl"), "utf8")
     .trim()
     .split("\n")
-    .map(JSON.parse)
+    .map((line) => parseJSON<RequestLog>(line))
   assert.ok(
     requests
       .filter((r) => r.path === "/session/status")
@@ -241,7 +249,9 @@ test(
       () => existsSync(join(f.state, "status.json")) && state(f).status === "WAITING_ON_OWNER"
     )
     assert.equal(f.command("attach").status, 0)
-    const attached = JSON.parse(readFileSync(join(f.root, "attachments.jsonl"), "utf8").trim())
+    const attached = parseJSON<Attachment>(
+      readFileSync(join(f.root, "attachments.jsonl"), "utf8").trim()
+    )
     assert.equal(attached.args[attached.args.indexOf("--dir") + 1], f.env.FAKE_SESSION_ORIGIN)
     writeFileSync(join(f.root, "manual-busy"), "yes")
     assert.equal(f.resume("Must not interrupt manual work").status, 2)
@@ -306,7 +316,7 @@ test("permission/session errors never complete and honor an explicit zero retry 
     assert.equal(result.status, 2, result.stderr)
     assert.doesNotMatch(result.stdout, /^DONE/m)
     assert.equal(f.calls().length, 1)
-    assert.equal(JSON.parse(readFileSync(join(f.state, "status.json"))).status, "BLOCKED")
+    assert.equal(state(f).status, "BLOCKED")
   }
 })
 
@@ -364,7 +374,7 @@ test("temporarily unavailable provider errors retry rather than blocking immedia
 })
 
 test("questions choose only the first option for the owned session and its new children", (t) => {
-  const question = (sessionID, id, questions) => ({
+  const question = (sessionID: string, id: string, questions: Question[]): AutonomyEvent => ({
     type: "question.asked",
     properties: { sessionID, id, questions },
   })
@@ -402,7 +412,7 @@ test("questions choose only the first option for the owned session and its new c
   const answers = readFileSync(join(f.root, "answers.jsonl"), "utf8")
     .trim()
     .split("\n")
-    .map(JSON.parse)
+    .map((line) => parseJSON<PostRequest>(line))
   assert.deepEqual(
     answers.map((reply) => reply.path.requestID),
     ["que_root", "que_child"]
@@ -458,9 +468,10 @@ test("the helper preserves injected config, never trusts an absent helper, and a
   assert.equal(f.calls()[0].config.model, original.model)
   assert.deepEqual(f.calls()[0].config.permission, original.permission)
   assert.equal(f.calls()[0].config.plugin[0], "existing-plugin")
-  assert.deepEqual(JSON.parse(readFileSync(join(f.root, "answers.jsonl"), "utf8")).body.answers, [
-    ["Use your best judgment within the agreed scope and continue."],
-  ])
+  assert.deepEqual(
+    parseJSON<PostRequest>(readFileSync(join(f.root, "answers.jsonl"), "utf8")).body.answers,
+    [["Use your best judgment within the agreed scope and continue."]]
+  )
 
   const disabled = fixture(t, [{ events: turn(token) }])
   disabled.env.FAKE_AUTONOMY_DISABLED = "1"
@@ -478,7 +489,7 @@ test("logs and status are private, completion does not carry over to a later run
   assert.equal(f.run().status, 0)
   assert.equal(f.run().status, 0)
   assert.equal(f.calls().length, 3)
-  const status = JSON.parse(readFileSync(join(f.state, "status.json")))
+  const status = state(f)
   assert.equal(status.status, "DONE")
   assert.equal(status.turn, 2)
   assert.equal(statSync(f.state).mode & 0o777, 0o700)
@@ -488,7 +499,7 @@ test("logs and status are private, completion does not carry over to a later run
   for (const log of logs) assert.equal(statSync(join(f.state, log)).mode & 0o777, 0o600)
 })
 
-async function waitFor(predicate) {
+async function waitFor(predicate: () => boolean) {
   const deadline = Date.now() + 10000
   while (!predicate()) {
     if (Date.now() > deadline) throw new Error("Timed out waiting for fixture")
@@ -496,7 +507,7 @@ async function waitFor(predicate) {
   }
 }
 
-function launch(t, f, extra = []) {
+function launch(t: TestContext, f: Fixture, extra: string[] = []) {
   const child = spawn(executable, [...f.args, "--max-retries", "0", ...extra], {
     env: f.env,
     stdio: ["ignore", "pipe", "pipe"],
@@ -509,7 +520,7 @@ function launch(t, f, extra = []) {
   child.stderr.on("data", (data) => {
     stderr += data
   })
-  const exited = new Promise((resolve) =>
+  const exited = new Promise<{ code: number | null; stdout: string; stderr: string }>((resolve) =>
     child.once("close", (code) => resolve({ code, stdout, stderr }))
   )
   t.after(async () => {
@@ -526,8 +537,8 @@ function launch(t, f, extra = []) {
   return { child, exited }
 }
 
-function state(f) {
-  return JSON.parse(readFileSync(join(f.state, "status.json"), "utf8"))
+function state(f: Fixture) {
+  return parseJSON<LoopState>(readFileSync(join(f.state, "status.json"), "utf8"))
 }
 
 test(
@@ -721,7 +732,7 @@ test(
     const attachments = readFileSync(join(f.root, "attachments.jsonl"), "utf8")
       .trim()
       .split("\n")
-      .map(JSON.parse)
+      .map((line) => parseJSON<Attachment>(line))
     assert.equal(attachments.length, 2)
     for (const attached of attachments) {
       assert.deepEqual(attached.args.slice(-4), ["--dir", f.root, "--session", session])
@@ -729,7 +740,7 @@ test(
     }
     const status = f.command("status", ["--json"])
     assert.equal(status.status, 0, status.stderr)
-    assert.equal(JSON.parse(status.stdout).status, "MANUAL_CONTROL")
+    assert.equal(parseJSON<LoopState>(status.stdout).status, "MANUAL_CONTROL")
     assert.doesNotMatch(status.stdout, /password|Authorization/)
     assert.match(f.command("status").stdout, /automatic continuation is paused/)
     await new Promise((resolve) => setTimeout(resolve, 400))
@@ -774,23 +785,35 @@ test(
   }
 )
 
-async function autonomyFixture(t, { parents = {}, permissions = [], questions = [] } = {}) {
+async function autonomyFixture(
+  t: TestContext,
+  {
+    parents = {},
+    permissions = [],
+    questions = [],
+  }: {
+    parents?: Record<string, string | null>
+    permissions?: PendingRequest[]
+    questions?: PendingRequest[]
+  } = {}
+) {
   const f = fixture(t, [])
   const controlFile = join(f.root, "autonomy-control.json")
   writeFileSync(controlFile, JSON.stringify({ runId: "autonomy-fixture", mode: "automatic" }), {
     mode: 0o600,
   })
-  const replies = []
+  const replies: PostRequest[] = []
   const transport = {
-    get: async (request) => {
+    get: async (request: GetRequest) => {
       assert.equal(request.query.directory, f.root)
       if (request.url === "/permission") return { data: [...permissions] }
       if (request.url === "/question") return { data: [...questions] }
       const id = request.path.sessionID
+      assert.ok(id)
       if (id !== session && !Object.hasOwn(parents, id)) throw new Error("Unknown session")
       return { data: { id, parentID: parents[id] } }
     },
-    post: async (request) => {
+    post: async (request: PostRequest) => {
       assert.equal(request.query.directory, f.root)
       replies.push(request)
       const queue = request.url.startsWith("/permission/") ? permissions : questions
@@ -812,7 +835,7 @@ async function autonomyFixture(t, { parents = {}, permissions = [], questions = 
     transport,
     async continue() {
       const text = "Continue the approved fixture scope."
-      const control = JSON.parse(readFileSync(controlFile, "utf8"))
+      const control = parseJSON<Control>(readFileSync(controlFile, "utf8"))
       writeFileSync(
         controlFile,
         JSON.stringify({
@@ -852,10 +875,14 @@ test("a new automatic turn reconciles pending requests from existing descendants
     "per_child",
     "que_grandchild",
   ])
-  assert.deepEqual(f.replies.find((request) => request.path.requestID === "per_child").body, {
+  const permissionReply = f.replies.find((request) => request.path.requestID === "per_child")
+  const questionReply = f.replies.find((request) => request.path.requestID === "que_grandchild")
+  assert.ok(permissionReply)
+  assert.ok(questionReply)
+  assert.deepEqual(permissionReply.body, {
     reply: "once",
   })
-  assert.deepEqual(f.replies.find((request) => request.path.requestID === "que_grandchild").body, {
+  assert.deepEqual(questionReply.body, {
     answers: [["First"]],
   })
   assert.deepEqual(
@@ -867,7 +894,7 @@ test("a new automatic turn reconciles pending requests from existing descendants
 test("automatic permissions include a resumed owned subagent without a new-session event", async (t) => {
   const f = fixture(t, [])
   const { default: autonomy } = await import("../scripts/oc-loop-autonomy.mjs")
-  const replies = []
+  const replies: PostRequest[] = []
   const hooks = await autonomy(
     {
       directory: f.root,
@@ -908,10 +935,10 @@ test("manual takeover during descendant lookup prevents approval and pending-req
   const request = { id: "per_waiting", sessionID: "ses_child", permission: "bash" }
   const f = await autonomyFixture(t, { parents: { ses_child: session }, permissions: [request] })
   const original = f.transport.get
-  let release
+  let release: (() => void) | undefined
   f.transport.get = async (query) => {
     if (query.path?.sessionID === "ses_child")
-      await new Promise((resolve) => {
+      await new Promise<void>((resolve) => {
         release = resolve
       })
     return original(query)
@@ -921,6 +948,7 @@ test("manual takeover during descendant lookup prevents approval and pending-req
   writeFileSync(`${f.controlFile}.manual`, JSON.stringify({ runId: "autonomy-fixture" }), {
     mode: 0o600,
   })
+  assert.ok(release)
   release()
   await pending
   await f.continue()
@@ -959,7 +987,7 @@ test("a native auto-reply race is harmless but an unresolved reply failure block
   for (const [flag, status] of [
     ["FAKE_REPLY_RACE", 0],
     ["FAKE_REPLY_FAILURE", 2],
-  ]) {
+  ] as const) {
     const f = fixture(t, [
       {
         events: [
@@ -1013,7 +1041,7 @@ test("the server helper latches native abort fallbacks and stops automatic quest
     { sessionID: session },
     { parts: [{ type: "text", text: runnerText }] }
   )
-  assert.equal(JSON.parse(readFileSync(controlFile)).mode, "automatic")
+  assert.equal(parseJSON<Control>(readFileSync(controlFile, "utf8")).mode, "automatic")
   await hooks.event({
     event: {
       type: "message.updated",
@@ -1022,7 +1050,7 @@ test("the server helper latches native abort fallbacks and stops automatic quest
       },
     },
   })
-  assert.equal(JSON.parse(readFileSync(controlFile)).mode, "manual")
+  assert.equal(parseJSON<Control>(readFileSync(controlFile, "utf8")).mode, "manual")
   await hooks.event({
     event: {
       type: "question.asked",
@@ -1038,14 +1066,14 @@ test("the server helper latches native abort fallbacks and stops automatic quest
     { sessionID: session },
     { parts: [{ type: "text", text: "Manual steering" }] }
   )
-  assert.equal(JSON.parse(readFileSync(controlFile)).mode, "manual")
+  assert.equal(parseJSON<Control>(readFileSync(controlFile, "utf8")).mode, "manual")
 })
 
 test("status shortcut uses the native TUI command layer without a model request or global config changes", async (t) => {
   const f = fixture(t, [{ events: turn(token) }])
   assert.equal(f.run().status, 0)
   const { default: plugin } = await import("../scripts/oc-loop-tui.mjs")
-  let layer, alert, disposed
+  let layer: KeymapLayer | undefined, alert: Alert | undefined, disposed: (() => void) | undefined
   await plugin.tui(
     {
       route: { current: { name: "session", params: { sessionID: session } } },
@@ -1070,8 +1098,12 @@ test("status shortcut uses the native TUI command layer without a model request 
     { directory: f.root, session, runId: state(f).runId }
   )
   assert.equal(typeof disposed, "function")
+  assert.ok(layer)
   assert.equal(layer.bindings[0].key, "ctrl+f2")
-  layer.commands.find((command) => command.name === "oc-loop.status").run()
+  const statusCommand = layer.commands.find((command) => command.name === "oc-loop.status")
+  assert.ok(statusCommand)
+  statusCommand.run()
+  assert.ok(alert)
   assert.match(alert.message, /DONE/)
   assert.equal(f.calls().length, 1)
 })
@@ -1182,7 +1214,7 @@ test(
     const requests = readFileSync(join(f.root, "requests.jsonl"), "utf8")
       .trim()
       .split("\n")
-      .map(JSON.parse)
+      .map((line) => parseJSON<RequestLog>(line))
     assert.ok(
       requests.some((r) => r.path.endsWith("/abort") && r.directory === f.env.FAKE_SESSION_ORIGIN)
     )
@@ -1208,7 +1240,7 @@ test("a second runner cannot own the session; Ctrl-C cancels its child and relea
   runner.kill("SIGINT")
   assert.equal(await exited, 130)
   assert.throws(() => process.kill(childPID, 0), { code: "ESRCH" })
-  assert.equal(JSON.parse(readFileSync(join(f.state, "status.json"))).status, "CANCELLED")
+  assert.equal(state(f).status, "CANCELLED")
   assert.equal(f.run().status, 0)
 })
 
@@ -1274,7 +1306,8 @@ test("prompt quoting stays literal and ordinary validation tool errors do not pr
 })
 
 // Explicit provider-free native probe: no model prompt and no real user state.
-if (process.env.OC_LOOP_NATIVE_BINARY) {
+const nativeBinary = process.env.OC_LOOP_NATIVE_BINARY
+if (nativeBinary) {
   test(
     "native persistent server authenticates, loads the run-local helper and exposes the same session without model calls",
     { timeout: 60000 },
@@ -1302,25 +1335,21 @@ if (process.env.OC_LOOP_NATIVE_BINARY) {
       }
       const baseConfig = { enabled_providers: [], autoupdate: false, snapshot: false, plugin: [] }
       const bootstrapPassword = randomUUID()
-      const child = spawn(
-        process.env.OC_LOOP_NATIVE_BINARY,
-        ["serve", "--hostname", "127.0.0.1", "--port", "0"],
-        {
-          cwd: workspace,
-          env: {
-            ...process.env,
-            ...environment,
-            OPENCODE_CONFIG_CONTENT: JSON.stringify({
-              ...baseConfig,
-              plugin: [new URL("../scripts/oc-loop-autonomy.mjs", import.meta.url).href],
-            }),
-            OPENCODE_SERVER_PASSWORD: bootstrapPassword,
-            OPENCODE_SERVER_USERNAME: "opencode",
-            CI: "true",
-          },
-          stdio: ["ignore", "pipe", "pipe"],
-        }
-      )
+      const child = spawn(nativeBinary, ["serve", "--hostname", "127.0.0.1", "--port", "0"], {
+        cwd: workspace,
+        env: {
+          ...process.env,
+          ...environment,
+          OPENCODE_CONFIG_CONTENT: JSON.stringify({
+            ...baseConfig,
+            plugin: [new URL("../scripts/oc-loop-autonomy.mjs", import.meta.url).href],
+          }),
+          OPENCODE_SERVER_PASSWORD: bootstrapPassword,
+          OPENCODE_SERVER_USERNAME: "opencode",
+          CI: "true",
+        },
+        stdio: ["ignore", "pipe", "pipe"],
+      })
       let output = "",
         errors = ""
       child.stdout.on("data", (data) => {
@@ -1337,7 +1366,9 @@ if (process.env.OC_LOOP_NATIVE_BINARY) {
         () => /listening on (http:\/\/127\.0\.0\.1:\d+)/.test(output) || child.exitCode !== null
       )
       assert.equal(child.exitCode, null, errors)
-      const url = output.match(/listening on (http:\/\/127\.0\.0\.1:\d+)/)[1]
+      const listening = output.match(/listening on (http:\/\/127\.0\.0\.1:\d+)/)
+      assert.ok(listening)
+      const url = listening[1]
       const created = await fetch(`${url}/session`, {
         method: "POST",
         headers: {
@@ -1350,13 +1381,13 @@ if (process.env.OC_LOOP_NATIVE_BINARY) {
         signal: AbortSignal.timeout(30000),
       })
       assert.equal(created.status, 200)
-      const nativeSession = await created.json()
+      const nativeSession = (await created.json()) as { id: string }
       child.kill("SIGTERM")
       await closed
       const { prepare, startServer, request } = await import("../scripts/oc-loop-runtime.mjs")
       const runnerProject = join(root, "loop-project")
       mkdirSync(runnerProject)
-      const config = { dir: runnerProject, session: nativeSession.id }
+      const config: RuntimeConfig = { dir: runnerProject, session: nativeSession.id }
       const { directory } = prepare(config)
       const id = randomUUID()
       const controlFile = join(directory, `control-${id}.json`)
@@ -1383,12 +1414,12 @@ if (process.env.OC_LOOP_NATIVE_BINARY) {
         Object.keys(environment).map((key) => [key, process.env[key]])
       )
       Object.assign(process.env, environment)
-      let transport
-      const nativeLogs = []
+      let transport: Transport | undefined
+      const nativeLogs: unknown[] = []
       try {
-        const state = {
+        const state: RuntimeState = {
           id,
-          record(row) {
+          record(row: unknown) {
             nativeLogs.push(row)
           },
           activity() {},
@@ -1422,8 +1453,12 @@ if (process.env.OC_LOOP_NATIVE_BINARY) {
           signal: AbortSignal.timeout(10000),
         })
         assert.equal(recorded.status, 200)
-        assert.equal((await recorded.json()).info.role, "user")
-        assert.equal(JSON.parse(readFileSync(controlFile)).expectedPrompt, undefined)
+        const recordedMessage = (await recorded.json()) as { info: { role: string } }
+        assert.equal(recordedMessage.info.role, "user")
+        assert.equal(
+          parseJSON<Control>(readFileSync(controlFile, "utf8")).expectedPrompt,
+          undefined
+        )
         await new Promise((resolve) => setTimeout(resolve, 50))
         assert.equal(transport.error, undefined)
         assert.equal(await transport.busy(), false)
@@ -1431,11 +1466,15 @@ if (process.env.OC_LOOP_NATIVE_BINARY) {
         assert.equal(await transport.ownerGate(Date.now()), undefined)
         assert.equal(statSync(join(directory, `server-${id}.json`)).mode & 0o777, 0o600)
         assert.equal(
-          JSON.parse(readFileSync(join(directory, `server-${id}.json`))).directory,
+          parseJSON<{ directory: string }>(
+            readFileSync(join(directory, `server-${id}.json`), "utf8")
+          ).directory,
           workspace
         )
         assert.equal(
-          JSON.parse(readFileSync(join(directory, `tui-${id}.json`))).plugin[0][1].runId,
+          parseJSON<{ plugin: [string, { runId: string }][] }>(
+            readFileSync(join(directory, `tui-${id}.json`), "utf8")
+          ).plugin[0][1].runId,
           id
         )
       } catch (error) {
@@ -1459,20 +1498,7 @@ if (process.env.OC_LOOP_NATIVE_BINARY) {
     const workspace = join(root, "workspace")
     mkdirSync(workspace)
     mkdirSync(join(home, ".config", "opencode"), { recursive: true })
-    const harness = join(root, "native-question.mjs")
-    writeFileSync(
-      harness,
-      `
-import autonomy from ${JSON.stringify(new URL("../scripts/oc-loop-autonomy.mjs", import.meta.url).href)}
-export default async function (ctx) {
-  return { event: async (input) => {
-    if (!["question.asked", "permission.asked"].includes(input.event.type)) return
-    const hooks = await autonomy(ctx, { sessionID: input.event.properties.sessionID })
-    await hooks.event(input)
-  } }
-}
-`
-    )
+    const harness = fileURLToPath(new URL("./oc-loop-native-question.mts", import.meta.url))
     const env = {
       PATH: process.env.PATH,
       HOME: home,
@@ -1509,7 +1535,7 @@ export default async function (ctx) {
       GIT_TERMINAL_PROMPT: "0",
     }
     const result = spawnSync(
-      process.env.OC_LOOP_NATIVE_BINARY,
+      nativeBinary,
       [
         "debug",
         "agent",
@@ -1543,7 +1569,7 @@ export default async function (ctx) {
     )
     assert.ifError(result.error)
     assert.equal(result.status, 0, result.stderr)
-    const tool = JSON.parse(
+    const tool = parseJSON<{ result: { metadata: { answers: string[][] } } }>(
       result.stdout
         .split("\n")
         .filter((line) => !line.startsWith('{"type":"oc_loop_autonomy"'))
@@ -1551,7 +1577,7 @@ export default async function (ctx) {
     )
     assert.deepEqual(tool.result.metadata.answers, [["First"], ["Unit tests"]])
     const allowed = spawnSync(
-      process.env.OC_LOOP_NATIVE_BINARY,
+      nativeBinary,
       [
         "debug",
         "agent",
@@ -1568,7 +1594,7 @@ export default async function (ctx) {
     )
     assert.ifError(allowed.error)
     assert.equal(allowed.status, 0, allowed.stderr)
-    const allowedTool = JSON.parse(
+    const allowedTool = parseJSON<{ result: { metadata: { exit: number } } }>(
       allowed.stdout
         .split("\n")
         .filter((line) => !line.startsWith('{"type":"oc_loop_autonomy"'))
@@ -1577,7 +1603,7 @@ export default async function (ctx) {
     assert.equal(allowedTool.result.metadata.exit, 0)
     const deniedPath = join(workspace, "must-not-be-created")
     const deniedRule = spawnSync(
-      process.env.OC_LOOP_NATIVE_BINARY,
+      nativeBinary,
       [
         "debug",
         "agent",
@@ -1597,7 +1623,7 @@ export default async function (ctx) {
     assert.match(deniedRule.stderr, /denied|rejected|permission/i)
     assert.equal(existsSync(deniedPath), false)
     const denied = spawnSync(
-      process.env.OC_LOOP_NATIVE_BINARY,
+      nativeBinary,
       [
         "debug",
         "agent",

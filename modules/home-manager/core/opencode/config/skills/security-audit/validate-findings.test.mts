@@ -1,16 +1,22 @@
-const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const os = require("node:os");
-const path = require("node:path");
-const { spawnSync } = require("node:child_process");
-const test = require("node:test");
-const schema = require("./report-schema.json");
+import assert from "node:assert/strict";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
+import { spawnSync, type SpawnSyncReturns } from "node:child_process";
+import { test } from "node:test";
+import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
+import type { Confirmed, NeedsValidation, FindingsValidator, LedgerValidator } from "./validator-test-types.d.ts";
+
+const require = createRequire(import.meta.url);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const schema: typeof import("./report-schema.json") = require("./report-schema.json");
 const {
   LIMITS,
   collect,
   collectSchemaErrors,
   validateDocument,
-} = require("./validate-findings.cjs");
+}: FindingsValidator = require("./validate-findings.cjs");
 
 const validatorPath = path.join(__dirname, "validate-findings.cjs");
 const CLI_TIMEOUT_MS = 5000;
@@ -37,7 +43,7 @@ function evidence(file = "src/handler.c", line = 10) {
   return { file, line, description: "The source performs the operation without the required check." };
 }
 
-function confirmed() {
+function confirmed(): Confirmed {
   return {
     verdict: "confirmed",
     fingerprint: "src-handler-missing-check",
@@ -64,7 +70,7 @@ function confirmed() {
   };
 }
 
-function needsValidation() {
+function needsValidation(): NeedsValidation {
   return {
     verdict: "needs_validation",
     fingerprint: "src-parser-size-hypothesis",
@@ -94,11 +100,11 @@ function rejected() {
   };
 }
 
-function errorsFor(value) {
+function errorsFor(value: unknown) {
   return validateDocument(value, schema);
 }
 
-function runCli(contents, options = {}) {
+function runCli(contents: string | Buffer, options: { nodeArgs?: string[]; timeout?: number } = {}) {
   const { nodeArgs = [], timeout = CLI_TIMEOUT_MS } = options;
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "validate-findings-"));
   const findingsPath = path.join(directory, "findings.json");
@@ -113,11 +119,11 @@ function runCli(contents, options = {}) {
   }
 }
 
-function cliOutput(result) {
+function cliOutput(result: SpawnSyncReturns<string>) {
   return `${result.stdout}${result.stderr}`;
 }
 
-function assertNoInjectedControlBytes(output) {
+function assertNoInjectedControlBytes(output: string | Buffer) {
   const bytes = Buffer.isBuffer(output) ? output : Buffer.from(output, "utf8");
   for (const marker of TERMINAL_CONTROL_BYTES) {
     assert.equal(bytes.indexOf(marker), -1, `found raw control bytes ${marker.toString("hex")}`);
@@ -139,10 +145,10 @@ function producerShapedFindings() {
   const blocked = needsValidation();
   delete blocked.validation_plan.deployment;
 
-  return [demonstrated, blocked, rejected()];
+  return [demonstrated, blocked, rejected()] as const;
 }
 
-function rejectMutation(factory, mutate) {
+function rejectMutation<T>(factory: () => T, mutate: (value: T) => void) {
   const value = factory();
   mutate(value);
   assert.notEqual(errorsFor([value]).length, 0);
@@ -156,9 +162,13 @@ test("schema is an actual top-level array with exactly three branches", () => {
   ]);
   const confirmedSchema = schema.items.oneOf[0].properties;
   assert.equal(confirmedSchema.title.visibleContent, true);
-  assert.equal(confirmedSchema.execution.properties.payloads.items.minLength, undefined);
-  assert.equal(confirmedSchema.execution.properties.payloads.items.visibleContent, undefined);
-  assert.equal(confirmedSchema.remediation.properties.code_changes.items.properties.fixed_code.minLength, undefined);
+  assert.ok(confirmedSchema.execution);
+  assert.ok(confirmedSchema.remediation);
+  const payloadSchema: { type: string; minLength?: number; visibleContent?: boolean } = confirmedSchema.execution.properties.payloads.items;
+  const codeSchema: { type: string; minLength?: number } = confirmedSchema.remediation.properties.code_changes.items.properties.fixed_code;
+  assert.equal(payloadSchema.minLength, undefined);
+  assert.equal(payloadSchema.visibleContent, undefined);
+  assert.equal(codeSchema.minLength, undefined);
 });
 
 test("accepts a producer-shaped findings document through the CLI", () => {
@@ -185,20 +195,20 @@ test("allows a one-line finding trace", () => {
 });
 
 test("rejects empty required content", () => {
-  const cases = [
-    [confirmed, (finding) => { finding.title = ""; }],
-    [confirmed, (finding) => { finding.title = "   "; }],
-    [confirmed, (finding) => { finding.evidence = []; }],
-    [confirmed, (finding) => { finding.execution.payloads = []; }],
-    [confirmed, (finding) => { finding.execution.instructions = []; }],
-    [confirmed, (finding) => { finding.execution.observed_result = ""; }],
-    [confirmed, (finding) => { finding.remediation.strategy = ""; }],
-    [needsValidation, (finding) => { finding.blockers = []; }],
-    [needsValidation, (finding) => { finding.validation_plan = {}; }],
-    [needsValidation, (finding) => { finding.validation_plan = { local: " " }; }],
-    [rejected, (finding) => { finding.claimed_root_cause = ""; }],
+  const cases: Array<() => void> = [
+    () => rejectMutation(confirmed, (finding) => { finding.title = ""; }),
+    () => rejectMutation(confirmed, (finding) => { finding.title = "   "; }),
+    () => rejectMutation(confirmed, (finding) => { finding.evidence = []; }),
+    () => rejectMutation(confirmed, (finding) => { finding.execution.payloads = []; }),
+    () => rejectMutation(confirmed, (finding) => { finding.execution.instructions = []; }),
+    () => rejectMutation(confirmed, (finding) => { finding.execution.observed_result = ""; }),
+    () => rejectMutation(confirmed, (finding) => { finding.remediation.strategy = ""; }),
+    () => rejectMutation(needsValidation, (finding) => { finding.blockers = []; }),
+    () => rejectMutation(needsValidation, (finding) => { finding.validation_plan = {}; }),
+    () => rejectMutation(needsValidation, (finding) => { finding.validation_plan = { local: " " }; }),
+    () => rejectMutation(rejected, (finding) => { finding.claimed_root_cause = ""; }),
   ];
-  for (const [factory, mutate] of cases) rejectMutation(factory, mutate);
+  for (const check of cases) check();
 });
 
 test("preserves exact payload and replacement-code strings", () => {
@@ -215,19 +225,19 @@ test("preserves exact payload and replacement-code strings", () => {
 
 test("rejects invalid scalars and whitespace, control, format, or default-ignorable prose", () => {
   for (const invisible of ["\u0000\t\r\n\u001f\u007f\u200b", "\u034f", "\ufe0f", "\ud800", "\udc00", "visible\ud800"]) {
-    const cases = [
-      [confirmed, (finding) => { finding.title = invisible; }],
-      [confirmed, (finding) => { finding.trace[0].scope = invisible; }],
-      [confirmed, (finding) => { finding.evidence[0].description = invisible; }],
-      [confirmed, (finding) => { finding.execution.instructions = [invisible]; }],
-      [confirmed, (finding) => { finding.remediation.strategy = invisible; }],
-      [confirmed, (finding) => { finding.severity.impact.reason = invisible; }],
-      [confirmed, (finding) => { finding.confidence.reason = invisible; }],
-      [needsValidation, (finding) => { finding.blockers = [invisible]; }],
-      [needsValidation, (finding) => { finding.validation_plan = { local: invisible }; }],
-      [rejected, (finding) => { finding.reason = invisible; }],
+    const cases: Array<() => void> = [
+      () => rejectMutation(confirmed, (finding) => { finding.title = invisible; }),
+      () => rejectMutation(confirmed, (finding) => { finding.trace[0].scope = invisible; }),
+      () => rejectMutation(confirmed, (finding) => { finding.evidence[0].description = invisible; }),
+      () => rejectMutation(confirmed, (finding) => { finding.execution.instructions = [invisible]; }),
+      () => rejectMutation(confirmed, (finding) => { finding.remediation.strategy = invisible; }),
+      () => rejectMutation(confirmed, (finding) => { finding.severity.impact.reason = invisible; }),
+      () => rejectMutation(confirmed, (finding) => { finding.confidence.reason = invisible; }),
+      () => rejectMutation(needsValidation, (finding) => { finding.blockers = [invisible]; }),
+      () => rejectMutation(needsValidation, (finding) => { finding.validation_plan = { local: invisible }; }),
+      () => rejectMutation(rejected, (finding) => { finding.reason = invisible; }),
     ];
-    for (const [factory, mutate] of cases) rejectMutation(factory, mutate);
+    for (const check of cases) check();
   }
 });
 
@@ -236,7 +246,7 @@ test("quotes input-derived controls in direct validation values and paths", () =
   finding.trace[0].kind = `invalid-${TERMINAL_CONTROL_PAYLOAD}`;
   finding.execution[`extra-${TERMINAL_CONTROL_PAYLOAD}`] = "value";
 
-  const cyclic = {};
+  const cyclic: Record<string, unknown> = {};
   cyclic[`path-${TERMINAL_CONTROL_PAYLOAD}`] = cyclic;
   const output = [
     ...errorsFor([finding]),
@@ -255,7 +265,7 @@ test("rejects line zero", () => {
 });
 
 test("does not treat inherited or Object-prototype properties as schema properties", () => {
-  rejectMutation(confirmed, (finding) => { finding.constructor = "not allowed"; });
+  rejectMutation(confirmed, (finding) => { Object.assign(finding, { constructor: "not allowed" }); });
   const inherited = Object.create({ verdict: "confirmed" });
   assert(errorsFor([inherited]).some((error) => error.includes("exactly one")));
   assert(collect(Object.create({ constructor: "inherited" }), {
@@ -474,7 +484,7 @@ test("CLI rejects a FIFO without blocking", { skip: process.platform === "win32"
       timeout: CLI_TIMEOUT_MS,
     });
     const output = cliOutput(result);
-    assert.notEqual(result.error && result.error.code, "ETIMEDOUT", output);
+    assert.notEqual((result.error as NodeJS.ErrnoException | undefined)?.code, "ETIMEDOUT", output);
     assert.equal(result.status, 1, output);
     assert.match(output, /input must be a regular file/);
     assert.doesNotMatch(output, /stack|at validate-findings/i);
@@ -495,7 +505,7 @@ test("CLI rejects a symlink without following it", { skip: process.platform === 
       timeout: CLI_TIMEOUT_MS,
     });
     const output = cliOutput(result);
-    assert.notEqual(result.error && result.error.code, "ETIMEDOUT", output);
+    assert.notEqual((result.error as NodeJS.ErrnoException | undefined)?.code, "ETIMEDOUT", output);
     assert.equal(result.status, 1, output);
     assert.match(output, /input must not be a symlink/);
     assert.doesNotMatch(output, /stack|at validate-findings/i);
@@ -524,7 +534,7 @@ test("CLI rejects an oversized array without an exception trace", () => {
 test("checks pattern and branch invariants", () => {
   rejectMutation(rejected, (finding) => { finding.fingerprint = "not stable"; });
   rejectMutation(needsValidation, (finding) => {
-    finding.severity = { impact: { score: "low" }, overall_severity: "low" };
+    Object.assign(finding, { severity: { impact: { score: "low" }, overall_severity: "low" } });
   });
 });
 
@@ -542,7 +552,7 @@ test("caps malformed 1000-finding validation output", () => {
 
   const result = runCli(JSON.stringify(Array.from({ length: LIMITS.arrayItems }, () => null)));
   const output = cliOutput(result);
-  assert.notEqual(result.error && result.error.code, "ETIMEDOUT", output);
+  assert.notEqual((result.error as NodeJS.ErrnoException | undefined)?.code, "ETIMEDOUT", output);
   assert.equal(result.status, 1, output);
   assert.match(output, /output capped at 100/);
   assert(output.length < 20000, `unexpected output length ${output.length}`);
@@ -564,7 +574,7 @@ test("caps amplified in-limit findings output under a constrained Node heap", { 
     timeout: HOSTILE_CLI_TIMEOUT_MS,
   });
   const output = cliOutput(result);
-  assert.notEqual(result.error && result.error.code, "ETIMEDOUT", output);
+  assert.notEqual((result.error as NodeJS.ErrnoException | undefined)?.code, "ETIMEDOUT", output);
   assert.equal(result.status, 1, output);
   assert.match(output, /output capped at 100/);
   assert(output.length < 20000, `unexpected output length ${output.length}`);
@@ -572,15 +582,15 @@ test("caps amplified in-limit findings output under a constrained Node heap", { 
 });
 
 test("keeps shared helpers aligned with the coverage-ledger validator", () => {
-  const findingsModule = require("./validate-findings.cjs");
-  const ledgerModule = require("./validate-coverage-ledger.cjs");
+  const findingsModule: FindingsValidator = require("./validate-findings.cjs");
+  const ledgerModule: LedgerValidator = require("./validate-coverage-ledger.cjs");
 
   for (const name of [
     "VISIBLE_CONTENT",
     "PATH_FORBIDDEN_CHARACTER",
     "WINDOWS_RESERVED_COMPONENT",
     "UNSAFE_DIAGNOSTIC_CHARACTER",
-  ]) {
+  ] as const) {
     assert.equal(findingsModule[name].source, ledgerModule[name].source, `${name} source`);
     assert.equal(findingsModule[name].flags, ledgerModule[name].flags, `${name} flags`);
   }

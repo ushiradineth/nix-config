@@ -54,10 +54,11 @@
     checks.oc-loop =
       pkgs.runCommand "oc-loop-tests" {
         src = ../.;
-        nativeBuildInputs = [pkgs.nodejs];
+        nativeBuildInputs = [pkgs.nodejs pkgs.typescript];
         OC_LOOP_TEST_BINARY = "${config.packages.oc-loop}/bin/oc-loop";
       } ''
-        node --test "$src/tests/oc-loop.test.mjs"
+        tsc --project "$src/tests/oc-loop.tsconfig.json" --typeRoots ${terminalTypes}
+        node --test "$src/tests/oc-loop.test.mts"
         touch "$out"
       '';
     checks.pre-commit-check = preCommitCheck;
@@ -251,6 +252,8 @@
         node --test "$src/tests/tmux-navigation.test.mts"
         touch "$out"
       '';
+    checks.agent-guidance = import ../tests/agent-guidance.nix {inherit lib pkgs;};
+    # These suites exercise Python implementations, not Nix configuration.
     checks.python-tests =
       pkgs.runCommand "python-tests" {
         src = ../.;
@@ -267,17 +270,17 @@
         python3 tests/status-digest-test.py
         python3 tests/agent-browser-task-test.py
         python3 tests/agent-capabilities-test.py
-        python3 tests/i-have-adhd-test.py
         touch "$out"
       '';
     checks.security-audit-validators =
       pkgs.runCommand "security-audit-validator-tests" {
         src = ../modules/home-manager/core/opencode/config/skills/security-audit;
-        nativeBuildInputs = [pkgs.nodejs];
+        nativeBuildInputs = [pkgs.nodejs pkgs.typescript];
       } ''
         export HOME="$TMPDIR/home"
         mkdir -p "$HOME"
-        node --test "$src/validate-findings.test.cjs" "$src/validate-coverage-ledger.test.cjs"
+        tsc --project "$src/tests.tsconfig.json" --typeRoots ${terminalTypes}
+        node --test "$src/validate-findings.test.mts" "$src/validate-coverage-ledger.test.mts"
         touch "$out"
       '';
     checks.codex-quota =

@@ -17,6 +17,9 @@
 ## Testing
 
 - Primary validation path: `just check`
+- Test Nix configuration with Nix assertions/module evaluation and flake checks. Use Bash for small
+  CLI/build checks; test genuine Python helpers in Python and Node helpers/plugins in TypeScript,
+  never JavaScript. Do not add Python/JS harnesses for configuration or source-contract assertions.
 - Flake checks include pre-commit hooks configured in `parts/development.nix`: `alejandra`,
   `prettier`, `deadnix`, `statix`, `typos`
 - Run formatter before check when touching multiple files: `just fmt && just check`

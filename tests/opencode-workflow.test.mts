@@ -210,7 +210,6 @@ test("shared permissions are inherited with only role-specific overrides", () =>
     for (const name of ["direct", "builder", "general", "grind", "audit", "ideate", "writer"]) {
       const agent = resolved(f, name)
       for (const command of [
-        "nix develop",
         "git status --short",
         "git diff --cached",
         "gh pr view 123",
@@ -222,7 +221,11 @@ test("shared permissions are inherited with only role-specific overrides", () =>
       ]) {
         assert.equal(action(agent, "bash", command), "allow", `${name}: ${command}`)
       }
+      // Nix shells can execute arbitrary code and inherit the shared ask default.
       for (const command of [
+        "nix develop",
+        "nix develop -c just check",
+        "nix shell nixpkgs#jq -c jq --version",
         "git commit -m test",
         "git push",
         "gh pr create",

@@ -1,9 +1,15 @@
-const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const os = require("node:os");
-const path = require("node:path");
-const { spawnSync } = require("node:child_process");
-const test = require("node:test");
+import assert from "node:assert/strict";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
+import { spawnSync, type SpawnSyncReturns } from "node:child_process";
+import { test } from "node:test";
+import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
+import type { CoverageUnit, Check, Attempt, LedgerValidator } from "./validator-test-types.d.ts";
+
+const require = createRequire(import.meta.url);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const {
   LIMITS,
   canonicalCoverageId,
@@ -12,7 +18,7 @@ const {
   isSafeRelativePath,
   preflightJsonText,
   validateDocument,
-} = require("./validate-coverage-ledger.cjs");
+}: LedgerValidator = require("./validate-coverage-ledger.cjs");
 
 const validatorPath = path.join(__dirname, "validate-coverage-ledger.cjs");
 const CLI_TIMEOUT_MS = 5000;
@@ -22,7 +28,7 @@ const HAS_SAFE_INPUT_OPEN = Number.isInteger(fs.constants.O_NOFOLLOW) &&
   Number.isInteger(fs.constants.O_NONBLOCK) &&
   fs.constants.O_NONBLOCK !== 0;
 
-function unit(overrides = {}) {
+function unit(overrides: Partial<CoverageUnit> & { extra?: unknown } = {}): CoverageUnit {
   const canonicalRefs = overrides.canonical_refs || {
     surface: "src/router.ts#POST /users/:id",
     boundary: "src/authz.ts#requireOwner",
@@ -53,11 +59,11 @@ function unit(overrides = {}) {
   return Object.assign(value, overrides, { canonical_refs: canonicalRefs });
 }
 
-function errorsFor(value) {
+function errorsFor(value: unknown) {
   return validateDocument(value);
 }
 
-function runCli(contents, options = {}) {
+function runCli(contents: string | Buffer, options: { nodeArgs?: string[]; timeout?: number } = {}) {
   const { nodeArgs = [], timeout = CLI_TIMEOUT_MS } = options;
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "validate-coverage-ledger-"));
   const ledgerPath = path.join(directory, "coverage-ledger.json");
@@ -72,7 +78,7 @@ function runCli(contents, options = {}) {
   }
 }
 
-function cliOutput(result) {
+function cliOutput(result: SpawnSyncReturns<string>) {
   return `${result.stdout}${result.stderr}`;
 }
 
@@ -84,14 +90,14 @@ const TERMINAL_CONTROL_BYTES = [
   Buffer.from("\u202e"),
 ];
 
-function assertNoInjectedControlBytes(output) {
+function assertNoInjectedControlBytes(output: string | Buffer) {
   const bytes = Buffer.isBuffer(output) ? output : Buffer.from(output, "utf8");
   for (const marker of TERMINAL_CONTROL_BYTES) {
     assert.equal(bytes.indexOf(marker), -1, `found raw control bytes ${marker.toString("hex")}`);
   }
 }
 
-function sourceCheck(agentId = "hunter-1", overrides = {}) {
+function sourceCheck(agentId: string | null = "hunter-1", overrides: Partial<Check> = {}): Check {
   return {
     agent_id: agentId,
     reviewed_paths: ["src/router.ts"],
@@ -103,7 +109,7 @@ function sourceCheck(agentId = "hunter-1", overrides = {}) {
   };
 }
 
-function localCheck(agentId = "hunter-1", overrides = {}) {
+function localCheck(agentId: string | null = "hunter-1", overrides: Partial<Check> = {}) {
   return sourceCheck(agentId, {
     method: "local",
     result: "The bounded fixture accepted the other owner's object.",
@@ -112,7 +118,7 @@ function localCheck(agentId = "hunter-1", overrides = {}) {
   });
 }
 
-function archivedAttempt(overrides = {}) {
+function archivedAttempt(overrides: Partial<Attempt> = {}): Attempt {
   const value = {
     wave: 1,
     status: "blocked",
@@ -635,7 +641,7 @@ test("rejects a FIFO through the CLI without blocking", { skip: process.platform
       timeout: CLI_TIMEOUT_MS,
     });
     const output = cliOutput(result);
-    assert.notEqual(result.error && result.error.code, "ETIMEDOUT", output);
+    assert.notEqual((result.error as NodeJS.ErrnoException | undefined)?.code, "ETIMEDOUT", output);
     assert.equal(result.status, 1, output);
     assert.match(output, /input must be a regular file/);
     assert.doesNotMatch(output, /stack|at validate-coverage-ledger/i);
@@ -656,7 +662,7 @@ test("rejects a symlink through the CLI", { skip: process.platform === "win32" |
       timeout: CLI_TIMEOUT_MS,
     });
     const output = cliOutput(result);
-    assert.notEqual(result.error && result.error.code, "ETIMEDOUT", output);
+    assert.notEqual((result.error as NodeJS.ErrnoException | undefined)?.code, "ETIMEDOUT", output);
     assert.equal(result.status, 1, output);
     assert.match(output, /input must not be a symlink/);
     assert.doesNotMatch(output, /stack|at validate-coverage-ledger/i);
@@ -666,14 +672,14 @@ test("rejects a symlink through the CLI", { skip: process.platform === "win32" |
 });
 
 test("rejects deeply nested input without recursion failure", () => {
-  let nested = 0;
+  let nested: unknown = 0;
   for (let depth = 0; depth < 20000; depth++) nested = [nested];
   assert(errorsFor(nested).some((error) => error.includes("exceeds nesting depth limit 64")));
   if (!HAS_SAFE_INPUT_OPEN) return;
 
   const result = runCli(`${"[".repeat(20000)}0${"]".repeat(20000)}`);
   const output = cliOutput(result);
-  assert.notEqual(result.error && result.error.code, "ETIMEDOUT", output);
+  assert.notEqual((result.error as NodeJS.ErrnoException | undefined)?.code, "ETIMEDOUT", output);
   assert.equal(result.status, 1, output);
   assert.match(output, /exceeds nesting depth limit 64/);
   assert.doesNotMatch(output, /RangeError|Maximum call stack|stack|at validate-coverage-ledger/i);
@@ -691,7 +697,7 @@ test("rejects multi-megabyte nesting under a constrained Node heap", { skip: !HA
       timeout: HOSTILE_CLI_TIMEOUT_MS,
     });
     const output = cliOutput(result);
-    assert.notEqual(result.error && result.error.code, "ETIMEDOUT", output);
+    assert.notEqual((result.error as NodeJS.ErrnoException | undefined)?.code, "ETIMEDOUT", output);
     assert.equal(result.status, 1, output);
     assert.match(output, /exceeds nesting depth limit 64/);
     assert.doesNotMatch(output, /heap out of memory|allocation failed|RangeError|Maximum call stack|stack|at validate-coverage-ledger/i);
@@ -704,7 +710,7 @@ test("caps malformed 10000-unit validation output", () => {
 
   const result = runCli(JSON.stringify(Array.from({ length: LIMITS.units }, () => null)));
   const output = cliOutput(result);
-  assert.notEqual(result.error && result.error.code, "ETIMEDOUT", output);
+  assert.notEqual((result.error as NodeJS.ErrnoException | undefined)?.code, "ETIMEDOUT", output);
   assert.equal(result.status, 1, output);
   assert.match(output, /output capped at 100/);
   assert(output.length < 20000, `unexpected output length ${output.length}`);
