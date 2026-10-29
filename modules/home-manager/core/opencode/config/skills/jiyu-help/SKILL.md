@@ -16,6 +16,13 @@ Normal work already uses the `jiyu` primary and `jiyu-mode`; the user describes 
 check it. Explicit slash commands choose one technique. Give one useful example, not a skill
 sequence the router already owns.
 
+UI design, brainstorming, interface review and visual/interaction fixes automatically use
+`impeccable`; ordinary development does not. `/impeccable <technique> <target>` selects a design
+move explicitly. Its `init`/`teach` arguments capture product context, while top-level `/init` still
+creates repository guidance and `/teach` explains code. Review and brainstorming commands remain
+read-only unless the user also requests implementation. Do not suggest the whole UI sequence for a
+small fix or claim the upstream live-picker/detector is installed.
+
 Distinguish `how` from `why`, `arena` from `swarm`, `blast-radius` from `interrogate`, and `ketchup`
 from resuming work. Models live in managed opencode.json; workers inherit unless configured
 otherwise. A model or harness change takes effect after the authorized apply and restart.

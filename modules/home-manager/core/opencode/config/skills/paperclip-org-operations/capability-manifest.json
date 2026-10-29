@@ -158,6 +158,17 @@
       "reason": "Share the audience-aware output skill across existing roles without compressing operational context or changing permissions."
     },
     {
+      "source": "impeccable",
+      "disposition": "exclude",
+      "inclusion": "none",
+      "roles": [],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode-only UI specialist. No Paperclip publication, bindings, detector hooks or live services are authorized."
+      ],
+      "reason": "Keep the requested Impeccable integration scoped to OpenCode and UI design tasks."
+    },
+    {
       "source": "in-your-own-words",
       "disposition": "adapt",
       "inclusion": "complete-tree",

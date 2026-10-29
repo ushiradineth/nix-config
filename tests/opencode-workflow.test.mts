@@ -182,6 +182,15 @@ test("ordinary checks run while destructive and operational commands retain appr
       assert.equal(action(agent, "bash", command), "ask", command)
     assert.equal(action(agent, "external_directory", "/unfamiliar/path/file"), "ask")
     assert.equal(action(agent, "external_directory", join(f.workspace, "file")), "allow")
+    for (const prefix of ["/var/folders", "/private/var/folders"]) {
+      for (const userDir of ["24/1sdtr2d96q75lv2m5mpy4f_m0000gn", "ab/a-different-temp-id"]) {
+        const temp = `${prefix}/${userDir}/T`
+        for (const path of [`${temp}/opencode/*`, `${temp}/opencode/session/output.txt`])
+          assert.equal(action(agent, "external_directory", path), "allow", path)
+        for (const path of [`${temp}/other/*`, `${temp}/opencode-other/*`])
+          assert.equal(action(agent, "external_directory", path), "ask", path)
+      }
+    }
   } finally {
     f.close()
   }
@@ -197,6 +206,7 @@ test("native discovery loads requested skills and their command entrypoints", ()
     const requested = [
       "jiyu-mode",
       "jiyu-help",
+      "impeccable",
       "benchmark-checklist",
       "blast-radius",
       "in-your-own-words",

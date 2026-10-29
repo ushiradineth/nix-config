@@ -42,6 +42,46 @@ Before delivering a substantive code change, the attack-the-diff playbook runs:
 These are distinct purposes at one completed review boundary. They do not run after every file.
 Trivial edits get an inline check. Repeated passes need a material change or an unresolved finding.
 
+## UI design with Impeccable
+
+Jiyu automatically uses `impeccable` when the requested result involves visual or interaction
+design: UI brainstorming, screens, layout, typography, UX copy, accessibility, responsiveness,
+motion or interface review. Ordinary coding, backend work, architecture discussions and frontend
+logic/refactoring that leaves the experience unchanged stay on their normal engineering routes.
+Mixed work uses Impeccable for the UI portion and one shared integration/code-review boundary.
+
+Describe the UI goal normally, or select a move explicitly:
+
+```text
+Brainstorm three settings layouts for frequent keyboard users. Ideas only.
+Fix this dialog's narrow-screen layout while keeping its Kumo components and behavior.
+/impeccable critique the onboarding flow
+/impeccable shape the new workspace screen
+/impeccable polish the checkout form
+```
+
+The sequence is context → shape/build → critique/audit → targeted fixes → polish, scaled to the
+task. A small fix loads its relevant reference; it does not run the entire sequence. Brainstorming,
+shape, critique and audit stay read-only unless implementation was also requested. A bare
+`/impeccable` offers a few next moves without running them.
+
+Operate, Read, Persuade and Experience modes distinguish an efficient tool from a reading surface,
+marketing page or showcase. Existing brand rules, design tokens, component libraries and native
+platform conventions remain authoritative. Missing PRODUCT.md or DESIGN.md does not block a local
+refinement or authorize a redesign. `init`, `document` and `extract` are available when their
+specific context/system work is useful or requested. Top-level `/init` and `/teach` retain their
+engineering meanings; Impeccable's aliases are namespaced under `/impeccable`.
+
+The design references cover layout, typeset, clarify, distill, harden, adapt, onboard, optimize,
+colorize, bolder, quieter, animate, delight, overdrive and polish. Native platform guidance loads
+only when applicable. Verify the actual affected render and interaction through existing browser or
+native procedures; a screenshot is not a functional test.
+
+The adaptation does not install upstream's binary detector, automatic hooks, live-picker service or
+shortcut generator. Variants use existing preview tools. No background UI scan runs after ordinary
+development edits. Source and local choices are recorded in
+[Impeccable provenance](skills/impeccable/UPSTREAM.md).
+
 The full detail behind all 24 upstream principles lives under
 `skills/jiyu-mode/references/principles/`, indexed by `references/principles.md`. The agent reads
 the applicable rule, rather than loading 24 more skill entries or reciting principle names in every
@@ -72,6 +112,11 @@ replacing project `AGENTS.md`. Use `ctx stats` in OpenCode to inspect it after a
 Routine shell commands and checks retain ordinary execution permission. Destructive commands,
 pushes, merges, deployment and system-switch commands retain approval patterns. These command
 patterns do not replace the user's scope or repository boundaries.
+
+OpenCode's scratch subtree under macOS's per-user temporary directory is allowed through
+`/var/folders/*/*/T/opencode/**` and its `/private/var/folders/` alias. The changing
+temporary-directory prefix does not need a new approval. Other temporary directories retain the
+default external-access prompt.
 
 ## Project guidance and continuity
 

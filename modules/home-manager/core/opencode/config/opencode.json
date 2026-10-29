@@ -88,6 +88,8 @@
     },
     "external_directory": {
       "*": "ask",
+      "/var/folders/*/*/T/opencode/**": "allow",
+      "/private/var/folders/*/*/T/opencode/**": "allow",
       "~/nix-config/**": "allow",
       "~/.config/**": "allow",
       "~/Code/**": "allow",

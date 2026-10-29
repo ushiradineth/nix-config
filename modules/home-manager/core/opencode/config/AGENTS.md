@@ -56,6 +56,10 @@ change that meets it. User instructions and the nearest repository guide determi
 
 - Use browser, infrastructure, Paperclip and security skills when their domain is the actual task.
   They supply task-specific procedures, not extra mandatory gates for everyday coding.
+- Use `impeccable` for UI brainstorming, visual/interaction design, UI review and refinement. Apply
+  it only to the UI portion of mixed work; frontend file extensions, architecture design and general
+  coding do not trigger it. Preserve project brand/component rules. Brainstorming and review stay
+  read-only unless implementation was requested; load only the relevant design playbook.
 - Write plainly and lead with the result. Keep progress updates useful and final evidence compact.
   Use `unslop` for substantial prose and `personal-writing-identity` when writing in Shu's voice.
   `i-have-adhd` is available when requested; honor conversation-local style choices.
