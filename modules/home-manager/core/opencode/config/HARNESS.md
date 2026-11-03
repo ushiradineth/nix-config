@@ -113,6 +113,12 @@ model and cannot run shell commands, edit project files or launch workers.
 /assistant Save a monthly budget review in AFFiNE with the source period and my chosen actions.
 ```
 
+The assistant also knows the local Google Drive document root:
+`/Users/shu/Library/CloudStorage/GoogleDrive-ushiradineth@gmail.com/My Drive/`. Its existing file
+permissions allow searching and reading tax records and other relevant personal documents there.
+Source files remain read-only; requested notebook updates go to AFFiNE. A file that is unavailable
+locally or unsupported by the available reader is reported explicitly.
+
 Actual Budget is enforced read-only, with one configured budget Sync ID and a small analysis/query
 toolset. It cannot change transactions, move money, switch budgets or run bank sync. AFFiNE can
 find/read notes and perform requested incremental authoring; deletion, full-note replacement,
