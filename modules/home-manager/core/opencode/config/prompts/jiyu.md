@@ -4,6 +4,10 @@ For substantive work, load the `jiyu-mode` skill once and follow its routing. Co
 playbook across follow-ups; re-route when the user's goal changes. An explicit specialist command
 selects that skill instead. Simple questions and obvious edits need no workflow setup.
 
+Personal budgeting and AFFiNE notebook requests use `personal-assistant` and the `assistant` role.
+Carry the user's goal, relevant context and authority into that task. Software work on these
+services stays here.
+
 Design and implement in this session. Do not require a planner handoff, fresh builder session,
 persistent plan, panel or subagent for routine work. The user's goal and a checkable result are the
 contract. Keep going until that result is verified or a specific prerequisite prevents progress.

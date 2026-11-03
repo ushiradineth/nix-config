@@ -22,20 +22,21 @@ For multi-step work, keep a short live checklist of the selected playbook's appl
 Explain a material omission when it affects confidence. Do not copy irrelevant steps just to skip
 them. Read only the matching file:
 
-| Task                                                            | Playbook                                        |
-| --------------------------------------------------------------- | ----------------------------------------------- |
-| UI ideas, visual/interaction design, UX review or UI refinement | Load `impeccable` for the UI portion            |
-| Explain, diagnose, compare, or investigate without edits        | [investigation](playbooks/investigation.md)     |
-| Reproduce and fix a defect                                      | [bug fix](playbooks/bug-fix.md)                 |
-| Add or change behavior                                          | [feature](playbooks/feature.md)                 |
-| Preserve behavior while changing structure                      | [refactoring](playbooks/refactoring.md)         |
-| Measure slowness or improve a metric                            | [performance](playbooks/performance.md)         |
-| Settle an uncertain approach or write a requested plan          | [design](playbooks/design.md)                   |
-| Large migration, unfamiliar run, or unattended work             | Load `figure-it-out`                            |
-| Attack a completed code diff                                    | [attack the diff](playbooks/attack-the-diff.md) |
-| Open a PR, address reviews, fix checks, or land work            | [PR work](playbooks/pr-work.md)                 |
-| Resume, report status, or pause                                 | [continuity](playbooks/continuity.md)           |
-| Create, adapt, or evaluate a skill                              | [skill authoring](playbooks/skill-authoring.md) |
+| Task                                                            | Playbook                                           |
+| --------------------------------------------------------------- | -------------------------------------------------- |
+| Personal budgets, spending, tax records or AFFiNE notes/reviews | Load `personal-assistant`; delegate to `assistant` |
+| UI ideas, visual/interaction design, UX review or UI refinement | Load `impeccable` for the UI portion               |
+| Explain, diagnose, compare, or investigate without edits        | [investigation](playbooks/investigation.md)        |
+| Reproduce and fix a defect                                      | [bug fix](playbooks/bug-fix.md)                    |
+| Add or change behavior                                          | [feature](playbooks/feature.md)                    |
+| Preserve behavior while changing structure                      | [refactoring](playbooks/refactoring.md)            |
+| Measure slowness or improve a metric                            | [performance](playbooks/performance.md)            |
+| Settle an uncertain approach or write a requested plan          | [design](playbooks/design.md)                      |
+| Large migration, unfamiliar run, or unattended work             | Load `figure-it-out`                               |
+| Attack a completed code diff                                    | [attack the diff](playbooks/attack-the-diff.md)    |
+| Open a PR, address reviews, fix checks, or land work            | [PR work](playbooks/pr-work.md)                    |
+| Resume, report status, or pause                                 | [continuity](playbooks/continuity.md)              |
+| Create, adapt, or evaluate a skill                              | [skill authoring](playbooks/skill-authoring.md)    |
 
 An explicit skill command uses that skill's scope and stopping point. A follow-up continues the
 active task. A new goal re-routes. A question about status does not cancel ongoing implementation.
@@ -46,6 +47,10 @@ editing frontend code does not trigger it. Backend work, architecture discussion
 data-fetching fixes and behavior-preserving frontend refactors use their normal playbooks unless the
 user also requests a UI change. Mixed tasks load Impeccable only for that portion and reuse this
 workflow's final integration and code-review boundary.
+
+Personal budgeting and notebook work uses the assistant route without coding design, repository
+bookkeeping or attack-the-diff. A request to change the Actual Budget/AFFiNE service configuration
+or integration code uses its normal coding playbook.
 
 For a named principle, read [the principle reference](references/principles.md) as needed.
 

@@ -35,7 +35,7 @@ interface Agent {
   model?: unknown
 }
 
-function fixture(candidate = config) {
+function fixture(candidate = config, mockMcp = false) {
   const dir = realpathSync(mkdtempSync(join(tmpdir(), "opencode-workflow-")))
   const home = join(dir, "home")
   const workspace = join(home, "Code/workspace")
@@ -44,7 +44,41 @@ function fixture(candidate = config) {
   mkdirSync(installed, { recursive: true })
   for (const entry of ["prompts", "instructions", "skills", "commands"])
     cpSync(join(configRoot, entry), join(installed, entry), { recursive: true })
-  writeFileSync(join(installed, "opencode.json"), JSON.stringify({ ...candidate, plugin: [] }))
+  const mock = join(dir, "mcp.mts")
+  writeFileSync(
+    mock,
+    `
+    import { createInterface } from "node:readline";
+    const tool = process.argv[2];
+    for await (const line of createInterface({ input: process.stdin })) {
+      const request = JSON.parse(line);
+      if (request.id === undefined) continue;
+      const result = request.method === "initialize"
+        ? { protocolVersion: "2024-11-05", capabilities: { tools: {} }, serverInfo: { name: "fixture", version: "1" } }
+        : request.method === "tools/list"
+          ? { tools: [{ name: tool, description: "Fixture read", inputSchema: { type: "object", properties: {} } }] }
+          : request.method === "tools/call"
+            ? { content: [{ type: "text", text: "verified-fixture-read" }] }
+            : {};
+      process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: request.id, result }) + "\\n");
+    }
+  `
+  )
+  const mcp = Object.fromEntries(
+    Object.entries(candidate.mcp).map(([name, server]) => [
+      name,
+      {
+        ...server,
+        enabled: mockMcp,
+        command: [
+          process.execPath,
+          mock,
+          name === "actualbudget" ? "actual_get_context" : "read_doc",
+        ],
+      },
+    ])
+  )
+  writeFileSync(join(installed, "opencode.json"), JSON.stringify({ ...candidate, mcp, plugin: [] }))
   const env = {
     PATH: process.env.PATH,
     HOME: home,
@@ -110,7 +144,7 @@ function resolved(f: ReturnType<typeof fixture>, name: string): Agent {
 }
 
 function action(agent: Agent, permission: string, resource = "*") {
-  const matches = (pattern: string) =>
+  const matches = (pattern: string, value: string) =>
     new RegExp(
       `^${pattern
         .split("")
@@ -118,11 +152,9 @@ function action(agent: Agent, permission: string, resource = "*") {
           char === "*" ? ".*" : char === "?" ? "." : char.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
         )
         .join("")}$`
-    ).test(resource)
+    ).test(value)
   return agent.permission
-    .filter(
-      (rule) => (rule.permission === permission || rule.permission === "*") && matches(rule.pattern)
-    )
+    .filter((rule) => matches(rule.permission, permission) && matches(rule.pattern, resource))
     .at(-1)?.action
 }
 
@@ -130,6 +162,7 @@ function assertCoordinator(agent: Agent) {
   assert.equal(agent.mode, "primary")
   assert.equal(action(agent, "task", "jiyu"), "deny")
   for (const leaf of leaves) assert.equal(action(agent, "task", leaf), "allow", leaf)
+  assert.equal(action(agent, "task", "assistant"), "allow")
 }
 
 function assertLeaf(agent: Agent) {
@@ -196,6 +229,33 @@ test("ordinary checks run while destructive and operational commands retain appr
   }
 })
 
+test("native personal transports register and service permissions belong to the assistant", () => {
+  const f = fixture(config, true)
+  try {
+    const assistant = resolved(f, "assistant")
+    assert.equal(assistant.mode, "all")
+    assert.equal(assistant.model, undefined)
+    assert.equal(action(assistant, "task", "general"), "deny")
+    assert.equal(action(assistant, "edit"), "deny")
+    assert.equal(action(assistant, "bash", "echo fixture"), "deny")
+    assert.equal(action(assistant, "ctx_execute"), "deny")
+    assert.equal(action(assistant, "a_future_plugin_tool"), "deny")
+    assert.equal(action(assistant, "read"), "allow")
+    assert.equal(action(assistant, "skill", "personal-assistant"), "allow")
+    const transports = f.run(["mcp", "list"])
+    assert.equal(transports.status, 0, transports.stderr)
+    assert.match(transports.stdout, /actualbudget/)
+    assert.match(transports.stdout, /affine/)
+    assert.doesNotMatch(transports.stdout + transports.stderr, /failed|error|disconnected/i)
+    for (const tool of ["actualbudget_actual_get_context", "affine_read_doc"]) {
+      assert.equal(action(assistant, tool), "allow")
+      for (const name of ["jiyu", ...leaves]) assert.equal(action(resolved(f, name), tool), "deny")
+    }
+  } finally {
+    f.close()
+  }
+})
+
 test("native discovery loads requested skills and their command entrypoints", () => {
   const f = fixture()
   try {
@@ -203,6 +263,7 @@ test("native discovery loads requested skills and their command entrypoints", ()
     assert.equal(result.status, 0, result.stderr)
     const skills: { name: string; location: string }[] = JSON.parse(result.stdout)
     const names = new Set(skills.map((skill) => skill.name))
+    assert.ok(names.has("personal-assistant"))
     const requested = [
       "jiyu-mode",
       "jiyu-help",
@@ -225,6 +286,7 @@ test("native discovery loads requested skills and their command entrypoints", ()
     const loadedResult = f.run(["debug", "config"])
     assert.equal(loadedResult.status, 0, loadedResult.stderr)
     const loaded = JSON.parse(loadedResult.stdout)
+    assert.equal(loaded.command.assistant.agent, "assistant")
     for (const name of requested) {
       assert.ok(names.has(name), `${name} is discoverable`)
       assert.equal(loaded.command[name].agent, "jiyu", `/${name} uses the primary session`)

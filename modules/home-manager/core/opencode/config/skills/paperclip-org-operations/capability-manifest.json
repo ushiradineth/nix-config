@@ -279,6 +279,17 @@
       "reason": "Canonical organization operations, access gates and secure capability publication procedure for Dot and eligible operators."
     },
     {
+      "source": "personal-assistant",
+      "disposition": "exclude",
+      "inclusion": "none",
+      "roles": [],
+      "dependencies": [],
+      "runtime_constraints": [
+        "OpenCode-only personal Actual Budget and AFFiNE connections. No company or Paperclip account, service binding or authorization is implied."
+      ],
+      "reason": "Personal assistant tools and guidance stay in the user's local OpenCode harness."
+    },
+    {
       "source": "personal-writing-identity",
       "disposition": "adapt",
       "inclusion": "complete-tree",

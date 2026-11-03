@@ -10,6 +10,7 @@
     inherit pkgs;
     opencode = llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode;
   };
+  assistantHelper = import ../../../../lib/opencode-assistant.nix {inherit pkgs;};
   psPath =
     if pkgs.stdenv.isDarwin
     then "/bin/ps"
@@ -41,6 +42,7 @@ in {
     pkgs.nodejs
     terminalHelper
     loopHelper
+    assistantHelper
   ];
 
   home.sessionVariables = {

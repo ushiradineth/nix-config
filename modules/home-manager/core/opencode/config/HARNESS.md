@@ -89,15 +89,62 @@ reply. Steering by a principle's name still works.
 
 ## Agents and tools
 
-| Agent      | Responsibility                                                            |
-| ---------- | ------------------------------------------------------------------------- |
-| `jiyu`     | Primary owner of the goal, design, implementation, integration and proof. |
-| `general`  | Bounded implementation or investigation worker.                           |
-| `explore`  | Read-only source mapping.                                                 |
-| `reviewer` | Read-only correctness, comment or structural review.                      |
+| Agent       | Responsibility                                                                                       |
+| ----------- | ---------------------------------------------------------------------------------------------------- |
+| `jiyu`      | Primary owner of the goal, design, implementation, integration and proof.                            |
+| `general`   | Bounded implementation or investigation worker.                                                      |
+| `explore`   | Read-only source mapping.                                                                            |
+| `reviewer`  | Read-only correctness, comment or structural review.                                                 |
+| `assistant` | Personal Actual Budget analysis and AFFiNE notebook work; available directly or as a bounded worker. |
 
 Workers cannot launch other agents. Competing writes get separate workspaces; shared review can use
 the same source. The primary inspects their artifacts and verifies integration.
+
+### Personal budgeting and AFFiNE
+
+Describe a spending, budget or personal notebook task normally. Jiyu routes it to `assistant`, whose
+service tools stay out of ordinary coding agents. `/assistant <request>` selects the role directly;
+a bare `/assistant` shows examples without reading accounts. The assistant inherits the configured
+model and cannot run shell commands, edit project files or launch workers.
+
+```text
+/assistant Review October's personal spending. Explain transfers and missing coverage.
+/assistant Find my trip plan and append these three packing items: ...
+/assistant Save a monthly budget review in AFFiNE with the source period and my chosen actions.
+```
+
+Actual Budget is enforced read-only, with one configured budget Sync ID and a small analysis/query
+toolset. It cannot change transactions, move money, switch budgets or run bank sync. AFFiNE can
+find/read notes and perform requested incremental authoring; deletion, full-note replacement,
+publishing and account administration are omitted. Requests to draft remain drafts; requests to save
+or update a specific note authorize that change, followed by a readback. Tax preparation establishes
+jurisdiction/year before applying current official rules. Health is deferred.
+
+The two connectors and their transitive dependencies are integrity-locked under
+`lib/opencode-assistant/` and packaged with Node 24. They run locally over stdio; no public MCP
+service or runtime package download is needed. AFFiNE remains behind Tailscale. The assistant reads
+only the service needed for the current request. Local connectors still send tool results to the
+configured model. The personal skill is excluded from Paperclip's capability export.
+
+After the authorized system activation, enter credentials in your own terminal:
+
+```sh
+opencode-assistant setup actualbudget
+opencode-assistant setup affine
+opencode-assistant status
+```
+
+Before activation, the same setup is available with
+`nix run .#opencode-assistant -- setup actualbudget` and
+`nix run .#opencode-assistant -- setup affine`. Passwords are hidden and saved in mode-0600 files
+under `~/.config/opencode-assistant/`, outside this repository and the Nix store. The budget cache
+lives under `~/.local/share/opencode-assistant/`. XDG overrides are respected. `status` proves
+configuration only. Restart OpenCode, inspect `opencode mcp list`, then request a harmless budget
+read and an existing-note read to verify account access. Verify writeback through an actual
+requested note change and readback; never create test transactions for setup.
+
+Changing `hosts/shupi/services/actualbudget.nix`, AFFiNE deployment or connector code remains
+engineering work in `jiyu`, with the normal repository checks and deployment boundaries.
 
 Existing model and provider settings are preserved. Workers inherit the active model unless an
 operator configures a role model in managed `opencode.json`. This setup does not pretend that two

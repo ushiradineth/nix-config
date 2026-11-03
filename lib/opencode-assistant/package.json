@@ -1,0 +1,9 @@
+{
+  "name": "opencode-assistant-connectors",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "actual-mcp-server": "0.25.1",
+    "affine-mcp-server": "3.10.2"
+  }
+}

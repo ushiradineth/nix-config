@@ -9,7 +9,7 @@
   manifest = builtins.fromJSON (builtins.readFile (root + /skills/paperclip-org-operations/capability-manifest.json));
   selected = map (entry: entry.source) manifest.skills;
   agents = lib.filterAttrs (_: agent: !(agent.disable or false)) config.agent;
-  primaries = lib.filterAttrs (_: agent: (agent.mode or "subagent") == "primary") agents;
+  primaries = lib.filterAttrs (_: agent: builtins.elem (agent.mode or "subagent") ["primary" "all"]) agents;
   promptExists = agent:
     if !(agent ? prompt)
     then true
@@ -21,10 +21,14 @@
   commandValid = name: let
     content = builtins.readFile (root + "/commands/${name}");
     parts = lib.splitString "---\n" content;
+    target =
+      if name == "assistant.md"
+      then "assistant"
+      else "jiyu";
   in
     lib.hasSuffix ".md" name
     && builtins.length parts >= 3
-    && lib.hasInfix "\nagent: jiyu\n" ("\n" + builtins.elemAt parts 1);
+    && lib.hasInfix "\nagent: ${target}\n" ("\n" + builtins.elemAt parts 1);
   identityValid = name: let
     path = root + "/skills/${name}/SKILL.md";
     content = builtins.readFile path;
@@ -35,7 +39,7 @@
     && lib.hasInfix "\nname: ${name}\n" ("\n" + frontmatter)
     && lib.hasInfix "description:" frontmatter;
   tests = {
-    single-primary = builtins.attrNames primaries == ["jiyu"] && config.default_agent == "jiyu";
+    primary-registration = builtins.attrNames primaries == ["assistant" "jiyu"] && config.default_agent == "jiyu";
     leaf-registration = lib.all (name: builtins.hasAttr name agents) ["general" "explore" "reviewer"];
     prompt-references = lib.all promptExists (builtins.attrValues agents);
     command-targets = lib.all commandValid (builtins.attrNames commands);

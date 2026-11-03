@@ -26,6 +26,25 @@
       "description": "Own a goal through jiyu-mode routing, implementation and verification",
       "prompt": "{file:./prompts/jiyu.md}"
     },
+    "assistant": {
+      "mode": "all",
+      "description": "Personal budgeting with Actual Budget and notes, plans and reviews in AFFiNE; no software implementation",
+      "prompt": "{file:./prompts/assistant.md}",
+      "permission": {
+        "*": "deny",
+        "read": "allow",
+        "glob": "allow",
+        "list": "allow",
+        "grep": "allow",
+        "external_directory": "allow",
+        "skill": "allow",
+        "question": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "actualbudget_*": "allow",
+        "affine_*": "allow"
+      }
+    },
     "general": {
       "mode": "subagent",
       "description": "Complete a bounded implementation or investigation assignment",
@@ -50,7 +69,23 @@
       }
     }
   },
+  "mcp": {
+    "actualbudget": {
+      "type": "local",
+      "command": ["opencode-assistant", "run", "actualbudget"],
+      "enabled": true,
+      "timeout": 30000
+    },
+    "affine": {
+      "type": "local",
+      "command": ["opencode-assistant", "run", "affine"],
+      "enabled": true,
+      "timeout": 30000
+    }
+  },
   "permission": {
+    "actualbudget_*": "deny",
+    "affine_*": "deny",
     "question": "allow",
     "read": "allow",
     "edit": "allow",
@@ -84,7 +119,8 @@
       "*": "deny",
       "general": "allow",
       "explore": "allow",
-      "reviewer": "allow"
+      "reviewer": "allow",
+      "assistant": "allow"
     },
     "external_directory": {
       "*": "ask",

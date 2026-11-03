@@ -51,6 +51,18 @@
       inherit pkgs;
       opencode = inputs.llm-agents.packages.${system}.opencode;
     };
+    packages.opencode-assistant = import ../lib/opencode-assistant.nix {inherit pkgs;};
+    checks.opencode-assistant =
+      pkgs.runCommand "opencode-assistant-tests" {
+        src = ../.;
+        nativeBuildInputs = [pkgs.nodejs_24 pkgs.typescript];
+        OPENCODE_ASSISTANT_TEST_BINARY = "${config.packages.opencode-assistant}/bin/opencode-assistant";
+        OPENCODE_ASSISTANT_TEST_MODULES = "${config.packages.opencode-assistant.connectors}/lib/node_modules";
+      } ''
+        tsc --project "$src/tests/opencode-assistant.tsconfig.json" --typeRoots ${terminalTypes}
+        node --test "$src/tests/opencode-assistant.test.mts"
+        touch "$out"
+      '';
     checks.oc-loop =
       pkgs.runCommand "oc-loop-tests" {
         src = ../.;

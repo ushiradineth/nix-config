@@ -54,6 +54,9 @@ change that meets it. User instructions and the nearest repository guide determi
 
 ## Specialists and writing
 
+- Use `personal-assistant` for personal Actual Budget analysis and AFFiNE notes, plans and reviews.
+  Route those requests to `assistant`, which owns the service tools; coding work on the services
+  stays in `jiyu`. Personal work does not run coding or UI review playbooks.
 - Use browser, infrastructure, Paperclip and security skills when their domain is the actual task.
   They supply task-specific procedures, not extra mandatory gates for everyday coding.
 - Use `impeccable` for UI brainstorming, visual/interaction design, UI review and refinement. Apply

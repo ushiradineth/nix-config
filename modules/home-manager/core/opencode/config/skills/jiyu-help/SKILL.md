@@ -29,3 +29,10 @@ otherwise. A model or harness change takes effect after the authorized apply and
 
 Help stays read-only. Do not begin implementation, run setup, change budgets, create a verification
 skill or publish anything just because it was recommended.
+
+Personal Actual Budget analysis and AFFiNE notes route to `assistant` using `personal-assistant`.
+`/assistant` shows its menu; `/assistant <request>` performs the requested personal task. Actual
+Budget is read-only. Requested AFFiNE note edits are read back, while drafts stay unsaved. Service
+configuration changes use the engineering workflow. Setup uses `opencode-assistant setup` in the
+user's terminal; do not request passwords in chat or claim a configured connector has account access
+until a real read succeeds.
