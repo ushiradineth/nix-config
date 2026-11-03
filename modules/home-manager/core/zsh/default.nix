@@ -62,6 +62,10 @@ in {
 
     inherit envExtra;
     initContent = ''
+      # Long-lived tmux sessions can retain an inherited ASCII locale.
+      export LANG=${lib.escapeShellArg config.home.sessionVariables.LANG}
+      export LC_ALL=${lib.escapeShellArg config.home.sessionVariables.LC_ALL}
+
       ${conditionalInitContent}
 
       zstyle ':autocomplete:*' default-context history-incremental-search-backward

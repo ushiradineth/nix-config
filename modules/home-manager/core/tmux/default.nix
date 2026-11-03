@@ -92,6 +92,8 @@ in {
       ["${quotaHelper}/bin/codex-quota status" "${navigationHelper}/bin/tmux-navigation sessions" "${navigationHelper}/bin/tmux-navigation projects" badgeStyle]
       (builtins.readFile ./.tmux.conf)
       + ''
+        set-environment -g LANG ${pkgs.lib.escapeShellArg config.home.sessionVariables.LANG}
+        set-environment -g LC_ALL ${pkgs.lib.escapeShellArg config.home.sessionVariables.LC_ALL}
         set-window-option -g automatic-rename-format '${renameFormat}'
       '';
   };
