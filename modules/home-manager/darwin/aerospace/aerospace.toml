@@ -126,6 +126,11 @@ run = 'move-node-to-workspace 2'
 if.app-id = 'md.obsidian'
 run = 'move-node-to-workspace 3'
 
+# Move Affine to workspace 3
+[[on-window-detected]]
+if.app-id = 'pro.affine.app'
+run = 'move-node-to-workspace 3'
+
 # Move Notes to workspace 3
 [[on-window-detected]]
 if.app-id = 'com.apple.Notes'

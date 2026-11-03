@@ -12,11 +12,15 @@
     autoMigrate = true;
 
     trust = {
-      casks = ["nikitabobko/tap/aerospace"];
+      casks = [
+        "nikitabobko/tap/aerospace"
+        "kamillobinski/thock/thock"
+      ];
       taps = [
         "tw93/tap"
         "nikitabobko/tap"
         "HaseebKhalid1507/tap"
+        "kamillobinski/thock"
       ];
       # commands = ["user/repo/command"];
       # formulae = ["user/repo/formula"];
@@ -41,6 +45,7 @@
       "nikitabobko/tap"
       "tw93/tap"
       "HaseebKhalid1507/tap"
+      "kamillobinski/thock"
     ];
     casks = [
       "obs"
@@ -81,6 +86,11 @@
       "osu"
       "handy" # Speech to text application
       "blankie" # Background noise
+      "affine" # Note editor and whiteboard
+      "dbx" # DB client
+      "thock" # Keyboard sounds
+      "atoll" # Dynamic Island
+      "thaw" # Menu bar manager
     ];
     masApps = {
       "Xcode" = 497799835;
