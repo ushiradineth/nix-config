@@ -40,13 +40,18 @@
       "czkawka"
       "myx"
     ];
-    taps = [
-      "homebrew/services"
-      "nikitabobko/tap"
-      "tw93/tap"
-      "HaseebKhalid1507/tap"
-      "kamillobinski/thock"
-    ];
+    # Bundle cleanup replaces the trust store with the Brewfile's trusted entries.
+    taps =
+      ["homebrew/services"]
+      ++ map (name: {
+        inherit name;
+        trusted = true;
+      }) [
+        "nikitabobko/tap"
+        "tw93/tap"
+        "HaseebKhalid1507/tap"
+        "kamillobinski/thock"
+      ];
     casks = [
       "obs"
       "vlc"
