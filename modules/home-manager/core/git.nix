@@ -29,6 +29,10 @@ in {
         push.autoSetupRemote = true;
         pull.rebase = true;
         rerere.enabled = true;
+        diff = {
+          algorithm = "histogram";
+          indentHeuristic = true;
+        };
       };
 
       ignores = [
@@ -108,9 +112,9 @@ in {
             loadingText = "Generating commit message...";
             output = "terminal";
             command = ''
-              DIFF=$(git diff --cached --diff-algorithm=minimal)
+              DIFF=$(git diff --cached)
               if [ -z "$DIFF" ]; then
-                DIFF=$(git diff --diff-algorithm=minimal)
+                DIFF=$(git diff)
               fi
               if [ -z "$DIFF" ]; then
                 echo "No changes to commit"
