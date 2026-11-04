@@ -42,9 +42,8 @@ to make a deliberate choice rather than a universal veto on a requested style. V
 driven by affected states and unresolved evidence rather than an arbitrary number of passes.
 
 No upstream engine, bootstrap/download script, live-browser bundle, provider hook, package install
-or detector service is included. No Paperclip export or live binding is added. Legacy project-local
-Impeccable skills remain available; the managed router selects this entrypoint for new UI tasks
-instead of stacking the older workflows.
+or detector service is included. Legacy project-local Impeccable skills remain available; the
+managed router selects this entrypoint for new UI tasks instead of stacking the older workflows.
 
 To update, compare the candidate upstream revision and full affected references with this pin;
 preserve notices and review the local decisions rather than overwriting the adaptation. Verify

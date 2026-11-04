@@ -223,7 +223,6 @@ in {
         "/srv/changedetection"
         "/srv/backrest/config"
         "/srv/backrest/data"
-        "/srv/paperclip"
         "/srv/snapotter/redis"
         "/srv/google-mcp"
       ];
@@ -236,7 +235,6 @@ in {
         "--tag=app-data"
         "--tag=shupi"
         "--tag=automated"
-        "--exclude=/srv/paperclip/instances/default/db"
       ];
 
       pruneOpts = [
@@ -266,7 +264,6 @@ in {
         "/srv/couchdb/config"
         "/srv/ntfy"
         "/srv/alertmanager"
-        "/var/lib/paperclip"
       ];
 
       extraOptions = [

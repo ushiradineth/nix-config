@@ -42,7 +42,6 @@
     CHANGEDETECTION_DOMAIN = "cd.shupi.ushira.com";
     HOMEASSISTANT_DOMAIN = "ha.shupi.ushira.com";
     ATUIN_DOMAIN = "at.shupi.ushira.com";
-    PAPERCLIP_DOMAIN = "pc.shupi.ushira.com";
     SNAPOTTER_DOMAIN = "so.shupi.ushira.com";
     GOOGLE_MCP_DOMAIN = "gmcp.shupi.ushira.com";
 

@@ -100,15 +100,16 @@ reply. Steering by a principle's name still works.
 Workers cannot launch other agents. Competing writes get separate workspaces; shared review can use
 the same source. The primary inspects their artifacts and verifies integration.
 
-### Personal budgeting and AFFiNE
+### Personal budgeting, Gmail and AFFiNE
 
-Describe a spending, budget or personal notebook task normally. Jiyu routes it to `assistant`, whose
-service tools stay out of ordinary coding agents. `/assistant <request>` selects the role directly;
-a bare `/assistant` shows examples without reading accounts. The assistant inherits the configured
-model and cannot run shell commands, edit project files or launch workers.
+Describe a spending, budget, email or personal notebook task normally. Jiyu routes it to
+`assistant`, whose service tools stay out of ordinary coding agents. `/assistant <request>` selects
+the role directly; a bare `/assistant` shows examples without reading accounts. The assistant
+inherits the configured model and cannot run shell commands, edit project files or launch workers.
 
 ```text
 /assistant Review October's personal spending. Explain transfers and missing coverage.
+/assistant Find this year's receipts from my accountant and list any missing tax documents.
 /assistant Find my trip plan and append these three packing items: ...
 /assistant Save a monthly budget review in AFFiNE with the source period and my chosen actions.
 ```
@@ -118,6 +119,12 @@ The assistant also knows the local Google Drive document root:
 permissions allow searching and reading tax records and other relevant personal documents there.
 Source files remain read-only; requested notebook updates go to AFFiNE. A file that is unavailable
 locally or unsupported by the available reader is reported explicitly.
+
+Gmail uses the existing Google Workspace MCP on shupi over the tailnet. Only the assistant can use
+its seven mail read tools: search, message/thread reads (single or batch), attachment retrieval and
+label listing. Other Google services and all mailbox changes remain denied, including sends, saved
+Gmail drafts, marking read, archiving and deletion. Replies can be drafted in chat. Email results
+include source message links; downloading an attachment does not prove it was read.
 
 Actual Budget is enforced read-only, with one configured budget Sync ID and a small analysis/query
 toolset. It cannot change transactions, move money, switch budgets or run bank sync. AFFiNE can
@@ -130,7 +137,7 @@ The two connectors and their transitive dependencies are integrity-locked under
 `lib/opencode-assistant/` and packaged with Node 24. They run locally over stdio; no public MCP
 service or runtime package download is needed. AFFiNE remains behind Tailscale. The assistant reads
 only the service needed for the current request. Local connectors still send tool results to the
-configured model. The personal skill is excluded from Paperclip's capability export.
+configured model.
 
 After the authorized system activation, enter credentials in your own terminal:
 
@@ -139,6 +146,16 @@ opencode-assistant setup actualbudget
 opencode-assistant setup affine
 opencode-assistant status
 ```
+
+For Gmail, deploy the Google MCP callback change, activate this harness, then run
+`opencode mcp auth google` and complete the browser sign-in as `ushiradineth@gmail.com`. OpenCode
+requests identity and Gmail read-only scopes and manages its own tokens outside this repository. The
+Gmail profile selects a tailnet-protected route that supplies the matching OAuth scope hint, so the
+shared server's broader advertisement does not expand this request. The server allowlist adds
+OpenCode's exact callback `http://127.0.0.1:19876/mcp/oauth/callback` while retaining the existing
+app callback. Its shared server permissions stay unchanged; the explicit OpenCode tool allowlist
+limits this assistant. `opencode mcp debug google` diagnoses discovery and authentication without
+treating registration as proof of mailbox access.
 
 Before activation, the same setup is available with
 `nix run .#opencode-assistant -- setup actualbudget` and
@@ -149,7 +166,7 @@ configuration only. Restart OpenCode, inspect `opencode mcp list`, then request 
 read and an existing-note read to verify account access. Verify writeback through an actual
 requested note change and readback; never create test transactions for setup.
 
-Changing `hosts/shupi/services/actualbudget.nix`, AFFiNE deployment or connector code remains
+Changing `hosts/shupi/services/actualbudget.nix`, AFFiNE/Google deployment or connector code remains
 engineering work in `jiyu`, with the normal repository checks and deployment boundaries.
 
 Existing model and provider settings are preserved. Workers inherit the active model unless an
@@ -232,10 +249,9 @@ The 23 upstream playbooks are covered without retaining 23 separate orchestratio
 | Session pickup, Pause safely                                 | Continuity playbook.                                                                                                             |
 | Worktree cleanup                                             | Scoped operational work from actual git state; no automatic deletion.                                                            |
 
-Browser automation, Paperclip operations, Minecraft context, security auditing, local SAST, Fallow,
-Kumo design and personal voice remain for their actual domains. ADHD presentation is opt-in.
-Personal voice uses unslop instead of the duplicate humanizer workflow. Paperclip's exporter and
-manifest reflect the new local catalog, but no live Paperclip skill, binding or agent is changed.
+Browser automation, Minecraft context, security auditing, local SAST, Fallow, Kumo design and
+personal voice remain for their actual domains. ADHD presentation is opt-in. Personal voice uses
+unslop instead of the duplicate humanizer workflow.
 
 Retired coding machinery includes the planner/builder/direct/sudo lanes, role-specific handoff
 templates, beam/redteam/sync commands and overlapping quality routers. Historical plans remain

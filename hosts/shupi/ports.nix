@@ -31,7 +31,6 @@
       homeassistant = 48022;
       lifeos = 48023;
       atuin = 48024;
-      paperclip = 48025;
       snapotter = 48026;
       googleMcp = 48027;
       changedetection = 48028;

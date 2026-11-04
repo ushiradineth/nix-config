@@ -6,8 +6,6 @@
   config = builtins.fromJSON (builtins.readFile (root + /opencode.json));
   skills = builtins.readDir (root + /skills);
   names = builtins.attrNames skills;
-  manifest = builtins.fromJSON (builtins.readFile (root + /skills/paperclip-org-operations/capability-manifest.json));
-  selected = map (entry: entry.source) manifest.skills;
   agents = lib.filterAttrs (_: agent: !(agent.disable or false)) config.agent;
   primaries = lib.filterAttrs (_: agent: builtins.elem (agent.mode or "subagent") ["primary" "all"]) agents;
   promptExists = agent:
@@ -44,9 +42,6 @@
     prompt-references = lib.all promptExists (builtins.attrValues agents);
     command-targets = lib.all commandValid (builtins.attrNames commands);
     discoverable-identities = lib.all identityValid names;
-    complete-export = builtins.sort builtins.lessThan selected == names;
-    unique-export = builtins.length (lib.unique selected) == builtins.length selected;
-    export-dependencies = lib.all (entry: lib.all (name: builtins.elem name selected) entry.dependencies) manifest.skills;
     upstream-attribution = lib.all (name: builtins.pathExists (root + "/skills/${name}/LICENSE")) [
       "jiyu-mode"
       "interrogate"

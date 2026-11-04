@@ -13,7 +13,7 @@
 None in `SKILL.md` or `LICENSE`; both preserve upstream bytes. This provenance file is local. The
 skill is copied into the Home Manager-managed OpenCode configuration instead of running the
 installer, so no other agents or global configuration are modified. Prettier excludes the upstream
-skill to preserve its bytes; the Paperclip capability manifest excludes it from exports.
+skill to preserve its bytes.
 
 ## Updating
 

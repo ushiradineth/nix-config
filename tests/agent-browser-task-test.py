@@ -298,7 +298,7 @@ class BrowserTaskTest(unittest.TestCase):
         self.tasks.chmod(0o755)
         self.denied("unsafe_directory")
 
-    def test_concurrent_runs_and_callers_have_separate_storage(self):
+    def test_concurrent_runs_and_sessions_have_separate_storage(self):
         def flow(identity):
             caller, run_id, session_id, marker = identity
             updates = {"caller": caller, "run_id": run_id, "session_id": session_id}
@@ -307,7 +307,7 @@ class BrowserTaskTest(unittest.TestCase):
             snapshot = self.ok(**updates, command="snapshot", args=[])
             return opened, snapshot
         identities = [("opencode", "run-1", "same", "alpha"),
-                      ("paperclip", "run-1", "same", "beta"),
+                       ("opencode", "run-1", "other", "beta"),
                       ("opencode", "run-2", "same", "gamma")]
         with ThreadPoolExecutor(max_workers=3) as pool:
             results = list(pool.map(flow, identities))

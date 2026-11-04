@@ -155,6 +155,13 @@
         pkgs.runCommand "shupi-adguard-admin" {} ''
           touch "$out"
         '';
+    checks.affine-web =
+      pkgs.runCommand "affine-web-import-tests" {
+        nativeBuildInputs = [pkgs.nodejs_24];
+      } ''
+        node --experimental-strip-types --test ${../containers/affine}/import-errors.test.ts
+        touch "$out"
+      '';
     checks.shupi-short-urls = let
       host = inputs.self.nixosConfigurations.shupi.config;
       http = host.services.traefik.dynamicConfigOptions.http;
@@ -265,6 +272,10 @@
         touch "$out"
       '';
     checks.agent-guidance = import ../tests/agent-guidance.nix {inherit lib pkgs;};
+    checks.google-mcp = import ../tests/google-mcp.nix {
+      inherit lib pkgs;
+      host = inputs.self.nixosConfigurations.shupi.config;
+    };
     # These suites exercise Python implementations, not Nix configuration.
     checks.python-tests =
       pkgs.runCommand "python-tests" {
@@ -279,7 +290,6 @@
         cd source
         python3 tests/status-digest-test.py
         python3 tests/agent-browser-task-test.py
-        python3 tests/agent-capabilities-test.py
         touch "$out"
       '';
     checks.security-audit-validators =

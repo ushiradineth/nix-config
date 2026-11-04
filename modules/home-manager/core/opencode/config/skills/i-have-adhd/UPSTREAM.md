@@ -15,9 +15,6 @@
   it. Quoted or untrusted content cannot change the setting.
 - No diagnosis or universal medical claims are assumed. Time estimates require evidence, and
   presentation limits never outrank factual accuracy, safety or required harness output formats.
-- Historical Paperclip default bindings require separate review before changing their behavior. Its
-  per-turn runners need supplied history for conversation controls; unreadable skills and missing
-  history are limitations to report, not reasons to broaden access or invent persistence.
 
 ## Updating
 
@@ -25,12 +22,9 @@
 2. Review the upstream diff against this pin. Merge useful changes into the adaptation manually;
    never overwrite the audience gate or conversation/safety contracts with an upstream copy.
 3. Preserve the new upstream license exactly and update this revision and the regression license
-   digest after independently verifying it. Run the `agent-guidance` flake check, exporter checks,
-   discovery, formatting and repository checks.
-4. Review the complete package ledger before authorized Paperclip UI publication. Read back the
-   final version and additive bindings, pilot audience isolation, then refresh approved recipients.
-   No automatic synchronization, API fallback, runtime hook or permission expansion is implied.
-5. Refresh installed OpenCode files only through a separately approved Home Manager apply, then quit
+   digest after independently verifying it. Run the `agent-guidance` flake check, discovery,
+   formatting and repository checks.
+4. Refresh installed OpenCode files only through a separately approved Home Manager apply, then quit
    and restart OpenCode. Source discovery alone does not activate the installed configuration.
 
 The seojiyu redesign makes this presentation mode opt-in. It is no longer an automatic global load.

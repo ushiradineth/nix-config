@@ -21,7 +21,7 @@
     WORKSPACE_MCP_PERMISSIONS=${permissions}
     WORKSPACE_EXTERNAL_URL=https://${domain}
     GOOGLE_OAUTH_REDIRECT_URI=https://${domain}/oauth2callback
-    WORKSPACE_MCP_ALLOWED_CLIENT_REDIRECT_URIS=https://${config.environment.variables.PAPERCLIP_DOMAIN}/api/tools/oauth/callback
+    WORKSPACE_MCP_ALLOWED_CLIENT_REDIRECT_URIS=http://127.0.0.1:60488/auth/google/callback
   '';
   route = mylib.traefikHelpers.mkTraefikRoute {
     name = "google-mcp";
@@ -79,7 +79,7 @@ in {
       WORKSPACE_EXTERNAL_URL = "https://${domain}";
       GOOGLE_OAUTH_REDIRECT_URI = "https://${domain}/oauth2callback";
       GOOGLE_CLIENT_SECRET_PATH = "/run/secrets/google-oauth.json";
-      WORKSPACE_MCP_ALLOWED_CLIENT_REDIRECT_URIS = "https://${config.environment.variables.PAPERCLIP_DOMAIN}/api/tools/oauth/callback";
+      WORKSPACE_MCP_ALLOWED_CLIENT_REDIRECT_URIS = "http://127.0.0.1:60488/auth/google/callback";
       WORKSPACE_MCP_DISABLE_LOCAL_FILES = "true";
       WORKSPACE_MCP_BRAND_NAME = "Shu Google MCP";
       PYTHONDONTWRITEBYTECODE = "1";

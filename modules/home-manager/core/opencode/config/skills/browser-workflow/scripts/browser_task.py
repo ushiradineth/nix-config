@@ -112,7 +112,7 @@ def validate(request):
         reject("invalid_request")
     if not isinstance(request["mode"], str) or request["mode"] not in {"public-read", "local-test"}:
         reject("invalid_mode")
-    if not isinstance(request["caller"], str) or request["caller"] not in {"opencode", "paperclip"}:
+    if request["caller"] != "opencode":
         reject("invalid_identity")
     for field in ("run_id", "session_id"):
         if not isinstance(request[field], str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}", request[field]):

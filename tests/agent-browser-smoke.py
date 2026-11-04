@@ -100,9 +100,9 @@ def main():
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     url = f"http://127.0.0.1:{server.server_port}/"
     run_id = "smoke-" + uuid.uuid4().hex
-    sessions = [{"caller": caller, "run_id": run_id, "session_id": marker,
+    sessions = [{"caller": "opencode", "run_id": run_id, "session_id": marker,
                  "mode": "local-test", "initial_url": url, "domains": ["127.0.0.1"]}
-                for caller, marker in (("opencode", "alpha"), ("paperclip", "beta"))]
+                for marker in ("alpha", "beta")]
     cleanup, evidence = [], []
     status, failure = "pass", None
     try:

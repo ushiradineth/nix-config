@@ -56,21 +56,6 @@ Give time estimates only when useful and supported by evidence; use concrete uni
 assumptions and mark uncertainty. Never invent a duration, a result or a completed action to make
 the answer easier to scan. Avoid generic openers, closing pleasantries and decorative progress cues.
 
-## Paperclip
-
-Use the same audience gate when this skill is supplied through a default agent binding. Resolve its
-actual runtime identity from the advertised catalog; a binding or skill name alone does not prove
-the agent can read the skill or follows it.
-
-- Explicitly human-addressed final answers, reports and user interactions use this presentation.
-- Issue comments are not automatically human-facing. Agent-addressed comments, delegation, research
-  records, summary-store source artifacts, schemas and operational payloads retain full task
-  context. A concise user report may summarize those records without replacing them.
-- Opt-out is local to the current conversation/task, never an organization-wide preference or an
-  instruction to other agents. On per-turn runners, use controller-supplied conversation history to
-  retain the setting. If that history is unavailable, report the persistence limitation; do not
-  silently create global preference storage or claim the setting persists.
-
 ## Before sending to the user
 
 Check that the opening makes the answer or next action clear, progress claims have evidence, and any
