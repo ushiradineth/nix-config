@@ -8,6 +8,8 @@ import { createInterface } from "node:readline/promises"
 import { emitKeypressEvents, type Key } from "node:readline"
 import { type Readable } from "node:stream"
 import { fileURLToPath } from "node:url"
+import { serveAffine } from "./opencode-affine.mts"
+import { serveDocuments } from "./opencode-documents.mts"
 
 type Service = "actualbudget" | "affine"
 type Credentials = Record<string, string>
@@ -306,16 +308,23 @@ async function main() {
     }
     return
   }
+  if (command === "run" && selected === "documents") {
+    const modules = process.env.OPENCODE_ASSISTANT_MODULES
+    const reader = process.env.OPENCODE_DOCUMENT_READER
+    if (!modules || !reader) throw new Error("Use the Nix-packaged opencode-assistant command")
+    return serveDocuments(modules, reader)
+  }
   if (
     (command !== "setup" && command !== "run") ||
     (selected !== "actualbudget" && selected !== "affine")
   ) {
     throw new Error(
-      "Usage: opencode-assistant status | setup <actualbudget|affine> | run <actualbudget|affine>"
+      "Usage: opencode-assistant status | setup <actualbudget|affine> | run <actualbudget|affine|documents>"
     )
   }
   if (command === "setup") return setup(selected)
   const plan = await launchPlan(selected)
+  if (selected === "affine") return serveAffine(plan, process.env.OPENCODE_ASSISTANT_MODULES!)
   const child = spawn(process.execPath, plan.args, {
     cwd: plan.cwd,
     env: plan.env,

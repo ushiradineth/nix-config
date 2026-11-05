@@ -64,7 +64,23 @@
         OPENCODE_ASSISTANT_TEST_MODULES = "${config.packages.opencode-assistant.connectors}/lib/node_modules";
       } ''
         tsc --project "$src/tests/opencode-assistant.tsconfig.json" --typeRoots ${terminalTypes}
-        node --test "$src/tests/opencode-assistant.test.mts"
+        node --test "$src/tests/opencode-assistant.test.mts" "$src/tests/opencode-affine.test.mts"
+        touch "$out"
+      '';
+    checks.opencode-documents = let
+      python = pkgs.python3.withPackages (p: [p.pypdf p.pillow p.reportlab]);
+    in
+      pkgs.runCommand "opencode-document-tests" {
+        src = ../.;
+        nativeBuildInputs = [python];
+        OPENCODE_DOCUMENT_TEST_BINARY = "${config.packages.opencode-assistant.documentReader}/bin/opencode-document-read";
+        OPENCODE_DOCUMENT_TEST_FONT = "${pkgs.dejavu_fonts}/share/fonts/truetype/DejaVuSans.ttf";
+        OPENCODE_PDFTOPPM = "${pkgs.poppler-utils}/bin/pdftoppm";
+        OPENCODE_TESSERACT = "${pkgs.tesseract.override {enableLanguages = ["eng"];}}/bin/tesseract";
+      } ''
+        export PYTHONDONTWRITEBYTECODE=1
+        export NIX_SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
+        python3 "$src/tests/opencode-document-test.py"
         touch "$out"
       '';
     checks.oc-loop =

@@ -120,6 +120,19 @@ permissions allow searching and reading tax records and other relevant personal 
 Source files remain read-only; requested notebook updates go to AFFiNE. A file that is unavailable
 locally or unsupported by the available reader is reported explicitly.
 
+`documents_read` supplies bounded extraction for local PDF/text/JSON files and HTTPS PDFs. It
+unwraps saved JSON tool responses and runs English OCR locally on PDF pages with scant text.
+Responses include page methods, empty-page flags and continuation offsets; originals stay intact. It
+accepts document parameters rather than shell commands or executable code. Python, pypdf, Poppler
+and Tesseract are packaged through Nix; no private document is uploaded for conversion. Encrypted
+PDFs require an unlocked local copy. Other formats continue to use their existing readers.
+
+The local AFFiNE adapter returns paged Markdown instead of duplicating blocks, plain text and
+Markdown in one large response. Literal `find` seeks a section before paging; revision and document
+identity accompany each excerpt. Explicit block reads preserve IDs and deltas for incremental edits.
+The adapter forwards writes and their revision preconditions unchanged. Shell and arbitrary
+context-mode execution remain denied for the assistant.
+
 Gmail uses the existing Google Workspace MCP on shupi over the tailnet. Only the assistant can use
 its seven mail read tools: search, message/thread reads (single or batch), attachment retrieval and
 label listing. Other Google services and all mailbox changes remain denied, including sends, saved

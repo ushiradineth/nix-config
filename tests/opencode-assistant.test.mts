@@ -198,6 +198,57 @@ test(
 )
 
 const modules = process.env.OPENCODE_ASSISTANT_TEST_MODULES
+test(
+  "packaged document MCP extracts a large saved response without credentials or execution tools",
+  { skip: !modules, timeout: 20000 },
+  async (t) => {
+    const f = await fixture(t)
+    const source = join(f.root, "saved-output.json")
+    const original = JSON.stringify({
+      markdown: "old notes ".repeat(10000) + "START HERE\nConfirmed 123.45",
+      revision: "a".repeat(64),
+    })
+    await writeFile(source, original)
+    const { Client } = await import(
+      join(modules!, "@modelcontextprotocol/sdk/dist/esm/client/index.js")
+    )
+    const { StdioClientTransport } = await import(
+      join(modules!, "@modelcontextprotocol/sdk/dist/esm/client/stdio.js")
+    )
+    const client = new Client({ name: "document-check", version: "1" }, { capabilities: {} })
+    const transport = new StdioClientTransport({
+      command: process.env.OPENCODE_ASSISTANT_TEST_BINARY!,
+      args: ["run", "documents"],
+      env: { ...process.env, ...f.env },
+      stderr: "pipe",
+    })
+    try {
+      await client.connect(transport)
+      const catalog = await client.listTools()
+      assert.deepEqual(
+        catalog.tools.map((tool: { name: string }) => tool.name),
+        ["read"]
+      )
+      assert.equal(catalog.tools[0].annotations.readOnlyHint, true)
+      const result = await client.callTool({
+        name: "read",
+        arguments: { source, find: "START HERE" },
+      })
+      assert.equal(result.isError, undefined, JSON.stringify(result.content))
+      assert.ok(result.content[0].text.endsWith("START HERE\nConfirmed 123.45"))
+      assert.ok(result.content[0].text.length < 1000)
+      const refused = await client.callTool({
+        name: "read",
+        arguments: { source, command: "touch unauthorized" },
+      })
+      assert.equal(refused.isError, true)
+      assert.equal(await readFile(source, "utf8"), original)
+    } finally {
+      await transport.close()
+    }
+  }
+)
+
 test("the packaged Actual SQLite dependency can execute queries", { skip: !modules }, () => {
   const require = createRequire(join(modules!, "package.json"))
   const Database = require("better-sqlite3")

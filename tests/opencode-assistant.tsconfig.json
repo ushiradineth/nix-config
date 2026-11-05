@@ -11,5 +11,9 @@
     "erasableSyntaxOnly": true,
     "types": ["node"]
   },
-  "files": ["./opencode-assistant.test.mts", "../scripts/opencode-assistant.mts"]
+  "files": [
+    "./opencode-assistant.test.mts",
+    "./opencode-affine.test.mts",
+    "../scripts/opencode-assistant.mts"
+  ]
 }

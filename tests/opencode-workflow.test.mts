@@ -45,6 +45,7 @@ const googleDenied = [
 const mockTools: Record<string, string[]> = {
   actualbudget: ["actual_get_context"],
   affine: ["read_doc"],
+  documents: ["read"],
   google: [...gmailReads, ...googleDenied],
 }
 
@@ -267,12 +268,15 @@ test("native personal transports register and service permissions belong to the 
     assert.equal(transports.status, 0, transports.stderr)
     assert.match(transports.stdout, /actualbudget/)
     assert.match(transports.stdout, /affine/)
+    assert.match(transports.stdout, /documents/)
     assert.match(transports.stdout, /google/)
     assert.doesNotMatch(transports.stdout + transports.stderr, /failed|error|disconnected/i)
-    for (const tool of ["actualbudget_actual_get_context", "affine_read_doc"]) {
+    for (const tool of ["actualbudget_actual_get_context", "affine_read_doc", "documents_read"]) {
       assert.equal(action(assistant, tool), "allow")
       for (const name of ["jiyu", ...leaves]) assert.equal(action(resolved(f, name), tool), "deny")
     }
+    assert.equal(action(assistant, "documents_execute"), "deny")
+    assert.equal(action(assistant, "documents_write"), "deny")
   } finally {
     f.close()
   }

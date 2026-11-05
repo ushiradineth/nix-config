@@ -36,12 +36,38 @@ For a finance request, start with `actualbudget_actual_get_context`. Confirm the
 currency, coverage and relevant accounts. The setup pins one budget Sync ID; do not switch to
 another budget, include company accounts or trigger bank sync to fill missing data. The connector
 enforces read-only access. If the user requests transaction edits, explain this limit and present
-the proposed edits without attempting a shell or direct-API bypass.
+the proposed edits without attempting a shell or direct-API bypass. Request accounts first; include
+category/payee catalogs only when the analysis needs them. A bounded lookup or aggregate is
+preferable to copying the entire catalog into context.
 
 For AFFiNE, use the configured workspace when present; otherwise list accessible workspaces. Use the
 only workspace if unambiguous, or ask the user to choose when several could fit. Resolve a note by
 title/search, then read it before editing. Ask only when duplicate candidates cannot be resolved
 from the request and content. Keep the workspace and document IDs for this task.
+
+## Read usable evidence
+
+`affine_read_doc` returns one bounded Markdown excerpt with its revision. Use `find` to seek a
+literal heading or phrase anywhere in the note, including a user-designated current section near the
+end. Continue with `nextOffset`; if the revision changes, reread the relevant excerpts before
+editing. Use `includeMarkdown:false` for original block IDs and rich-text deltas when updating a
+block. Preserve unrelated content and the user's stated precedence among current and older notes.
+
+Use `documents_read` for local PDFs, UTF-8 text, saved JSON tool output and HTTPS PDFs. It unwraps
+AFFiNE/MCP JSON before seeking, avoiding single-line grep limits. PDF output identifies page
+numbers, extraction method and empty pages. Read at most three pages per call; finish a text
+excerpt's `nextOffset` before advancing `nextPage`. `find` searches only those selected PDF pages,
+so a miss is not proof that the whole PDF lacks the phrase. Local OCR runs automatically on scant
+text; use `ocr:always` for incomplete hybrid pages and inspect the original visually for ambiguous
+figures, tables or legal wording. OCR is English; password-protected PDFs and unsupported formats
+need a suitable reader or unlocked local copy. Do not overwrite originals or use public converters.
+
+A download, `PDF read successfully` acknowledgement or empty extraction alone does not establish the
+document's contents. Record the actual figures/passages used and their source locations. If a tool
+returns raw `%PDF-` data, clips a long JSON line, or errors on a large grep record, switch to the
+bounded reader using the original PDF path/URL or saved JSON response. An inaccessible source does
+not erase already verified access or evidence. State the exact unresolved issue and finish any
+supported calculation or explicitly conditional result within the user's requested scope.
 
 ## Gmail and supporting records
 

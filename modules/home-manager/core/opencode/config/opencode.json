@@ -43,6 +43,7 @@
         "websearch": "allow",
         "actualbudget_*": "allow",
         "affine_*": "allow",
+        "documents_read": "allow",
         "google_search_gmail_messages": "allow",
         "google_get_gmail_message_content": "allow",
         "google_get_gmail_messages_content_batch": "allow",
@@ -89,6 +90,12 @@
       "enabled": true,
       "timeout": 30000
     },
+    "documents": {
+      "type": "local",
+      "command": ["opencode-assistant", "run", "documents"],
+      "enabled": true,
+      "timeout": 120000
+    },
     "google": {
       "type": "remote",
       "url": "https://gmcp.shupi.ushira.com/mcp",
@@ -105,6 +112,7 @@
   "permission": {
     "actualbudget_*": "deny",
     "affine_*": "deny",
+    "documents_*": "deny",
     "google_*": "deny",
     "question": "allow",
     "read": "allow",
