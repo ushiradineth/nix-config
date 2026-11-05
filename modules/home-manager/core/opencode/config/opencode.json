@@ -28,7 +28,7 @@
     },
     "assistant": {
       "mode": "all",
-      "description": "Personal budgeting with Actual Budget and notes, plans and reviews in AFFiNE; no software implementation",
+      "description": "Personal budgeting, read-only Gmail and AFFiNE notes, plans and reviews; no software implementation",
       "prompt": "{file:./prompts/assistant.md}",
       "permission": {
         "*": "deny",
@@ -42,7 +42,14 @@
         "webfetch": "allow",
         "websearch": "allow",
         "actualbudget_*": "allow",
-        "affine_*": "allow"
+        "affine_*": "allow",
+        "google_search_gmail_messages": "allow",
+        "google_get_gmail_message_content": "allow",
+        "google_get_gmail_messages_content_batch": "allow",
+        "google_get_gmail_thread_content": "allow",
+        "google_get_gmail_threads_content_batch": "allow",
+        "google_get_gmail_attachment_content": "allow",
+        "google_list_gmail_labels": "allow"
       }
     },
     "general": {
@@ -81,11 +88,24 @@
       "command": ["opencode-assistant", "run", "affine"],
       "enabled": true,
       "timeout": 30000
+    },
+    "google": {
+      "type": "remote",
+      "url": "https://gmcp.shupi.ushira.com/mcp",
+      "headers": {
+        "X-Workspace-MCP-Profile": "gmail-readonly"
+      },
+      "oauth": {
+        "scope": "openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/gmail.readonly"
+      },
+      "enabled": true,
+      "timeout": 30000
     }
   },
   "permission": {
     "actualbudget_*": "deny",
     "affine_*": "deny",
+    "google_*": "deny",
     "question": "allow",
     "read": "allow",
     "edit": "allow",

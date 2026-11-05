@@ -15,3 +15,15 @@ integrity-locked dependency file:
 Both connectors are MIT-licensed; their npm packages retain upstream license files. These links are
 provenance, not instructions to install a moving main branch. Update the package lock and exercise
 native tool discovery, permissions and representative service reads when upgrading.
+
+Gmail uses the existing MIT-licensed
+[Google Workspace MCP](https://github.com/taylorwilsdon/google_workspace_mcp/tree/2e9e9e785d30abaf89cf181c548d172b09ed0150),
+whose pinned image and local patches are managed by `hosts/shupi/services/google-mcp.nix` and
+`containers/google-mcp/`. OpenCode uses its native remote MCP/OAuth support; no Google connector is
+added to the npm lock. The shared server supports other Google services and write operations, but
+the personal assistant receives only an explicit set of Gmail reads and requests Gmail read-only
+OAuth access. Recheck the advertised schemas, native permission filtering and OAuth scopes when
+upgrading either OpenCode or the server. The server's profile-specific Traefik route narrows the
+OAuth challenge for this client: pinned OpenCode otherwise replaces the configured scope with the
+broader server advertisement. The route preserves the existing tailnet restriction and shared
+endpoint; it does not add a connector process or change other clients' permissions.

@@ -16,6 +16,13 @@
   clientRedirectUris = lib.concatStringsSep "," [
     "http://127.0.0.1:60488/auth/google/callback"
     "http://127.0.0.1:60489/auth/google/callback"
+    "http://127.0.0.1:19876/mcp/oauth/callback"
+  ];
+  gmailReadScopes = lib.concatStringsSep " " [
+    "openid"
+    "https://www.googleapis.com/auth/userinfo.email"
+    "https://www.googleapis.com/auth/userinfo.profile"
+    "https://www.googleapis.com/auth/gmail.readonly"
   ];
   environmentVersion = pkgs.writeText "google-mcp-environment-version" ''
     MCP_ENABLE_OAUTH21=true
@@ -119,5 +126,12 @@ in {
       "172.17.0.0/16"
     ];
     routers.google-mcp.middlewares = ["google-mcp-tailnet-only"];
+    routers.google-mcp-gmail =
+      route.routers.google-mcp
+      // {
+        rule = "${route.routers.google-mcp.rule} && Path(`/mcp`) && Header(`X-Workspace-MCP-Profile`, `gmail-readonly`)";
+        middlewares = ["google-mcp-tailnet-only" "google-mcp-gmail-scopes"];
+      };
+    middlewares.google-mcp-gmail-scopes.headers.customResponseHeaders.WWW-Authenticate = ''Bearer scope="${gmailReadScopes}", resource_metadata="https://${domain}/.well-known/oauth-protected-resource/mcp"'';
   };
 }

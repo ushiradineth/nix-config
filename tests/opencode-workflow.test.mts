@@ -22,6 +22,31 @@ const configRoot = join(root, "modules/home-manager/core/opencode/config")
 const config = JSON.parse(readFileSync(join(configRoot, "opencode.json"), "utf8"))
 const binary = process.env.OPENCODE_TEST_BINARY ?? "opencode"
 const leaves = ["general", "explore", "reviewer"]
+const gmailReads = [
+  "search_gmail_messages",
+  "get_gmail_message_content",
+  "get_gmail_messages_content_batch",
+  "get_gmail_thread_content",
+  "get_gmail_threads_content_batch",
+  "get_gmail_attachment_content",
+  "list_gmail_labels",
+]
+const googleDenied = [
+  "send_gmail_message",
+  "draft_gmail_message",
+  "modify_gmail_message_labels",
+  "batch_modify_gmail_message_labels",
+  "manage_gmail_label",
+  "manage_gmail_filter",
+  "list_events",
+  "search_drive_files",
+  "a_future_tool",
+]
+const mockTools: Record<string, string[]> = {
+  actualbudget: ["actual_get_context"],
+  affine: ["read_doc"],
+  google: [...gmailReads, ...googleDenied],
+}
 
 interface Rule {
   permission: string
@@ -49,14 +74,14 @@ function fixture(candidate = config, mockMcp = false) {
     mock,
     `
     import { createInterface } from "node:readline";
-    const tool = process.argv[2];
+    const tools = JSON.parse(process.argv[2]);
     for await (const line of createInterface({ input: process.stdin })) {
       const request = JSON.parse(line);
       if (request.id === undefined) continue;
       const result = request.method === "initialize"
         ? { protocolVersion: "2024-11-05", capabilities: { tools: {} }, serverInfo: { name: "fixture", version: "1" } }
         : request.method === "tools/list"
-          ? { tools: [{ name: tool, description: "Fixture read", inputSchema: { type: "object", properties: {} } }] }
+          ? { tools: tools.map(name => ({ name, description: "Fixture tool", inputSchema: { type: "object", properties: {} } })) }
           : request.method === "tools/call"
             ? { content: [{ type: "text", text: "verified-fixture-read" }] }
             : {};
@@ -65,16 +90,12 @@ function fixture(candidate = config, mockMcp = false) {
   `
   )
   const mcp = Object.fromEntries(
-    Object.entries(candidate.mcp).map(([name, server]) => [
+    Object.keys(candidate.mcp).map((name) => [
       name,
       {
-        ...server,
+        type: "local",
         enabled: mockMcp,
-        command: [
-          process.execPath,
-          mock,
-          name === "actualbudget" ? "actual_get_context" : "read_doc",
-        ],
+        command: [process.execPath, mock, JSON.stringify(mockTools[name])],
       },
     ])
   )
@@ -246,10 +267,31 @@ test("native personal transports register and service permissions belong to the 
     assert.equal(transports.status, 0, transports.stderr)
     assert.match(transports.stdout, /actualbudget/)
     assert.match(transports.stdout, /affine/)
+    assert.match(transports.stdout, /google/)
     assert.doesNotMatch(transports.stdout + transports.stderr, /failed|error|disconnected/i)
     for (const tool of ["actualbudget_actual_get_context", "affine_read_doc"]) {
       assert.equal(action(assistant, tool), "allow")
       for (const name of ["jiyu", ...leaves]) assert.equal(action(resolved(f, name), tool), "deny")
+    }
+  } finally {
+    f.close()
+  }
+})
+
+test("mail reads belong to the assistant while writes and other Google tools stay denied", () => {
+  const f = fixture()
+  try {
+    const assistant = resolved(f, "assistant")
+    const others = ["jiyu", ...leaves].map((name) => resolved(f, name))
+    for (const name of gmailReads) {
+      const tool = `google_${name}`
+      assert.equal(action(assistant, tool), "allow", tool)
+      for (const agent of others)
+        assert.equal(action(agent, tool), "deny", `${agent.name}: ${tool}`)
+    }
+    for (const name of googleDenied) {
+      const tool = `google_${name}`
+      assert.equal(action(assistant, tool), "deny", tool)
     }
   } finally {
     f.close()
