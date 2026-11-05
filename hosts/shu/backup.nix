@@ -87,11 +87,19 @@
     # Run backup
     log "=== Backup started ==="
 
+    # Only atomically published, verified completed app bundles. Never walk the app's live
+    # PostgreSQL/native SQLite/profile credentials or its incomplete preparation directory.
+    BACKUP_SOURCES=(/Users/shu/Code)
+    APP_ARCHIVE_ROOT="/Users/shu/Library/Application Support/agent-platform/offhost-ready"
+    if [ -d "$APP_ARCHIVE_ROOT" ] && [ ! -L "$APP_ARCHIVE_ROOT" ]; then
+      BACKUP_SOURCES+=("$APP_ARCHIVE_ROOT")
+    fi
+
     # Initialize repository if needed (ignore error if already initialized)
     restic_cmd -r "$REPOSITORY" --password-file "$PASSWORD_FILE" init 2>/dev/null || true
 
     restic_cmd -r "$REPOSITORY" --password-file "$PASSWORD_FILE" backup \
-      /Users/shu/Code \
+      "''${BACKUP_SOURCES[@]}" \
       --tag=shu-code \
       --tag=macos \
       --tag=automated \
