@@ -106,10 +106,17 @@ accordion-padding = 30
     # Reload config
     esc = ['reload-config', 'mode main']
 
-# Move Zen to workspace 1
+# Move Helium Personal to workspace 1
 [[on-window-detected]]
-if.app-id = 'app.zen-browser.zen'
+if.app-id = 'net.imput.helium'
+if.window-title-regex-substring = '– Personal$'
 run = 'move-node-to-workspace 1'
+
+# Move Helium Work to workspace 5
+[[on-window-detected]]
+if.app-id = 'net.imput.helium'
+if.window-title-regex-substring = '– Work$'
+run = 'move-node-to-workspace 5'
 
 # Move WezTerm to workspace 2
 [[on-window-detected]]
@@ -155,16 +162,6 @@ run = 'move-node-to-workspace 4'
 [[on-window-detected]]
 if.app-id = 'com.blackmagic-design.DaVinciResolveLite'
 run = 'move-node-to-workspace 4'
-
-# Move Arc to workspace 5
-[[on-window-detected]]
-if.app-id = 'company.thebrowser.Browser'
-run = 'move-node-to-workspace 5'
-
-# Move Helium to workspace 5
-[[on-window-detected]]
-if.app-id = 'net.imput.helium'
-run = 'move-node-to-workspace 5'
 
 # Move Bitwarden to workspace 6
 [[on-window-detected]]

@@ -55,8 +55,6 @@
     casks = [
       "obs"
       "vlc"
-      "arc" # Arc - for work
-      "zen" # Zen Browser
       "figma"
       "shottr" # Screenshot tool
       "raycast" # Enhanced Spotlight
@@ -70,6 +68,7 @@
       "ghostty" # Terminal emulator
       "orbstack" # Drop in replacement for Docker Desktop
       "whatsapp"
+      "google-chrome"
       "google-drive"
       "discord"
       "medibangpaintpro"
@@ -95,7 +94,6 @@
       "dbx" # DB client
       "thock" # Keyboard sounds
       "atoll" # Dynamic Island
-      "thaw" # Menu bar manager
     ];
     masApps = {
       "Xcode" = 497799835;

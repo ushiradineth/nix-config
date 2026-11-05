@@ -20,7 +20,7 @@
         mru-spaces = false;
         expose-group-apps = true;
         persistent-apps = [
-          "/Applications/Zen.app"
+          "/Applications/Helium.app"
           "/Applications/Ghostty.app"
           "/Applications/Notion Calendar.app"
           "/Applications/Obsidian.app"
