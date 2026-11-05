@@ -18,6 +18,10 @@
       myvars = import ../vars {};
       config.xdg.cacheHome = "/unused-quota-test-cache";
       config.home.homeDirectory = "/unused-navigation-test-home";
+      config.home.sessionVariables = {
+        LANG = "en_US.UTF-8";
+        LC_ALL = "en_US.UTF-8";
+      };
     };
     quotaHelper = builtins.head quotaModule.home.packages;
     terminalTestProcess = pkgs.writeShellScript "opencode-terminal-test-process" ''
