@@ -192,6 +192,11 @@ indexed retrieval, large-output handling and compaction recovery; `jiyu-mode` ow
 workflow. Context-mode supplies its native tools and hooks without a duplicate MCP registration or
 replacing project `AGENTS.md`. Use `ctx stats` in OpenCode to inspect it after activation.
 
+Context-mode is pinned to `1.0.169`: `2.1.4` runs its hooks inside OpenCode's embedded Bun runtime
+and rejects its reported Node version (`v24.3.0`). Updating the shell's Node does not change that
+runtime. Advance the pin only after hooks, routing and a native `ctx_execute` call pass in the
+packaged OpenCode binary.
+
 Routine shell commands and checks retain ordinary execution permission. Destructive commands,
 pushes, merges, deployment and system-switch commands retain approval patterns. These command
 patterns do not replace the user's scope or repository boundaries.

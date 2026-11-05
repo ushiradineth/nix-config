@@ -5,7 +5,7 @@
   "default_agent": "jiyu",
   "autoupdate": false,
   "lsp": {},
-  "plugin": ["opencode-wakatime", "@mohak34/opencode-notifier@0.8.1", "context-mode"],
+  "plugin": ["opencode-wakatime", "@mohak34/opencode-notifier@0.8.1", "context-mode@1.0.169"],
   "instructions": ["~/.config/opencode/instructions/shell.md"],
   "provider": {
     "openai": {
