@@ -404,7 +404,7 @@ def runtime_status(options, deadline):
                            min(deadline, time.monotonic() + 3))
     match = re.fullmatch(rb"agent-browser (\d+\.\d+\.\d+)\s*", output)
     version = match[1].decode() if match else None
-    compatible = code == 0 and version == "0.39.1"
+    compatible = code == 0 and version == "0.41.1"
     runtime = options.browser != BROWSER or os.access(CHROME, os.X_OK)
     return {"ok": compatible and runtime, "version": version, "compatible": compatible,
             "browser_runtime_available": runtime, "browser_launched": False}

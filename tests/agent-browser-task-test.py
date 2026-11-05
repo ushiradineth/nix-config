@@ -20,7 +20,7 @@ PNG = base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4
 FAKE = r'''
 import base64, json, os, pathlib, sys, time
 if sys.argv[1:] == ["--version"]:
-    print("agent-browser 0.39.1")
+    print("agent-browser 0.41.1")
     sys.exit(0)
 options = {}
 args = sys.argv[1:]
@@ -336,10 +336,10 @@ class BrowserTaskTest(unittest.TestCase):
         result = self.cli(extra=("--health",))
         self.assertEqual(result.returncode, 0, result.stdout)
         health = json.loads(result.stdout)
-        self.assertEqual(health["version"], "0.39.1")
+        self.assertEqual(health["version"], "0.41.1")
         self.assertTrue(health["compatible"])
         self.assertFalse(self.tasks.exists())
-        for version in ("0.38.1", "0.39.0", "0.39.2", "0.40.0", "9.0.0", "0.39.1-beta"):
+        for version in ("0.39.1", "0.41.0", "0.41.2", "0.42.0", "9.0.0", "0.41.1-beta"):
             with self.subTest(version=version):
                 self.browser.write_text("#!" + sys.executable + f'\nprint("agent-browser {version}")\n')
                 result = self.cli(extra=("--health",))

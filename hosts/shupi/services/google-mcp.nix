@@ -13,6 +13,10 @@
   clientSecret = "${runtimeDir}/client-secret.json";
   dataDir = "/srv/google-mcp";
   permissions = "gmail:send calendar:full drive:full docs:full sheets:full";
+  clientRedirectUris = lib.concatStringsSep "," [
+    "http://127.0.0.1:60488/auth/google/callback"
+    "http://127.0.0.1:60489/auth/google/callback"
+  ];
   environmentVersion = pkgs.writeText "google-mcp-environment-version" ''
     MCP_ENABLE_OAUTH21=true
     WORKSPACE_MCP_STATELESS_MODE=false
@@ -21,7 +25,7 @@
     WORKSPACE_MCP_PERMISSIONS=${permissions}
     WORKSPACE_EXTERNAL_URL=https://${domain}
     GOOGLE_OAUTH_REDIRECT_URI=https://${domain}/oauth2callback
-    WORKSPACE_MCP_ALLOWED_CLIENT_REDIRECT_URIS=http://127.0.0.1:60488/auth/google/callback
+    WORKSPACE_MCP_ALLOWED_CLIENT_REDIRECT_URIS=${clientRedirectUris}
   '';
   route = mylib.traefikHelpers.mkTraefikRoute {
     name = "google-mcp";
@@ -58,7 +62,7 @@ in {
   };
 
   virtualisation.oci-containers.containers.google-mcp = {
-    image = "ghcr.io/ushiradineth/google-workspace-mcp:file-handles-2311c8735e68@sha256:ac54d4630e732b3eeeb6901dc0d5db275431410815f0c4b92d97986ed8f693c2";
+    image = "ghcr.io/ushiradineth/google-workspace-mcp:account-identity-73c2250f6b16@sha256:871b53e2ef00db337e9183b286b1e970c744ae98db36577df8f8c6f417319f90";
     autoStart = true;
     log-driver = "json-file";
     ports = ["127.0.0.1:${toString port}:8000"];
@@ -79,7 +83,7 @@ in {
       WORKSPACE_EXTERNAL_URL = "https://${domain}";
       GOOGLE_OAUTH_REDIRECT_URI = "https://${domain}/oauth2callback";
       GOOGLE_CLIENT_SECRET_PATH = "/run/secrets/google-oauth.json";
-      WORKSPACE_MCP_ALLOWED_CLIENT_REDIRECT_URIS = "http://127.0.0.1:60488/auth/google/callback";
+      WORKSPACE_MCP_ALLOWED_CLIENT_REDIRECT_URIS = clientRedirectUris;
       WORKSPACE_MCP_DISABLE_LOCAL_FILES = "true";
       WORKSPACE_MCP_BRAND_NAME = "Shu Google MCP";
       PYTHONDONTWRITEBYTECODE = "1";

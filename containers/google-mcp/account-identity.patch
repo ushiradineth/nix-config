@@ -1,0 +1,28 @@
+diff --git a/core/server.py b/core/server.py
+--- a/core/server.py
++++ b/core/server.py
+@@ -847,3 +847,24 @@ def close_auth_provider() -> None:
++@server.custom_route("/auth/account", methods=["GET"])
++async def authenticated_account_route(request: Request):
++    """Return only the bearer-verified Google account; no cookie/account-selector fallback."""
++    from auth.account_identity import authenticated_account
++
++    headers = {"Cache-Control": "no-store", "Pragma": "no-cache", "Vary": "Authorization"}
++    try:
++        if not is_oauth21_enabled():
++            raise PermissionError
++        account = await authenticated_account(
++            get_auth_provider(), request.method, request.url.query,
++            request.headers.getlist("authorization"),
++        )
++        return JSONResponse(account, headers=headers)
++    except Exception:
++        return JSONResponse(
++            {"error": "Account identity unavailable"}, status_code=401,
++            headers={**headers, "WWW-Authenticate": "Bearer"},
++        )
++
++
+ @server.custom_route("/", methods=["GET"])
+ @server.custom_route("/health", methods=["GET"])
+ async def health_check(request: Request):
