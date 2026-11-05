@@ -88,9 +88,6 @@
         # Move Ghostty to workspace 2
         "workspace 2, class:^(com.mitchellh.ghostty)$"
 
-        # Move Obsidian to workspace 3
-        "workspace 3, class:^(obsidian)$"
-
         # Move Figma to workspace 4
         "workspace 4, class:^(figma-linux)$"
 

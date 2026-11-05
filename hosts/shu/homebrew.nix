@@ -78,7 +78,6 @@
       "drawpen" # For presentations (sketching on the screen)
       "utm" # Virtual Machines
       "affinity" # Photo editing
-      "obsidian"
       "seafile-client"
       "insomnia"
       "helium-browser"

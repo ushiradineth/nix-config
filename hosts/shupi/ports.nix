@@ -10,7 +10,6 @@
       actualbudget = 48001;
       portainer = 48002;
       uptimekuma = 48003;
-      couchdb = 48004;
       adguard = 48005;
       victoriametrics = 48006;
       victorialogs = 48007;
@@ -34,6 +33,7 @@
       snapotter = 48026;
       googleMcp = 48027;
       changedetection = 48028;
+      affine = 48029;
     };
   };
 }

@@ -186,7 +186,7 @@
         providers.file.watch = false;
       });
     in
-      assert builtins.length (builtins.attrNames aliases) == 23;
+      assert builtins.length (builtins.attrNames aliases) == 22;
       assert builtins.length (builtins.attrNames routers) == builtins.length (builtins.attrNames aliases);
       assert lib.all (alias:
         builtins.elem {

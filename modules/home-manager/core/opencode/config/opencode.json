@@ -129,8 +129,7 @@
       "~/nix-config/**": "allow",
       "~/.config/**": "allow",
       "~/Code/**": "allow",
-      "~/Downloads/**": "allow",
-      "/Users/shu/Documents/Obsidian Vault/**": "allow"
+      "~/Downloads/**": "allow"
     }
   }
 }

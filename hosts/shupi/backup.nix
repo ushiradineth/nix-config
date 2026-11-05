@@ -170,6 +170,7 @@ in {
         "/srv/immich/library"
         "/srv/seafile/data"
         "/srv/snapotter/data"
+        "/srv/affine/storage"
       ];
 
       extraOptions = [
@@ -214,7 +215,7 @@ in {
         "/srv/umami"
         "/srv/uptimekuma"
         "/srv/portainer"
-        "/srv/couchdb/data" # CouchDB uses file-based backup (no SQL dump)
+        "/srv/couchdb/data" # Retained archive after CouchDB service retirement.
         "/srv/infisical/redis" # Redis has no SQL dump alternative
         "/srv/forgejo/data"
         "/srv/forgejo/repos"
@@ -261,9 +262,11 @@ in {
         "/srv/adguard"
         "/srv/traefik"
         "/srv/wakapi"
-        "/srv/couchdb/config"
+        "/srv/couchdb/config" # Retained with the database archive for recovery.
         "/srv/ntfy"
         "/srv/alertmanager"
+        "/srv/affine/config"
+        "/var/lib/affine"
       ];
 
       extraOptions = [

@@ -33,7 +33,6 @@
     HOMEPAGE_DOMAIN = "shupi.ushira.com";
     IMMICH_DOMAIN = "im.shupi.ushira.com";
     SEAFILE_DOMAIN = "sf.shupi.ushira.com";
-    COUCHDB_DOMAIN = "couchdb.shupi.ushira.com";
     BACKREST_DOMAIN = "br.shupi.ushira.com";
     NTFY_DOMAIN = "ntfy.shupi.ushira.com";
     ALERTMANAGER_DOMAIN = "am.shupi.ushira.com";
@@ -44,6 +43,7 @@
     ATUIN_DOMAIN = "at.shupi.ushira.com";
     SNAPOTTER_DOMAIN = "so.shupi.ushira.com";
     GOOGLE_MCP_DOMAIN = "gmcp.shupi.ushira.com";
+    AFFINE_DOMAIN = "ae.shupi.ushira.com";
 
     # Exposed through Cloudflared
     UMAMI_DOMAIN = "umami.ushira.com";

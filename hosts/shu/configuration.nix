@@ -23,7 +23,7 @@
           "/Applications/Helium.app"
           "/Applications/Ghostty.app"
           "/Applications/Notion Calendar.app"
-          "/Applications/Obsidian.app"
+          "/Applications/AFFiNE.app"
           "/Applications/Bitwarden.app"
         ];
         tilesize = 32;
