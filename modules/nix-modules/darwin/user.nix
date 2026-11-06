@@ -1,5 +1,6 @@
 {
   pkgs,
+  pkgs-unstable,
   myvars,
   ...
 }: {
@@ -15,7 +16,7 @@
     shell = pkgs.zsh;
   };
 
-  environment.systemPackages = with pkgs; [
-    terminal-notifier # macOS notifications
+  environment.systemPackages = [
+    pkgs-unstable.terminal-notifier # macOS notifications
   ];
 }

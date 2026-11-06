@@ -3,6 +3,7 @@
   llm-agents,
   managedInstallsEnabled ? false,
   pkgs,
+  pkgs-unstable,
   ...
 }: let
   pnpm = import ../../../../lib/pnpm.nix {inherit config pkgs;};
@@ -17,14 +18,14 @@
     else "${pkgs.procps}/bin/ps";
   terminalHelper = pkgs.writeShellApplication {
     name = "opencode-terminal";
-    runtimeInputs = [pkgs.nodejs pkgs.tmux pkgs.fzf] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [pkgs.terminal-notifier];
+    runtimeInputs = [pkgs.nodejs pkgs.tmux pkgs.fzf] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [pkgs-unstable.terminal-notifier];
     text = ''
       export OPENCODE_TERMINAL_HELPER="$0"
       export OPENCODE_TERMINAL_STATE_DIR=${pkgs.lib.escapeShellArg "${config.xdg.stateHome}/opencode-terminal"}
       export OPENCODE_TERMINAL_TMUX=${pkgs.tmux}/bin/tmux
       export OPENCODE_TERMINAL_PS=${psPath}
       export OPENCODE_TERMINAL_FZF=${pkgs.fzf}/bin/fzf
-      ${pkgs.lib.optionalString pkgs.stdenv.isDarwin ''export OPENCODE_TERMINAL_NOTIFIER=${pkgs.terminal-notifier}/bin/terminal-notifier''}
+      ${pkgs.lib.optionalString pkgs.stdenv.isDarwin ''export OPENCODE_TERMINAL_NOTIFIER=${pkgs-unstable.terminal-notifier}/bin/terminal-notifier''}
       exec ${pkgs.nodejs}/bin/node ${./config/terminal/terminal-context.mts} "$@"
     '';
   };
