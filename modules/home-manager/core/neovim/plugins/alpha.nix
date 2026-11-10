@@ -117,15 +117,8 @@ _: {
           (
             mkButton
             "r"
-            "<CMD>require('spectre').open()<CR>"
+            "<CMD>Spectre<CR>"
             "Search & Replace"
-            "Operator"
-          )
-          (
-            mkButton
-            "u"
-            "<CMD>Lazy sync<CR>"
-            "Update Plugins"
             "Operator"
           )
           (

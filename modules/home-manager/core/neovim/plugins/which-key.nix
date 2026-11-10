@@ -43,11 +43,6 @@ _: {
           icon = "";
         }
         {
-          __unkeyed-1 = "<leader>gr";
-          group = "Repo";
-          icon = "";
-        }
-        {
           __unkeyed-1 = "<leader>l";
           group = "Line";
           icon = "⋯";

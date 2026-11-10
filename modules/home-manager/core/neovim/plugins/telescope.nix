@@ -186,29 +186,18 @@ in {
       options = {
         noremap = true;
         silent = true;
-        desc = "Telescope commits";
-      };
-    }
-    {
-      # List the current git repository's history
-      key = "<leader>grc";
-      mode = ["n"];
-      action = ":Telescope git_commits<CR>";
-      options = {
-        noremap = true;
-        silent = true;
-        desc = "Telescope commits";
+        desc = "File Commits";
       };
     }
     {
       # List the changed files in the current git repository
-      key = "<leader>gs";
+      key = "<leader>gf";
       mode = ["n"];
       action = ":Telescope git_status<CR>";
       options = {
         noremap = true;
         silent = true;
-        desc = "Telescope changed files";
+        desc = "Changed Files";
       };
     }
     {

@@ -1,4 +1,8 @@
-_: {
+{
+  lib,
+  pkgs,
+  ...
+}: {
   programs.nixvim.plugins.conform-nvim = {
     enable = true;
 
@@ -101,7 +105,13 @@ _: {
 
       formatters = {
         biome = {
+          # The built-in cwd searches for biome.json / biome.jsonc (including dotfiles).
           require_cwd = true;
+        };
+        prettier = {
+          command.__raw = ''
+            require("conform.util").find_executable({ "node_modules/.bin/prettier" }, "${lib.getExe pkgs.prettier}")
+          '';
         };
         yamlfix = {
           env = {
@@ -110,30 +120,57 @@ _: {
         };
       };
 
-      format_on_save = ''
+      format_on_save.__raw = ''
         function(bufnr)
+          if vim.g.autoformat == false or vim.b[bufnr].autoformat == false then
+            return
+          end
           local bufname = vim.api.nvim_buf_get_name(bufnr)
           if bufname:match("/node_modules/") then
             return
           end
-          return { timeout_ms = 1000, lsp_fallback = true }
+          return { timeout_ms = 1000, lsp_format = "fallback" }
         end
       '';
-
-      format_after_save = {
-        lsp_fallback = true;
-      };
     };
   };
 
   programs.nixvim.keymaps = [
     {
       key = "<leader>cf";
-      action = ":lua require('conform').format({ timeout_ms = 1000, lsp_fallback = true })<CR>";
+      action = ":lua require('conform').format({ timeout_ms = 1000, lsp_format = 'fallback' })<CR>";
       options = {
         noremap = true;
         silent = true;
         desc = "Format";
+      };
+    }
+    {
+      key = "<leader>tf";
+      mode = "n";
+      action.__raw = ''
+        function()
+          vim.g.autoformat = vim.g.autoformat == false
+          vim.notify("Autoformat (global): " .. (vim.g.autoformat and "enabled" or "disabled"))
+        end
+      '';
+      options = {
+        silent = true;
+        desc = "Toggle autoformat (global)";
+      };
+    }
+    {
+      key = "<leader>tF";
+      mode = "n";
+      action.__raw = ''
+        function()
+          vim.b.autoformat = vim.b.autoformat == false
+          vim.notify("Autoformat (buffer): " .. (vim.b.autoformat and "enabled" or "disabled"))
+        end
+      '';
+      options = {
+        silent = true;
+        desc = "Toggle autoformat (buffer)";
       };
     }
   ];

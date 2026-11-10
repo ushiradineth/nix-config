@@ -24,17 +24,17 @@ _: {
     {
       key = "<leader>qq";
       mode = ["n"];
-      action = ":qa!<CR>";
+      action = ":qa<CR>";
       options = {
         noremap = true;
         silent = true;
-        desc = "Force Quit";
+        desc = "Quit";
       };
     }
     {
       key = "<leader>wq";
       mode = ["n"];
-      action = ":wq!<CR>";
+      action = ":wq<CR>";
       options = {
         noremap = true;
         silent = true;
@@ -44,7 +44,7 @@ _: {
     {
       key = "<leader>w";
       mode = ["n"];
-      action = ":silent w!<CR>";
+      action = ":w<CR>";
       options = {
         noremap = true;
         silent = true;
@@ -98,7 +98,19 @@ _: {
     {
       key = "<Leader>lc";
       mode = ["n"];
-      action = ":let @+ = expand('%') . ':' . line('.')<cr>";
+      action.__raw = ''
+        function()
+          local name = vim.api.nvim_buf_get_name(0)
+          if name == "" or vim.bo.buftype ~= "" then
+            vim.notify("Copy context requires a file buffer", vim.log.levels.WARN)
+            return
+          end
+          local root = vim.fs.root(name, ".git") or vim.fn.getcwd()
+          local path = vim.fs.relpath(root, name) or name
+          vim.fn.setreg("+", path .. ":" .. vim.fn.line("."))
+          vim.notify("Copied context to clipboard")
+        end
+      '';
       options = {
         noremap = true;
         silent = true;

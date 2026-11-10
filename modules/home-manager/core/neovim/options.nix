@@ -13,6 +13,7 @@
       shiftwidth = 2; # Auto-indent uses 2 spaces
       laststatus = 3; # Global statusline
       swapfile = false;
+      autoread = true;
       updatetime = 300; # Makes cursor-hover actions (like diagnostics popups) respond faster
       inccommand = "split"; # Show the effects of a search / replace in a live preview window
 
@@ -24,11 +25,6 @@
       signcolumn = "yes"; # set signcolumn=yes;
       number = true; # Enable line numbers
     };
-
-    extraConfigLua = ''
-      -- make :w always silent
-      vim.cmd([[cnoreabbrev w silent! write]])
-    '';
 
     clipboard = {
       providers = {

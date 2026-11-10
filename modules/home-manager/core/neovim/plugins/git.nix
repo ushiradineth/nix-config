@@ -4,6 +4,7 @@ _: {
       gitsigns = {
         enable = true;
         settings = {
+          attach_to_untracked = true;
           current_line_blame = true;
           signcolumn = true;
           watch_gitdir = {
@@ -11,22 +12,32 @@ _: {
           };
         };
       };
-      diffview.enable = true;
+      snacks = {
+        enable = true;
+        settings.picker = {
+          enabled = true;
+          ui_select = false;
+          layout.preset = "default";
+          previewers.diff.style = "syntax";
+          win = {
+            input.keys."<Esc>" = {
+              __unkeyed-1 = "close";
+              mode = ["n" "i"];
+            };
+            list.keys."<Esc>" = "close";
+            preview.keys."<Esc>" = "close";
+          };
+          sources = {
+            # History is for review, not the picker's default checkout action.
+            git_log.confirm = "close";
+          };
+        };
+      };
     };
 
     keymaps = [
       {
         key = "<leader>gp";
-        mode = ["n"];
-        action = ":Gitsigns preview_hunk<CR>";
-        options = {
-          noremap = true;
-          silent = true;
-          desc = "Preview Hunk";
-        };
-      }
-      {
-        key = "<leader>gd";
         mode = ["n"];
         action = ":Gitsigns preview_hunk_inline<CR>";
         options = {
@@ -36,43 +47,56 @@ _: {
         };
       }
       {
-        key = "<leader>gq";
+        key = "]c";
         mode = ["n"];
-        action = ":silent! DiffviewClose<CR>";
+        action.__raw = ''
+          function()
+            if vim.wo.diff then
+              vim.cmd.normal({ vim.v.count1 .. ']c', bang = true })
+            else
+              require('gitsigns').nav_hunk('next', { target = 'all' })
+            end
+          end
+        '';
         options = {
-          noremap = true;
           silent = true;
-          desc = "Close Diffview";
+          desc = "Next Hunk";
         };
       }
       {
-        key = "<leader>grd";
+        key = "[c";
         mode = ["n"];
-        action = ":DiffviewOpen<CR>";
+        action.__raw = ''
+          function()
+            if vim.wo.diff then
+              vim.cmd.normal({ vim.v.count1 .. '[c', bang = true })
+            else
+              require('gitsigns').nav_hunk('prev', { target = 'all' })
+            end
+          end
+        '';
         options = {
-          noremap = true;
           silent = true;
-          desc = "Diff";
+          desc = "Previous Hunk";
+        };
+      }
+      {
+        key = "<leader>gs";
+        mode = ["n" "x"];
+        action = ":Gitsigns stage_hunk<CR>";
+        options = {
+          silent = true;
+          desc = "Stage / Unstage Hunk or Selected Lines";
         };
       }
       {
         key = "<leader>gh";
         mode = ["n"];
-        action = ":DiffviewFileHistory %<CR>";
+        action = ":lua Snacks.picker.git_log()<CR>";
         options = {
           noremap = true;
           silent = true;
-          desc = "History";
-        };
-      }
-      {
-        key = "<leader>grh";
-        mode = ["n"];
-        action = ":DiffviewFileHistory<CR>";
-        options = {
-          noremap = true;
-          silent = true;
-          desc = "History";
+          desc = "Repository Commits / History";
         };
       }
     ];

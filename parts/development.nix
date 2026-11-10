@@ -94,6 +94,10 @@
         touch "$out"
       '';
     checks.pre-commit-check = preCommitCheck;
+    checks.neovim-workflow = import ../tests/neovim-workflow.nix {
+      inherit pkgs;
+      inherit (inputs) nixvim;
+    };
     checks.semgrep-local =
       pkgs.runCommand "semgrep-local-tests" {
         src = ../.;
