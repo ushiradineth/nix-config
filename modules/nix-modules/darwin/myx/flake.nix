@@ -6,11 +6,11 @@ _: {
     ...
   }: {
     packages = lib.optionalAttrs (system == "aarch64-darwin") {
-      myx = pkgs.callPackage ../lib/myx-package.nix {};
+      myx = pkgs.callPackage ./package.nix {};
     };
     checks = lib.optionalAttrs (system == "aarch64-darwin") {
-      myx = import ../tests/myx.nix {inherit lib pkgs;};
-      myx-launcher = import ../tests/myx-launcher.nix {inherit lib pkgs;};
+      myx = import ./tests {inherit lib pkgs;};
+      myx-launcher = import ./tests/launcher.nix {inherit lib pkgs;};
     };
   };
 }

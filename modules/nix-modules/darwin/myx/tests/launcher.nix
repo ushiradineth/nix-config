@@ -14,7 +14,7 @@
     tar -czf "$out" myx-macos-aarch64
   '';
   directory = "/nonexistent-myx-launcher-fixture/managed";
-  package = (pkgs.callPackage ../lib/myx-package.nix {
+  package = (pkgs.callPackage ../package.nix {
     configuration = {
       inherit directory;
       settings = {

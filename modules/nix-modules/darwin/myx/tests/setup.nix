@@ -1,5 +1,5 @@
 {pkgs, ...}: let
-  setup = pkgs.callPackage ../lib/myx-setup.nix {};
+  setup = pkgs.callPackage ../setup.nix {};
   configure = setup.configure {
     restore_on_startup = true;
     soloist = {

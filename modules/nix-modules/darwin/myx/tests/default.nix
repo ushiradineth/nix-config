@@ -6,7 +6,7 @@
     myx-soloist-api-key.path = "/runtime/age/soloist";
     myx-spotify-client-id.path = "/runtime/age/spotify";
   };
-  module = import ../hosts/shu/myx.nix {
+  module = import ../default.nix {
     config.age.secrets = agePaths;
     hostname = "fixture";
     mysecrets = "/encrypted";
@@ -30,4 +30,4 @@ in
     && module.age.secrets.${name}.mode == "0600"
     && lib.hasSuffix ".age" module.age.secrets.${name}.file)
   ["myx-soloist-api-key" "myx-spotify-client-id"];
-    import ./myx-setup.nix {inherit pkgs;}
+    import ./setup.nix {inherit pkgs;}

@@ -9,7 +9,7 @@
 }: let
   version = "0.5.0-preview.5";
   archiveHash = "sha256-y4JGlbWjPC4PN83IKG4ND9MXA/f/pb29rrl4Kt1WYV4=";
-  setup = callPackage ./myx-setup.nix {};
+  setup = callPackage ./setup.nix {};
   configure = lib.optionalString (configuration != null) ''
     if [ "$custom_config" = 0 ]; then
       if [ "$metadata_only" = 0 ] && [ "$recovery_only" = 0 ]; then
