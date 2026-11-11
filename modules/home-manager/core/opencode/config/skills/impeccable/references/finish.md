@@ -23,9 +23,9 @@ Fix the findings as a coherent batch, then confirm the changed states and run th
 checks. Repeat only for a remaining defect or a material new change. Stop when the requested path is
 complete; do not iterate indefinitely over subjective micro-adjustments.
 
-For web work, use the installed `browser-workflow` within its authority. For native work, use the
-actual preview/device/test workflow. Describe the inspected sizes, states and interactions; avoid
-claiming browser, device, assistive-technology or performance coverage that did not run.
+For web work, use the project's supported browser tools. For native work, use the actual
+preview/device/test workflow. Describe the inspected sizes, states and interactions; avoid claiming
+browser, device, assistive-technology or performance coverage that did not run.
 
 Return a compact account of the visible improvement and verification. The parent Jiyu workflow owns
 final code review and delivery; do not duplicate that pass or commit/deploy without the user's

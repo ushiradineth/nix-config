@@ -73,12 +73,12 @@ labels, gratuitous glass, effects and invented metrics are poor substitutes for 
 them only when they serve the brief or established system; do not impose a universal aesthetic ban
 over explicit user choices. Familiar controls and system fonts often serve Operate surfaces well.
 
-Verify the rendered result at the sizes and states the change affects. Use `browser-workflow` for
-web inspection and interaction, or the project's native preview/test path. Batch observations and
-fixes; repeat for a material change or unresolved defect, not endless cosmetic self-review. Check
-keyboard/focus, real content extremes, contrast and reduced-motion behavior as applicable. A
-screenshot proves appearance in one state, not that a control works. If rendering is unavailable,
-use current source and trustworthy visual fixtures, and report the remaining visual check honestly.
+Verify the rendered result at the sizes and states the change affects. Use the project's supported
+browser tools or native preview/test path. Batch observations and fixes; repeat for a material
+change or unresolved defect, not endless cosmetic self-review. Check keyboard/focus, real content
+extremes, contrast and reduced-motion behavior as applicable. A screenshot proves appearance in one
+state, not that a control works. If rendering is unavailable, use current source and trustworthy
+visual fixtures, and report the remaining visual check honestly.
 
 Implementation includes the project's functional and integration checks. At the completed code
 boundary, use Jiyu's [attack-the-diff](../jiyu-mode/playbooks/attack-the-diff.md) once; reuse the

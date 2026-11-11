@@ -267,9 +267,9 @@ The 23 upstream playbooks are covered without retaining 23 separate orchestratio
 | Session pickup, Pause safely                                 | Continuity playbook.                                                                                                             |
 | Worktree cleanup                                             | Scoped operational work from actual git state; no automatic deletion.                                                            |
 
-Browser automation, Minecraft context, security auditing, local SAST, Fallow, Kumo design and
-personal voice remain for their actual domains. ADHD presentation is opt-in. Personal voice uses
-unslop instead of the duplicate humanizer workflow.
+Minecraft context, security auditing, local SAST, Fallow, Kumo design and personal voice remain for
+their actual domains. ADHD presentation is opt-in. Personal voice uses unslop instead of the
+duplicate humanizer workflow.
 
 Retired coding machinery includes the planner/builder/direct/sudo lanes, role-specific handoff
 templates, beam/redteam/sync commands and overlapping quality routers. Historical plans remain

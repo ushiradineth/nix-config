@@ -313,7 +313,6 @@
         chmod -R u+w source
         cd source
         python3 tests/status-digest-test.py
-        python3 tests/agent-browser-task-test.py
         touch "$out"
       '';
     checks.security-audit-validators =
