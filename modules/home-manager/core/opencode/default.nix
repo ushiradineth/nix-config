@@ -7,10 +7,6 @@
   ...
 }: let
   pnpm = import ../../../../lib/pnpm.nix {inherit config pkgs;};
-  loopHelper = import ../../../../lib/oc-loop.nix {
-    inherit pkgs;
-    opencode = llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode;
-  };
   assistantHelper = import ../../../../lib/opencode-assistant.nix {inherit pkgs;};
   psPath =
     if pkgs.stdenv.isDarwin
@@ -42,7 +38,6 @@ in {
     llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode
     pkgs.nodejs
     terminalHelper
-    loopHelper
     assistantHelper
   ];
 

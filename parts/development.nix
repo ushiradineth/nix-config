@@ -51,10 +51,6 @@
       };
     };
   in {
-    packages.oc-loop = import ../lib/oc-loop.nix {
-      inherit pkgs;
-      opencode = inputs.llm-agents.packages.${system}.opencode;
-    };
     packages.opencode-assistant = import ../lib/opencode-assistant.nix {inherit pkgs;};
     checks.opencode-assistant =
       pkgs.runCommand "opencode-assistant-tests" {
@@ -81,16 +77,6 @@
         export PYTHONDONTWRITEBYTECODE=1
         export NIX_SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
         python3 "$src/tests/opencode-document-test.py"
-        touch "$out"
-      '';
-    checks.oc-loop =
-      pkgs.runCommand "oc-loop-tests" {
-        src = ../.;
-        nativeBuildInputs = [pkgs.nodejs pkgs.typescript];
-        OC_LOOP_TEST_BINARY = "${config.packages.oc-loop}/bin/oc-loop";
-      } ''
-        tsc --project "$src/tests/oc-loop.tsconfig.json" --typeRoots ${terminalTypes}
-        node --test "$src/tests/oc-loop.test.mts"
         touch "$out"
       '';
     checks.pre-commit-check = preCommitCheck;

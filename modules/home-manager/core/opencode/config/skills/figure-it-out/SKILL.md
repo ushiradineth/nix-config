@@ -25,7 +25,6 @@ For long or unattended work, use `show-me-your-work` for decisions, evidence and
 Honor the agreed stopping condition; do not relax it to claim success. If blocked, preserve progress
 and name the exact missing prerequisite. Finish by checking the whole against the original goal.
 
-An unattended loop needs a native supported wake mechanism and explicit scope. OpenCode can use the
-existing `oc-loop` CLI when the user requests an ongoing run; inspect its installed `--help` for
-session, bounds and controls. Do not emulate Cursor's /loop, silently start a daemon, auto-approve
-new authority, or claim that one assistant turn can keep working after the process stops.
+An unattended loop needs a native supported wake mechanism and explicit scope. If none is available,
+report that prerequisite. Do not emulate Cursor's /loop, silently start a daemon, auto-approve new
+authority, or claim that one assistant turn can keep working after the process stops.
