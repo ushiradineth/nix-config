@@ -152,10 +152,10 @@ or update a specific note authorize that change, followed by a readback. Tax pre
 jurisdiction/year before applying current official rules. Health is deferred.
 
 The two connectors and their transitive dependencies are integrity-locked under
-`lib/opencode-assistant/` and packaged with Node 24. They run locally over stdio; no public MCP
-service or runtime package download is needed. AFFiNE remains behind Tailscale. The assistant reads
-only the service needed for the current request. Local connectors still send tool results to the
-configured model.
+`modules/home-manager/core/opencode/assistant/connectors/` and packaged with Node 24. They run
+locally over stdio; no public MCP service or runtime package download is needed. AFFiNE remains
+behind Tailscale. The assistant reads only the service needed for the current request. Local
+connectors still send tool results to the configured model.
 
 After the authorized system activation, enter credentials in your own terminal:
 
@@ -175,14 +175,13 @@ app callback. Its shared server permissions stay unchanged; the explicit OpenCod
 limits this assistant. `opencode mcp debug google` diagnoses discovery and authentication without
 treating registration as proof of mailbox access.
 
-Before activation, the same setup is available with
-`nix run .#opencode-assistant -- setup actualbudget` and
-`nix run .#opencode-assistant -- setup affine`. Passwords are hidden and saved in mode-0600 files
-under `~/.config/opencode-assistant/`, outside this repository and the Nix store. The budget cache
-lives under `~/.local/share/opencode-assistant/`. XDG overrides are respected. `status` proves
-configuration only. Restart OpenCode, inspect `opencode mcp list`, then request a harmless budget
-read and an existing-note read to verify account access. Verify writeback through an actual
-requested note change and readback; never create test transactions for setup.
+The setup commands use the helper installed by the OpenCode Home Manager module. Passwords are
+hidden and saved in mode-0600 files under `~/.config/opencode-assistant/`, outside this repository
+and the Nix store. The budget cache lives under `~/.local/share/opencode-assistant/`. XDG overrides
+are respected. `status` proves configuration only. Restart OpenCode, inspect `opencode mcp list`,
+then request a harmless budget read and an existing-note read to verify account access. Verify
+writeback through an actual requested note change and readback; never create test transactions for
+setup.
 
 Changing `hosts/shupi/services/actualbudget.nix`, AFFiNE/Google deployment or connector code remains
 engineering work in `jiyu`, with the normal repository checks and deployment boundaries.

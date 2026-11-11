@@ -1,11 +1,11 @@
 {pkgs}: let
   nodejs = pkgs.nodejs_24;
   assistantScripts = pkgs.lib.fileset.toSource {
-    root = ../scripts;
+    root = ./scripts;
     fileset = pkgs.lib.fileset.unions [
-      ../scripts/opencode-assistant.mts
-      ../scripts/opencode-affine.mts
-      ../scripts/opencode-documents.mts
+      ./scripts/opencode-assistant.mts
+      ./scripts/opencode-affine.mts
+      ./scripts/opencode-documents.mts
     ];
   };
   documentPython = pkgs.python3.withPackages (p: [p.pypdf]);
@@ -15,14 +15,14 @@
     text = ''
       export OPENCODE_PDFTOPPM=${pkgs.poppler-utils}/bin/pdftoppm
       export OPENCODE_TESSERACT=${documentOcr}/bin/tesseract
-      exec ${documentPython}/bin/python3 -I ${../scripts/opencode-document.py}
+      exec ${documentPython}/bin/python3 -I ${./scripts/opencode-document.py}
     '';
   };
   connectors = (pkgs.buildNpmPackage.override {inherit nodejs;}) {
     pname = "opencode-assistant-connectors";
     version = "1.0.0";
-    src = ./opencode-assistant;
-    npmDeps = pkgs.importNpmLock {npmRoot = ./opencode-assistant;};
+    src = ./connectors;
+    npmDeps = pkgs.importNpmLock {npmRoot = ./connectors;};
     npmConfigHook = pkgs.importNpmLock.npmConfigHook;
     npmFlags = ["--ignore-scripts"];
     dontNpmBuild = true;

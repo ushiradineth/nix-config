@@ -3,8 +3,9 @@
 This is a local OpenCode skill, not a wholesale import of a finance or accounting persona. Health
 integrations and jurisdiction-specific tax rules are intentionally outside this setup.
 
-The two community MCP connectors are pinned in `lib/opencode-assistant/package.json` and its
-integrity-locked dependency file:
+The two community MCP connectors are pinned in
+`modules/home-manager/core/opencode/assistant/connectors/package.json` and its integrity-locked
+dependency file:
 
 - [Actual MCP Server 0.25.1](https://github.com/agigante80/actual-mcp-server): local stdio
   transport, official `@actual-app/api`, server-enforced read-only mode and selected toolsets.

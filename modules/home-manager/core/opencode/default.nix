@@ -7,7 +7,6 @@
   ...
 }: let
   pnpm = import ../../../../lib/pnpm.nix {inherit config pkgs;};
-  assistantHelper = import ../../../../lib/opencode-assistant.nix {inherit pkgs;};
   psPath =
     if pkgs.stdenv.isDarwin
     then "/bin/ps"
@@ -34,11 +33,12 @@
       events = pkgs.lib.mapAttrs (_name: event: event // pkgs.lib.optionalAttrs pkgs.stdenv.isDarwin {notification = false;}) notifierPolicy.events;
     };
 in {
+  imports = [./assistant];
+
   home.packages = [
     llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode
     pkgs.nodejs
     terminalHelper
-    assistantHelper
   ];
 
   home.sessionVariables = {

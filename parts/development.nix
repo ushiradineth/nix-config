@@ -13,6 +13,10 @@
     semgrepPython = pkgs.python3.withPackages (p: [p.pyyaml]);
     semgrepPackage = import ../lib/semgrep.nix {inherit pkgs;};
     terminalTypes = import ../lib/opencode-terminal-types.nix {inherit pkgs;};
+    assistantChecks = import ../modules/home-manager/core/opencode/assistant/tests {
+      inherit pkgs;
+      nodeTypes = terminalTypes;
+    };
     quotaModule = import ../modules/home-manager/core/tmux {
       inherit pkgs;
       myvars = import ../vars {};
@@ -51,34 +55,8 @@
       };
     };
   in {
-    packages.opencode-assistant = import ../lib/opencode-assistant.nix {inherit pkgs;};
-    checks.opencode-assistant =
-      pkgs.runCommand "opencode-assistant-tests" {
-        src = ../.;
-        nativeBuildInputs = [pkgs.nodejs_24 pkgs.typescript];
-        OPENCODE_ASSISTANT_TEST_BINARY = "${config.packages.opencode-assistant}/bin/opencode-assistant";
-        OPENCODE_ASSISTANT_TEST_MODULES = "${config.packages.opencode-assistant.connectors}/lib/node_modules";
-      } ''
-        tsc --project "$src/tests/opencode-assistant.tsconfig.json" --typeRoots ${terminalTypes}
-        node --test "$src/tests/opencode-assistant.test.mts" "$src/tests/opencode-affine.test.mts"
-        touch "$out"
-      '';
-    checks.opencode-documents = let
-      python = pkgs.python3.withPackages (p: [p.pypdf p.pillow p.reportlab]);
-    in
-      pkgs.runCommand "opencode-document-tests" {
-        src = ../.;
-        nativeBuildInputs = [python];
-        OPENCODE_DOCUMENT_TEST_BINARY = "${config.packages.opencode-assistant.documentReader}/bin/opencode-document-read";
-        OPENCODE_DOCUMENT_TEST_FONT = "${pkgs.dejavu_fonts}/share/fonts/truetype/DejaVuSans.ttf";
-        OPENCODE_PDFTOPPM = "${pkgs.poppler-utils}/bin/pdftoppm";
-        OPENCODE_TESSERACT = "${pkgs.tesseract.override {enableLanguages = ["eng"];}}/bin/tesseract";
-      } ''
-        export PYTHONDONTWRITEBYTECODE=1
-        export NIX_SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
-        python3 "$src/tests/opencode-document-test.py"
-        touch "$out"
-      '';
+    checks.opencode-assistant = assistantChecks.assistant;
+    checks.opencode-documents = assistantChecks.documents;
     checks.pre-commit-check = preCommitCheck;
     checks.neovim-workflow = import ../tests/neovim-workflow.nix {
       inherit pkgs;
