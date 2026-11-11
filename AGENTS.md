@@ -3,9 +3,8 @@
 ## Commands
 
 - Format: `just fmt`
-- Full checks (CI-equivalent local gate): `just check`
-- Direct check command:
-  `nix flake check --all-systems --extra-experimental-features 'nix-command flakes'`
+- Current-system checks: `just check`
+- Direct check command: `nix flake check --extra-experimental-features 'nix-command flakes'`
 - macOS apply local host: `just build`
 - macOS build only: `just build-dry`
 - Linux apply local host: `just build`

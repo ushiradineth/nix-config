@@ -166,10 +166,10 @@ cleanup:
 fmt:
   nix fmt
 
-# Run flake checks including pre-commit hooks.
+# Run current-system flake checks including pre-commit hooks.
 [group('nix')]
 check:
-  nix flake check --all-systems --extra-experimental-features 'nix-command flakes'
+  nix flake check --extra-experimental-features 'nix-command flakes'
 
 ############################################################################
 #
