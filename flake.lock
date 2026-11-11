@@ -382,10 +382,10 @@
     "mysecrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1791439462,
-        "narHash": "sha256-GCs42sVc1V8c9qZEKH6ghRuUbbsYdx6i3V+nqLDWb5c=",
+        "lastModified": 1793917244,
+        "narHash": "sha256-wUXeljhkcdmb8DQ7cTeXTVPwRzXOTDHLCHtSAQilZD4=",
         "ref": "refs/heads/main",
-        "rev": "b9ef2642bb495718441a79d5ad25d558b8a4ab14",
+        "rev": "5a14f484a4f67965653f3a82c64aeae1e2014c79",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/ushiradineth/nix-secrets.git"
@@ -553,11 +553,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1768783163,
-        "narHash": "sha256-tLj4KcRDLakrlpvboTJDKsrp6z2XLwyQ4Zmo+w8KsY4=",
+        "lastModified": 1793826729,
+        "narHash": "sha256-D5H7H+qMoTGI/jJtxKP4u7BdjkFnUyhOovTrf3pTOr0=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "bde09022887110deb780067364a0818e89258968",
+        "rev": "6dadaf4375be35033e1c84395adbd53ff5fded96",
         "type": "github"
       },
       "original": {

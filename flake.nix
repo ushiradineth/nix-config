@@ -98,6 +98,7 @@
         ./outputs/colmena
         ./parts/overlays.nix
         ./parts/development.nix
+        ./parts/myx.nix
       ];
     };
 }

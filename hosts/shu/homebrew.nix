@@ -38,7 +38,6 @@
       "handbrake"
       "nvm"
       "czkawka"
-      "myx"
     ];
     # Bundle cleanup replaces the trust store with the Brewfile's trusted entries.
     taps =
