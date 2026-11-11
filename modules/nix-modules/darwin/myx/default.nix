@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   hostname,
   mysecrets,
   myvars,
@@ -16,7 +17,7 @@
       device_name = "myx";
     };
   };
-  package = pkgs.myx.override {
+  package = pkgs.callPackage ./package.nix {
     configuration = {
       inherit settings directory;
       keySource = config.age.secrets.myx-soloist-api-key.path;
@@ -24,27 +25,31 @@
     };
   };
 in {
-  age.secrets = {
-    myx-soloist-api-key = {
-      file = "${mysecrets}/${hostname}/myx-soloist-api-key.age";
-      owner = myvars.username;
-      mode = "0600";
+  options.programs.myx.enable = lib.mkEnableOption "Myx";
+
+  config = lib.mkIf config.programs.myx.enable {
+    age.secrets = {
+      myx-soloist-api-key = {
+        file = "${mysecrets}/${hostname}/myx-soloist-api-key.age";
+        owner = myvars.username;
+        mode = "0600";
+      };
+      myx-spotify-client-id = {
+        file = "${mysecrets}/${hostname}/myx-spotify-client-id.age";
+        owner = myvars.username;
+        mode = "0600";
+      };
     };
-    myx-spotify-client-id = {
-      file = "${mysecrets}/${hostname}/myx-spotify-client-id.age";
-      owner = myvars.username;
-      mode = "0600";
-    };
-  };
-  home-manager.users.${myvars.username} = {
-    home.packages = [package];
-    home.shellAliases.myx = "${package}/bin/myx";
-    home.file."Applications/Myx.command" = {
-      executable = true;
-      text = ''
-        #!${pkgs.runtimeShell}
-        exec ${package}/bin/myx "$@"
-      '';
+    home-manager.users.${myvars.username} = {
+      home.packages = [package];
+      home.shellAliases.myx = "${package}/bin/myx";
+      home.file."Applications/Myx.command" = {
+        executable = true;
+        text = ''
+          #!${pkgs.runtimeShell}
+          exec ${package}/bin/myx "$@"
+        '';
+      };
     };
   };
 }

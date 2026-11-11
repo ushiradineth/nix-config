@@ -10,4 +10,6 @@
     websocat # WebSocket client
     llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex
   ];
+
+  programs.myx.enable = true;
 }

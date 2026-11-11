@@ -55,6 +55,13 @@
       };
     };
   in {
+    imports = lib.optionals (system == "aarch64-darwin") [
+      {
+        checks.myx = import ../modules/nix-modules/darwin/myx/tests {inherit lib pkgs;};
+        checks.myx-launcher = import ../modules/nix-modules/darwin/myx/tests/launcher.nix {inherit lib pkgs;};
+      }
+    ];
+
     checks.opencode-assistant = assistantChecks.assistant;
     checks.opencode-documents = assistantChecks.documents;
     checks.pre-commit-check = preCommitCheck;

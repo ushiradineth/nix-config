@@ -98,7 +98,6 @@
         ./outputs/colmena
         ./parts/overlays.nix
         ./parts/development.nix
-        ./modules/nix-modules/darwin/myx/flake.nix
       ];
     };
 }

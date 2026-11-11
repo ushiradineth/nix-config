@@ -7,15 +7,12 @@
       (builtins.readDir ../overlays));
 
   namedOverlays =
-    (builtins.listToAttrs
-      (map (file: {
-          name = lib.removeSuffix ".nix" file;
-          value = import (../overlays + "/${file}") inputs;
-        })
-        overlayFiles))
-    // {
-      myx = import ../modules/nix-modules/darwin/myx/overlay.nix inputs;
-    };
+    builtins.listToAttrs
+    (map (file: {
+        name = lib.removeSuffix ".nix" file;
+        value = import (../overlays + "/${file}") inputs;
+      })
+      overlayFiles);
 in {
   flake.overlays =
     namedOverlays
