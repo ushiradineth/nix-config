@@ -92,6 +92,7 @@ reply. Steering by a principle's name still works.
 | Agent       | Responsibility                                                                                       |
 | ----------- | ---------------------------------------------------------------------------------------------------- |
 | `jiyu`      | Primary owner of the goal, design, implementation, integration and proof.                            |
+| `sudo-jiyu` | Same prompt, instructions and model as Jiyu, with every OpenCode permission allowed.                 |
 | `general`   | Bounded implementation or investigation worker.                                                      |
 | `explore`   | Read-only source mapping.                                                                            |
 | `reviewer`  | Read-only correctness, comment or structural review.                                                 |
@@ -99,6 +100,10 @@ reply. Steering by a principle's name still works.
 
 Workers cannot launch other agents. Competing writes get separate workspaces; shared review can use
 the same source. The primary inspects their artifacts and verifies integration.
+
+Select `sudo-jiyu` for Jiyu with unrestricted OpenCode tool, shell, directory, delegation and MCP
+access. It shares `prompts/jiyu.md`, `AGENTS.md`, skills and instructions with `jiyu`; only its
+agent-level permission changes to `"*": "allow"`. The default agent remains `jiyu`.
 
 ### Personal budgeting, Gmail and AFFiNE
 

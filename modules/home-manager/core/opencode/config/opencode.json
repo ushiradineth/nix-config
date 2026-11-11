@@ -26,6 +26,14 @@
       "description": "Own a goal through jiyu-mode routing, implementation and verification",
       "prompt": "{file:./prompts/jiyu.md}"
     },
+    "sudo-jiyu": {
+      "mode": "primary",
+      "description": "Own a goal through jiyu-mode routing, implementation and verification",
+      "prompt": "{file:./prompts/jiyu.md}",
+      "permission": {
+        "*": "allow"
+      }
+    },
     "assistant": {
       "mode": "all",
       "description": "Personal budgeting, read-only Gmail and AFFiNE notes, plans and reviews; no software implementation",

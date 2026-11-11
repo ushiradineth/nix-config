@@ -37,7 +37,7 @@
     && lib.hasInfix "\nname: ${name}\n" ("\n" + frontmatter)
     && lib.hasInfix "description:" frontmatter;
   tests = {
-    primary-registration = builtins.attrNames primaries == ["assistant" "jiyu"] && config.default_agent == "jiyu";
+    primary-registration = builtins.attrNames primaries == ["assistant" "jiyu" "sudo-jiyu"] && config.default_agent == "jiyu";
     leaf-registration = lib.all (name: builtins.hasAttr name agents) ["general" "explore" "reviewer"];
     prompt-references = lib.all promptExists (builtins.attrValues agents);
     command-targets = lib.all commandValid (builtins.attrNames commands);

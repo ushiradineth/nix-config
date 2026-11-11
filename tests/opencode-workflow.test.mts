@@ -211,6 +211,40 @@ test("OpenCode resolves the default coordinator and bounded inherited workers", 
   }
 })
 
+test("sudo-jiyu shares Jiyu guidance and permits every tool and resource", () => {
+  const f = fixture()
+  try {
+    const jiyu = resolved(f, "jiyu")
+    const sudo = resolved(f, "sudo-jiyu")
+    const guidance = (agent: Agent) =>
+      Object.fromEntries(
+        Object.entries(agent).filter(([key]) => key !== "name" && key !== "permission")
+      )
+    assert.deepEqual(guidance(sudo), guidance(jiyu))
+    for (const [permission, resource] of [
+      ["bash", "sudo command"],
+      ["bash", "rm file"],
+      ["bash", "git push"],
+      ["bash", "just build"],
+      ["external_directory", "/unfamiliar/path/file"],
+      ["read", "private.env"],
+      ["edit", "/unfamiliar/path/file"],
+      ["task", "sudo-jiyu"],
+      ["task", "general"],
+      ["skill", "personal-assistant"],
+      ["doom_loop", "*"],
+      ["actualbudget_actual_get_context", "*"],
+      ["affine_read_doc", "*"],
+      ["documents_read", "*"],
+      ["google_send_gmail_message", "*"],
+      ["a_future_plugin_tool", "*"],
+    ])
+      assert.equal(action(sudo, permission, resource), "allow", `${permission}: ${resource}`)
+  } finally {
+    f.close()
+  }
+})
+
 test("ordinary checks run while destructive and operational commands retain approval", () => {
   const f = fixture()
   try {
