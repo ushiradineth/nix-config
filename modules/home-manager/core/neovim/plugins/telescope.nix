@@ -65,7 +65,6 @@ in {
           "--line-number"
           "--column"
           "--smart-case"
-          "--fixed-strings"
           "--hidden"
           "--trim"
           "--ignore-file"
@@ -144,10 +143,22 @@ in {
       };
     }
     {
-      # Initiate search in the current file
+      # Search the saved file with the same regex engine as the directory search.
       key = "<leader>sc";
       mode = ["n"];
-      action = ":Telescope current_buffer_fuzzy_find<CR>";
+      action.__raw = ''
+        function()
+          local filename = vim.api.nvim_buf_get_name(0)
+          if vim.bo.buftype ~= "" or filename == "" or vim.fn.filereadable(filename) ~= 1 then
+            vim.notify("Current-file search needs a saved file", vim.log.levels.INFO)
+            return
+          end
+          require("telescope").extensions.live_grep_args.live_grep_args({
+            search_dirs = { filename },
+            prompt_title = "Current saved file (regex)",
+          })
+        end
+      '';
       options = {
         noremap = true;
         silent = true;

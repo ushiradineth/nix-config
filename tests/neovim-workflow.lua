@@ -185,6 +185,63 @@ section("real saves select one formatter, honor toggles, and exclude node_module
 	save(dependency, {})
 end)
 
+section("regex search scopes and literal word shortcuts", function()
+	local repo = root .. "/regex search"
+	vim.fn.mkdir(repo, "p")
+	vim.fn.chdir(repo)
+	write(repo .. "/.gitignore", {})
+	local path = repo .. "/current file.nix"
+	write(path, {
+		"programs.myx.enable = true;",
+		"programs.neovim.enable = true;",
+		"programsXmyxYenable = false;",
+	})
+	write(repo .. "/other.nix", { "programs.other.enable = true;" })
+	edit(path)
+	local buf = vim.api.nvim_get_current_buf()
+	local state = require("telescope.actions.state")
+	local function search(binding, prompt, expected)
+		vim.api.nvim_set_current_buf(buf)
+		keys(binding)
+		local picker = state.get_current_picker(vim.api.nvim_get_current_buf())
+		assert(picker, "search picker opens")
+		if prompt then
+			picker:reset_prompt(prompt)
+		end
+		wait(binding .. " returns " .. expected .. " matches", function()
+			return picker.manager and picker.manager:num_results() == expected
+		end)
+		local entries = {}
+		for entry in picker.manager:iter() do
+			entries[#entries + 1] = entry
+		end
+		require("telescope.actions").close(picker.prompt_bufnr)
+		return entries
+	end
+	local regex = [[programs\..*\.enable]]
+	local all = search("<leader>sa", regex, 3)
+	local files = {}
+	for _, entry in ipairs(all) do
+		files[vim.fs.basename(entry.filename)] = true
+	end
+	assert(files["current file.nix"] and files["other.nix"], "directory regex covers both files")
+	for _, entry in ipairs(search("<leader>sc", regex, 2)) do
+		eq(vim.fs.basename(entry.filename), "current file.nix", "current-file regex stays scoped")
+	end
+	eq(search("<leader>sa", [["programs.myx.enable" -F]], 1)[1].lnum, 1, "literal flag remains available")
+	vim.api.nvim_set_current_buf(buf)
+	vim.bo.iskeyword = vim.bo.iskeyword .. ",."
+	vim.api.nvim_win_set_cursor(0, { 1, 0 })
+	eq(search("<leader>swa", nil, 1)[1].lnum, 1, "directory word search stays literal")
+	vim.api.nvim_set_current_buf(buf)
+	vim.api.nvim_win_set_cursor(0, { 1, 0 })
+	eq(search("<leader>swc", nil, 1)[1].lnum, 1, "current-file word search stays literal")
+	vim.cmd.new()
+	local unnamed = vim.api.nvim_get_current_buf()
+	keys("<leader>sc")
+	eq(vim.api.nvim_get_current_buf(), unnamed, "unnamed buffer does not broaden current-file search")
+end)
+
 section("Git hunk navigation, range staging and floating review pickers", function()
 	for _, suffix in ipairs({ "gd", "gS", "grd", "grD", "grs", "grc", "grh" }) do
 		eq(vim.fn.maparg(vim.g.mapleader .. suffix, "n"), "", "retired Git binding " .. suffix)
