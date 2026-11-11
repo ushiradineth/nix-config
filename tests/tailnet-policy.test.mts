@@ -21,7 +21,10 @@ const candidate = '// reviewed candidate\n{"acls": [], "tests": [],}\n'
 
 function preparedPolicy() {
   return JSON.parse(
-    readFileSync(resolve("network/tailscale/policy.hujson"), "utf8").replace(/^\s*\/\/.*$/gm, "")
+    readFileSync(resolve("hosts/shupi/tailscale/policy.hujson"), "utf8").replace(
+      /^\s*\/\/.*$/gm,
+      ""
+    )
   )
 }
 
