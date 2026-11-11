@@ -138,11 +138,11 @@ identity accompany each excerpt. Explicit block reads preserve IDs and deltas fo
 The adapter forwards writes and their revision preconditions unchanged. Shell and arbitrary
 context-mode execution remain denied for the assistant.
 
-Gmail uses the existing Google Workspace MCP on shupi over the tailnet. Only the assistant can use
-its seven mail read tools: search, message/thread reads (single or batch), attachment retrieval and
-label listing. Other Google services and all mailbox changes remain denied, including sends, saved
-Gmail drafts, marking read, archiving and deletion. Replies can be drafted in chat. Email results
-include source message links; downloading an attachment does not prove it was read.
+Gmail uses the existing Google Workspace MCP on shupi over the tailnet. The assistant can use seven
+mail read tools: search, message/thread reads (single or batch), attachment retrieval and label
+listing. Other Google services and all mailbox changes remain denied, including sends, saved Gmail
+drafts, marking read, archiving and deletion. Replies can be drafted in chat. Email results include
+source message links; downloading an attachment does not prove it was read.
 
 Actual Budget is enforced read-only, with one configured budget Sync ID and a small analysis/query
 toolset. It cannot change transactions, move money, switch budgets or run bank sync. AFFiNE can
@@ -259,17 +259,17 @@ The following choices keep the engineering methods while removing duplicate orch
 
 The 23 upstream playbooks are covered without retaining 23 separate orchestration systems:
 
-| Upstream playbooks                                           | Local route                                                                                                                      |
-| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
-| Investigation, Runtime forensics, Trace forensics            | Investigation with the relevant live or captured evidence.                                                                       |
-| Bug fix, Feature, Refactoring                                | Dedicated implementation playbooks.                                                                                              |
-| Perf issue, Hillclimb                                        | Performance playbook with controlled measurement and hypothesis logging.                                                         |
-| Prototype, Visual parity, Multi-phase plan                   | Design and feature routes with the actual prototype, frozen baseline or requested plan.                                          |
-| Authoring a skill, Eval                                      | Skill-authoring playbook and isolated behavioral evaluation.                                                                     |
-| Opening a PR, Babysit, Shipping                              | PR work, conflict resolution and attached-CI checks; status-only stays read-only.                                                |
-| Autonomous run, Orchestrate, Autopilot-full, Autopilot-stack | Figure-it-out phases, bounded leaf work and the existing oc-loop when explicitly requested. A merge still needs merge authority. |
-| Session pickup, Pause safely                                 | Continuity playbook.                                                                                                             |
-| Worktree cleanup                                             | Scoped operational work from actual git state; no automatic deletion.                                                            |
+| Upstream playbooks                                           | Local route                                                                             |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| Investigation, Runtime forensics, Trace forensics            | Investigation with the relevant live or captured evidence.                              |
+| Bug fix, Feature, Refactoring                                | Dedicated implementation playbooks.                                                     |
+| Perf issue, Hillclimb                                        | Performance playbook with controlled measurement and hypothesis logging.                |
+| Prototype, Visual parity, Multi-phase plan                   | Design and feature routes with the actual prototype, frozen baseline or requested plan. |
+| Authoring a skill, Eval                                      | Skill-authoring playbook and isolated behavioral evaluation.                            |
+| Opening a PR, Babysit, Shipping                              | PR work, conflict resolution and attached-CI checks; status-only stays read-only.       |
+| Autonomous run, Orchestrate, Autopilot-full, Autopilot-stack | Figure-it-out phases and bounded leaf work. A merge still needs merge authority.        |
+| Session pickup, Pause safely                                 | Continuity playbook.                                                                    |
+| Worktree cleanup                                             | Scoped operational work from actual git state; no automatic deletion.                   |
 
 Minecraft context, security auditing, local SAST, Fallow, Kumo design and personal voice remain for
 their actual domains. ADHD presentation is opt-in. Personal voice uses unslop instead of the
