@@ -7,8 +7,8 @@
   runtimeShell,
   configuration ? null,
 }: let
-  version = "0.5.0-preview.5";
-  archiveHash = "sha256-y4JGlbWjPC4PN83IKG4ND9MXA/f/pb29rrl4Kt1WYV4=";
+  version = "0.5.0-preview.6";
+  archiveHash = "sha256-dsYPxGzoT9Gb5UQJHMZnC46SSM1hnU6i4bXeR8uLNDA=";
   setup = callPackage ./setup.nix {};
   configure = lib.optionalString (configuration != null) ''
     if [ "$custom_config" = 0 ]; then
