@@ -15,7 +15,7 @@ import tempfile
 
 import yaml
 
-BASELINE = Path(os.environ.get("SEMGREP_LOCAL_BASELINE", Path(__file__).resolve().parents[1] / "security/semgrep")).resolve()
+BASELINE = Path(os.environ.get("SEMGREP_LOCAL_BASELINE", Path(__file__).resolve().parent / "baseline")).resolve()
 SANDBOX_EXEC = "/usr/bin/sandbox-exec"
 EXTENSIONS = {".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx", ".mts", ".cts", ".py", ".go", ".rs"}
 IGNORE_DIRS = {".git", ".direnv", ".next", ".nuxt", ".astro", ".vercel", ".cache", "node_modules", ".venv", "venv",

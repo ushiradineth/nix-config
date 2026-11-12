@@ -93,10 +93,11 @@ semgrep-local --root /absolute/path/to/application --profile project-a
 The baseline has eleven detector families for JS/TS, Python, Go, and Rust: browser injection,
 selected request-to-shell flows, unsafe TLS options, unsafe PyYAML loaders, and a formatted-SQLx
 query heuristic. Exact rule IDs, confidence levels and blind spots are in
-[`security/semgrep/manifest.json`](security/semgrep/manifest.json). Coverage is bounded and
-intraprocedural; a clean result is not a whole-application security assessment or a substitute for
-native checks. Internal no-finding controls force AST parsing even when security-rule prefilters
-select no source. Generated directories are excluded and listed in each report.
+[`modules/home-manager/core/semgrep/baseline/manifest.json`](modules/home-manager/core/semgrep/baseline/manifest.json).
+Coverage is bounded and intraprocedural; a clean result is not a whole-application security
+assessment or a substitute for native checks. Internal no-finding controls force AST parsing even
+when security-rule prefilters select no source. Generated directories are excluded and listed in
+each report.
 
 JSON goes to stdout. Exit `0` means a completed scan without candidates, `1` means candidates
 requiring source review, and `2` means validation/engine failure or incomplete scope. Parser errors,
@@ -126,12 +127,12 @@ selected custom rule needs `ruleid:` and `ok:` annotations; the runner validates
 before scanning. It freezes those inputs in private temporary storage and deletes the storage after
 the scan. Unknown fields, remote configurations, executable rule extensions, missing fixtures,
 incorrect permissions and mismatched roots fail closed. The profile shape is documented in
-[`profile.schema.json`](security/semgrep/profile.schema.json); runtime checks also enforce canonical
-paths, ownership and local rule safety.
+[`profile.schema.json`](modules/home-manager/core/semgrep/baseline/profile.schema.json); runtime
+checks also enforce canonical paths, ownership and local rule safety.
 
 `nix build --no-link .#checks.aarch64-darwin.semgrep-local` runs the baseline fixture suites and
 runner unit regressions. Actual OS confinement/CLI tests run separately through
-`SEMGREP_LOCAL_BINARY=<built-package>/bin/semgrep-local python3 tests/semgrep-local-test.py --runtime`
+`SEMGREP_LOCAL_BINARY=<built-package>/bin/semgrep-local python3 modules/home-manager/core/semgrep/tests/scanner-test.py --runtime`
 in a Python environment with PyYAML. macOS uses `/usr/bin/sandbox-exec`; Linux uses packaged
 Bubblewrap and may refuse to run when user namespaces are disabled. Native Linux isolation is not
 established by mocked unit checks or Nix evaluation.

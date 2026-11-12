@@ -12,14 +12,14 @@ import unittest
 from unittest import mock
 from types import SimpleNamespace
 
-REPO = Path(__file__).resolve().parents[1]
+MODULE = Path(__file__).resolve().parents[1]
 RUNTIME = "--runtime" in sys.argv
 if RUNTIME:
     sys.argv.remove("--runtime")
 
 
 def runner_module():
-    spec = importlib.util.spec_from_file_location("semgrep_scan", REPO / "scripts/semgrep-scan.py")
+    spec = importlib.util.spec_from_file_location("semgrep_scan", MODULE / "scanner.py")
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -39,7 +39,7 @@ class RunnerTests(unittest.TestCase):
 
     def scan(self, *args):
         binary = os.environ.get("SEMGREP_LOCAL_BINARY")
-        command = [binary] if binary else [sys.executable, str(REPO / "scripts/semgrep-scan.py")]
+        command = [binary] if binary else [sys.executable, str(MODULE / "scanner.py")]
         result = subprocess.run(command + ["--root", str(self.root), *args],
                                 env=self.env, capture_output=True, text=True, timeout=60)
         self.assertTrue(result.stdout, result.stderr)
@@ -131,7 +131,7 @@ class RunnerTests(unittest.TestCase):
     def test_baseline_disagreement_is_not_ignored(self):
         runner = runner_module()
         baseline = self.base / "baseline"
-        shutil.copytree(REPO / "security/semgrep", baseline)
+        shutil.copytree(MODULE / "baseline", baseline)
         path = baseline / "manifest.json"
         path.chmod(0o600)
         manifest = json.loads(path.read_text())
@@ -254,7 +254,7 @@ class RunnerTests(unittest.TestCase):
         link = self.base / "link"
         link.symlink_to(target)
         for path in (target, self.root / "report.json", link, self.config / "report.json",
-                     REPO / "security/semgrep/report.json"):
+                     MODULE / "baseline/report.json"):
             with self.subTest(path=path), self.assertRaises(runner.ScanError):
                 runner.output_path(str(path), self.root, self.config)
         self.assertEqual(target.read_text(), "original")
