@@ -90,17 +90,7 @@
         python3 tests/semgrep-local-test.py
         touch "$out"
       '';
-    checks.tailnet-policy =
-      pkgs.runCommand "tailnet-policy-tests" {
-        src = ../.;
-        nativeBuildInputs = [pkgs.nodejs pkgs.bash pkgs.jq pkgs.coreutils pkgs.diffutils pkgs.shellcheck];
-      } ''
-        cd "$src"
-        bash -n scripts/tailnet-policy.sh
-        shellcheck scripts/tailnet-policy.sh
-        node --test tests/tailnet-policy.test.mts
-        touch "$out"
-      '';
+    checks.tailnet-policy = import ../hosts/shupi/tailscale/tests {inherit pkgs;};
     checks.shupi-dns-routing = let
       host = inputs.self.nixosConfigurations.shupi.config;
       dns = host.services.adguardhome.settings.dns;

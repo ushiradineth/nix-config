@@ -11,20 +11,18 @@ import {
   symlinkSync,
   readdirSync,
 } from "node:fs"
+import { fileURLToPath } from "node:url"
 import { tmpdir } from "node:os"
 import { join, resolve } from "node:path"
 import { spawn, spawnSync } from "node:child_process"
 
-const script = resolve("scripts/tailnet-policy.sh")
+const script = fileURLToPath(new URL("../tailnet-policy.sh", import.meta.url))
 const baseline = '// HuJSON baseline\n{"acls": [],}\n'
 const candidate = '// reviewed candidate\n{"acls": [], "tests": [],}\n'
 
 function preparedPolicy() {
   return JSON.parse(
-    readFileSync(resolve("hosts/shupi/tailscale/policy.hujson"), "utf8").replace(
-      /^\s*\/\/.*$/gm,
-      ""
-    )
+    readFileSync(new URL("../policy.hujson", import.meta.url), "utf8").replace(/^\s*\/\/.*$/gm, "")
   )
 }
 
