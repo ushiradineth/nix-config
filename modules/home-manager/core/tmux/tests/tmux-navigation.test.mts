@@ -21,7 +21,7 @@ import {
   numberBindings,
   preferredSessionName,
   sessionsForProject,
-} from "../modules/home-manager/core/tmux/navigation.mts"
+} from "../navigation.mts"
 
 const testShell = process.env.TMUX_NAVIGATION_TEST_SHELL || "/bin/sh"
 const shellQuote = (value: string) => `'${value.replaceAll("'", "'\\''")}'`
@@ -161,7 +161,7 @@ test("session CLI initially highlights the caller's third session without reorde
     const result = spawnSync(
       process.execPath,
       [
-        fileURLToPath(new URL("../modules/home-manager/core/tmux/navigation.mts", import.meta.url)),
+        fileURLToPath(new URL("../navigation.mts", import.meta.url)),
         "sessions",
         "--client",
         "/dev/ttys999",
@@ -240,7 +240,7 @@ exec ${shellQuote(process.env.TMUX_NAVIGATION_TEST_FZF || "fzf")} "$@" '--pointe
         "-y",
         "30",
         process.execPath,
-        fileURLToPath(new URL("../modules/home-manager/core/tmux/navigation.mts", import.meta.url)),
+        fileURLToPath(new URL("../navigation.mts", import.meta.url)),
         "sessions",
         "--client",
         "/dev/ttys999",

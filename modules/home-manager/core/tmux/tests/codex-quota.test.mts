@@ -20,7 +20,7 @@ import {
   formatCompactQuota,
   formatFullQuota,
   readQuota,
-} from "../modules/home-manager/core/tmux/codex-quota.mts"
+} from "../codex-quota.mts"
 
 const weekly = { usedPercent: 19, windowDurationMins: 10080, resetsAt: 2000000000 }
 
@@ -589,9 +589,7 @@ test("different Codex homes never reuse a snapshot and worker launch failure is 
   }
 })
 
-const helper = fileURLToPath(
-  new URL("../modules/home-manager/core/tmux/codex-quota.mts", import.meta.url)
-)
+const helper = fileURLToPath(new URL("../codex-quota.mts", import.meta.url))
 
 test("concurrent CLI status calls detach one bounded refresh and reuse its snapshot", async () => {
   const root = mkdtempSync(join(tmpdir(), "cq-"))
@@ -682,8 +680,7 @@ test("isolated tmux toggles remaining quota without hiding OC and preserves choi
     ? `${packagePath} status`
     : `${process.execPath} ${helper} status`
   const source =
-    process.env.CODEX_QUOTA_TEST_CONFIG ||
-    fileURLToPath(new URL("../modules/home-manager/core/tmux/.tmux.conf", import.meta.url))
+    process.env.CODEX_QUOTA_TEST_CONFIG || fileURLToPath(new URL("../.tmux.conf", import.meta.url))
   const text = readFileSync(source, "utf8")
   writeFileSync(config, packagePath ? text : text.replace("codex-quota status", quotaCommand))
   const tmux = (...args: string[]) =>

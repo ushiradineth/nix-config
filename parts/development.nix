@@ -15,20 +15,10 @@
       inherit pkgs;
       nodeTypes = terminalTypes;
     };
-    quotaModule = import ../modules/home-manager/core/tmux {
-      inherit pkgs;
-      myvars = import ../vars {};
-      config.xdg.cacheHome = "/unused-quota-test-cache";
-      config.home.homeDirectory = "/unused-navigation-test-home";
-      config.home.sessionVariables = {
-        LANG = "en_US.UTF-8";
-        LC_ALL = "en_US.UTF-8";
-      };
-    };
-    quotaHelper = builtins.head quotaModule.home.packages;
     terminalTestProcess = pkgs.writeShellScript "opencode-terminal-test-process" ''
       printf 'test-process-%s\n' "$2"
     '';
+    tmuxChecks = import ../modules/home-manager/core/tmux/tests {inherit pkgs nodeTypes;};
     preCommitCheck = inputs.pre-commit-hooks.lib.${system}.run {
       src = ../.;
       hooks = {
@@ -222,18 +212,7 @@
         ' effective.conf
         touch "$out"
       '';
-    checks.tmux-navigation =
-      pkgs.runCommand "tmux-navigation-tests" {
-        src = ../.;
-        nativeBuildInputs = [pkgs.nodejs pkgs.tmux pkgs.fzf pkgs.typescript];
-        TMUX_NAVIGATION_TEST_SHELL = pkgs.runtimeShell;
-      } ''
-        export HOME="$TMPDIR/home"
-        mkdir -p "$HOME"
-        tsc --project "$src/tests/tmux-navigation.tsconfig.json" --typeRoots ${terminalTypes}
-        node --test "$src/tests/tmux-navigation.test.mts"
-        touch "$out"
-      '';
+    checks.tmux-navigation = tmuxChecks.navigation;
     checks.agent-guidance = import ../tests/agent-guidance.nix {inherit lib pkgs;};
     checks.google-mcp = import ../tests/google-mcp.nix {
       inherit lib pkgs;
@@ -251,19 +230,7 @@
         node --test "$src/validate-findings.test.mts" "$src/validate-coverage-ledger.test.mts"
         touch "$out"
       '';
-    checks.codex-quota =
-      pkgs.runCommand "codex-quota-tests" {
-        src = ../.;
-        nativeBuildInputs = [pkgs.nodejs pkgs.tmux pkgs.typescript];
-        CODEX_QUOTA_TEST_HELPER = "${quotaHelper}/bin/codex-quota";
-        CODEX_QUOTA_TEST_CONFIG = pkgs.writeText "quota-tmux.conf" quotaModule.programs.tmux.extraConfig;
-      } ''
-        export HOME="$TMPDIR/home"
-        mkdir -p "$HOME"
-        tsc --project "$src/tests/codex-quota.tsconfig.json" --typeRoots ${terminalTypes}
-        node --test "$src/tests/codex-quota.test.mts"
-        touch "$out"
-      '';
+    checks.codex-quota = tmuxChecks.quota;
     checks.opencode-terminal =
       pkgs.runCommand "opencode-terminal-tests" {
         src = ../.;
