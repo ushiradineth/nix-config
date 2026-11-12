@@ -8,7 +8,7 @@
     hash = "sha512-9UJ2xGDvQ43tYyVMpuHlsgApydB8ZKfVYTsLDhXkFL/6gfkp+U8xTGdh8pMJv1SpZna0zxG1DwsKZsreLbXBxw==";
   };
 in
-  pkgs.runCommand "opencode-terminal-type-definitions" {
+  pkgs.runCommand "node-type-definitions" {
     nativeBuildInputs = [pkgs.gnutar];
   } ''
     mkdir -p "$out/node" "$out/undici-types"

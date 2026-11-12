@@ -10,11 +10,8 @@
     system,
     ...
   }: let
-    terminalTypes = import ../lib/opencode-terminal-types.nix {inherit pkgs;};
-    assistantChecks = import ../modules/home-manager/core/opencode/assistant/tests {
-      inherit pkgs;
-      nodeTypes = terminalTypes;
-    };
+    nodeTypes = import ../lib/node-types.nix {inherit pkgs;};
+    assistantChecks = import ../modules/home-manager/core/opencode/assistant/tests {inherit pkgs nodeTypes;};
     terminalTestProcess = pkgs.writeShellScript "opencode-terminal-test-process" ''
       printf 'test-process-%s\n' "$2"
     '';
@@ -226,7 +223,7 @@
       } ''
         export HOME="$TMPDIR/home"
         mkdir -p "$HOME"
-        tsc --project "$src/tests.tsconfig.json" --typeRoots ${terminalTypes}
+        tsc --project "$src/tests.tsconfig.json" --typeRoots ${nodeTypes}
         node --test "$src/validate-findings.test.mts" "$src/validate-coverage-ledger.test.mts"
         touch "$out"
       '';
@@ -242,7 +239,7 @@
       } ''
         export HOME="$TMPDIR/home"
         mkdir -p "$HOME"
-        tsc --project "$src/tests/opencode-terminal.tsconfig.json" --typeRoots ${terminalTypes}
+        tsc --project "$src/tests/opencode-terminal.tsconfig.json" --typeRoots ${nodeTypes}
         node --test "$src/tests/opencode-terminal.test.mts" "$src/tests/tmux-terminal.test.mts"
         touch "$out"
       '';
