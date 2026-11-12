@@ -14,6 +14,6 @@
   "files": [
     "./opencode-terminal.test.mts",
     "./tmux-terminal.test.mts",
-    "../modules/home-manager/core/opencode/config/plugins/terminal-context.ts"
+    "../config/plugins/terminal-context.ts"
   ]
 }

@@ -9,8 +9,8 @@ import {
   createTerminalContext,
   rootTransition,
   inboxMessage,
-} from "../modules/home-manager/core/opencode/config/terminal/terminal-context.mts"
-import type { RootState } from "../modules/home-manager/core/opencode/config/terminal/terminal-context.mts"
+} from "../config/terminal/terminal-context.mts"
+import type { RootState } from "../config/terminal/terminal-context.mts"
 
 test("an invalid notification token cannot select a pane or execute a command", async () => {
   const root = mkdtempSync(join(tmpdir(), "pane-test-"))
