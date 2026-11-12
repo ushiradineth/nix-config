@@ -271,21 +271,7 @@
       inherit lib pkgs;
       host = inputs.self.nixosConfigurations.shupi.config;
     };
-    # These suites exercise Python implementations, not Nix configuration.
-    checks.python-tests =
-      pkgs.runCommand "python-tests" {
-        src = ../.;
-        nativeBuildInputs = [pkgs.python3];
-      } ''
-        export HOME="$TMPDIR/home"
-        export PYTHONDONTWRITEBYTECODE=1
-        mkdir -p "$HOME"
-        cp -R "$src" source
-        chmod -R u+w source
-        cd source
-        python3 tests/status-digest-test.py
-        touch "$out"
-      '';
+    checks.ntfy-log-digest = import ../hosts/shupi/services/ntfy-log-digest/tests {inherit pkgs;};
     checks.security-audit-validators =
       pkgs.runCommand "security-audit-validator-tests" {
         src = ../modules/home-manager/core/opencode/config/skills/security-audit;

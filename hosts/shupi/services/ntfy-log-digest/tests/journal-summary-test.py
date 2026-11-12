@@ -1,9 +1,10 @@
 import datetime as dt
 import importlib.util
+from pathlib import Path
 import unittest
 import sys
 sys.dont_write_bytecode = True
-spec = importlib.util.spec_from_file_location('observer', 'hosts/shupi/services/journal-summary.py')
+spec = importlib.util.spec_from_file_location('observer', Path(__file__).resolve().parents[1] / 'journal-summary.py')
 o = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(o)
 NOW = dt.datetime(2026, 9, 30, 5, tzinfo=dt.timezone.utc)
