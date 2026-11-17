@@ -1,20 +1,21 @@
 import assert from "node:assert/strict"
-import { spawnSync } from "node:child_process"
+import { spawn, spawnSync } from "node:child_process"
+import { once } from "node:events"
 import {
-  closeSync,
   cpSync,
   existsSync,
   mkdirSync,
-  openSync,
   mkdtempSync,
   readFileSync,
   realpathSync,
-  symlinkSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from "node:fs"
+import { createServer } from "node:http"
 import { tmpdir } from "node:os"
 import { dirname, join, resolve } from "node:path"
+import { setTimeout as delay } from "node:timers/promises"
 import { fileURLToPath } from "node:url"
 import test from "node:test"
 
@@ -49,19 +50,43 @@ const mockTools: Record<string, string[]> = {
   google: [...gmailReads, ...googleDenied],
 }
 
-interface Rule {
-  permission: string
-  pattern: string
-  action: string
+interface Session {
+  id: string
+  agent: string
 }
-interface Agent {
+interface Message {
+  type: string
+  content?: { type: string; state?: { status: string; error?: unknown } }[]
+}
+interface ConfigEntry {
+  type: string
+  info?: { default_agent: string; agents: Record<string, { system: string }> }
+}
+interface McpServer {
   name: string
-  mode: string
-  permission: Rule[]
-  model?: unknown
+  status: { status: string }
+}
+interface Discovery {
+  id: string
+  name: string
+}
+interface Data<T> {
+  data: T
 }
 
-function fixture(candidate = config, mockMcp = false) {
+interface Agent {
+  id: string
+  name: string
+  mode: string
+  system?: string
+  model?: unknown
+}
+interface ChatRequest {
+  tools?: { function: { name: string } }[]
+  messages: { role: string; content: string | unknown[] }[]
+}
+
+async function fixture(candidate = config, mockMcp = false) {
   const dir = realpathSync(mkdtempSync(join(tmpdir(), "opencode-workflow-")))
   const home = join(dir, "home")
   const workspace = join(home, "Code/workspace")
@@ -70,6 +95,9 @@ function fixture(candidate = config, mockMcp = false) {
   mkdirSync(installed, { recursive: true })
   for (const entry of ["prompts", "instructions", "skills", "commands", "tools"])
     cpSync(join(configRoot, entry), join(installed, entry), { recursive: true })
+  cpSync(join(configRoot, "plugins/obsidian"), join(installed, "plugins/obsidian"), {
+    recursive: true,
+  })
   const mock = join(dir, "mcp.mts")
   writeFileSync(
     mock,
@@ -86,21 +114,83 @@ function fixture(candidate = config, mockMcp = false) {
           : request.method === "tools/call"
             ? { content: [{ type: "text", text: "verified-fixture-read" }] }
             : {};
-      process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: request.id, result }) + "\\n");
+      process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: request.id, result }) + String.fromCharCode(10));
     }
   `
   )
-  const mcp = Object.fromEntries(
-    Object.keys(candidate.mcp).map((name) => [
+  const requests: ChatRequest[] = []
+  // Drive the packaged agent loop without an account, remote model, or host credentials.
+  const model = createServer(async (request, response) => {
+    let body = ""
+    for await (const chunk of request) body += chunk
+    const input: ChatRequest = JSON.parse(body)
+    requests.push(input)
+    const user = input.messages.findLast((message) => message.role === "user")
+    const text = typeof user?.content === "string" ? user.content : JSON.stringify(user?.content)
+    const selected = /fixture-tool:(\{[^\n]+\})/.exec(text ?? "")
+    const call = selected && !input.messages.some((message) => message.role === "tool")
+    const tool = call ? JSON.parse(selected[1]) : undefined
+    response.writeHead(200, { "content-type": "text/event-stream" })
+    for (const [delta, finish] of [
+      [
+        call
+          ? {
+              role: "assistant",
+              tool_calls: [
+                {
+                  index: 0,
+                  id: "call_fixture",
+                  type: "function",
+                  function: { name: tool.name, arguments: JSON.stringify(tool.args) },
+                },
+              ],
+            }
+          : { role: "assistant", content: "fixture complete" },
+        null,
+      ],
+      [{}, call ? "tool_calls" : "stop"],
+    ])
+      response.write(
+        `data: ${JSON.stringify({
+          id: "chatcmpl-fixture",
+          object: "chat.completion.chunk",
+          created: 1,
+          model: "chat",
+          choices: [{ index: 0, delta, finish_reason: finish }],
+        })}\n\n`
+      )
+    response.end("data: [DONE]\n\n")
+  })
+  model.listen(0, "127.0.0.1")
+  await once(model, "listening")
+  const address = model.address()
+  assert.ok(address && typeof address !== "string")
+  const servers = Object.fromEntries(
+    Object.keys(candidate.mcp.servers).map((name) => [
       name,
       {
         type: "local",
-        enabled: mockMcp,
+        disabled: !mockMcp,
         command: [process.execPath, mock, JSON.stringify(mockTools[name])],
       },
     ])
   )
-  writeFileSync(join(installed, "opencode.json"), JSON.stringify({ ...candidate, mcp, plugin: [] }))
+  const installedConfig = {
+    ...candidate,
+    model: "fixture/chat",
+    providers: {
+      fixture: {
+        package: "@opencode/ai/providers/openai/chat",
+        settings: { baseURL: `http://127.0.0.1:${address.port}/v1`, apiKey: "fixture" },
+        models: { chat: {} },
+      },
+    },
+    agents: { ...candidate.agents, title: { disabled: true } },
+    mcp: { servers },
+    plugins: [],
+  }
+  const configFile = join(installed, "opencode.json")
+  writeFileSync(configFile, JSON.stringify(installedConfig))
   const env = {
     PATH: process.env.PATH,
     HOME: home,
@@ -109,12 +199,6 @@ function fixture(candidate = config, mockMcp = false) {
     XDG_DATA_HOME: join(home, ".local/share"),
     XDG_STATE_HOME: join(home, ".local/state"),
     XDG_CACHE_HOME: join(home, ".cache"),
-    OPENCODE_DISABLE_PROJECT_CONFIG: "1",
-    OPENCODE_DISABLE_EXTERNAL_SKILLS: "1",
-    OPENCODE_DISABLE_CLAUDE_CODE_SKILLS: "1",
-    OPENCODE_DISABLE_MODELS_FETCH: "1",
-    OPENCODE_DISABLE_DEFAULT_PLUGINS: "1",
-    OPENCODE_PURE: "1",
     CI: "true",
     GIT_TERMINAL_PROMPT: "0",
     GIT_CONFIG_NOSYSTEM: "1",
@@ -126,112 +210,182 @@ function fixture(candidate = config, mockMcp = false) {
   })
   assert.ifError(init.error)
   assert.equal(init.status, 0, init.stderr)
-  return {
-    home,
-    workspace,
-    configFile: join(installed, "opencode.json"),
-    run(args: string[]) {
-      const stdoutPath = join(dir, "stdout")
-      const stderrPath = join(dir, "stderr")
-      const stdout = openSync(stdoutPath, "w")
-      const stderr = openSync(stderrPath, "w")
-      try {
-        const result = spawnSync(binary, ["--pure", ...args], {
+  const child = spawn(binary, ["serve", "--hostname", "127.0.0.1", "--port", "0"], {
+    cwd: workspace,
+    env,
+    stdio: ["ignore", "pipe", "pipe"],
+  })
+  let startup = ""
+  let stderr = ""
+  let spawnError: Error | undefined
+  child.stdout.on("data", (chunk) => (startup += chunk))
+  child.stderr.on("data", (chunk) => (stderr += chunk))
+  child.on("error", (error) => (spawnError = error))
+  async function close() {
+    if (child.exitCode === null && child.signalCode === null) {
+      const exited = once(child, "exit")
+      child.kill()
+      await exited
+    }
+    await new Promise<void>((done) => model.close(() => done()))
+    rmSync(dir, { recursive: true, force: true })
+  }
+  try {
+    const deadline = Date.now() + 20000
+    while (!/server password (\S+)/.test(startup)) {
+      assert.ifError(spawnError)
+      assert.equal(child.exitCode, null, stderr)
+      assert.ok(Date.now() < deadline, `server startup timed out: ${stderr}`)
+      await delay(25)
+    }
+    const url = /server listening on (http:\/\/\S+)/.exec(startup)![1]
+    const password = /server password (\S+)/.exec(startup)![1]
+    async function request(path: string, body?: object) {
+      const response = await fetch(`${url}${path}`, {
+        method: body ? "POST" : "GET",
+        headers: {
+          authorization: `Basic ${Buffer.from(`opencode:${password}`).toString("base64")}`,
+          "content-type": "application/json",
+        },
+        body: body ? JSON.stringify(body) : undefined,
+        signal: AbortSignal.timeout(20000),
+      })
+      const text = await response.text()
+      return { status: response.status, body: text ? (JSON.parse(text) as unknown) : null }
+    }
+    async function api<T = Data<Session>>(path: string, body?: object): Promise<T> {
+      const response = await request(path, body)
+      assert.ok(
+        response.status === 200 || response.status === 204,
+        `${path}: ${JSON.stringify(response.body)}`
+      )
+      return response.body as T
+    }
+    const agents: Agent[] = (await api<Data<Agent[]>>("/api/agent")).data
+    const sessions = new Map<string, string>()
+    async function session(agent: string) {
+      const created = await api("/api/session", {
+        agent,
+        title: "Workflow fixture",
+        model: { providerID: "fixture", id: "chat" },
+        location: { directory: workspace },
+      })
+      return created.data.id as string
+    }
+    return {
+      home,
+      workspace,
+      configFile,
+      installedConfig,
+      agents,
+      session,
+      api,
+      request,
+      async action(agent: string, action: string, resource = "*") {
+        let id = sessions.get(agent)
+        if (!id) {
+          id = await session(agent)
+          sessions.set(agent, id)
+        }
+        const result = await api<Data<{ effect: string }>>(`/api/session/${id}/permission`, {
+          action,
+          resources: [resource],
+          agent,
+        })
+        return result.data.effect as string
+      },
+      async tool(name: string, args: object, agent = "assistant") {
+        const start = requests.length
+        const id = await session(agent)
+        await api(`/api/session/${id}/prompt`, {
+          text: `fixture-tool:${JSON.stringify({ name, args })}`,
+        })
+        const deadline = Date.now() + 20000
+        let messages: Message[] = []
+        while (true) {
+          messages = (await api<Data<Message[]>>(`/api/session/${id}/message`)).data
+          if (messages.some((message) => message.type === "idle")) break
+          assert.ok(Date.now() < deadline, `tool ${name} timed out: ${JSON.stringify(messages)}`)
+          await delay(25)
+        }
+        const calls = requests.slice(start)
+        return {
+          messages,
+          errors: messages
+            .flatMap((message) => message.content ?? [])
+            .filter((content) => content.type === "tool" && content.state?.status === "error")
+            .map((content) => content.state!.error),
+          requests: calls,
+          output: calls.flatMap((input) =>
+            input.messages
+              .filter((message) => message.role === "tool")
+              .map((message) => message.content)
+          ),
+        }
+      },
+      run(args: string[]) {
+        return spawnSync(binary, ["api", "--standalone", ...args], {
           cwd: workspace,
           env,
           timeout: 20000,
-          stdio: ["ignore", stdout, stderr],
+          encoding: "utf8",
         })
-        assert.ifError(result.error)
-        assert.notEqual(result.status, null, "native diagnostic must exit normally")
-        return {
-          ...result,
-          stdout: readFileSync(stdoutPath, "utf8"),
-          stderr: readFileSync(stderrPath, "utf8"),
-        }
-      } finally {
-        closeSync(stdout)
-        closeSync(stderr)
-      }
-    },
-    close() {
-      rmSync(dir, { recursive: true, force: true })
-    },
+      },
+      close,
+    }
+  } catch (error) {
+    await close()
+    throw error
   }
 }
 
-function resolved(f: ReturnType<typeof fixture>, name: string): Agent {
-  const result = f.run(["debug", "agent", name])
-  assert.equal(result.status, 0, `${name}: ${result.stderr}`)
-  return JSON.parse(result.stdout)
+type Fixture = Awaited<ReturnType<typeof fixture>>
+function resolved(f: Fixture, id: string) {
+  const agent = f.agents.find((agent) => agent.id === id)
+  assert.ok(agent, `${id} is registered`)
+  return agent
+}
+async function assertCoordinator(f: Fixture) {
+  assert.equal(resolved(f, "jiyu").mode, "primary")
+  assert.equal(await f.action("jiyu", "subagent", "jiyu"), "deny")
+  for (const leaf of [...leaves, "assistant"])
+    assert.equal(await f.action("jiyu", "subagent", leaf), "allow", leaf)
+}
+async function assertLeaf(f: Fixture, id: string) {
+  assert.equal(resolved(f, id).mode, "subagent")
+  assert.equal(await f.action(id, "subagent", "general"), "deny", "workers cannot delegate")
+  if (id !== "general") assert.equal(await f.action(id, "edit"), "deny", "review is read-only")
 }
 
-function action(agent: Agent, permission: string, resource = "*") {
-  const matches = (pattern: string, value: string) =>
-    new RegExp(
-      `^${pattern
-        .split("")
-        .map((char) =>
-          char === "*" ? ".*" : char === "?" ? "." : char.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-        )
-        .join("")}$`
-    ).test(value)
-  return agent.permission
-    .filter((rule) => matches(rule.permission, permission) && matches(rule.pattern, resource))
-    .at(-1)?.action
-}
-
-function assertCoordinator(agent: Agent) {
-  assert.equal(agent.mode, "primary")
-  assert.equal(action(agent, "task", "jiyu"), "deny")
-  for (const leaf of leaves) assert.equal(action(agent, "task", leaf), "allow", leaf)
-  assert.equal(action(agent, "task", "assistant"), "allow")
-}
-
-function assertLeaf(agent: Agent) {
-  assert.equal(agent.mode, "subagent")
-  assert.equal(action(agent, "task", "general"), "deny", "workers cannot delegate")
-  if (agent.name !== "general") assert.equal(action(agent, "edit"), "deny", "review is read-only")
-}
-
-test("OpenCode resolves the default coordinator and bounded inherited workers", () => {
-  const f = fixture()
+test("V2 resolves the default coordinator and enforces bounded workers natively", async () => {
+  const f = await fixture()
   try {
-    const result = f.run(["debug", "config"])
-    assert.equal(result.status, 0, result.stderr)
-    const loaded = JSON.parse(result.stdout)
-    assert.equal(loaded.default_agent, "jiyu")
-    assertCoordinator(resolved(f, loaded.default_agent))
+    const documents = await f.api<ConfigEntry[]>("/api/config")
+    assert.ok(Array.isArray(documents))
+    assert.equal(documents.find((entry) => entry.type === "document")!.info!.default_agent, "jiyu")
+    await assertCoordinator(f)
     for (const name of leaves) {
-      const agent = resolved(f, name)
-      assertLeaf(agent)
-      assert.equal(agent.model, undefined, "role models inherit rather than using Cursor slugs")
+      await assertLeaf(f, name)
+      assert.equal(resolved(f, name).model, undefined, "role models inherit")
     }
   } finally {
-    f.close()
+    await f.close()
   }
 })
 
-test("sudo-jiyu shares Jiyu guidance and permits every tool and resource", () => {
-  const f = fixture()
+test("sudo-jiyu shares Jiyu guidance and permits every tool and resource", async () => {
+  const f = await fixture()
   try {
-    const jiyu = resolved(f, "jiyu")
-    const sudo = resolved(f, "sudo-jiyu")
-    const guidance = (agent: Agent) =>
-      Object.fromEntries(
-        Object.entries(agent).filter(([key]) => !["name", "permission", "tools"].includes(key))
-      )
-    assert.deepEqual(guidance(sudo), guidance(jiyu))
-    for (const [permission, resource] of [
-      ["bash", "sudo command"],
-      ["bash", "rm file"],
-      ["bash", "git push"],
-      ["bash", "just build"],
+    assert.equal(resolved(f, "sudo-jiyu").system, resolved(f, "jiyu").system)
+    for (const [action, resource] of [
+      ["shell", "sudo command"],
+      ["shell", "rm file"],
+      ["shell", "git push"],
+      ["shell", "just build"],
       ["external_directory", "/unfamiliar/path/file"],
       ["read", "private.env"],
       ["edit", "/unfamiliar/path/file"],
-      ["task", "sudo-jiyu"],
-      ["task", "general"],
+      ["subagent", "sudo-jiyu"],
       ["skill", "personal-assistant"],
       ["doom_loop", "*"],
       ["actualbudget_actual_get_context", "*"],
@@ -242,16 +396,15 @@ test("sudo-jiyu shares Jiyu guidance and permits every tool and resource", () =>
       ["google_send_gmail_message", "*"],
       ["a_future_plugin_tool", "*"],
     ])
-      assert.equal(action(sudo, permission, resource), "allow", `${permission}: ${resource}`)
+      assert.equal(await f.action("sudo-jiyu", action, resource), "allow", `${action}: ${resource}`)
   } finally {
-    f.close()
+    await f.close()
   }
 })
 
-test("ordinary checks run while destructive and operational commands retain approval", () => {
-  const f = fixture()
+test("ordinary checks run while destructive commands and external paths retain approval", async () => {
+  const f = await fixture()
   try {
-    const agent = resolved(f, "jiyu")
     for (const command of [
       "rg retry src",
       "git diff --cached",
@@ -259,7 +412,7 @@ test("ordinary checks run while destructive and operational commands retain appr
       "just build-dry",
       "pnpm test",
     ])
-      assert.equal(action(agent, "bash", command), "allow", command)
+      assert.equal(await f.action("jiyu", "shell", command), "allow", command)
     for (const command of [
       "git push",
       "git reset --hard",
@@ -271,179 +424,102 @@ test("ordinary checks run while destructive and operational commands retain appr
       "just deploy shu",
       "darwin-rebuild switch",
     ])
-      assert.equal(action(agent, "bash", command), "ask", command)
-    assert.equal(action(agent, "external_directory", "/unfamiliar/path/file"), "ask")
-    assert.equal(action(agent, "external_directory", join(f.workspace, "file")), "allow")
+      assert.equal(await f.action("jiyu", "shell", command), "ask", command)
+    assert.equal(await f.action("jiyu", "external_directory", "/unfamiliar/path/file"), "ask")
+    assert.equal(await f.action("jiyu", "external_directory", join(f.workspace, "file")), "allow")
     for (const prefix of ["/var/folders", "/private/var/folders"]) {
-      for (const userDir of ["24/1sdtr2d96q75lv2m5mpy4f_m0000gn", "ab/a-different-temp-id"]) {
-        const temp = `${prefix}/${userDir}/T`
-        for (const path of [`${temp}/opencode/*`, `${temp}/opencode/session/output.txt`])
-          assert.equal(action(agent, "external_directory", path), "allow", path)
-        for (const path of [`${temp}/other/*`, `${temp}/opencode-other/*`])
-          assert.equal(action(agent, "external_directory", path), "ask", path)
-      }
+      const temp = `${prefix}/ab/a-different-temp-id/T`
+      assert.equal(
+        await f.action("jiyu", "external_directory", `${temp}/opencode/output.txt`),
+        "allow"
+      )
+      for (const path of [`${temp}/other/file`, `${temp}/opencode-other/file`])
+        assert.equal(await f.action("jiyu", "external_directory", path), "ask", path)
     }
   } finally {
-    f.close()
+    await f.close()
   }
 })
 
-test("native personal transports register and service permissions belong to the assistant", () => {
-  const f = fixture(config, true)
+test("native MCP transports connect and personal services belong to the assistant", async () => {
+  const f = await fixture(config, true)
   try {
-    const assistant = resolved(f, "assistant")
-    assert.equal(assistant.mode, "all")
-    assert.equal(assistant.model, undefined)
-    assert.equal(action(assistant, "task", "general"), "deny")
-    assert.equal(action(assistant, "edit"), "deny")
-    assert.equal(action(assistant, "bash", "echo fixture"), "deny")
-    assert.equal(action(assistant, "ctx_execute"), "deny")
-    assert.equal(action(assistant, "a_future_plugin_tool"), "deny")
-    assert.equal(action(assistant, "read"), "allow")
-    assert.equal(action(assistant, "skill", "personal-assistant"), "allow")
-    const transports = f.run(["mcp", "list"])
-    assert.equal(transports.status, 0, transports.stderr)
-    assert.match(transports.stdout, /actualbudget/)
-    assert.match(transports.stdout, /documents/)
-    assert.match(transports.stdout, /google/)
-    assert.doesNotMatch(transports.stdout + transports.stderr, /failed|error|disconnected/i)
+    assert.equal(resolved(f, "assistant").mode, "all")
+    for (const [action, resource] of [
+      ["subagent", "general"],
+      ["edit", "*"],
+      ["shell", "echo fixture"],
+      ["ctx_execute", "*"],
+      ["a_future_plugin_tool", "*"],
+      ["documents_execute", "*"],
+      ["documents_write", "*"],
+    ])
+      assert.equal(await f.action("assistant", action, resource), "deny", action)
+    assert.equal(await f.action("assistant", "read"), "allow")
+    assert.equal(await f.action("assistant", "skill", "personal-assistant"), "allow")
+    let servers = (await f.api<Data<McpServer[]>>("/api/mcp")).data
+    const deadline = Date.now() + 15000
+    while (servers.some((server: McpServer) => server.status.status === "pending")) {
+      assert.ok(Date.now() < deadline, JSON.stringify(servers))
+      await delay(50)
+      servers = (await f.api<Data<McpServer[]>>("/api/mcp")).data
+    }
+    for (const name of Object.keys(mockTools)) {
+      const server = servers.find((entry: McpServer) => entry.name === name)
+      assert.ok(server, `${name} transport is registered`)
+      assert.equal(server.status.status, "connected", JSON.stringify(server))
+    }
     for (const tool of ["actualbudget_actual_get_context", "documents_read"]) {
-      assert.equal(action(assistant, tool), "allow")
-      for (const name of ["jiyu", ...leaves]) assert.equal(action(resolved(f, name), tool), "deny")
+      assert.equal(await f.action("assistant", tool), "allow")
+      for (const name of ["jiyu", ...leaves]) assert.equal(await f.action(name, tool), "deny")
+      let result = await f.tool(tool, {})
+      // MCP connection readiness precedes its debounced tool registration.
+      const ready = Date.now() + 15000
+      while (!result.requests[0].tools!.some((entry) => entry.function.name === tool)) {
+        assert.ok(Date.now() < ready, `${tool} was not registered`)
+        await delay(25)
+        result = await f.tool(tool, {})
+      }
+      assert.deepEqual(result.errors, [])
+      assert.deepEqual(result.output, ["verified-fixture-read"])
+      const exposed = result.requests[0].tools!.map((entry) => entry.function.name)
+      for (const denied of ["documents_write", "documents_execute", "google_send_gmail_message"])
+        assert.equal(exposed.includes(denied), false, `${denied} is unavailable to the assistant`)
     }
-    assert.equal(action(assistant, "documents_execute"), "deny")
-    assert.equal(action(assistant, "documents_write"), "deny")
   } finally {
-    f.close()
+    await f.close()
   }
 })
 
-test("assistant edits only Obsidian notes through the local tools", () => {
-  const f = fixture()
+test("mail read permissions belong to the assistant and all writes stay denied", async () => {
+  const f = await fixture()
   try {
-    const vault = join(f.home, "Documents/Obsidian Vault")
-    const note = join(vault, "Review.md")
-    mkdirSync(vault, { recursive: true })
-    writeFileSync(note, "# Review\n\nExisting paragraph.\n")
-    const call = (tool: string, params: object, agent = "assistant") =>
-      f.run(["debug", "agent", agent, "--tool", tool, "--params", JSON.stringify(params)])
-    const read = call("obsidian_read", { path: "Review.md", offset: 0, limit: 12000 })
-    assert.equal(read.status, 0, `${read.stdout}\n${read.stderr}`)
-    const response = JSON.parse(read.stdout)
-    const original = JSON.parse(response.result.output)
-    assert.equal(original.text, "# Review\n\nExisting paragraph.\n")
-    const edit = {
-      path: "Review.md",
-      expectedRevision: original.revision,
-      oldText: "Existing paragraph.",
-      newText: "Existing paragraph.\n\nRequested next steps.",
-    }
-    const updated = call("obsidian_edit", edit)
-    assert.equal(updated.status, 0, `${updated.stdout}\n${updated.stderr}`)
-    assert.equal(
-      readFileSync(note, "utf8"),
-      "# Review\n\nExisting paragraph.\n\nRequested next steps.\n"
-    )
-    const stale = call("obsidian_edit", edit)
-    assert.notEqual(stale.status, 0)
-    assert.match(`${stale.stdout}\n${stale.stderr}`, /changed|revision/i)
-    const reread = call("obsidian_read", { path: "Review.md", offset: 0, limit: 12000 })
-    assert.equal(reread.status, 0, reread.stderr)
-    const current = JSON.parse(JSON.parse(reread.stdout).result.output)
-    assert.equal(current.text, readFileSync(note, "utf8"))
-    const ambiguous = call("obsidian_edit", {
-      ...edit,
-      expectedRevision: current.revision,
-      oldText: "\n",
-      newText: "ambiguous",
-    })
-    assert.notEqual(ambiguous.status, 0)
-    assert.match(`${ambiguous.stdout}\n${ambiguous.stderr}`, /exactly one/i)
-    const excerpt = call("obsidian_read", { path: "Review.md", offset: 2, limit: 6 })
-    assert.equal(excerpt.status, 0, excerpt.stderr)
-    const page = JSON.parse(JSON.parse(excerpt.stdout).result.output)
-    assert.equal(page.text, current.text.slice(2, 8))
-    assert.equal(page.nextOffset, 8)
-    writeFileSync(join(vault, "Empty.md"), "")
-    const emptyRead = call("obsidian_read", { path: "Empty.md", offset: 0, limit: 12000 })
-    assert.equal(emptyRead.status, 0, emptyRead.stderr)
-    const empty = JSON.parse(JSON.parse(emptyRead.stdout).result.output)
-    const fill = call("obsidian_edit", {
-      path: "Empty.md",
-      expectedRevision: empty.revision,
-      oldText: "",
-      newText: "First entry.\n",
-    })
-    assert.equal(fill.status, 0, `${fill.stdout}\n${fill.stderr}`)
-    assert.equal(readFileSync(join(vault, "Empty.md"), "utf8"), "First entry.\n")
-    const create = { path: "Projects/Weekly review.md", markdown: "# Weekly review\n" }
-    const created = call("obsidian_create", create)
-    assert.equal(created.status, 0, `${created.stdout}\n${created.stderr}`)
-    assert.equal(readFileSync(join(vault, create.path), "utf8"), create.markdown)
-    assert.notEqual(call("obsidian_create", create).status, 0, "create cannot overwrite")
-    for (const path of [
-      "../outside.md",
-      "/tmp/outside.md",
-      "settings.json",
-      ".obsidian/config.md",
-      "Notes/.selfsync/credentials.md",
-    ]) {
-      const result = call("obsidian_create", { path, markdown: "must not be written" })
-      assert.notEqual(result.status, 0, path)
-    }
-    symlinkSync(f.workspace, join(vault, "linked"))
-    assert.notEqual(
-      call("obsidian_create", { path: "linked/escape.md", markdown: "denied" }).status,
-      0
-    )
-    assert.equal(existsSync(join(f.workspace, "escape.md")), false)
-    symlinkSync(note, join(vault, "alias.md"))
-    assert.notEqual(call("obsidian_read", { path: "alias.md", offset: 0, limit: 12000 }).status, 0)
-    for (const agent of ["jiyu", ...leaves]) {
-      const result = call("obsidian_create", { path: `${agent}.md`, markdown: "denied" }, agent)
-      assert.notEqual(result.status, 0, agent)
-      assert.equal(existsSync(join(vault, `${agent}.md`)), false)
-    }
-    const outside = join(f.workspace, "project.md")
-    const result = call("apply_patch", {
-      patchText: `*** Begin Patch\n*** Add File: ${outside}\n+denied\n*** End Patch`,
-    })
-    assert.notEqual(result.status, 0)
-    assert.equal(existsSync(outside), false)
-  } finally {
-    f.close()
-  }
-})
-
-test("mail reads belong to the assistant while writes and other Google tools stay denied", () => {
-  const f = fixture()
-  try {
-    const assistant = resolved(f, "assistant")
-    const others = ["jiyu", ...leaves].map((name) => resolved(f, name))
     for (const name of gmailReads) {
       const tool = `google_${name}`
-      assert.equal(action(assistant, tool), "allow", tool)
-      for (const agent of others)
-        assert.equal(action(agent, tool), "deny", `${agent.name}: ${tool}`)
+      assert.equal(await f.action("assistant", tool), "allow", tool)
+      for (const agent of ["jiyu", ...leaves])
+        assert.equal(await f.action(agent, tool), "deny", `${agent}: ${tool}`)
     }
-    for (const name of googleDenied) {
-      const tool = `google_${name}`
-      assert.equal(action(assistant, tool), "deny", tool)
-    }
+    for (const name of googleDenied)
+      assert.equal(await f.action("assistant", `google_${name}`), "deny", name)
   } finally {
-    f.close()
+    await f.close()
   }
 })
 
-test("native discovery loads requested skills and their command entrypoints", () => {
-  const f = fixture()
+test("native discovery loads skills and their command entrypoints", async () => {
+  const f = await fixture()
   try {
-    const result = f.run(["debug", "skill"])
-    assert.equal(result.status, 0, result.stderr)
-    const skills: { name: string; location: string }[] = JSON.parse(result.stdout)
-    const names = new Set(skills.map((skill) => skill.name))
+    const names = new Set(
+      (await f.api<Data<Discovery[]>>("/api/skill")).data.map((skill: Discovery) => skill.id)
+    )
     assert.ok(names.has("personal-assistant"))
-    const requested = [
+    const commands = (await f.api<Data<Discovery[]>>("/api/command")).data
+    assert.ok(commands.some((command: Discovery) => command.name === "assistant"))
+    const id = await f.session("jiyu")
+    await f.api(`/api/session/${id}/command`, { name: "assistant", text: "fixture" })
+    assert.equal((await f.api(`/api/session/${id}`)).data.agent, "assistant")
+    for (const name of [
       "jiyu-mode",
       "jiyu-help",
       "impeccable",
@@ -461,109 +537,185 @@ test("native discovery loads requested skills and their command entrypoints", ()
       "loop-on-ci",
       "fix-merge-conflicts",
       "thermo-nuclear-code-quality-review",
-    ]
-    const loadedResult = f.run(["debug", "config"])
-    assert.equal(loadedResult.status, 0, loadedResult.stderr)
-    const loaded = JSON.parse(loadedResult.stdout)
-    assert.equal(loaded.command.assistant.agent, "assistant")
-    for (const name of requested) {
+    ]) {
       assert.ok(names.has(name), `${name} is discoverable`)
-      assert.equal(loaded.command[name].agent, "jiyu", `/${name} uses the primary session`)
+      assert.ok(commands.some((command: Discovery) => command.name === name))
+      await f.api(`/api/session/${id}/command`, { name, text: "fixture" })
+      assert.equal(
+        (await f.api(`/api/session/${id}`)).data.agent,
+        "jiyu",
+        `/${name} uses the primary session`
+      )
     }
     for (const name of ["engineering-quality", "brainstorming", "handoff", "humanizer"])
       assert.equal(names.has(name), false, `${name} is retired`)
   } finally {
-    f.close()
+    await f.close()
   }
 })
 
-test("native tools allow implementation and reject reviewer and explorer writes", () => {
-  const f = fixture()
+test("native V2 tools permit implementation and reject reviewer and explorer writes", async () => {
+  const f = await fixture()
   try {
-    for (const name of ["jiyu", "general", "reviewer", "explore"]) {
-      const file = join(f.workspace, `${name}-product.txt`)
-      const result = f.run([
-        "debug",
-        "agent",
-        name,
-        "--tool",
-        "apply_patch",
-        "--params",
-        JSON.stringify({
-          patchText: `*** Begin Patch\n*** Add File: ${file}\n+fixture\n*** End Patch`,
-        }),
-      ])
-      if (name === "jiyu" || name === "general") {
-        assert.equal(result.status, 0, result.stderr)
+    for (const agent of ["jiyu", "general", "reviewer", "explore", "assistant"]) {
+      const file = join(f.workspace, `${agent}-product.txt`)
+      const result = await f.tool("write", { path: file, content: "fixture\n" }, agent)
+      if (agent === "jiyu" || agent === "general") {
+        assert.ok(existsSync(file), JSON.stringify(result.messages))
         assert.equal(readFileSync(file, "utf8"), "fixture\n")
+        const tools = result.requests[0].tools!.map((tool) => tool.function.name)
+        if (agent === "jiyu") {
+          assert.ok(tools.includes("subagent"))
+          assert.ok(tools.includes("shell"))
+          assert.ok(tools.includes("todowrite"))
+          assert.equal(tools.includes("task"), false)
+          assert.equal(tools.includes("bash"), false)
+        }
       } else {
-        assert.notEqual(result.status, 0)
-        assert.match(`${result.stdout}\n${result.stderr}`, /denied|disabled|rule which prevents/i)
-        assert.equal(existsSync(file), false)
+        assert.equal(existsSync(file), false, `${agent} cannot write`)
+        assert.match(
+          JSON.stringify(result.messages),
+          /denied|not found|not available|no tool named|invalid tool|unknown tool/i
+        )
       }
     }
     const receipt = join(f.workspace, ".agents/reviewer-note.md")
-    const result = f.run([
-      "debug",
-      "agent",
+    await f.tool("write", { path: receipt, content: "denied" }, "reviewer")
+    assert.equal(existsSync(receipt), false, "shared state has no reviewer write exception")
+  } finally {
+    await f.close()
+  }
+})
+
+test("assistant uses native Obsidian tools with revision and path safeguards", async () => {
+  const f = await fixture()
+  try {
+    const vault = join(f.home, "Documents/Obsidian Vault")
+    mkdirSync(vault, { recursive: true })
+    const note = join(vault, "Review.md")
+    writeFileSync(note, "# Review\n\nExisting paragraph.\n")
+    const read = async (path: string, offset = 0, limit = 12000) => {
+      const result = await f.tool("obsidian_read", { path, offset, limit })
+      assert.ok(result.output.length, JSON.stringify(result.messages))
+      return JSON.parse(result.output[0] as string)
+    }
+    const original = await read("Review.md")
+    assert.equal(original.text, readFileSync(note, "utf8"))
+    const edit = {
+      path: "Review.md",
+      expectedRevision: original.revision,
+      oldText: "Existing paragraph.",
+      newText: "Existing paragraph.\n\nRequested next steps.",
+    }
+    await f.tool("obsidian_edit", edit)
+    assert.equal(
+      readFileSync(note, "utf8"),
+      "# Review\n\nExisting paragraph.\n\nRequested next steps.\n"
+    )
+    const stale = await f.tool("obsidian_edit", edit)
+    assert.match(JSON.stringify(stale.errors), /changed|revision/i)
+    const current = await read("Review.md")
+    const ambiguous = await f.tool("obsidian_edit", {
+      ...edit,
+      expectedRevision: current.revision,
+      oldText: "\n",
+      newText: "ambiguous",
+    })
+    assert.match(JSON.stringify(ambiguous.errors), /exactly one/i)
+    assert.equal(readFileSync(note, "utf8"), current.text)
+    const page = await read("Review.md", 2, 6)
+    assert.equal(page.text, current.text.slice(2, 8))
+    assert.equal(page.nextOffset, 8)
+    writeFileSync(join(vault, "Empty.md"), "")
+    const empty = await read("Empty.md")
+    await f.tool("obsidian_edit", {
+      path: "Empty.md",
+      expectedRevision: empty.revision,
+      oldText: "",
+      newText: "First entry.\n",
+    })
+    assert.equal(readFileSync(join(vault, "Empty.md"), "utf8"), "First entry.\n")
+    const create = { path: "Projects/Weekly review.md", markdown: "# Weekly review\n" }
+    await f.tool("obsidian_create", create)
+    assert.equal(readFileSync(join(vault, create.path), "utf8"), create.markdown)
+    await f.tool("obsidian_create", { ...create, markdown: "must not overwrite" })
+    assert.equal(readFileSync(join(vault, create.path), "utf8"), create.markdown)
+    for (const path of [
+      "../outside.md",
+      "/tmp/outside.md",
+      "settings.json",
+      ".obsidian/config.md",
+      "Notes/.selfsync/credentials.md",
+    ]) {
+      const result = await f.tool("obsidian_create", { path, markdown: "must not be written" })
+      assert.match(JSON.stringify(result.errors), /relative|hidden|traversal|\.md/i, path)
+    }
+    symlinkSync(f.workspace, join(vault, "linked"))
+    await f.tool("obsidian_create", { path: "linked/escape.md", markdown: "denied" })
+    assert.equal(existsSync(join(f.workspace, "escape.md")), false)
+    symlinkSync(note, join(vault, "alias.md"))
+    const alias = await f.tool("obsidian_read", { path: "alias.md", offset: 0, limit: 12000 })
+    assert.match(JSON.stringify(alias.errors), /symbolic|symlink|regular/i)
+    for (const agent of ["jiyu", ...leaves]) {
+      await f.tool("obsidian_create", { path: `${agent}.md`, markdown: "denied" }, agent)
+      assert.equal(existsSync(join(vault, `${agent}.md`)), false, agent)
+    }
+  } finally {
+    await f.close()
+  }
+})
+
+test("native permission evaluation catches candidate regressions", async () => {
+  for (const [agent, rule, check] of [
+    ["jiyu", { action: "subagent", resource: "*", effect: "allow" }, assertCoordinator],
+    [
       "reviewer",
-      "--tool",
-      "apply_patch",
-      "--params",
-      JSON.stringify({
-        patchText: `*** Begin Patch\n*** Add File: ${receipt}\n+fixture\n*** End Patch`,
-      }),
-    ])
-    assert.notEqual(result.status, 0, "shared state has no reviewer write exception")
-    assert.equal(existsSync(receipt), false)
-  } finally {
-    f.close()
+      { action: "edit", resource: "*", effect: "allow" },
+      (f: Fixture) => assertLeaf(f, "reviewer"),
+    ],
+    [
+      "general",
+      { action: "subagent", resource: "*", effect: "allow" },
+      (f: Fixture) => assertLeaf(f, "general"),
+    ],
+  ] as const) {
+    const invalid = structuredClone(config)
+    invalid.agents[agent].permissions = [...(invalid.agents[agent].permissions ?? []), rule]
+    const f = await fixture(invalid)
+    try {
+      await assert.rejects(() => check(f))
+    } finally {
+      await f.close()
+    }
   }
 })
 
-test("native resolution exposes permission regressions in candidate configurations", () => {
-  const primary = structuredClone(config)
-  primary.permission.task["*"] = "allow"
-  const f = fixture(primary)
-  try {
-    assert.throws(() => assertCoordinator(resolved(f, "jiyu")))
-  } finally {
-    f.close()
-  }
-
-  const reviewer = structuredClone(config)
-  reviewer.agent.reviewer.permission.edit = "allow"
-  const g = fixture(reviewer)
-  try {
-    assert.throws(() => assertLeaf(resolved(g, "reviewer")))
-  } finally {
-    g.close()
-  }
-
-  const worker = structuredClone(config)
-  worker.agent.general.permission.task = "allow"
-  const h = fixture(worker)
-  try {
-    assert.throws(() => assertLeaf(resolved(h, "general")))
-  } finally {
-    h.close()
-  }
-})
-
-test("native loading rejects malformed configuration and missing prompt files", () => {
-  const f = fixture()
+test("validation detects documents and guidance silently omitted by the V2 loader", async () => {
+  const f = await fixture()
   try {
     writeFileSync(f.configFile, "{broken")
-    const syntax = f.run(["debug", "config"])
-    assert.notEqual(syntax.status, 0)
-    assert.match(`${syntax.stdout}\n${syntax.stderr}`, /json|parse|syntax/i)
-    const invalid = structuredClone(config)
-    invalid.agent.jiyu.prompt = "{file:./prompts/missing-fixture.md}"
-    writeFileSync(f.configFile, JSON.stringify({ ...invalid, plugin: [] }))
-    const missing = f.run(["debug", "agent", "jiyu"])
-    assert.notEqual(missing.status, 0)
-    assert.match(`${missing.stdout}\n${missing.stderr}`, /missing-fixture|not found|ENOENT/i)
+    const syntax = f.run(["GET", "/api/config"])
+    assert.ifError(syntax.error)
+    assert.equal(syntax.status, 0, syntax.stderr)
+    assert.equal(
+      (JSON.parse(syntax.stdout) as ConfigEntry[]).some((entry) => entry.type === "document"),
+      false
+    )
+    const invalid = structuredClone(f.installedConfig)
+    invalid.agents.jiyu.system = "{file:./prompts/missing-fixture.md}"
+    writeFileSync(f.configFile, JSON.stringify(invalid))
+    const missing = f.run(["GET", "/api/config"])
+    assert.ifError(missing.error)
+    assert.equal(missing.status, 0, missing.stderr)
+    const document = (JSON.parse(missing.stdout) as ConfigEntry[]).find(
+      (entry) => entry.type === "document"
+    )!
+    assert.equal(
+      document.info!.agents.jiyu.system,
+      "",
+      "missing prompt must fail nonempty-guidance validation"
+    )
   } finally {
-    f.close()
+    await f.close()
   }
 })

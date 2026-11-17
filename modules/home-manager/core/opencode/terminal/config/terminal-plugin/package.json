@@ -1,0 +1,11 @@
+{
+  "name": "opencode-terminal-context",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./tui": "./tui.ts"
+  },
+  "peerDependencies": {
+    "solid-js": ">=1.9.0"
+  }
+}

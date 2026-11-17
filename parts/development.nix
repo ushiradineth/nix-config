@@ -227,7 +227,10 @@
       pkgs.runCommand "opencode-workflow-tests" {
         src = ../.;
         nativeBuildInputs = [pkgs.nodejs pkgs.git pkgs.ripgrep pkgs.typescript];
-        OPENCODE_TEST_BINARY = "${inputs.llm-agents.packages.${system}.opencode}/bin/opencode";
+        OPENCODE_TEST_BINARY = "${import ../modules/home-manager/core/opencode/package.nix {
+          inherit pkgs;
+          upstream = inputs.llm-agents.packages.${system}.opencode2;
+        }}/bin/opencode";
       } ''
         export HOME="$TMPDIR/home"
         mkdir -p "$HOME"

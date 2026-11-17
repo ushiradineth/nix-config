@@ -6,13 +6,13 @@
   config = builtins.fromJSON (builtins.readFile (root + /opencode.json));
   skills = builtins.readDir (root + /skills);
   names = builtins.attrNames skills;
-  agents = lib.filterAttrs (_: agent: !(agent.disable or false)) config.agent;
+  agents = lib.filterAttrs (_: agent: !(agent.disabled or false)) config.agents;
   primaries = lib.filterAttrs (_: agent: builtins.elem (agent.mode or "subagent") ["primary" "all"]) agents;
   promptExists = agent:
-    if !(agent ? prompt)
+    if !(agent ? system)
     then true
     else let
-      match = builtins.match "\\{file:\\./(.*)\\}" agent.prompt;
+      match = builtins.match "\\{file:\\./(.*)\\}" agent.system;
     in
       match != null && builtins.pathExists (root + "/${builtins.head match}");
   commands = builtins.readDir (root + /commands);

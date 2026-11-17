@@ -10,7 +10,10 @@ in {
   imports = [./assistant ./terminal];
 
   home.packages = [
-    llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode
+    (import ./package.nix {
+      inherit pkgs;
+      upstream = llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
+    })
     pkgs.nodejs
   ];
 

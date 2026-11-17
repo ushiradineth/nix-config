@@ -53,22 +53,22 @@ test("child and background root events cannot steal the selected root's title or
   const root: RootState = { id: "ses_root", title: "Real task", status: "working", pending: [] }
   assert.deepEqual(
     rootTransition(root, {
-      type: "session.updated",
-      properties: { info: { id: "ses_child", parentID: "ses_root", title: "Child" } },
+      type: "session.renamed",
+      data: { sessionID: "ses_child", title: "Child" },
     }),
     root
   )
   assert.deepEqual(
     rootTransition(root, {
       type: "session.status",
-      properties: { sessionID: "ses_other", status: { type: "idle" } },
+      data: { sessionID: "ses_other", status: { type: "idle" } },
     }),
     root
   )
   assert.equal(
     rootTransition(root, {
-      type: "session.updated",
-      properties: { info: { id: "ses_root", title: "Renamed task" } },
+      type: "session.renamed",
+      data: { sessionID: "ses_root", title: "Renamed task" },
     }).title,
     "Renamed task"
   )
@@ -78,17 +78,50 @@ test("permission remains waiting until its explicit reply, not an unrelated busy
   let root: RootState = { id: "ses_root", title: "Task", status: "working", pending: [] }
   root = rootTransition(root, {
     type: "permission.asked",
-    properties: { sessionID: "ses_root", id: "per_1" },
+    data: { sessionID: "ses_root", id: "per_1" },
   })
   assert.equal(root.status, "needs_input")
   root = rootTransition(root, {
     type: "session.status",
-    properties: { sessionID: "ses_root", status: { type: "busy" } },
+    data: { sessionID: "ses_root", status: { type: "busy" } },
   })
   assert.equal(root.status, "needs_input")
   root = rootTransition(root, {
     type: "permission.replied",
-    properties: { sessionID: "ses_root", requestID: "per_1" },
+    data: { sessionID: "ses_root", requestID: "per_1" },
+  })
+  assert.equal(root.status, "working")
+})
+
+test("V2 forms remain pending until a reply or cancellation and unrelated event data is ignored", () => {
+  let root: RootState = { id: "ses_root", title: "Task", status: "working", pending: [] }
+  root = rootTransition(root, {
+    type: "form.created",
+    data: { form: { id: "form_1", sessionID: "ses_root" } },
+  })
+  root = rootTransition(root, {
+    type: "permission.asked",
+    data: { id: "per_1", sessionID: "ses_root" },
+  })
+  root = rootTransition(root, {
+    type: "form.cancelled",
+    data: { id: "form_1", sessionID: "ses_root" },
+  })
+  assert.equal(root.status, "needs_input")
+  assert.deepEqual(root.pending, ["per_1"])
+  assert.equal(rootTransition(root, { type: "shell.exited", data: { status: "exited" } }), root)
+  assert.equal(rootTransition(root, { type: "session.status", data: null }), root)
+  root = rootTransition(root, {
+    type: "permission.replied",
+    data: { sessionID: "ses_root", requestID: "per_1" },
+  })
+  root = rootTransition(root, {
+    type: "form.created",
+    data: { form: { id: "form_2", sessionID: "ses_root" } },
+  })
+  root = rootTransition(root, {
+    type: "form.replied",
+    data: { id: "form_2", sessionID: "ses_root" },
   })
   assert.equal(root.status, "working")
 })
@@ -96,12 +129,14 @@ test("permission remains waiting until its explicit reply, not an unrelated busy
 test("cancelling a turn stays idle rather than displaying a false completion", () => {
   const root: RootState = { id: "ses_root", title: "Task", status: "working", pending: [] }
   const cancelled = rootTransition(root, {
-    type: "session.error",
-    properties: { sessionID: "ses_root", error: { name: "MessageAbortedError" } },
+    type: "session.execution.interrupted",
+    data: { sessionID: "ses_root" },
   })
   assert.equal(
-    rootTransition(cancelled, { type: "session.idle", properties: { sessionID: "ses_root" } })
-      .status,
+    rootTransition(cancelled, {
+      type: "session.status",
+      data: { sessionID: "ses_root", status: { type: "idle" } },
+    }).status,
     "idle"
   )
 })

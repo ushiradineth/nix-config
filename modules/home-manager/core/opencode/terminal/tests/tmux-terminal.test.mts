@@ -5,8 +5,12 @@ import { tmpdir } from "node:os"
 import { delimiter, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import test from "node:test"
+import { createRoot, createSignal } from "solid-js"
+import { observeTerminalSelection } from "../config/terminal-plugin/tui.ts"
 import { randomUUID } from "node:crypto"
 import { createTerminalContext } from "../config/terminal/terminal-context.mts"
+import type { TerminalEvent } from "../config/terminal/terminal-context.mts"
+import { attachTerminalContext } from "../config/terminal/tui-context.mts"
 
 function fixture() {
   const root = mkdtempSync(join(tmpdir(), "pane-"))
@@ -45,6 +49,156 @@ function fixture() {
     },
   }
 }
+
+test("V2 TUI ownership follows local selection, rejects child/background events, and cleans up", async () => {
+  const f = fixture()
+  const [route, setRoute] = createSignal<{ type: string; sessionID?: string }>({
+    type: "session",
+    sessionID: "ses_root",
+  })
+  let listener: ((event: { details: TerminalEvent }) => void) | undefined
+  let stopped = false
+  const delivered: string[] = []
+  const pending = new Map<string, { id: string }[]>()
+  const tui: Parameters<typeof observeTerminalSelection>[0] = {
+    location: { directory: f.root },
+    ui: {
+      router: { current: route },
+      slot(claim) {
+        return createRoot((dispose) => {
+          claim.render()
+          return dispose
+        })
+      },
+    },
+    data: {
+      location: { default: () => ({ directory: f.root }) },
+      listen(handler) {
+        listener = handler
+        return () => {
+          stopped = true
+        }
+      },
+      session: {
+        get: (id) => ({ id, title: id, ...(id === "ses_child" ? { parentID: "ses_root" } : {}) }),
+        status: () => "idle",
+        sync: async () => {},
+        permission: { list: (id) => pending.get(id), sync: async () => {} },
+        form: { list: () => [], sync: async () => {} },
+      },
+    },
+  }
+  const context = createTerminalContext({
+    stateDirectory: join(f.root, "state"),
+    socket: f.socket,
+    pane: f.second,
+    processID: Number(f.tmux("display-message", "-p", "-t", f.second, "#{pane_pid}")),
+  })
+  const dispose = attachTerminalContext(
+    tui,
+    {
+      ...context,
+      ownedTUI: () => true,
+      async notify(token) {
+        delivered.push(token)
+      },
+    },
+    { notifications: true, observeSelection: (changed) => observeTerminalSelection(tui, changed) }
+  )!
+  let sequence = 0
+  const emit = async (type: string, data: TerminalEvent["data"], id = `event-${++sequence}`) => {
+    listener!({ details: { id, type, data } })
+    await new Promise<void>((resolve) => setImmediate(resolve))
+  }
+  try {
+    await emit("session.execution.started", { sessionID: "ses_root" })
+    await emit("session.execution.succeeded", { sessionID: "ses_child" })
+    await emit("permission.asked", { sessionID: "ses_other", id: "per_other" })
+    assert.equal(delivered.length, 0)
+    await emit("permission.asked", { sessionID: "ses_root", id: "per_root" }, "permission-event")
+    await emit("permission.asked", { sessionID: "ses_root", id: "per_root" }, "permission-event")
+    assert.equal(delivered.length, 1)
+    assert.equal(context.listAttention()[0].event, "permission")
+    await emit("permission.replied", { sessionID: "ses_root", requestID: "per_root" })
+    assert.equal(context.listAttention().length, 0)
+    await emit("session.execution.interrupted", { sessionID: "ses_root" })
+    await emit("session.status", { sessionID: "ses_root", status: { type: "idle" } })
+    assert.equal(delivered.length, 1)
+    setRoute({ type: "session", sessionID: "ses_second" })
+    // Navigation alone invalidates the old target, before a server event or timer.
+    await assert.rejects(context.focus(delivered[0]), /Root session is no longer selected/)
+    await emit("session.execution.started", { sessionID: "ses_second" })
+    assert.equal(f.tmux("display-message", "-p", "-t", f.second, "#{pane_active}"), "0")
+    await emit("session.execution.succeeded", { sessionID: "ses_root" })
+    assert.equal(delivered.length, 1)
+    await emit("session.execution.succeeded", { sessionID: "ses_second" })
+    const token = delivered[1]
+    assert.equal(context.readEvent(token).sessionID, "ses_second")
+    assert.equal(context.readEvent(token).pane, f.second)
+    setRoute({ type: "session", sessionID: "ses_child" })
+    await assert.rejects(context.focus(token), /Root session is no longer selected/)
+    await emit("permission.asked", { sessionID: "ses_child", id: "per_child" })
+    assert.equal(delivered.length, 2)
+    await assert.rejects(context.focus(token), /Root session is no longer selected/)
+    assert.equal(context.listAttention().length, 0)
+    assert.equal(f.tmux("display-message", "-p", "-t", f.second, "#{pane_active}"), "0")
+    setRoute({ type: "session", sessionID: "ses_second" })
+    pending.set("ses_second", [{ id: "per_reconnect" }])
+    await emit("server.connected", {})
+    // Reconnect restores existing pending state without replaying a native alert.
+    assert.equal(delivered.length, 2)
+    assert.equal(context.listAttention()[0].event, "permission")
+    await assert.rejects(context.focus(token), /No eligible Ghostty client/)
+    const originalSync = tui.data.session.sync
+    let signalSync!: () => void
+    let finishSync!: () => void
+    const syncing = new Promise<void>((resolve) => {
+      signalSync = resolve
+    })
+    const synchronized = new Promise<void>((resolve) => {
+      finishSync = resolve
+    })
+    tui.data.session.sync = async () => {
+      signalSync()
+      await synchronized
+    }
+    listener!({ details: { id: `event-${++sequence}`, type: "server.connected", data: {} } })
+    try {
+      await syncing
+      setRoute({ type: "home" })
+      await assert.rejects(context.focus(token), /Root session is no longer selected/)
+    } finally {
+      finishSync()
+      tui.data.session.sync = originalSync
+    }
+    await emit("session.renamed", { sessionID: "ses_second", title: "Background" })
+    await assert.rejects(context.focus(token), /Root session is no longer selected/)
+    assert.equal(context.listAttention().length, 0)
+    setRoute({ type: "session", sessionID: "ses_second" })
+    await emit("server.connected", {})
+    assert.equal(context.listAttention()[0].event, "permission")
+    assert.equal(delivered.length, 2)
+    await emit("session.deleted", { sessionID: "ses_second" })
+    setRoute({ type: "session", sessionID: "ses_new" })
+    await emit("session.execution.started", { sessionID: "ses_new" })
+    await assert.rejects(context.focus(token), /Root session has been deleted/)
+    const next = await context.capture({
+      owner: context.readEvent(token).owner,
+      sessionID: "ses_new",
+      event: "permission",
+    })
+    assert.equal(context.readEvent(next).sessionID, "ses_new")
+    assert.equal(f.tmux("display-message", "-p", "-t", f.second, "#{pane_active}"), "0")
+    await dispose()
+    assert.equal(stopped, true)
+    assert.equal(context.listAttention().length, 0)
+    assert.equal(f.tmux("show-options", "-gqv", "@opencode_terminal_attention"), "0")
+    await assert.rejects(context.focus(token), /Origin pane is stale/)
+  } finally {
+    await dispose()
+    f.close()
+  }
+})
 
 test("popup bindings expand caller formats before launching direct helper argv", () => {
   const config = readFileSync(new URL("../../../tmux/.tmux.conf", import.meta.url), "utf8")

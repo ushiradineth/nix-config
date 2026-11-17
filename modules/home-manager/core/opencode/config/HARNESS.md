@@ -192,7 +192,7 @@ engineering work in `jiyu`, with the normal repository checks and deployment bou
 
 Existing model and provider settings are preserved. Workers inherit the active model unless an
 operator configures a role model in managed `opencode.json`. This setup does not pretend that two
-same-model reviewers are a multi-model panel. Native OpenCode skill, task, todo and file tools
+same-model reviewers are a multi-model panel. Native OpenCode skill, subagent, todo and file tools
 replace Cursor-specific calls.
 
 Wakatime, notifications and terminal integration remain. The upstream context-mode plugin provides
@@ -200,10 +200,25 @@ indexed retrieval, large-output handling and compaction recovery; `jiyu-mode` ow
 workflow. Context-mode supplies its native tools and hooks without a duplicate MCP registration or
 replacing project `AGENTS.md`. Use `ctx stats` in OpenCode to inspect it after activation.
 
-Context-mode is pinned to `1.0.169`: `2.1.4` runs its hooks inside OpenCode's embedded Bun runtime
-and rejects its reported Node version (`v24.3.0`). Updating the shell's Node does not change that
-runtime. Advance the pin only after hooks, routing and a native `ctx_execute` call pass in the
-packaged OpenCode binary.
+OpenCode is pinned to V2 `2.2.5` through a package-only override. Other llm-agents packages and
+`flake.lock` retain their existing revisions. Both `opencode` and the upstream Nix package's
+`opencode2` command run this version. Global terminal settings are managed in `cli.json`. V2 has no
+LSP tools; verification uses the project's lint, typecheck and compiler commands.
+
+Google MCP keeps the explicit `127.0.0.1:19876/mcp/oauth/callback` redirect already allowed by the
+server. V2 otherwise chooses an ephemeral callback port and a different default path.
+
+Context-mode is pinned to `2.2.0`, using its upstream V2 server entrypoint. Its tools, hooks and
+compaction recovery must work inside the packaged OpenCode runtime; changing the shell's Node
+version alone does not change that runtime. WakaTime uses the official V2 package
+`@wakatime/opencode-wakatime@1.0.0`.
+
+Terminal ownership and root-session attention run in the local V2 TUI plugin, including when the
+server is shared or remote. The notifier retains its sound policy; its server command is disabled.
+On macOS, the local terminal helper delivers notifications with exact Ghostty/tmux click targets.
+Native OpenCode notifications are disabled to avoid duplicate alerts. Headless sessions do not claim
+a terminal pane. Obsidian's V2 plugin registers the same restricted note tools and permission
+actions; its file access remains local to the server.
 
 Routine shell commands and checks retain ordinary execution permission. Destructive commands,
 pushes, merges, deployment and system-switch commands retain approval patterns. These command

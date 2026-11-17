@@ -73,15 +73,9 @@ export interface RootState {
 }
 
 export interface TerminalEvent {
+  id?: string
   type: string
-  properties?: {
-    info?: { id?: string; parentID?: string | null; title?: string }
-    sessionID?: string
-    id?: string
-    requestID?: string
-    status?: { type?: string }
-    error?: { name?: string }
-  }
+  data?: unknown
 }
 
 type RunCommand = (command: string, args: string[]) => string
@@ -318,65 +312,84 @@ function execute(command: string, args: string[]): string {
 }
 
 export function rootTransition(root: RootState, event: TerminalEvent): RootState {
-  if (
-    ![
-      "session.updated",
-      "permission.asked",
-      "question.asked",
-      "permission.replied",
-      "question.replied",
-      "question.rejected",
-      "session.status",
-      "session.idle",
-      "session.error",
-      "session.deleted",
-    ].includes(event.type)
-  )
-    return root
-  const properties = event.properties ?? {}
-  const id = properties.info?.id ?? properties.sessionID
-  if (id !== root.id || properties.info?.parentID) return root
-  const next: RootState = { ...root, pending: [...(root.pending ?? [])] }
-  if (event.type === "session.updated") next.title = cleanText(properties.info?.title)
-  if (event.type === "permission.asked" || event.type === "question.asked") {
-    if (properties.id && !next.pending.includes(properties.id)) next.pending.push(properties.id)
-    next.status = "needs_input"
-  }
-  if (["permission.replied", "question.replied", "question.rejected"].includes(event.type)) {
-    next.pending = next.pending.filter((id) => id !== properties.requestID)
-    next.status = next.pending.length ? "needs_input" : "working"
-  }
-  if (event.type === "session.status" && properties.status?.type !== "idle") {
-    next.status = next.pending.length ? "needs_input" : "working"
-  }
-  if (event.type === "session.idle")
-    next.status = next.pending.length
-      ? "needs_input"
-      : root.cancelled
-        ? "idle"
-        : root.status === "error"
-          ? "error"
-          : "done"
-  if (event.type === "session.error") {
-    next.cancelled = properties.error?.name === "MessageAbortedError"
-    next.status = next.cancelled ? "idle" : "error"
-    next.pending = []
-  }
-  if (event.type === "session.deleted") {
-    next.status = "idle"
-    next.pending = []
-    next.deleted = true
+  const data = terminalEventData(event)
+  const id = data.form?.sessionID ?? data.sessionID
+  if (id !== root.id) return root
+  const next: RootState = { ...root, pending: [...root.pending] }
+  switch (event.type) {
+    case "session.renamed":
+      next.title = cleanText(data.title)
+      break
+    case "permission.asked":
+    case "form.created": {
+      const request = data.form?.id ?? data.id
+      if (request && !next.pending.includes(request)) next.pending.push(request)
+      next.status = "needs_input"
+      break
+    }
+    case "permission.replied":
+    case "form.replied":
+    case "form.cancelled":
+      next.pending = next.pending.filter((id) => id !== (data.requestID ?? data.id))
+      next.status = next.pending.length ? "needs_input" : "working"
+      break
+    case "session.execution.started":
+      next.cancelled = false
+      next.status = next.pending.length ? "needs_input" : "working"
+      break
+    case "session.status":
+      if (data.status?.type === "idle") return root
+      next.status = next.pending.length ? "needs_input" : "working"
+      break
+    case "session.execution.succeeded":
+      next.status = next.pending.length ? "needs_input" : "done"
+      break
+    case "session.execution.failed":
+      next.status = "error"
+      next.pending = []
+      break
+    case "session.execution.interrupted":
+      next.cancelled = true
+      next.status = "idle"
+      next.pending = []
+      break
+    case "session.deleted":
+      next.status = "idle"
+      next.pending = []
+      next.deleted = true
+      break
+    default:
+      return root
   }
   if (
     next.title === root.title &&
     next.status === root.status &&
     next.deleted === root.deleted &&
     next.cancelled === root.cancelled &&
-    next.pending.length === (root.pending ?? []).length &&
+    next.pending.length === root.pending.length &&
     next.pending.every((id, index) => id === root.pending[index])
   )
     return root
   return next
+}
+
+// data.listen includes unrelated domains whose data may also have keys such as
+// status. Decode only the fields this client-side state machine consumes.
+export function terminalEventData(event: TerminalEvent) {
+  const data = object(event.data) ? event.data : {}
+  const form = object(data.form) ? data.form : {}
+  const status = object(data.status) ? data.status : {}
+  return {
+    sessionID: typeof data.sessionID === "string" ? data.sessionID : undefined,
+    title: typeof data.title === "string" ? data.title : undefined,
+    id: typeof data.id === "string" ? data.id : undefined,
+    requestID: typeof data.requestID === "string" ? data.requestID : undefined,
+    status: { type: typeof status.type === "string" ? status.type : undefined },
+    form:
+      typeof form.id === "string" && typeof form.sessionID === "string"
+        ? { id: form.id, sessionID: form.sessionID }
+        : undefined,
+  }
 }
 
 export function createTerminalContext(options: ContextOptions = {}) {
@@ -558,8 +571,11 @@ export function createTerminalContext(options: ContextOptions = {}) {
       places.find((item) => item.session === record.session) ??
       (places.length === 1 ? places[0] : undefined)
     if (!location) throw new Error("Origin pane is stale or ambiguous")
-    if (requireRoot && rootRecord(record.owner, record.sessionID).deleted)
-      throw new Error("Root session has been deleted")
+    if (requireRoot) {
+      const root = rootRecord(record.owner, record.sessionID)
+      if (root.deleted) throw new Error("Root session has been deleted")
+      if (root.active === false) throw new Error("Root session is no longer selected")
+    }
     return location
   }
 
@@ -575,8 +591,9 @@ export function createTerminalContext(options: ContextOptions = {}) {
     newTurn = false
   ): RootRecord {
     const owner = read("owner", ownerToken)
-    validate({ ...owner, owner: ownerToken, sessionID, created: Date.now() })
+    validate({ ...owner, owner: ownerToken, sessionID, created: Date.now() }, false)
     const root = rootRecord(ownerToken, sessionID)
+    if (root.deleted) throw new Error("Root session has been deleted")
     const next = {
       ...root,
       ...changes,
@@ -678,6 +695,7 @@ export function createTerminalContext(options: ContextOptions = {}) {
       `#{==:#{${OWNER_OPTION}},${token}}`,
       commands
     )
+    updateCount(owner.socket)
   }
 
   function refresh() {
@@ -723,43 +741,7 @@ export function createTerminalContext(options: ContextOptions = {}) {
       try {
         const command = run(psPath, ["-p", String(processID), "-o", "args="])
         const words = command.split(/\s+/)
-        if (!/(^|\/)\.?opencode(?:-wrapped)?$/.test(words[0])) return false
-        if (
-          words
-            .slice(1)
-            .some(
-              (word) =>
-                [
-                  "run",
-                  "serve",
-                  "web",
-                  "acp",
-                  "attach",
-                  "debug",
-                  "auth",
-                  "mcp",
-                  "agent",
-                  "export",
-                  "import",
-                  "session",
-                  "models",
-                  "stats",
-                  "upgrade",
-                  "uninstall",
-                  "github",
-                  "pr",
-                  "completion",
-                  "--help",
-                  "-h",
-                  "--version",
-                  "--mini",
-                  "--port",
-                  "--hostname",
-                  "--mdns",
-                ].includes(word) || /^(--port|--hostname|--mdns)=/.test(word)
-            )
-        )
-          return false
+        if (!/(^|\/)\.?opencode2?(?:-wrapped)?$/.test(words[0])) return false
         const targetTTY = tmuxAt(socket, "display-message", "-p", "-t", pane, "#{pane_tty}")
         const processTTY = run(psPath, ["-p", String(processID), "-o", "tty="])
         if (targetTTY !== `/dev/${processTTY}`) return false
@@ -771,17 +753,6 @@ export function createTerminalContext(options: ContextOptions = {}) {
         }
       } catch {}
       return false
-    },
-    initialRoot() {
-      const words = run(psPath, ["-p", String(processID), "-o", "args="]).split(/\s+/)
-      for (let index = 1; index < words.length; index++) {
-        const candidate = ["-s", "--session"].includes(words[index])
-          ? words[index + 1]
-          : words[index].startsWith("--session=")
-            ? words[index].slice(10)
-            : undefined
-        if (SESSION.test(candidate ?? "")) return candidate
-      }
     },
     async register(sessionID: string): Promise<string> {
       if (!SESSION.test(sessionID)) throw new Error("Root session ID is required")
@@ -982,24 +953,6 @@ export function createTerminalContext(options: ContextOptions = {}) {
         `${callback} focus ${token}`,
       ])
     },
-    plainNotification(title: unknown, message: unknown) {
-      if (!env.TMUX) {
-        try {
-          const native = decodeGhostty(
-            JSON.parse(run("/usr/bin/osascript", ["-l", "JavaScript", "-e", GHOSTTY_QUERY]))
-          )
-          if (native.frontmost) return
-        } catch {
-          /* Retain delivery when focus cannot be determined. */
-        }
-      }
-      run(env.OPENCODE_TERMINAL_NOTIFIER || "terminal-notifier", [
-        "-title",
-        `OpenCode: ${cleanText(title) || "Attention"}`,
-        "-message",
-        `OpenCode: ${cleanText(message, 320) || "Attention"}`,
-      ])
-    },
     doctor() {
       let state = "absent"
       try {
@@ -1044,32 +997,6 @@ async function main(argv: string[]): Promise<void> {
   if (argv[0] === "focus" && argv.length === 2) {
     const result = await context.focus(argv[1])
     console.log(JSON.stringify(result))
-    return
-  }
-  if (argv[0] === "event") {
-    const fields: Record<string, string> = {}
-    for (let index = 1; index < argv.length; index += 2) {
-      if (
-        !["--event", "--session-id", "--title", "--message"].includes(argv[index]) ||
-        argv[index + 1] === undefined
-      )
-        throw new Error("Invalid event arguments")
-      fields[argv[index].slice(2)] = argv[index + 1]
-    }
-    if (!EVENTS.has(fields.event)) throw new Error("Unsupported attention event")
-    const owner = process.env.OPENCODE_TERMINAL_OWNER
-    if (!owner) {
-      if (process.platform === "darwin") context.plainNotification(fields.title, fields.message)
-      return
-    }
-    const token = await context.capture({
-      owner,
-      sessionID: fields["session-id"],
-      event: fields.event as AttentionEvent,
-      title: fields.title,
-      message: fields.message,
-    })
-    if (process.platform === "darwin") await context.notify(token)
     return
   }
   if (argv[0] === "doctor" && argv.length === 1) {
@@ -1133,7 +1060,7 @@ async function main(argv: string[]): Promise<void> {
     await context.focus(token, { client: argv[2] })
     return
   }
-  throw new Error("Usage: opencode-terminal event|focus|inbox|oldest|ack|refresh|doctor")
+  throw new Error("Usage: opencode-terminal focus|inbox|oldest|ack|refresh|doctor")
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

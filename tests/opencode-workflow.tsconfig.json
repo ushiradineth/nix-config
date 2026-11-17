@@ -13,6 +13,7 @@
   },
   "files": [
     "./opencode-workflow.test.mts",
-    "../modules/home-manager/core/opencode/config/tools/obsidian.ts"
+    "../modules/home-manager/core/opencode/config/tools/obsidian.ts",
+    "../modules/home-manager/core/opencode/config/plugins/obsidian/index.ts"
   ]
 }

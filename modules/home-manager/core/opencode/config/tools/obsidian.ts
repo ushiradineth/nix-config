@@ -4,7 +4,7 @@ import { createHash, randomUUID } from "node:crypto"
 import { homedir } from "node:os"
 import { dirname, isAbsolute, join } from "node:path"
 
-interface Context {
+export interface Context {
   ask(input: {
     permission: string
     patterns: string[]

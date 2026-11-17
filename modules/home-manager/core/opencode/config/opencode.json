@@ -1,167 +1,184 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "model": "openai/gpt-6.1-sol",
-  "small_model": "openai/gpt-6-luna",
   "default_agent": "jiyu",
-  "autoupdate": false,
-  "lsp": {},
-  "plugin": ["opencode-wakatime", "@mohak34/opencode-notifier@0.8.1", "context-mode@1.0.169"],
   "instructions": ["~/.config/opencode/instructions/shell.md"],
-  "provider": {
-    "openai": {
-      "options": {
-        "reasoningEffort": "medium"
+  "mcp": {
+    "servers": {
+      "actualbudget": {
+        "type": "local",
+        "command": ["opencode-assistant", "run", "actualbudget"],
+        "timeout": {
+          "catalog": 30000,
+          "execution": 30000
+        },
+        "disabled": false
+      },
+      "documents": {
+        "type": "local",
+        "command": ["opencode-assistant", "run", "documents"],
+        "timeout": {
+          "catalog": 120000,
+          "execution": 120000
+        },
+        "disabled": false
+      },
+      "google": {
+        "type": "remote",
+        "url": "https://gmcp.shupi.ushira.com/mcp",
+        "headers": {
+          "X-Workspace-MCP-Profile": "gmail-readonly"
+        },
+        "oauth": {
+          "redirect_uri": "http://127.0.0.1:19876/mcp/oauth/callback",
+          "scope": "openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/gmail.readonly"
+        },
+        "timeout": {
+          "catalog": 30000,
+          "execution": 30000
+        },
+        "disabled": false
       }
     }
   },
-  "agent": {
+  "agents": {
     "plan": {
-      "disable": true
+      "disabled": true
     },
     "build": {
-      "disable": true
+      "disabled": true
     },
     "jiyu": {
       "mode": "primary",
       "description": "Own a goal through jiyu-mode routing, implementation and verification",
-      "prompt": "{file:./prompts/jiyu.md}"
+      "system": "{file:./prompts/jiyu.md}"
     },
     "sudo-jiyu": {
       "mode": "primary",
       "description": "Own a goal through jiyu-mode routing, implementation and verification",
-      "prompt": "{file:./prompts/jiyu.md}",
-      "permission": {
-        "*": "allow"
-      }
+      "system": "{file:./prompts/jiyu.md}",
+      "permissions": [{ "action": "*", "resource": "*", "effect": "allow" }]
     },
     "assistant": {
       "mode": "all",
       "description": "Personal budgeting, read-only Gmail, tax preparation documents and local Obsidian notes; no software implementation",
-      "prompt": "{file:./prompts/assistant.md}",
-      "permission": {
-        "*": "deny",
-        "read": "allow",
-        "glob": "allow",
-        "list": "allow",
-        "grep": "allow",
-        "obsidian_read": "allow",
-        "obsidian_create": "allow",
-        "obsidian_edit": "allow",
-        "external_directory": "allow",
-        "skill": "allow",
-        "question": "allow",
-        "webfetch": "allow",
-        "websearch": "allow",
-        "actualbudget_*": "allow",
-        "documents_read": "allow",
-        "google_search_gmail_messages": "allow",
-        "google_get_gmail_message_content": "allow",
-        "google_get_gmail_messages_content_batch": "allow",
-        "google_get_gmail_thread_content": "allow",
-        "google_get_gmail_threads_content_batch": "allow",
-        "google_get_gmail_attachment_content": "allow",
-        "google_list_gmail_labels": "allow"
-      }
+      "system": "{file:./prompts/assistant.md}",
+      "permissions": [
+        { "action": "*", "resource": "*", "effect": "deny" },
+        { "action": "read", "resource": "*", "effect": "allow" },
+        { "action": "glob", "resource": "*", "effect": "allow" },
+        { "action": "list", "resource": "*", "effect": "allow" },
+        { "action": "grep", "resource": "*", "effect": "allow" },
+        { "action": "obsidian_read", "resource": "*", "effect": "allow" },
+        { "action": "obsidian_create", "resource": "*", "effect": "allow" },
+        { "action": "obsidian_edit", "resource": "*", "effect": "allow" },
+        { "action": "external_directory", "resource": "*", "effect": "allow" },
+        { "action": "skill", "resource": "*", "effect": "allow" },
+        { "action": "question", "resource": "*", "effect": "allow" },
+        { "action": "webfetch", "resource": "*", "effect": "allow" },
+        { "action": "websearch", "resource": "*", "effect": "allow" },
+        { "action": "actualbudget_*", "resource": "*", "effect": "allow" },
+        { "action": "documents_read", "resource": "*", "effect": "allow" },
+        { "action": "google_search_gmail_messages", "resource": "*", "effect": "allow" },
+        { "action": "google_get_gmail_message_content", "resource": "*", "effect": "allow" },
+        { "action": "google_get_gmail_messages_content_batch", "resource": "*", "effect": "allow" },
+        { "action": "google_get_gmail_thread_content", "resource": "*", "effect": "allow" },
+        { "action": "google_get_gmail_threads_content_batch", "resource": "*", "effect": "allow" },
+        { "action": "google_get_gmail_attachment_content", "resource": "*", "effect": "allow" },
+        { "action": "google_list_gmail_labels", "resource": "*", "effect": "allow" }
+      ]
     },
     "general": {
       "mode": "subagent",
       "description": "Complete a bounded implementation or investigation assignment",
-      "prompt": "{file:./prompts/worker.md}",
-      "permission": {
-        "task": "deny"
-      }
+      "system": "{file:./prompts/worker.md}",
+      "permissions": [{ "action": "subagent", "resource": "*", "effect": "deny" }]
     },
     "explore": {
-      "permission": {
-        "task": "deny",
-        "edit": "deny"
-      }
+      "permissions": [
+        { "action": "subagent", "resource": "*", "effect": "deny" },
+        { "action": "edit", "resource": "*", "effect": "deny" }
+      ]
     },
     "reviewer": {
       "mode": "subagent",
       "description": "Read-only correctness, comment and maintainability review",
-      "prompt": "{file:./prompts/reviewer.md}",
-      "permission": {
-        "task": "deny",
-        "edit": "deny"
+      "system": "{file:./prompts/reviewer.md}",
+      "permissions": [
+        { "action": "subagent", "resource": "*", "effect": "deny" },
+        { "action": "edit", "resource": "*", "effect": "deny" }
+      ]
+    },
+    "title": {
+      "model": "openai/gpt-6-luna"
+    }
+  },
+  "update": "disable",
+  "plugins": [
+    "@wakatime/opencode-wakatime@1.0.0",
+    "@mohak34/opencode-notifier@0.8.1",
+    "context-mode@2.2.0"
+  ],
+  "providers": {
+    "openai": {
+      "settings": {
+        "reasoningEffort": "medium"
       }
     }
   },
-  "mcp": {
-    "actualbudget": {
-      "type": "local",
-      "command": ["opencode-assistant", "run", "actualbudget"],
-      "enabled": true,
-      "timeout": 30000
+  "permissions": [
+    { "action": "actualbudget_*", "resource": "*", "effect": "deny" },
+    { "action": "documents_*", "resource": "*", "effect": "deny" },
+    { "action": "obsidian_*", "resource": "*", "effect": "deny" },
+    { "action": "google_*", "resource": "*", "effect": "deny" },
+    { "action": "question", "resource": "*", "effect": "allow" },
+    { "action": "read", "resource": "*", "effect": "allow" },
+    { "action": "edit", "resource": "*", "effect": "allow" },
+    { "action": "glob", "resource": "*", "effect": "allow" },
+    { "action": "list", "resource": "*", "effect": "allow" },
+    { "action": "grep", "resource": "*", "effect": "allow" },
+    { "action": "webfetch", "resource": "*", "effect": "allow" },
+    { "action": "websearch", "resource": "*", "effect": "allow" },
+    { "action": "skill", "resource": "*", "effect": "allow" },
+    { "action": "shell", "resource": "*", "effect": "allow" },
+    { "action": "shell", "resource": "rm *", "effect": "ask" },
+    { "action": "shell", "resource": "sudo *", "effect": "ask" },
+    { "action": "shell", "resource": "git push*", "effect": "ask" },
+    { "action": "shell", "resource": "git reset*", "effect": "ask" },
+    { "action": "shell", "resource": "git clean*", "effect": "ask" },
+    { "action": "shell", "resource": "git restore*", "effect": "ask" },
+    { "action": "shell", "resource": "git checkout --*", "effect": "ask" },
+    { "action": "shell", "resource": "git branch -D*", "effect": "ask" },
+    { "action": "shell", "resource": "gh pr merge*", "effect": "ask" },
+    { "action": "shell", "resource": "gh repo delete*", "effect": "ask" },
+    { "action": "shell", "resource": "just build*", "effect": "ask" },
+    { "action": "shell", "resource": "just build-dry*", "effect": "allow" },
+    { "action": "shell", "resource": "just init*", "effect": "ask" },
+    { "action": "shell", "resource": "just deploy*", "effect": "ask" },
+    { "action": "shell", "resource": "nixos-rebuild*", "effect": "ask" },
+    { "action": "shell", "resource": "darwin-rebuild*", "effect": "ask" },
+    { "action": "subagent", "resource": "*", "effect": "deny" },
+    { "action": "subagent", "resource": "general", "effect": "allow" },
+    { "action": "subagent", "resource": "explore", "effect": "allow" },
+    { "action": "subagent", "resource": "reviewer", "effect": "allow" },
+    { "action": "subagent", "resource": "assistant", "effect": "allow" },
+    { "action": "external_directory", "resource": "*", "effect": "ask" },
+    {
+      "action": "external_directory",
+      "resource": "/var/folders/*/*/T/opencode/**",
+      "effect": "allow"
     },
-    "documents": {
-      "type": "local",
-      "command": ["opencode-assistant", "run", "documents"],
-      "enabled": true,
-      "timeout": 120000
+    {
+      "action": "external_directory",
+      "resource": "/private/var/folders/*/*/T/opencode/**",
+      "effect": "allow"
     },
-    "google": {
-      "type": "remote",
-      "url": "https://gmcp.shupi.ushira.com/mcp",
-      "headers": {
-        "X-Workspace-MCP-Profile": "gmail-readonly"
-      },
-      "oauth": {
-        "scope": "openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/gmail.readonly"
-      },
-      "enabled": true,
-      "timeout": 30000
-    }
-  },
-  "permission": {
-    "actualbudget_*": "deny",
-    "documents_*": "deny",
-    "obsidian_*": "deny",
-    "google_*": "deny",
-    "question": "allow",
-    "read": "allow",
-    "edit": "allow",
-    "glob": "allow",
-    "list": "allow",
-    "grep": "allow",
-    "webfetch": "allow",
-    "websearch": "allow",
-    "skill": "allow",
-    "lsp": "allow",
-    "bash": {
-      "*": "allow",
-      "rm *": "ask",
-      "sudo *": "ask",
-      "git push*": "ask",
-      "git reset*": "ask",
-      "git clean*": "ask",
-      "git restore*": "ask",
-      "git checkout --*": "ask",
-      "git branch -D*": "ask",
-      "gh pr merge*": "ask",
-      "gh repo delete*": "ask",
-      "just build*": "ask",
-      "just build-dry*": "allow",
-      "just init*": "ask",
-      "just deploy*": "ask",
-      "nixos-rebuild*": "ask",
-      "darwin-rebuild*": "ask"
-    },
-    "task": {
-      "*": "deny",
-      "general": "allow",
-      "explore": "allow",
-      "reviewer": "allow",
-      "assistant": "allow"
-    },
-    "external_directory": {
-      "*": "ask",
-      "/var/folders/*/*/T/opencode/**": "allow",
-      "/private/var/folders/*/*/T/opencode/**": "allow",
-      "~/nix-config/**": "allow",
-      "~/.config/**": "allow",
-      "~/Code/**": "allow",
-      "~/Downloads/**": "allow"
-    }
+    { "action": "external_directory", "resource": "~/nix-config/**", "effect": "allow" },
+    { "action": "external_directory", "resource": "~/.config/**", "effect": "allow" },
+    { "action": "external_directory", "resource": "~/Code/**", "effect": "allow" },
+    { "action": "external_directory", "resource": "~/Downloads/**", "effect": "allow" }
+  ],
+  "experimental": {
+    "todo": true
   }
 }

@@ -8,6 +8,9 @@
     ".opencode-wrapp" = "oc";
     ".opencode-wrapped" = "oc";
     opencode = "oc";
+    ".opencode2-wrapped" = "oc";
+    ".opencode2-wrap" = "oc";
+    opencode2 = "oc";
     lazygit = "lg";
   };
   attentionBadge = {

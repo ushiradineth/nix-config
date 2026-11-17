@@ -86,7 +86,7 @@ For a named principle, read [the principle reference](references/principles.md) 
 ## Runtime and delegation
 
 Use OpenCode's advertised tools and skill discovery. In OpenCode, load skills with `skill`, use
-`todowrite` when useful, and dispatch `general`, `explore` or `reviewer` through `task`. The
+`todowrite` when useful, and dispatch `general`, `explore` or `reviewer` through `subagent`. The
 configured prompt files define those roles. Do not send Cursor-only model slugs, background, cloud,
 resume or read-only fields to an incompatible tool.
 

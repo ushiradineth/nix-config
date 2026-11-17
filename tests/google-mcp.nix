@@ -6,8 +6,9 @@
   http = host.services.traefik.dynamicConfigOptions.http;
   domain = host.environment.variables.GOOGLE_MCP_DOMAIN;
   opencode = builtins.fromJSON (builtins.readFile ../modules/home-manager/core/opencode/config/opencode.json);
-  profileHeaders = lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "-H ${lib.escapeShellArg "${name}: ${value}"}") opencode.mcp.google.headers);
-  expectedChallenge = ''Bearer scope="${opencode.mcp.google.oauth.scope}", resource_metadata="${lib.removeSuffix "/mcp" opencode.mcp.google.url}/.well-known/oauth-protected-resource/mcp"'';
+  google = opencode.mcp.servers.google;
+  profileHeaders = lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "-H ${lib.escapeShellArg "${name}: ${value}"}") google.headers);
+  expectedChallenge = ''Bearer scope="${google.oauth.scope}", resource_metadata="${lib.removeSuffix "/mcp" google.url}/.well-known/oauth-protected-resource/mcp"'';
   routers = lib.mapAttrs (_: router:
     (builtins.removeAttrs router ["tls" "entrypoints"])
     // {entryPoints = ["web"];}) {
@@ -35,7 +36,7 @@ in
   assert lib.all (uri: builtins.elem uri (lib.splitString "," host.virtualisation.oci-containers.containers.google-mcp.environment.WORKSPACE_MCP_ALLOWED_CLIENT_REDIRECT_URIS)) [
     "http://127.0.0.1:60488/auth/google/callback"
     "http://127.0.0.1:60489/auth/google/callback"
-    "http://127.0.0.1:19876/mcp/oauth/callback"
+    google.oauth.redirect_uri
   ];
     pkgs.runCommand "google-mcp-routing-tests" {
       nativeBuildInputs = [pkgs.traefik pkgs.curl pkgs.socat];

@@ -77,7 +77,7 @@ test("full timestamps use readable configured timezone across a date boundary", 
     reset * 1000 - 60000,
     "Asia/Dubai"
   )
-  assert.match(output, /Next reset: Wed, 14 Oct 2026, 02:15 GMT\+5:30 \(Asia\/Dubai\)/)
+  assert.match(output, /Next reset: Wed, 14 Oct 2026, 00:45 GMT\+4 \(Asia\/Dubai\)/)
   assert.match(output, /Reset in: 0 days, 0 hours, 1 minute/)
 })
 
@@ -129,7 +129,7 @@ test("full CLI displays cached quota details and rejects unknown commands", asyn
     assert.equal(result.status, 0)
     assert.match(result.stdout, /81% Codex Quota Remaining \(weekly\)/)
     assert.match(result.stdout, /Next reset:/)
-    assert.match(result.stdout, /Cached snapshot: .*GMT\+5:30 \(Asia\/Dubai\)/)
+    assert.match(result.stdout, /Cached snapshot: .*GMT\+4 \(Asia\/Dubai\)/)
     assert.match(result.stdout, /Manual resets remaining: unknown/)
     const invalid = spawnSync(process.execPath, [helper, "unknown"], {
       env,

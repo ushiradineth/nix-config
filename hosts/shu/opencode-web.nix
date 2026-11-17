@@ -7,7 +7,6 @@
   ...
 }: let
   port = 4096;
-  username = "opencode";
   resolveTailscale = ''
     TS_BIN="$(command -v tailscale || true)"
     if [ -z "$TS_BIN" ] && [ -x /Applications/Tailscale.app/Contents/MacOS/Tailscale ]; then
@@ -37,10 +36,9 @@
       exit 1
     fi
 
-    export OPENCODE_SERVER_USERNAME="${username}"
-    export OPENCODE_SERVER_PASSWORD="$PASSWORD"
+    export OPENCODE_PASSWORD="$PASSWORD"
 
-    exec "$(command -v opencode)" web --hostname 127.0.0.1 --port ${toString port}
+    exec "$(command -v opencode)" serve --hostname 127.0.0.1 --port ${toString port}
   '';
 in {
   environment.shellAliases = {
