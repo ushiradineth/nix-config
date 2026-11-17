@@ -3,6 +3,7 @@
   mysecrets,
   hostname,
   config,
+  lib,
   ...
 }: let
   mullvadSettings = pkgs.writeText "mullvad-settings.json" (builtins.toJSON {
@@ -96,96 +97,103 @@
     settings_version = 12;
     show_beta_releases = false;
   });
-in {
-  services.mullvad-vpn = {
-    enable = true;
-    package = pkgs.mullvad-vpn;
-  };
+in
+  lib.mkIf config.services.mullvad-vpn.enable {
+    services.mullvad-vpn.package = pkgs.mullvad-vpn;
 
-  environment.systemPackages = with pkgs; [
-    mullvad-vpn
-  ];
+    age.secrets.mullvad-account-id.file = "${mysecrets}/${hostname}/mullvad-account-id.age";
 
-  age.secrets.mullvad-account-id.file = "${mysecrets}/${hostname}/mullvad-account-id.age";
+    systemd = {
+      # Set writable settings directory
+      services."mullvad-daemon".environment.MULLVAD_SETTINGS_DIR = "/var/lib/mullvad-vpn";
 
-  systemd = {
-    # Set writable settings directory
-    services."mullvad-daemon".environment.MULLVAD_SETTINGS_DIR = "/var/lib/mullvad-vpn";
+      # Ensure Mullvad starts after Tailscale
+      services."mullvad-daemon" = {
+        after = ["tailscaled.service"];
+        wants = ["tailscaled.service"];
+        preStart = ''
+          cp --no-preserve=all ${mullvadSettings} /var/lib/mullvad-vpn/settings.json
+          chmod 600 /var/lib/mullvad-vpn/settings.json
+        '';
+        postStart = let
+          mullvad = config.services.mullvad-vpn.package;
+        in ''
+          # Wait for daemon to be ready
+          while ! ${mullvad}/bin/mullvad status >/dev/null 2>&1; do
+            sleep 1
+          done
 
-    # Ensure Mullvad starts after Tailscale
-    services."mullvad-daemon" = {
-      after = ["tailscaled.service"];
-      wants = ["tailscaled.service"];
-      preStart = ''
-        cp --no-preserve=all ${mullvadSettings} /var/lib/mullvad-vpn/settings.json
-        chmod 600 /var/lib/mullvad-vpn/settings.json
-      '';
-      postStart = let
-        mullvad = config.services.mullvad-vpn.package;
-      in ''
-        # Wait for daemon to be ready
-        while ! ${mullvad}/bin/mullvad status >/dev/null 2>&1; do
-          sleep 1
-        done
+          # Enforce fail-closed behavior through the supported API, not only the settings file.
+          ${mullvad}/bin/mullvad lockdown-mode set on
 
-        # Enforce fail-closed behavior through the supported API, not only the settings file.
-        ${mullvad}/bin/mullvad lockdown-mode set on
+          if ${mullvad}/bin/mullvad account get 2>&1 | grep -qi "Not logged in"; then
+            echo "Logging in to Mullvad..."
+            ACCOUNT_ID=$(cat ${config.age.secrets.mullvad-account-id.path} | tr -d '[:space:]')
+            ${mullvad}/bin/mullvad account login "$ACCOUNT_ID"
+          else
+            echo "Already logged in to Mullvad"
+          fi
 
-        if ${mullvad}/bin/mullvad account get 2>&1 | grep -qi "Not logged in"; then
-          echo "Logging in to Mullvad..."
-          ACCOUNT_ID=$(cat ${config.age.secrets.mullvad-account-id.path} | tr -d '[:space:]')
-          ${mullvad}/bin/mullvad account login "$ACCOUNT_ID"
-        else
-          echo "Already logged in to Mullvad"
-        fi
+          # Enable LAN access (required for local network + Tailscale)
+          ${mullvad}/bin/mullvad lan set allow
+          ${mullvad}/bin/mullvad connect
+        '';
+      };
 
-        # Enable LAN access (required for local network + Tailscale)
-        ${mullvad}/bin/mullvad lan set allow
-        ${mullvad}/bin/mullvad connect
-      '';
-    };
-
-    # Ensure Tailscale CGNAT range routes through tailscale0, not Mullvad
-    services.tailscale-route-fix = {
-      description = "Fix Tailscale routing to prevent Mullvad hijacking";
-      after = ["tailscaled.service" "mullvad-daemon.service"];
-      wants = ["tailscaled.service"];
-      wantedBy = ["multi-user.target"];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        ExecStart = "${pkgs.iproute2}/bin/ip route add 100.64.0.0/10 dev tailscale0";
-        ExecStartPost = "${pkgs.coreutils}/bin/sleep 1";
-        # Ignore errors if route already exists
-        SuccessExitStatus = "0 2";
+      # Ensure Tailscale CGNAT range routes through tailscale0, not Mullvad
+      services.tailscale-route-fix = {
+        description = "Fix Tailscale routing to prevent Mullvad hijacking";
+        after = ["tailscaled.service" "mullvad-daemon.service"];
+        wants = ["tailscaled.service"];
+        wantedBy = ["multi-user.target"];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = "${pkgs.iproute2}/bin/ip route add 100.64.0.0/10 dev tailscale0";
+          ExecStartPost = "${pkgs.coreutils}/bin/sleep 1";
+          # Ignore errors if route already exists
+          SuccessExitStatus = "0 2";
+        };
       };
     };
-  };
 
-  # nftables rules for Tailscale + Mullvad coexistence
-  # Marks: 0x00000f41 (ct mark) + 0x6d6f6c65 (meta mark = "mole") = bypass Mullvad tunnel
-  networking.nftables.tables.mullvad-tailscale = {
-    family = "inet";
-    content = ''
-      chain output {
-        type route hook output priority dstnat; policy accept;
-        # Mark locally-generated traffic TO Tailscale peers (CGNAT range) to bypass Mullvad
-        ip daddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65
-        # Mark traffic from tailscale0 interface to bypass Mullvad (coordination server etc.)
-        oifname "tailscale0" ct mark set 0x00000f41 meta mark set 0x6d6f6c65
-      }
-    '';
-  };
+    # nftables rules for Tailscale + Mullvad coexistence
+    # Marks: 0x00000f41 (ct mark) + 0x6d6f6c65 (meta mark = "mole") = bypass Mullvad tunnel
+    networking.nftables.tables.mullvad-tailscale = {
+      family = "inet";
+      content = ''
+        chain output {
+          type route hook output priority dstnat; policy accept;
+          # Mark locally-generated traffic TO Tailscale peers (CGNAT range) to bypass Mullvad
+          ip daddr 100.64.0.0/10 ct mark set 0x00000f41 meta mark set 0x6d6f6c65
+          # Mark traffic from tailscale0 interface to bypass Mullvad (coordination server etc.)
+          oifname "tailscale0" ct mark set 0x00000f41 meta mark set 0x6d6f6c65
+        }
+      '';
+    };
 
-  # NAT rules for Tailscale exit node traffic through Mullvad
-  networking.nftables.tables.tailscale-exit-nat = {
-    family = "ip";
-    content = ''
-      chain postrouting {
-        type nat hook postrouting priority srcnat; policy accept;
-        # Masquerade exit node traffic from Tailscale going through Mullvad
-        iifname "tailscale0" oifname "wg0-mullvad" masquerade
-      }
-    '';
-  };
-}
+    # NAT rules for Tailscale exit node traffic through Mullvad
+    networking.nftables.tables.tailscale-exit-nat = {
+      family = "ip";
+      content = ''
+        chain postrouting {
+          type nat hook postrouting priority srcnat; policy accept;
+          # Masquerade exit node traffic from Tailscale going through Mullvad
+          iifname "tailscale0" oifname "wg0-mullvad" masquerade
+        }
+      '';
+    };
+
+    networking.nftables.tables.tailscale-prerouting-mark = {
+      family = "ip";
+      content = ''
+        chain prerouting {
+          type filter hook prerouting priority mangle + 10; policy accept;
+          # Set the Mullvad bypass mark for traffic to local Tailscale services.
+          iifname "tailscale0" ip saddr 100.64.0.0/10 ip daddr 100.64.0.0/10 ct mark set 0x00000f41
+          # Clear marks so exit-node traffic routes through Mullvad.
+          iifname "tailscale0" ip saddr 100.64.0.0/10 ip daddr != 100.64.0.0/10 meta mark set 0x00000000 ct mark set 0x00000000
+        }
+      '';
+    };
+  }

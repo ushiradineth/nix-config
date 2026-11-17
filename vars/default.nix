@@ -22,6 +22,9 @@ in {
     shuos = "192.168.1.5";
     shulab = "100.111.240.122";
   };
+  hostLocalAddresses = {
+    shupi = "192.168.1.13";
+  };
   authorizedKeys = [publicKeys.shu publicKeys.shuos]; # Authorized to access all machines
   inherit publicKeys;
 }

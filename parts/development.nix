@@ -58,17 +58,54 @@
       host = inputs.self.nixosConfigurations.shupi.config;
     };
     checks.shupi-dns-routing = let
-      host = inputs.self.nixosConfigurations.shupi.config;
-      dns = host.services.adguardhome.settings.dns;
+      checkMode = enabled: let
+        host =
+          (inputs.self.nixosConfigurations.shupi.extendModules {
+            modules = [{services.mullvad-vpn.enable = lib.mkForce enabled;}];
+          }).config;
+        dns = host.services.adguardhome.settings.dns;
+        challenge = host.services.traefik.staticConfigOptions.certificatesResolvers.letsencrypt.acme.dnsChallenge;
+        tunnel = host.systemd.services.cloudflared-tunnel-shupi;
+        resolvers =
+          if enabled
+          then ["10.64.0.1"]
+          else ["1.1.1.1" "1.0.0.1"];
+        vpnTables = ["mullvad-tailscale" "tailscale-exit-nat" "tailscale-prerouting-mark"];
+      in
+        assert lib.assertMsg (dns.upstream_dns == resolvers && dns.bootstrap_dns == resolvers) "shupi DNS must follow Mullvad enablement";
+        assert !host.services.unbound.enable;
+        assert host.services.adguardhome.enable && dns.port == 53;
+        assert (dns.fallback_dns or []) == [];
+        assert host.networking.nameservers == ["127.0.0.1"];
+        assert host.virtualisation.docker.daemon.settings.dns == ["172.17.0.1"];
+        assert !(builtins.elem 5335 host.networking.firewall.allowedTCPPorts);
+        assert !(builtins.elem 5335 host.networking.firewall.allowedUDPPorts);
+        assert challenge.resolvers == map (address: "${address}:53") resolvers;
+        assert challenge.disablePropagationCheck == enabled;
+        assert host.services.adguardhome.settings.filtering.filtering_enabled;
+        assert host.services.adguardhome.settings.filtering.protection_enabled;
+        assert host.services.tailscale.enable && host.services.tailscale.useRoutingFeatures == "both";
+        assert builtins.elem "--advertise-exit-node" host.services.tailscale.extraUpFlags;
+        assert builtins.elem "--accept-dns=false" host.services.tailscale.extraUpFlags;
+        assert lib.all (name: builtins.hasAttr name host.networking.nftables.tables == enabled) vpnTables;
+        assert (host.systemd.services ? mullvad-daemon) == enabled;
+        assert (host.systemd.services ? tailscale-route-fix) == enabled;
+        assert (host.age.secrets ? mullvad-account-id) == enabled;
+        assert builtins.elem host.services.mullvad-vpn.package host.environment.systemPackages == enabled;
+        assert builtins.elem "mullvad-daemon.service" tunnel.after == enabled;
+        assert builtins.elem "mullvad-daemon.service" tunnel.wants == enabled;
+        assert builtins.elem "mullvad-daemon.service" tunnel.partOf == enabled;
+        assert (tunnel.environment ? TUNNEL_EDGE_BIND_ADDRESS) == enabled;
+        assert tunnel.environment.TUNNEL_DNS_RESOLVER_ADDRS == "1.1.1.1:53,1.0.0.1:53";
+        assert (
+          if enabled
+          then lib.hasInfix "mullvad split-tunnel add $MAINPID" tunnel.serviceConfig.ExecStartPost
+          else (tunnel.serviceConfig.ExecStartPost or "") == ""
+        );
+        assert !enabled || lib.hasInfix "lockdown-mode set on" host.systemd.services.mullvad-daemon.postStart; true;
     in
-      assert !host.services.unbound.enable;
-      assert host.services.adguardhome.enable && dns.port == 53;
-      assert dns.upstream_dns == ["10.64.0.1"] && dns.bootstrap_dns == ["10.64.0.1"];
-      assert (dns.fallback_dns or []) == [];
-      assert host.networking.nameservers == ["127.0.0.1"];
-      assert host.virtualisation.docker.daemon.settings.dns == ["172.17.0.1"];
-      assert !(builtins.elem 5335 host.networking.firewall.allowedTCPPorts);
-      assert !(builtins.elem 5335 host.networking.firewall.allowedUDPPorts);
+      assert checkMode true;
+      assert checkMode false;
         pkgs.runCommand "shupi-dns-routing" {} ''
           touch "$out"
         '';

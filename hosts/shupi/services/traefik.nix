@@ -59,8 +59,12 @@ in {
           dnsChallenge = {
             provider = "cloudflare";
             delayBeforeCheck = 10;
-            resolvers = ["10.64.0.1:53"]; # Mullvad DNS - public DNS blocked by VPN
-            disablePropagationCheck = true; # Skip direct NS query (blocked by Mullvad)
+            resolvers =
+              if config.services.mullvad-vpn.enable
+              then ["10.64.0.1:53"]
+              else ["1.1.1.1:53" "1.0.0.1:53"];
+            # Direct authoritative DNS queries are blocked in VPN mode.
+            disablePropagationCheck = config.services.mullvad-vpn.enable;
           };
         };
       };

@@ -62,6 +62,21 @@ This repository drew significant inspiration from the outstanding work done by
   be `switch`, `boot`, or `dry-activate`. Tags default to each hostname, so `shupi` affects only
   `shupi`; group tags can be added in the per-host Colmena definition if needed.
 
+## Shupi VPN mode
+
+Set `services.mullvad-vpn.enable` in `hosts/shupi/networking.nix`, then rebuild and apply the
+configuration. It defaults to `true`. With `false`, shupi and its Tailscale exit-node clients use
+the normal internet connection rather than Mullvad. AdGuard still filters DNS, using Cloudflare's
+`1.1.1.1` and `1.0.0.1` over ordinary DNS in direct mode. Internal DNS rewrites and container DNS
+paths stay unchanged.
+
+This is a rebuild-time switch, not a runtime disconnect or automatic fallback. Enabled mode retains
+Mullvad lockdown. Before changing modes on the running host, keep independent LAN or console
+recovery access and a previous system generation. Run checks and `just deploy-dry shupi` before an
+authorized deployment. After switching, verify fresh SSH connections, host/container DNS,
+Cloudflared and a separate exit-node client, then repeat after reboot. Retain Mullvad state and
+credentials for rollback.
+
 ## Local Dev Environments
 
 - Copy a template from `flakes/` into the target repo and adjust it there.

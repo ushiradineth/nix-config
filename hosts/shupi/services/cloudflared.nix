@@ -2,6 +2,7 @@
   config,
   hostname,
   mysecrets,
+  myvars,
   lib,
   ...
 }: {
@@ -18,15 +19,15 @@
   };
 
   systemd.services."cloudflared-tunnel-shupi" = {
-    after = ["mullvad-daemon.service"];
-    wants = ["mullvad-daemon.service"];
-    partOf = ["mullvad-daemon.service"];
+    after = lib.optional config.services.mullvad-vpn.enable "mullvad-daemon.service";
+    wants = lib.optional config.services.mullvad-vpn.enable "mullvad-daemon.service";
+    partOf = lib.optional config.services.mullvad-vpn.enable "mullvad-daemon.service";
 
     environment = {
       # Avoid tunnel startup failures when local DNS (127.0.0.1) is temporarily unavailable.
       TUNNEL_DNS_RESOLVER_ADDRS = "1.1.1.1:53,1.0.0.1:53";
       # Split tunneling otherwise retains the VPN source address on the LAN interface.
-      TUNNEL_EDGE_BIND_ADDRESS = "192.168.1.13";
+      TUNNEL_EDGE_BIND_ADDRESS = lib.mkIf config.services.mullvad-vpn.enable myvars.hostLocalAddresses.shupi;
     };
 
     unitConfig = {
@@ -35,7 +36,7 @@
 
     serviceConfig = {
       # Exclude each new PID without running cloudflared itself as root.
-      ExecStartPost = "+${config.services.mullvad-vpn.package}/bin/mullvad split-tunnel add $MAINPID";
+      ExecStartPost = lib.mkIf config.services.mullvad-vpn.enable "+${config.services.mullvad-vpn.package}/bin/mullvad split-tunnel add $MAINPID";
       Restart = lib.mkForce "always";
       RestartSec = "30s";
     };

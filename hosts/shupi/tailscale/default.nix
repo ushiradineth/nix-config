@@ -21,7 +21,7 @@
       "--advertise-exit-node"
       "--ssh"
       "--accept-routes"
-      "--accept-dns=false" # Disabled to avoid conflict with Mullvad's DNS pointed to AdGuard
+      "--accept-dns=false" # AdGuard owns DNS in both VPN and direct modes.
     ];
   };
 
@@ -41,22 +41,6 @@
     checkReversePath = lib.mkForce false; # Exit-node traffic to local services needs strict bypass
     trustedInterfaces = ["tailscale0"];
     allowedUDPPorts = [config.services.tailscale.port];
-  };
-
-  # Handle Tailscale traffic marks for Mullvad coexistence
-  networking.nftables.tables.tailscale-prerouting-mark = {
-    family = "ip";
-    content = ''
-      chain prerouting {
-        type filter hook prerouting priority mangle + 10; policy accept;
-        # Traffic from Tailscale peers TO local Tailscale services (CGNAT range)
-        # Set bypass mark so Mullvad's INPUT chain accepts it
-        iifname "tailscale0" ip saddr 100.64.0.0/10 ip daddr 100.64.0.0/10 ct mark set 0x00000f41
-        # Exit node traffic (to non-Tailscale destinations like the internet)
-        # Clear marks so it routes through Mullvad tunnel
-        iifname "tailscale0" ip saddr 100.64.0.0/10 ip daddr != 100.64.0.0/10 meta mark set 0x00000000 ct mark set 0x00000000
-      }
-    '';
   };
 
   # Force tailscaled to use nftables (Critical for clean nftables-only systems)

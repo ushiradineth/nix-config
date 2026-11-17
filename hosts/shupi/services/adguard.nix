@@ -5,6 +5,10 @@
   ...
 }: let
   port = config.ports.adguard;
+  resolvers =
+    if config.services.mullvad-vpn.enable
+    then ["10.64.0.1"]
+    else ["1.1.1.1" "1.0.0.1"];
 in {
   systemd.tmpfiles.rules = [
     "d /srv/adguard 0700 adguardhome adguardhome -"
@@ -36,14 +40,8 @@ in {
       dns = {
         bind_hosts = ["0.0.0.0"];
         port = 53;
-        upstream_dns = [
-          # Mullvad internal DNS
-          "10.64.0.1"
-        ];
-        bootstrap_dns = [
-          # Mullvad internal DNS
-          "10.64.0.1"
-        ];
+        upstream_dns = resolvers;
+        bootstrap_dns = resolvers;
       };
 
       tls = {
