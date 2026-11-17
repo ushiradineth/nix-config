@@ -94,6 +94,7 @@
       "atoll" # Dynamic Island
     ];
     masApps = {
+      "Amphetamine" = 937984704; # Keep display alive when lid is closed
       "Xcode" = 497799835;
     };
 
