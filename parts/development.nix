@@ -53,6 +53,10 @@
     };
     checks.semgrep-local = import ../modules/home-manager/core/semgrep/tests {inherit pkgs;};
     checks.tailnet-policy = import ../hosts/shupi/tailscale/tests {inherit pkgs;};
+    checks.shupi-selfsync = import ../hosts/shupi/services/selfsync/tests.nix {
+      inherit pkgs;
+      host = inputs.self.nixosConfigurations.shupi.config;
+    };
     checks.shupi-dns-routing = let
       host = inputs.self.nixosConfigurations.shupi.config;
       dns = host.services.adguardhome.settings.dns;
@@ -102,13 +106,6 @@
         pkgs.runCommand "shupi-adguard-admin" {} ''
           touch "$out"
         '';
-    checks.affine-web =
-      pkgs.runCommand "affine-web-import-tests" {
-        nativeBuildInputs = [pkgs.nodejs_24];
-      } ''
-        node --experimental-strip-types --test ${../containers/affine}/import-errors.test.ts
-        touch "$out"
-      '';
     checks.shupi-short-urls = let
       host = inputs.self.nixosConfigurations.shupi.config;
       http = host.services.traefik.dynamicConfigOptions.http;
@@ -229,11 +226,12 @@
     checks.opencode-workflow =
       pkgs.runCommand "opencode-workflow-tests" {
         src = ../.;
-        nativeBuildInputs = [pkgs.nodejs pkgs.git pkgs.ripgrep];
+        nativeBuildInputs = [pkgs.nodejs pkgs.git pkgs.ripgrep pkgs.typescript];
         OPENCODE_TEST_BINARY = "${inputs.llm-agents.packages.${system}.opencode}/bin/opencode";
       } ''
         export HOME="$TMPDIR/home"
         mkdir -p "$HOME"
+        tsc --project "$src/tests/opencode-workflow.tsconfig.json" --typeRoots ${nodeTypes}
         node --test "$src/tests/opencode-workflow.test.mts"
         touch "$out"
       '';

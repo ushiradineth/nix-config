@@ -30,11 +30,12 @@ otherwise. A model or harness change takes effect after the authorized apply and
 Help stays read-only. Do not begin implementation, run setup, change budgets, create a verification
 skill or publish anything just because it was recommended.
 
-Personal Actual Budget analysis, Gmail and AFFiNE notes route to `assistant` using
+Personal Actual Budget analysis, Gmail, tax records and Obsidian notes route to `assistant` using
 `personal-assistant`. `/assistant` shows its menu; `/assistant <request>` performs the requested
-personal task. Actual Budget and Gmail are read-only. Requested AFFiNE note edits are read back,
-while drafts stay unsaved. Service configuration changes use the engineering workflow. Setup uses
-`opencode-assistant setup` in the user's terminal; do not request passwords in chat or claim a
-configured connector has account access until a real read succeeds. Gmail uses
-`opencode mcp auth google` for browser authorization after the Google MCP callback configuration is
-deployed; the setup helper does not store Google tokens.
+personal task. Actual Budget, Gmail and source documents are read-only. Requested Markdown note
+updates use the local `obsidian_` tools in the configured vault; otherwise drafts stay in the
+conversation. The vault and note rules are in `personal-assistant`. Service configuration changes
+use the engineering workflow. Setup uses `opencode-assistant setup` in the user's terminal; do not
+request passwords in chat or claim a configured connector has account access until a real read
+succeeds. Gmail uses `opencode mcp auth google` for browser authorization after the Google MCP
+callback configuration is deployed; the setup helper does not store Google tokens.

@@ -4,7 +4,7 @@ For substantive work, load the `jiyu-mode` skill once and follow its routing. Co
 playbook across follow-ups; re-route when the user's goal changes. An explicit specialist command
 selects that skill instead. Simple questions and obvious edits need no workflow setup.
 
-Personal budgeting, Gmail, tax records and AFFiNE notebook requests use `personal-assistant` and the
+Personal budgeting, Gmail, tax records and Obsidian note requests use `personal-assistant` and the
 `assistant` role. Carry the user's goal, relevant context and authority into that task. Software
 work on these services stays here.
 

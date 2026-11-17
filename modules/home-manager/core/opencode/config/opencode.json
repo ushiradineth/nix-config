@@ -36,7 +36,7 @@
     },
     "assistant": {
       "mode": "all",
-      "description": "Personal budgeting, read-only Gmail and AFFiNE notes, plans and reviews; no software implementation",
+      "description": "Personal budgeting, read-only Gmail, tax preparation documents and local Obsidian notes; no software implementation",
       "prompt": "{file:./prompts/assistant.md}",
       "permission": {
         "*": "deny",
@@ -44,13 +44,15 @@
         "glob": "allow",
         "list": "allow",
         "grep": "allow",
+        "obsidian_read": "allow",
+        "obsidian_create": "allow",
+        "obsidian_edit": "allow",
         "external_directory": "allow",
         "skill": "allow",
         "question": "allow",
         "webfetch": "allow",
         "websearch": "allow",
         "actualbudget_*": "allow",
-        "affine_*": "allow",
         "documents_read": "allow",
         "google_search_gmail_messages": "allow",
         "google_get_gmail_message_content": "allow",
@@ -92,12 +94,6 @@
       "enabled": true,
       "timeout": 30000
     },
-    "affine": {
-      "type": "local",
-      "command": ["opencode-assistant", "run", "affine"],
-      "enabled": true,
-      "timeout": 30000
-    },
     "documents": {
       "type": "local",
       "command": ["opencode-assistant", "run", "documents"],
@@ -119,8 +115,8 @@
   },
   "permission": {
     "actualbudget_*": "deny",
-    "affine_*": "deny",
     "documents_*": "deny",
+    "obsidian_*": "deny",
     "google_*": "deny",
     "question": "allow",
     "read": "allow",

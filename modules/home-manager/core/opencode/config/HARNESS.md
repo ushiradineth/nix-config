@@ -89,14 +89,14 @@ reply. Steering by a principle's name still works.
 
 ## Agents and tools
 
-| Agent       | Responsibility                                                                                       |
-| ----------- | ---------------------------------------------------------------------------------------------------- |
-| `jiyu`      | Primary owner of the goal, design, implementation, integration and proof.                            |
-| `sudo-jiyu` | Same prompt, instructions and model as Jiyu, with every OpenCode permission allowed.                 |
-| `general`   | Bounded implementation or investigation worker.                                                      |
-| `explore`   | Read-only source mapping.                                                                            |
-| `reviewer`  | Read-only correctness, comment or structural review.                                                 |
-| `assistant` | Personal Actual Budget analysis and AFFiNE notebook work; available directly or as a bounded worker. |
+| Agent       | Responsibility                                                                                    |
+| ----------- | ------------------------------------------------------------------------------------------------- |
+| `jiyu`      | Primary owner of the goal, design, implementation, integration and proof.                         |
+| `sudo-jiyu` | Same prompt, instructions and model as Jiyu, with every OpenCode permission allowed.              |
+| `general`   | Bounded implementation or investigation worker.                                                   |
+| `explore`   | Read-only source mapping.                                                                         |
+| `reviewer`  | Read-only correctness, comment or structural review.                                              |
+| `assistant` | Personal Actual Budget analysis, Gmail, document reviews and Obsidian notes; direct or delegated. |
 
 Workers cannot launch other agents. Competing writes get separate workspaces; shared review can use
 the same source. The primary inspects their artifacts and verifies integration.
@@ -105,25 +105,26 @@ Select `sudo-jiyu` for Jiyu with unrestricted OpenCode tool, shell, directory, d
 access. It shares `prompts/jiyu.md`, `AGENTS.md`, skills and instructions with `jiyu`; only its
 agent-level permission changes to `"*": "allow"`. The default agent remains `jiyu`.
 
-### Personal budgeting, Gmail and AFFiNE
+### Personal budgeting, Gmail, documents and Obsidian
 
-Describe a spending, budget, email or personal notebook task normally. Jiyu routes it to
-`assistant`, whose service tools stay out of ordinary coding agents. `/assistant <request>` selects
-the role directly; a bare `/assistant` shows examples without reading accounts. The assistant
-inherits the configured model and cannot run shell commands, edit project files or launch workers.
+Describe a spending, budget, email, personal document or Obsidian note task normally. Jiyu routes it
+to `assistant`, whose service tools stay out of ordinary coding agents. `/assistant <request>`
+selects the role directly; a bare `/assistant` shows examples without reading accounts. The
+assistant inherits the configured model and cannot run shell commands, edit project files or launch
+workers.
 
 ```text
 /assistant Review October's personal spending. Explain transfers and missing coverage.
 /assistant Find this year's receipts from my accountant and list any missing tax documents.
-/assistant Find my trip plan and append these three packing items: ...
-/assistant Save a monthly budget review in AFFiNE with the source period and my chosen actions.
+/assistant Draft a monthly budget review with the source period and my chosen actions.
+/assistant Save the agreed monthly review to Reviews/November.md in Obsidian.
 ```
 
 The assistant also knows the local Google Drive document root:
 `/Users/shu/Library/CloudStorage/GoogleDrive-ushiradineth@gmail.com/My Drive/`. Its existing file
 permissions allow searching and reading tax records and other relevant personal documents there.
-Source files remain read-only; requested notebook updates go to AFFiNE. A file that is unavailable
-locally or unsupported by the available reader is reported explicitly.
+Source files remain read-only. A file that is unavailable locally or unsupported by the available
+reader is reported explicitly.
 
 `documents_read` supplies bounded extraction for local PDF/text/JSON files and HTTPS PDFs. It
 unwraps saved JSON tool responses and runs English OCR locally on PDF pages with scant text.
@@ -132,11 +133,7 @@ accepts document parameters rather than shell commands or executable code. Pytho
 and Tesseract are packaged through Nix; no private document is uploaded for conversion. Encrypted
 PDFs require an unlocked local copy. Other formats continue to use their existing readers.
 
-The local AFFiNE adapter returns paged Markdown instead of duplicating blocks, plain text and
-Markdown in one large response. Literal `find` seeks a section before paging; revision and document
-identity accompany each excerpt. Explicit block reads preserve IDs and deltas for incremental edits.
-The adapter forwards writes and their revision preconditions unchanged. Shell and arbitrary
-context-mode execution remain denied for the assistant.
+Shell and arbitrary context-mode execution remain denied for the assistant.
 
 Gmail uses the existing Google Workspace MCP on shupi over the tailnet. The assistant can use seven
 mail read tools: search, message/thread reads (single or batch), attachment retrieval and label
@@ -145,23 +142,31 @@ drafts, marking read, archiving and deletion. Replies can be drafted in chat. Em
 source message links; downloading an attachment does not prove it was read.
 
 Actual Budget is enforced read-only, with one configured budget Sync ID and a small analysis/query
-toolset. It cannot change transactions, move money, switch budgets or run bank sync. AFFiNE can
-find/read notes and perform requested incremental authoring; deletion, full-note replacement,
-publishing and account administration are omitted. Requests to draft remain drafts; requests to save
-or update a specific note authorize that change, followed by a readback. Tax preparation establishes
-jurisdiction/year before applying current official rules. Health is deferred.
+toolset. It cannot change transactions, move money, switch budgets or run bank sync. Draft reviews
+stay in the conversation. Tax preparation establishes jurisdiction/year before applying current
+official rules. Health is deferred.
 
-The two connectors and their transitive dependencies are integrity-locked under
-`modules/home-manager/core/opencode/assistant/connectors/` and packaged with Node 24. They run
-locally over stdio; no public MCP service or runtime package download is needed. AFFiNE remains
-behind Tailscale. The assistant reads only the service needed for the current request. Local
-connectors still send tool results to the configured model.
+Obsidian replaces the former hosted notebook workflow with local file access. The vault root and
+note-edit rules live in `skills/personal-assistant/SKILL.md`, with enforcement in
+`tools/obsidian.ts`. These dependency-free custom tools expose `obsidian_read`, `obsidian_create`
+and `obsidian_edit` to the assistant. They work independently of the current coding project. The
+assistant can search and read the vault and edit its Markdown notes, while writes outside that scope
+stay denied. It reads before editing, preserves unrelated content and rereads afterward. Saving
+requires a concrete user request; ordinary questions and drafts stay in chat. Hidden metadata,
+plugin settings, credentials and attachments are outside the write scope. Selfsync handles
+replication through Obsidian; a successful file edit proves local persistence, not delivery to
+another device. No extra MCP connector or Selfsync server credentials are needed.
+
+The Actual Budget connector and its transitive dependencies are integrity-locked under
+`modules/home-manager/core/opencode/assistant/connectors/` and packaged with Node 24. It runs
+locally over stdio; no public MCP service or runtime package download is needed. The assistant reads
+only the service needed for the current request. Local connector reads still send tool results to
+the configured model.
 
 After the authorized system activation, enter credentials in your own terminal:
 
 ```sh
 opencode-assistant setup actualbudget
-opencode-assistant setup affine
 opencode-assistant status
 ```
 
@@ -179,11 +184,10 @@ The setup commands use the helper installed by the OpenCode Home Manager module.
 hidden and saved in mode-0600 files under `~/.config/opencode-assistant/`, outside this repository
 and the Nix store. The budget cache lives under `~/.local/share/opencode-assistant/`. XDG overrides
 are respected. `status` proves configuration only. Restart OpenCode, inspect `opencode mcp list`,
-then request a harmless budget read and an existing-note read to verify account access. Verify
-writeback through an actual requested note change and readback; never create test transactions for
+then request a harmless budget read to verify account access. Never create test transactions for
 setup.
 
-Changing `hosts/shupi/services/actualbudget.nix`, AFFiNE/Google deployment or connector code remains
+Changing `hosts/shupi/services/actualbudget.nix`, Google deployment or connector code remains
 engineering work in `jiyu`, with the normal repository checks and deployment boundaries.
 
 Existing model and provider settings are preserved. Workers inherit the active model unless an

@@ -33,7 +33,7 @@
       snapotter = 48026;
       googleMcp = 48027;
       changedetection = 48028;
-      affine = 48029;
+      selfsync = 48030;
     };
   };
 }

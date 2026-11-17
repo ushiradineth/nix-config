@@ -24,7 +24,7 @@ them. Read only the matching file:
 
 | Task                                                            | Playbook                                           |
 | --------------------------------------------------------------- | -------------------------------------------------- |
-| Personal budgets, Gmail, tax records or AFFiNE notes/reviews    | Load `personal-assistant`; delegate to `assistant` |
+| Personal budgets, Gmail, tax records or Obsidian notes          | Load `personal-assistant`; delegate to `assistant` |
 | UI ideas, visual/interaction design, UX review or UI refinement | Load `impeccable` for the UI portion               |
 | Explain, diagnose, compare, or investigate without edits        | [investigation](playbooks/investigation.md)        |
 | Reproduce and fix a defect                                      | [bug fix](playbooks/bug-fix.md)                    |
@@ -49,8 +49,8 @@ user also requests a UI change. Mixed tasks load Impeccable only for that portio
 workflow's final integration and code-review boundary.
 
 Personal budgeting, mail and notebook work uses the assistant route without coding design,
-repository bookkeeping or attack-the-diff. A request to change the Actual Budget/AFFiNE/Google
-service configuration or integration code uses its normal coding playbook.
+repository bookkeeping or attack-the-diff. A request to change the Actual Budget/Google service
+configuration or integration code uses its normal coding playbook.
 
 For a named principle, read [the principle reference](references/principles.md) as needed.
 

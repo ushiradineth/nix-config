@@ -4,7 +4,6 @@
     root = ./scripts;
     fileset = pkgs.lib.fileset.unions [
       ./scripts/opencode-assistant.mts
-      ./scripts/opencode-affine.mts
       ./scripts/opencode-documents.mts
     ];
   };

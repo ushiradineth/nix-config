@@ -12,7 +12,7 @@ in {
       OPENCODE_ASSISTANT_TEST_MODULES = "${package.connectors}/lib/node_modules";
     } ''
       tsc --project "$src/tests/opencode-assistant.tsconfig.json" --typeRoots ${nodeTypes}
-      node --test "$src/tests/opencode-assistant.test.mts" "$src/tests/opencode-affine.test.mts"
+      node --test "$src/tests/opencode-assistant.test.mts"
       touch "$out"
     '';
   documents = let

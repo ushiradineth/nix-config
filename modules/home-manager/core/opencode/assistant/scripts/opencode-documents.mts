@@ -20,7 +20,7 @@ export async function serveDocuments(modules: string, reader: string) {
       {
         name: "read",
         description:
-          "Read-only extraction of a local PDF, UTF-8 text or saved JSON tool output, or an HTTPS PDF URL. Unwraps AFFiNE/MCP JSON before searching. Extracts up to 3 PDF pages, using local English OCR automatically for scant text; use ocr:always for incomplete hybrid pages. Returns readable text, page methods, source and continuation offsets; never edits originals or uploads documents. For PDF continuation keep page/pages unchanged when using nextOffset; advance nextPage only after exhausting that excerpt.",
+          "Read-only extraction of a local PDF, UTF-8 text or saved JSON tool output, or an HTTPS PDF URL. Unwraps saved MCP JSON before searching. Extracts up to 3 PDF pages, using local English OCR automatically for scant text; use ocr:always for incomplete hybrid pages. Returns readable text, page methods, source and continuation offsets; never edits originals or uploads documents. For PDF continuation keep page/pages unchanged when using nextOffset; advance nextPage only after exhausting that excerpt.",
         inputSchema: {
           type: "object",
           required: ["source"],

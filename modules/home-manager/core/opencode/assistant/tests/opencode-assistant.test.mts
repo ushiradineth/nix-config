@@ -33,12 +33,6 @@ const actual = {
   ACTUAL_PASSWORD: "a password with $() and `literal` text",
   ACTUAL_BUDGET_SYNC_ID: "selected-personal-budget",
 }
-const affine = {
-  AFFINE_BASE_URL: "https://notes.example.com",
-  AFFINE_EMAIL: "me@example.com",
-  AFFINE_PASSWORD: "private-affine-password",
-  AFFINE_WORKSPACE_ID: "selected-personal-workspace",
-}
 
 test("hidden input preserves password bytes alongside ANSI keys and restores terminal state", async () => {
   class Input extends PassThrough {
@@ -127,7 +121,7 @@ test("budget launch stays read-only and replaces ambient connector settings", as
     ACTUAL_BUDGET_REGISTRY: "unexpected-budget",
     BUDGET_1_NAME: "Default",
     BUDGET_1_SYNC_ID: "unexpected-budget",
-    AFFINE_COOKIE: "other-service-secret",
+    OTHER_SERVICE_COOKIE: "other-service-secret",
     UNRELATED_API_TOKEN: "unrelated-secret",
     NODE_OPTIONS: "--import=untrusted",
   })
@@ -136,7 +130,7 @@ test("budget launch stays read-only and replaces ambient connector settings", as
   assert.equal(plan.env.ACTUAL_PASSWORD, actual.ACTUAL_PASSWORD)
   assert.equal(plan.env.ACTUAL_BUDGET_REGISTRY, undefined)
   assert.equal(plan.env.BUDGET_1_SYNC_ID, undefined)
-  assert.equal(plan.env.AFFINE_COOKIE, undefined)
+  assert.equal(plan.env.OTHER_SERVICE_COOKIE, undefined)
   assert.equal(plan.env.UNRELATED_API_TOKEN, undefined)
   assert.equal(plan.env.NODE_OPTIONS, undefined)
   assert.doesNotMatch(plan.env.MCP_TOOLS ?? "", /delete/)
@@ -152,25 +146,6 @@ test("budget launch stays read-only and replaces ambient connector settings", as
   await assert.rejects(launchPlan("actualbudget", f.env), /Unexpected .env/)
 })
 
-test("AFFiNE uses the selected workspace and incremental authoring without account or sharing tools", async (t) => {
-  const f = await fixture(t)
-  await saveCredentials("affine", affine, f.env)
-  const plan = await launchPlan("affine", {
-    ...f.env,
-    AFFINE_TOOL_PROFILE: "full",
-    MCP_TRANSPORT: "http",
-  })
-  assert.equal(plan.env.AFFINE_WORKSPACE_ID, affine.AFFINE_WORKSPACE_ID)
-  assert.equal(plan.env.AFFINE_TOOL_PROFILE, "core")
-  assert.equal(plan.env.MCP_TRANSPORT, "stdio")
-  assert.equal(plan.env.AFFINE_CLIENT_VERSION, "0.27.4")
-  assert.match(plan.env.AFFINE_DISABLED_GROUPS ?? "", /destructive/)
-  assert.match(plan.env.AFFINE_DISABLED_GROUPS ?? "", /docs.share/)
-  assert.match(plan.env.AFFINE_DISABLED_TOOLS ?? "", /sign_in/)
-  assert.equal(plan.env.ACTUAL_PASSWORD, undefined)
-  assert.equal(plan.env.XDG_CONFIG_HOME, join(plan.cwd, "config"))
-})
-
 test(
   "the packaged CLI reports configuration without claiming a working connection",
   { skip: !process.env.OPENCODE_ASSISTANT_TEST_BINARY },
@@ -184,16 +159,16 @@ test(
     })
     assert.equal(status.status, 0, status.stderr)
     assert.match(status.stdout, /actualbudget: configured/)
-    assert.match(status.stdout, /affine: not configured/)
     assert.match(status.stdout, /not checked/)
-    assert.doesNotMatch(status.stdout + status.stderr, /a password|private-affine-password/)
-    const missing = spawnSync(binary, ["run", "affine"], {
+    assert.doesNotMatch(status.stdout + status.stderr, /a password/)
+    await rm(credentialPath("actualbudget", f.env))
+    const missing = spawnSync(binary, ["run", "actualbudget"], {
       env: { ...process.env, ...f.env },
       encoding: "utf8",
     })
     assert.notEqual(missing.status, 0)
     assert.equal(missing.stdout, "", "MCP stdout stays free of diagnostics")
-    assert.match(missing.stderr, /setup affine/)
+    assert.match(missing.stderr, /setup actualbudget/)
   }
 )
 
@@ -261,7 +236,7 @@ test("the packaged Actual SQLite dependency can execute queries", { skip: !modul
 })
 
 test(
-  "real packaged MCP servers publish the intended surfaces and refuse excluded writes",
+  "the packaged budget MCP publishes the intended surface and refuses excluded writes",
   { skip: !modules, timeout: 20000 },
   async (t) => {
     const f = await fixture(t)
@@ -276,51 +251,37 @@ test(
       { ...actual, ACTUAL_SERVER_URL: "http://127.0.0.1:9" },
       f.env
     )
-    await saveCredentials("affine", { ...affine, AFFINE_BASE_URL: "http://127.0.0.1:9" }, f.env)
-    for (const service of ["actualbudget", "affine"] as const) {
-      const client = new Client(
-        { name: "opencode-assistant-check", version: "1" },
-        { capabilities: {} }
-      )
-      const transport = new StdioClientTransport({
-        command: process.env.OPENCODE_ASSISTANT_TEST_BINARY!,
-        args: ["run", service],
-        env: { ...process.env, ...f.env },
-        stderr: "pipe",
-      })
-      try {
-        await client.connect(transport)
-        const tools = await client.listTools()
-        const names = new Set(tools.tools.map((tool: { name: string }) => tool.name))
-        const expected =
-          service === "actualbudget"
-            ? [
-                "actual_get_context",
-                "actual_query_run",
-                "actual_budgets_getMonth",
-                "actual_schedules_get",
-              ]
-            : ["read_doc", "create_doc_from_markdown", "append_markdown", "update_block"]
-        for (const name of expected) assert.ok(names.has(name), `${service}: ${name}`)
-        const excluded =
-          service === "actualbudget"
-            ? ["actual_transactions_create", "actual_bank_sync", "actual_budgets_switch"]
-            : [
-                "replace_doc_with_markdown",
-                "publish_doc",
-                "delete_doc",
-                "sign_in",
-                "update_workspace",
-              ]
-        for (const name of excluded) assert.equal(names.has(name), false, `${service}: ${name}`)
-        assert.ok(names.size <= 32, `${service} keeps a bounded tool surface`)
-        const refused = await client
-          .callTool({ name: excluded[0], arguments: {} })
-          .catch((error: Error) => ({ isError: true, message: error.message }))
-        assert.equal(refused.isError, true, `${service} refuses a hidden write`)
-      } finally {
-        await transport.close()
-      }
+    const service = "actualbudget"
+    const client = new Client(
+      { name: "opencode-assistant-check", version: "1" },
+      { capabilities: {} }
+    )
+    const transport = new StdioClientTransport({
+      command: process.env.OPENCODE_ASSISTANT_TEST_BINARY!,
+      args: ["run", service],
+      env: { ...process.env, ...f.env },
+      stderr: "pipe",
+    })
+    try {
+      await client.connect(transport)
+      const tools = await client.listTools()
+      const names = new Set(tools.tools.map((tool: { name: string }) => tool.name))
+      const expected = [
+        "actual_get_context",
+        "actual_query_run",
+        "actual_budgets_getMonth",
+        "actual_schedules_get",
+      ]
+      for (const name of expected) assert.ok(names.has(name), `${service}: ${name}`)
+      const excluded = ["actual_transactions_create", "actual_bank_sync", "actual_budgets_switch"]
+      for (const name of excluded) assert.equal(names.has(name), false, `${service}: ${name}`)
+      assert.ok(names.size <= 32, `${service} keeps a bounded tool surface`)
+      const refused = await client
+        .callTool({ name: excluded[0], arguments: {} })
+        .catch((error: Error) => ({ isError: true, message: error.message }))
+      assert.equal(refused.isError, true, `${service} refuses a hidden write`)
+    } finally {
+      await transport.close()
     }
   }
 )

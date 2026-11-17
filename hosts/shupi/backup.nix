@@ -170,7 +170,6 @@ in {
         "/srv/immich/library"
         "/srv/seafile/data"
         "/srv/snapotter/data"
-        "/srv/affine/storage"
       ];
 
       extraOptions = [
@@ -265,8 +264,6 @@ in {
         "/srv/couchdb/config" # Retained with the database archive for recovery.
         "/srv/ntfy"
         "/srv/alertmanager"
-        "/srv/affine/config"
-        "/var/lib/affine"
       ];
 
       extraOptions = [

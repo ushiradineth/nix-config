@@ -9,6 +9,7 @@ import {
   mkdtempSync,
   readFileSync,
   realpathSync,
+  symlinkSync,
   rmSync,
   writeFileSync,
 } from "node:fs"
@@ -44,7 +45,6 @@ const googleDenied = [
 ]
 const mockTools: Record<string, string[]> = {
   actualbudget: ["actual_get_context"],
-  affine: ["read_doc"],
   documents: ["read"],
   google: [...gmailReads, ...googleDenied],
 }
@@ -68,7 +68,7 @@ function fixture(candidate = config, mockMcp = false) {
   const installed = join(home, ".config/opencode")
   mkdirSync(workspace, { recursive: true })
   mkdirSync(installed, { recursive: true })
-  for (const entry of ["prompts", "instructions", "skills", "commands"])
+  for (const entry of ["prompts", "instructions", "skills", "commands", "tools"])
     cpSync(join(configRoot, entry), join(installed, entry), { recursive: true })
   const mock = join(dir, "mcp.mts")
   writeFileSync(
@@ -127,6 +127,7 @@ function fixture(candidate = config, mockMcp = false) {
   assert.ifError(init.error)
   assert.equal(init.status, 0, init.stderr)
   return {
+    home,
     workspace,
     configFile: join(installed, "opencode.json"),
     run(args: string[]) {
@@ -218,7 +219,7 @@ test("sudo-jiyu shares Jiyu guidance and permits every tool and resource", () =>
     const sudo = resolved(f, "sudo-jiyu")
     const guidance = (agent: Agent) =>
       Object.fromEntries(
-        Object.entries(agent).filter(([key]) => key !== "name" && key !== "permission")
+        Object.entries(agent).filter(([key]) => !["name", "permission", "tools"].includes(key))
       )
     assert.deepEqual(guidance(sudo), guidance(jiyu))
     for (const [permission, resource] of [
@@ -234,8 +235,10 @@ test("sudo-jiyu shares Jiyu guidance and permits every tool and resource", () =>
       ["skill", "personal-assistant"],
       ["doom_loop", "*"],
       ["actualbudget_actual_get_context", "*"],
-      ["affine_read_doc", "*"],
       ["documents_read", "*"],
+      ["obsidian_read", "*"],
+      ["obsidian_create", "*"],
+      ["obsidian_edit", "*"],
       ["google_send_gmail_message", "*"],
       ["a_future_plugin_tool", "*"],
     ])
@@ -301,16 +304,112 @@ test("native personal transports register and service permissions belong to the 
     const transports = f.run(["mcp", "list"])
     assert.equal(transports.status, 0, transports.stderr)
     assert.match(transports.stdout, /actualbudget/)
-    assert.match(transports.stdout, /affine/)
     assert.match(transports.stdout, /documents/)
     assert.match(transports.stdout, /google/)
     assert.doesNotMatch(transports.stdout + transports.stderr, /failed|error|disconnected/i)
-    for (const tool of ["actualbudget_actual_get_context", "affine_read_doc", "documents_read"]) {
+    for (const tool of ["actualbudget_actual_get_context", "documents_read"]) {
       assert.equal(action(assistant, tool), "allow")
       for (const name of ["jiyu", ...leaves]) assert.equal(action(resolved(f, name), tool), "deny")
     }
     assert.equal(action(assistant, "documents_execute"), "deny")
     assert.equal(action(assistant, "documents_write"), "deny")
+  } finally {
+    f.close()
+  }
+})
+
+test("assistant edits only Obsidian notes through the local tools", () => {
+  const f = fixture()
+  try {
+    const vault = join(f.home, "Documents/Obsidian Vault")
+    const note = join(vault, "Review.md")
+    mkdirSync(vault, { recursive: true })
+    writeFileSync(note, "# Review\n\nExisting paragraph.\n")
+    const call = (tool: string, params: object, agent = "assistant") =>
+      f.run(["debug", "agent", agent, "--tool", tool, "--params", JSON.stringify(params)])
+    const read = call("obsidian_read", { path: "Review.md", offset: 0, limit: 12000 })
+    assert.equal(read.status, 0, `${read.stdout}\n${read.stderr}`)
+    const response = JSON.parse(read.stdout)
+    const original = JSON.parse(response.result.output)
+    assert.equal(original.text, "# Review\n\nExisting paragraph.\n")
+    const edit = {
+      path: "Review.md",
+      expectedRevision: original.revision,
+      oldText: "Existing paragraph.",
+      newText: "Existing paragraph.\n\nRequested next steps.",
+    }
+    const updated = call("obsidian_edit", edit)
+    assert.equal(updated.status, 0, `${updated.stdout}\n${updated.stderr}`)
+    assert.equal(
+      readFileSync(note, "utf8"),
+      "# Review\n\nExisting paragraph.\n\nRequested next steps.\n"
+    )
+    const stale = call("obsidian_edit", edit)
+    assert.notEqual(stale.status, 0)
+    assert.match(`${stale.stdout}\n${stale.stderr}`, /changed|revision/i)
+    const reread = call("obsidian_read", { path: "Review.md", offset: 0, limit: 12000 })
+    assert.equal(reread.status, 0, reread.stderr)
+    const current = JSON.parse(JSON.parse(reread.stdout).result.output)
+    assert.equal(current.text, readFileSync(note, "utf8"))
+    const ambiguous = call("obsidian_edit", {
+      ...edit,
+      expectedRevision: current.revision,
+      oldText: "\n",
+      newText: "ambiguous",
+    })
+    assert.notEqual(ambiguous.status, 0)
+    assert.match(`${ambiguous.stdout}\n${ambiguous.stderr}`, /exactly one/i)
+    const excerpt = call("obsidian_read", { path: "Review.md", offset: 2, limit: 6 })
+    assert.equal(excerpt.status, 0, excerpt.stderr)
+    const page = JSON.parse(JSON.parse(excerpt.stdout).result.output)
+    assert.equal(page.text, current.text.slice(2, 8))
+    assert.equal(page.nextOffset, 8)
+    writeFileSync(join(vault, "Empty.md"), "")
+    const emptyRead = call("obsidian_read", { path: "Empty.md", offset: 0, limit: 12000 })
+    assert.equal(emptyRead.status, 0, emptyRead.stderr)
+    const empty = JSON.parse(JSON.parse(emptyRead.stdout).result.output)
+    const fill = call("obsidian_edit", {
+      path: "Empty.md",
+      expectedRevision: empty.revision,
+      oldText: "",
+      newText: "First entry.\n",
+    })
+    assert.equal(fill.status, 0, `${fill.stdout}\n${fill.stderr}`)
+    assert.equal(readFileSync(join(vault, "Empty.md"), "utf8"), "First entry.\n")
+    const create = { path: "Projects/Weekly review.md", markdown: "# Weekly review\n" }
+    const created = call("obsidian_create", create)
+    assert.equal(created.status, 0, `${created.stdout}\n${created.stderr}`)
+    assert.equal(readFileSync(join(vault, create.path), "utf8"), create.markdown)
+    assert.notEqual(call("obsidian_create", create).status, 0, "create cannot overwrite")
+    for (const path of [
+      "../outside.md",
+      "/tmp/outside.md",
+      "settings.json",
+      ".obsidian/config.md",
+      "Notes/.selfsync/credentials.md",
+    ]) {
+      const result = call("obsidian_create", { path, markdown: "must not be written" })
+      assert.notEqual(result.status, 0, path)
+    }
+    symlinkSync(f.workspace, join(vault, "linked"))
+    assert.notEqual(
+      call("obsidian_create", { path: "linked/escape.md", markdown: "denied" }).status,
+      0
+    )
+    assert.equal(existsSync(join(f.workspace, "escape.md")), false)
+    symlinkSync(note, join(vault, "alias.md"))
+    assert.notEqual(call("obsidian_read", { path: "alias.md", offset: 0, limit: 12000 }).status, 0)
+    for (const agent of ["jiyu", ...leaves]) {
+      const result = call("obsidian_create", { path: `${agent}.md`, markdown: "denied" }, agent)
+      assert.notEqual(result.status, 0, agent)
+      assert.equal(existsSync(join(vault, `${agent}.md`)), false)
+    }
+    const outside = join(f.workspace, "project.md")
+    const result = call("apply_patch", {
+      patchText: `*** Begin Patch\n*** Add File: ${outside}\n+denied\n*** End Patch`,
+    })
+    assert.notEqual(result.status, 0)
+    assert.equal(existsSync(outside), false)
   } finally {
     f.close()
   }

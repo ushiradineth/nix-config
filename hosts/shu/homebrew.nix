@@ -72,6 +72,7 @@
       "discord"
       "medibangpaintpro"
       "notion-calendar"
+      "obsidian"
       "tailscale-app"
       "visual-studio-code" # For Dev Containers
       "drawpen" # For presentations (sketching on the screen)
@@ -88,7 +89,6 @@
       "osu"
       "handy" # Speech to text application
       "blankie" # Background noise
-      "affine" # Note editor and whiteboard
       "dbx" # DB client
       "thock" # Keyboard sounds
       "atoll" # Dynamic Island

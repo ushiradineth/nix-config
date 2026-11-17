@@ -128,9 +128,9 @@ run = 'move-node-to-workspace 2'
 if.app-id = 'com.mitchellh.ghostty'
 run = 'move-node-to-workspace 2'
 
-# Move AFFiNE to workspace 3
+# Move Obsidian to workspace 3
 [[on-window-detected]]
-if.app-id = 'pro.affine.app'
+if.app-id = 'md.obsidian'
 run = 'move-node-to-workspace 3'
 
 # Move Notes to workspace 3
