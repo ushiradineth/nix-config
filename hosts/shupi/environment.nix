@@ -43,7 +43,7 @@
     ATUIN_DOMAIN = "at.shupi.ushira.com";
     SNAPOTTER_DOMAIN = "so.shupi.ushira.com";
     GOOGLE_MCP_DOMAIN = "gmcp.shupi.ushira.com";
-    SELFSYNC_DOMAIN = "sync.shupi.ushira.com";
+    SELFSYNC_DOMAIN = "ob.shupi.ushira.com";
 
     # Exposed through Cloudflared
     UMAMI_DOMAIN = "umami.ushira.com";
