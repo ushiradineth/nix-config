@@ -3,7 +3,7 @@
   lib,
   ...
 }: {
-  services.mullvad-vpn.enable = true;
+  services.mullvad-vpn.enable = false;
 
   networking.hostName = hostname;
   networking.networkmanager = {
