@@ -251,6 +251,13 @@ instructions authoritative.
 Every installed technique has native discovery. Coding techniques also have slash commands that run
 in the current primary session. Commands select a technique; normal prompts let the router pick.
 
+The Caldo techniques are available as `/prune-tests [path]` for focused test-suite cleanup and
+`/untangle-codebase [area or concern]` for structural refactoring. Both preserve the requested
+scope; review requests stay read-only. Test pruning preserves distinct boundary coverage and active
+security contracts. Untangling uses the existing refactoring workflow and stops at the requested
+outcome, with broad comment/test cleanup included only when requested. Source pins, licenses and
+adaptation notes live alongside each skill in `UPSTREAM.md`.
+
 The complete upstream inventory was reviewed: 58 skills, including 24 principles, 23 playbooks, both
 agents, the ten-chapter guide, the Claude adapter, helper inventory and generated harness layout.
 The following choices keep the engineering methods while removing duplicate orchestration.

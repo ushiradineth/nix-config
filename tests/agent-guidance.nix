@@ -49,6 +49,8 @@
       "loop-on-ci"
       "fix-merge-conflicts"
       "thermo-nuclear-code-quality-review"
+      "prune-tests"
+      "untangle-codebase"
     ];
   };
   failures = builtins.attrNames (lib.filterAttrs (_: passed: !passed) tests);

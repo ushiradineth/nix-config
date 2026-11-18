@@ -537,6 +537,8 @@ test("native discovery loads skills and their command entrypoints", async () => 
       "loop-on-ci",
       "fix-merge-conflicts",
       "thermo-nuclear-code-quality-review",
+      "prune-tests",
+      "untangle-codebase",
     ]) {
       assert.ok(names.has(name), `${name} is discoverable`)
       assert.ok(commands.some((command: Discovery) => command.name === name))
